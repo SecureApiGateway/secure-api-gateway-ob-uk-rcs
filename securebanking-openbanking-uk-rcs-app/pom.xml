@@ -24,7 +24,7 @@
     <artifactId>securebanking-openbanking-uk-rcs-app</artifactId>
     <packaging>jar</packaging>
     <version>1.0.0-SNAPSHOT</version>
-    <name>securebanking-openbanking-uk-rs-simulator-app</name>
+    <name>securebanking-openbanking-uk-rcs-app</name>
     <description>A Spring Boot application for the Secure Banking Accelerator Toolkit's Open Banking Remote Consent Service</description>
 
     <parent>

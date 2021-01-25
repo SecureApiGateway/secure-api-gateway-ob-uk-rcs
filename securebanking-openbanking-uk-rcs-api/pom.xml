@@ -29,7 +29,7 @@
 
     <parent>
         <groupId>com.forgerock.securebanking</groupId>
-        <artifactId>securebanking-openbanking-uk-rs</artifactId>
+        <artifactId>securebanking-openbanking-uk-rcs</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
