@@ -128,39 +128,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-            <plugin>
-                <groupId>com.google.cloud.tools</groupId>
-                <artifactId>jib-maven-plugin</artifactId>
-                <configuration>
-                    <from>
-                        <image>adoptopenjdk/openjdk14:jre-14.0.2_12</image>
-                    </from>
-                    <to>
-                        <image>eu.gcr.io/openbanking-214714/securebanking/uk-ob-rcs</image>
-                        <tags>
-                            <tag>${project.version}</tag>
-                            <tag>latest</tag>
-                        </tags>
-                    </to>
-                    <container>
-                        <!-- Using this setting means the image is not truly reproducible, as a new one is created each
-                        time. However it gives it a proper creation date in the registry (rather than 1 Jan 1970!) -->
-                        <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
-                        <jvmFlags>
-                            <jvmFlag>-Xms512m</jvmFlag>
-                            <jvmFlag>-Xdebug</jvmFlag>
-                        </jvmFlags>
-                    </container>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>build</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 
