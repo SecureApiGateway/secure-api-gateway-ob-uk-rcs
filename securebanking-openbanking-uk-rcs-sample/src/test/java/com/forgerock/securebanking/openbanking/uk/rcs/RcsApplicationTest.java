@@ -20,10 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Simple unit test to ensure the {@link RcsApplication} starts up correctly.
+ * A simple Spring Boot test to ensure the {@link RcsApplication} starts up correctly.
  */
 @SpringBootTest
 public class RcsApplicationTest {

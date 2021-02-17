@@ -21,11 +21,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.forgerock.securebanking</groupId>
-    <artifactId>securebanking-openbanking-uk-rcs-app</artifactId>
+    <artifactId>securebanking-openbanking-uk-rcs-sample</artifactId>
     <packaging>jar</packaging>
     <version>1.0.0-SNAPSHOT</version>
-    <name>securebanking-openbanking-uk-rcs-app</name>
-    <description>A Spring Boot application for the Secure Banking Accelerator Toolkit's Open Banking Remote Consent Service</description>
+    <name>securebanking-openbanking-uk-rcs-sample</name>
+    <description>A sample Spring Boot application for the Secure Banking Accelerator Toolkit's Open Banking Remote Consent Service</description>
 
     <parent>
         <groupId>com.forgerock.securebanking</groupId>
@@ -66,26 +66,6 @@
             <artifactId>spring-boot-starter-hateoas</artifactId>
         </dependency>
 
-        <!-- swagger -->
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-boot-starter</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
-        </dependency>
-
-
         <!-- External Test dependencies -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -114,6 +94,39 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <configuration>
+                    <from>
+                        <image>adoptopenjdk/openjdk14:jre-14.0.2_12</image>
+                    </from>
+                    <to>
+                        <image>eu.gcr.io/openbanking-214714/securebanking/uk-ob-rcs</image>
+                        <tags>
+                            <tag>${project.version}</tag>
+                            <tag>latest</tag>
+                        </tags>
+                    </to>
+                    <container>
+                        <!-- Using this setting means the image is not truly reproducible, as a new one is created each
+                        time. However it gives it a proper creation date in the registry (rather than 1 Jan 1970!) -->
+                        <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
+                        <jvmFlags>
+                            <jvmFlag>-Xms512m</jvmFlag>
+                            <jvmFlag>-Xdebug</jvmFlag>
+                        </jvmFlags>
+                    </container>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
