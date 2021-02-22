@@ -23,17 +23,15 @@ import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.ApiSelectorBuilder;
 import springfox.documentation.spring.web.plugins.Docket;
 
 import java.security.Principal;
 
 import static springfox.documentation.builders.PathSelectors.any;
+import static springfox.documentation.spi.DocumentationType.SWAGGER_2;
 
 /**
- * Configuration class for the application's Swagger specification. Refer to the project's README.md for more
- * information.
+ * Configuration class for the application's Swagger specification.
  */
 @Configuration
 @PropertySource("classpath:messages/swagger.properties")
@@ -49,8 +47,6 @@ public class SwaggerDocumentationConfig {
     public String swaggerLicenseUrl;
     @Value("${swagger.terms-of-service-url}")
     public String swaggerTermsOfServiceUrl;
-    @Value("${swagger.version}")
-    public String swaggerVersion;
     @Value("${swagger.contact.name}")
     public String swaggerContactName;
     @Value("${swagger.contact.url}")
@@ -70,18 +66,15 @@ public class SwaggerDocumentationConfig {
     }
 
     @Bean
-    public Docket customImplementation(@Value("${rcs.baseUrl}") String baseUrl) {
-        ApiSelectorBuilder select = new Docket(DocumentationType.SWAGGER_2)
+    public Docket customImplementation() {
+        return new Docket(SWAGGER_2)
                 .ignoredParameterTypes(Principal.class)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.forgerock.securebanking.openbanking.uk.rcs.api"));
-
-        return select
+                .apis(RequestHandlerSelectors.basePackage("com.forgerock.securebanking.openbanking.uk.rcs.api"))
                 .paths(any())
                 .build()
                 .directModelSubstitute(org.joda.time.LocalDate.class, java.sql.Date.class)
                 .directModelSubstitute(org.joda.time.DateTime.class, java.util.Date.class)
                 .apiInfo(apiInfo());
     }
-
 }
