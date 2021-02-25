@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.openbanking.uk.rcs.api;
+package com.forgerock.securebanking.openbanking.uk.rcs.configuration;
 
-import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetails;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 
-@Controller
-public class RCSConsentDetailsApiController implements RCSConsentDetailsApi {
-
-    @Override
-    public ResponseEntity<ConsentDetails> getConsentDetails(String consentRequestJwt, String ssoToken) {
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-    }
+@Configuration
+@Data
+public class AmConfigurationProperties {
+    @Value("${am.oidc.issuerid}")
+    private String issuerId;
+    @Value("${am.cookie.name}")
+    private String cookieName;
+    @Value("${am.userprofile.id}")
+    private String userProfileId;
 }

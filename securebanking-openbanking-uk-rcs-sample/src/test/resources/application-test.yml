@@ -1,0 +1,20 @@
+dns:
+  hosts:
+    root: hosts-root
+
+rcs:
+  issuerId: forgerock-rcs
+
+rs-store:
+  internal-port: 8443
+  base-url: https://rs-store:${rs-store.internal-port}
+
+am:
+  hostname: as.aspsp.${dns.hosts.root}
+  root: https://${am.hostname}
+  cookie:
+    name: iPlanetDirectoryPro
+  oidc:
+    issuerid: ${am.root}/oauth2
+  userprofile:
+    id: id

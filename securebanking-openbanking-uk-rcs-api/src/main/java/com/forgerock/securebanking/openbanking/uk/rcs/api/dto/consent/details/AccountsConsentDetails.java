@@ -16,13 +16,13 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRBankAccountWithBalance;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRExternalPermissionsCode;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.IntentType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.joda.time.DateTime;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 
 import java.util.List;
 
@@ -35,7 +35,7 @@ import java.util.List;
 @NoArgsConstructor
 public class AccountsConsentDetails extends ConsentDetails {
 
-    private List<OBExternalPermissions1Code> permissions;
+    private List<FRExternalPermissionsCode> permissions;
     private DateTime fromTransaction;
     private DateTime toTransaction;
 
