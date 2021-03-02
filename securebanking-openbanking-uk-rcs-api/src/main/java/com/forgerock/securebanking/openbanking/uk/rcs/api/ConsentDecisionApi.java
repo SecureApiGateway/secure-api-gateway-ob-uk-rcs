@@ -16,7 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.api;
 
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
-import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetails;
+import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.RedirectionAction;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -24,21 +24,26 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-@Api(tags = "RCS Consent Details API", description = "The RCS Consent Request Details API")
-public interface RCSConsentDetailsApi {
+/**
+ * Interface for dealing with the PSU's consent decision,
+ */
+@Api(tags = "RCS Consent Decision API", description = "The RCS Consent Decision API")
+public interface ConsentDecisionApi {
 
-    @ApiOperation(value = "Get consent details", notes = "Get the consent details behind a consent request JWT." +
-            " Due to the size of the consent request JWT, we are using a POST instead of a GET")
+    @ApiOperation(
+            value = "Submit consent decision",
+            notes = "Submit the PSU's consent decision for a corresponding consent request")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Consent details", response = ConsentDetails.class)
+            @ApiResponse(code = 200, message = "A redirection response, specifying the URI the PSU should be redirected to",
+                    response = RedirectionAction.class)
     })
-    @RequestMapping(value = "/api/rcs/consent/details",
-            consumes = {"application/jwt; charset=utf-8"},
+    @RequestMapping(value = "/api/rcs/consent/decision",
+            consumes = {"application/json; charset=utf-8"},
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
-    ResponseEntity<ConsentDetails> getConsentDetails(
-            @ApiParam(value = "Consent request JWT received by AM", required = true)
-            @RequestBody String consentRequestJwt,
+    ResponseEntity<RedirectionAction> submitConsentDecision(
+            @ApiParam(value = "Consent decision JWT", required = true)
+            @RequestBody String consentDecisionSerialised,
 
             @ApiParam(value = "Cookie containing the user session", required = true)
             @CookieValue(value = "${am.cookie.name}") String ssoToken) throws OBErrorException;
