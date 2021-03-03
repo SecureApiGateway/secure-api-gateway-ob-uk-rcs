@@ -16,23 +16,52 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.client.idm;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRDomesticPaymentConsent;
+import com.forgerock.securebanking.openbanking.uk.rcs.configuration.RcsConfigurationProperties;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import static org.springframework.http.HttpMethod.PUT;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Service
 @Slf4j
 public class DomesticPaymentConsentService implements PaymentConsentService<FRDomesticPaymentConsent> {
+    private static final String CONSENTS_URI = "/domestic-payment-consents";
 
-    // TODO - implement
+    private final RcsConfigurationProperties configurationProperties;
+    private final RestTemplate restTemplate;
+
+    public DomesticPaymentConsentService(RcsConfigurationProperties configurationProperties,
+                                         RestTemplate restTemplate) {
+        this.configurationProperties = configurationProperties;
+        this.restTemplate = restTemplate;
+    }
+
     @Override
     public FRDomesticPaymentConsent getConsent(String consentId) {
-        // Ideally go via IG
-        throw new UnsupportedOperationException("implement me!");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(APPLICATION_JSON);
+        // TODO - add additional required headers
+        return restTemplate.getForObject(consentIdUrl(consentId), FRDomesticPaymentConsent.class, headers);
     }
 
     @Override
     public void updateConsent(FRDomesticPaymentConsent consent) {
-        // Ideally go via IG
-        throw new UnsupportedOperationException("implement me!");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(APPLICATION_JSON);
+        // TODO - add additional required headers
+        HttpEntity<FRDomesticPaymentConsent> requestEntity = new HttpEntity<>(consent, headers);
+        restTemplate.exchange(consentIdUrl(consent.getId()), PUT, requestEntity, Void.class);
+    }
+
+    private String consentUrl() {
+        return configurationProperties.getIdmBaseUrl() + CONSENTS_URI;
+    }
+
+    private String consentIdUrl(String consentId) {
+        return consentUrl() + "/" + consentId;
     }
 }

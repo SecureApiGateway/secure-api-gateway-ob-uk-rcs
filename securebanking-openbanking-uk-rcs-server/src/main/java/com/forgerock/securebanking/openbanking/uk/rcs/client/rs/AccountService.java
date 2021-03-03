@@ -17,10 +17,9 @@ package com.forgerock.securebanking.openbanking.uk.rcs.client.rs;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRBankAccountWithBalance;
+import com.forgerock.securebanking.openbanking.uk.rcs.configuration.RcsConfigurationProperties;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -29,16 +28,20 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.web.util.UriComponentsBuilder.fromHttpUrl;
+
 @Service
 @Slf4j
 public class AccountService {
+    private static final String FIND_USER_BY_ID_URI = "/api/accounts/search/findByUserId";
 
-    private final String rsStoreRoot;
     private final RestTemplate restTemplate;
+    private final RcsConfigurationProperties configurationProperties;
 
-    public AccountService(@Value("${rs-store.base-url}") String rsStoreRoot, RestTemplate restTemplate) {
-        this.rsStoreRoot = rsStoreRoot;
+    public AccountService(RestTemplate restTemplate, RcsConfigurationProperties configurationProperties) {
         this.restTemplate = restTemplate;
+        this.configurationProperties = configurationProperties;
     }
 
     public List<FRAccount> getAccounts(String userID) {
@@ -47,12 +50,11 @@ public class AccountService {
         log.debug("Searching for accounts with user ID: {}", lowercaseUserId);
 
         ParameterizedTypeReference<List<FRAccount>> ptr = new ParameterizedTypeReference<>() {};
-        // TODO - needs to go via IG
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(rsStoreRoot + "/api/accounts/search/findByUserId");
+        UriComponentsBuilder builder = fromHttpUrl(configurationProperties.getRsBaseUrl() + FIND_USER_BY_ID_URI);
         builder.queryParam("userId", lowercaseUserId);
 
         URI uri = builder.build().encode().toUri();
-        ResponseEntity<List<FRAccount>> entity = restTemplate.exchange(uri, HttpMethod.GET, null, ptr);
+        ResponseEntity<List<FRAccount>> entity = restTemplate.exchange(uri, GET, null, ptr);
         return entity.getBody();
     }
 
@@ -62,13 +64,12 @@ public class AccountService {
         log.debug("Searching for accounts with balance for user ID: {}", lowercaseUserId);
 
         ParameterizedTypeReference<List<FRBankAccountWithBalance>> ptr = new ParameterizedTypeReference<>() {};
-        // TODO - needs to go via IG
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(rsStoreRoot + "/api/accounts/search/findByUserId");
+        UriComponentsBuilder builder = fromHttpUrl(configurationProperties.getRsBaseUrl() + FIND_USER_BY_ID_URI);
         builder.queryParam("userId", lowercaseUserId);
         builder.queryParam("withBalance", true);
 
         URI uri = builder.build().encode().toUri();
-        ResponseEntity<List<FRBankAccountWithBalance>> entity = restTemplate.exchange(uri, HttpMethod.GET, null, ptr);
+        ResponseEntity<List<FRBankAccountWithBalance>> entity = restTemplate.exchange(uri, GET, null, ptr);
         return entity.getBody();
     }
 }

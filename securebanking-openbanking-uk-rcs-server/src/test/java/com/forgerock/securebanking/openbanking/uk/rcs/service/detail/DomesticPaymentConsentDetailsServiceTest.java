@@ -69,7 +69,7 @@ public class DomesticPaymentConsentDetailsServiceTest {
                 .clientId(request.getClientId())
                 .build();
         given(paymentConsentService.getConsent(request.getIntentId())).willReturn(consent);
-        given(tppService.findById(consent.getPispId())).willReturn(Optional.of(tpp));
+        given(tppService.getTpp(consent.getPispId())).willReturn(Optional.of(tpp));
 
         // When
         DomesticPaymentConsentDetails consentDetails = consentDetailsService.getConsentDetails(request);
@@ -128,7 +128,7 @@ public class DomesticPaymentConsentDetailsServiceTest {
                 .pispId(request.getClientId())
                 .build();
         given(paymentConsentService.getConsent(request.getIntentId())).willReturn(consent);
-        given(tppService.findById(consent.getPispId())).willReturn(Optional.empty());
+        given(tppService.getTpp(consent.getPispId())).willReturn(Optional.empty());
 
         // When
         InvalidConsentException e = catchThrowableOfType(() -> consentDetailsService.getConsentDetails(request), InvalidConsentException.class);
@@ -147,7 +147,7 @@ public class DomesticPaymentConsentDetailsServiceTest {
         Tpp tpp = aValidTppBuilder()
                 .build();
         given(paymentConsentService.getConsent(request.getIntentId())).willReturn(consent);
-        given(tppService.findById(consent.getPispId())).willReturn(Optional.of(tpp));
+        given(tppService.getTpp(consent.getPispId())).willReturn(Optional.of(tpp));
 
         // When
         OBErrorException e = catchThrowableOfType(() -> consentDetailsService.getConsentDetails(request), OBErrorException.class);

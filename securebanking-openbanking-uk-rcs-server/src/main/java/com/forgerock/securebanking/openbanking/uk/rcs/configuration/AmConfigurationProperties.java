@@ -22,10 +22,16 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @Data
 public class AmConfigurationProperties {
+    @Value("${am.root}")
+    private String root;
+    @Value("${am.hostname}")
+    private String hostName;
     @Value("${am.oidc.issuerid}")
     private String issuerId;
     @Value("${am.cookie.name}")
     private String cookieName;
     @Value("${am.userprofile.id}")
     private String userProfileId;
+    @Value("${am.endpoint.userprofile}")
+    private String userProfileEndpoint;
 }

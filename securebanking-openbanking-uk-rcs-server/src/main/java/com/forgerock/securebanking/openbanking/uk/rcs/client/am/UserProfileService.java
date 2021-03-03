@@ -17,27 +17,50 @@ package com.forgerock.securebanking.openbanking.uk.rcs.client.am;
 
 import com.forgerock.securebanking.openbanking.uk.rcs.configuration.AmConfigurationProperties;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+
+/**
+ * Retrieves user profile related information from AM.
+ */
 @Service
 @Slf4j
 public class UserProfileService {
 
+    private final RestTemplate restTemplate;
     private final AmConfigurationProperties amConfiguration;
 
-    public UserProfileService(AmConfigurationProperties amConfiguration) {
+    public UserProfileService(RestTemplate restTemplate, AmConfigurationProperties amConfiguration) {
+        this.restTemplate = restTemplate;
         this.amConfiguration = amConfiguration;
     }
 
+    /**
+     * Retrieves the username from AM, using the logged in user's ssoToken.
+     *
+     * @param ssoToken The logged in user's session cookie.
+     * @return The username value
+     */
     public String getUsername(String ssoToken) {
         return getProfile(ssoToken).get(amConfiguration.getUserProfileId());
     }
 
-    // TODO - implement
     private Map<String, String> getProfile(String ssoToken) {
-        // Need to fetch from AM - via IG ideally
-        throw new UnsupportedOperationException("implement me!");
+        log.info("Get user profile behind the sso token");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(APPLICATION_JSON);
+        // TODO - ideally we shouldn't be sending the session cookie to AM
+        headers.add("Cookie", amConfiguration.getCookieName() + "=" + ssoToken);
+        headers.add("Accept-API-Version", "protocol=1.0,resource=1.0");
+        HttpEntity<Map<String, String>> request = new HttpEntity(headers);
+        log.debug("Send user info request to the AS {}", amConfiguration.getUserProfileEndpoint());
+        // TODO - deserialize this to an object, rather than just Map
+        return (Map)this.restTemplate.postForObject(amConfiguration.getUserProfileEndpoint(), request, Map.class, new Object[0]);
     }
 }
