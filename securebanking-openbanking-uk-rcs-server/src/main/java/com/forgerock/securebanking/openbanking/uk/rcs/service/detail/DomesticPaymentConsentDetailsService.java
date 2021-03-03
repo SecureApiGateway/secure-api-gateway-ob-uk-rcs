@@ -78,7 +78,7 @@ public class DomesticPaymentConsentDetailsService implements ConsentDetailsServi
             accounts = List.of(matchingUserAccount.get());
         }
 
-        Optional<Tpp> isTpp = tppService.findById(domesticConsent.getPispId());
+        Optional<Tpp> isTpp = tppService.getTpp(domesticConsent.getPispId());
         if (isTpp.isEmpty()) {
             log.error("The TPP '{}' (Client ID {}) that created this consent id '{}' doesn't exist anymore.",
                     domesticConsent.getPispId(), clientId, consentId);

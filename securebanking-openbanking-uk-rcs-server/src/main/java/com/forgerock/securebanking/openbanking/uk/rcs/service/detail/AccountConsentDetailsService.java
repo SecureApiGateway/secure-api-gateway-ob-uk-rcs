@@ -67,7 +67,7 @@ public class AccountConsentDetailsService implements ConsentDetailsService {
                     accountRequestId);
         }
 
-        Optional<Tpp> isTpp = tppService.findById(accountConsent.getAispId());
+        Optional<Tpp> isTpp = tppService.getTpp(accountConsent.getAispId());
         if (!isTpp.isPresent()) {
             log.error("The TPP '{}' (Client ID {}) that created this consent id '{}' doesn't exist anymore.",
                     accountConsent.getAispId(), clientId, accountConsent.getId());

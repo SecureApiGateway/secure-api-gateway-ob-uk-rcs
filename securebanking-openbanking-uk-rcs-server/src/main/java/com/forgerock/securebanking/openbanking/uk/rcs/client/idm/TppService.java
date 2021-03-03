@@ -16,17 +16,47 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.client.idm;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.tpp.Tpp;
+import com.forgerock.securebanking.openbanking.uk.rcs.configuration.RcsConfigurationProperties;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
+
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Service
 @Slf4j
 public class TppService {
+    private static final String TPP_URI = "/repo";
 
-    // TODO - implement
-    public Optional<Tpp> findById(String id) {
-        throw new UnsupportedOperationException("implement me!");
+    private final RcsConfigurationProperties configurationProperties;
+    private final RestTemplate restTemplate;
+
+    public TppService(RcsConfigurationProperties configurationProperties, RestTemplate restTemplate) {
+        this.configurationProperties = configurationProperties;
+        this.restTemplate = restTemplate;
+    }
+
+    public Optional<Tpp> getTpp(String tppId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(APPLICATION_JSON);
+        // TODO - add additional required headers
+        ResponseEntity<Tpp> response = restTemplate.getForEntity(tppIdUrl(tppId), Tpp.class, headers);
+        if (response.getStatusCode().equals(OK) && response.getBody() != null) {
+            return Optional.of(response.getBody());
+        }
+        return Optional.empty();
+    }
+
+    private String tppUrl() {
+        return configurationProperties.getIdmBaseUrl() + TPP_URI;
+    }
+
+    private String tppIdUrl(String consentId) {
+        return tppUrl() + "/" + consentId;
     }
 }

@@ -53,7 +53,7 @@ public class ConsentDecisionValidator {
                                            ConsentDecisionService decisionService) throws OBErrorException {
         //Verify consent is own by the right TPP
         String tppIdBehindConsent = decisionService.getTppIdBehindConsent(intentId);
-        Optional<Tpp> isTpp = tppService.findById(tppIdBehindConsent);
+        Optional<Tpp> isTpp = tppService.getTpp(tppIdBehindConsent);
         if (!isTpp.isPresent()) {
             log.error("The TPP '{}' that created this intent id '{}' doesn't exist anymore.", tppIdBehindConsent, intentId);
             throw new OBErrorException(RCS_CONSENT_REQUEST_NOT_FOUND_TPP, tppIdBehindConsent, intentId, clientId);

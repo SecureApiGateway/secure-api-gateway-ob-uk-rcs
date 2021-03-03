@@ -27,11 +27,9 @@ import com.nimbusds.jwt.SignedJWT;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.text.ParseException;
 import java.time.Duration;
@@ -43,6 +41,8 @@ import static com.forgerock.securebanking.openbanking.uk.common.api.meta.OBConst
 import static com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType.RCS_CONSENT_RESPONSE_FAILURE;
 import static com.forgerock.securebanking.openbanking.uk.rcs.common.RCSConstants.Claims.CSRF;
 import static com.forgerock.securebanking.openbanking.uk.rcs.common.RCSConstants.Claims.SCOPES;
+import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.web.util.UriComponentsBuilder.fromHttpUrl;
 
 /**
  * RCS flows contains the functions needed by RCS to communicate with the AS.
@@ -83,7 +83,7 @@ public class ConsentDecisionResponseHandler {
         ResponseEntity responseEntity = sendRcsResponseToAM(ssoToken, RedirectionAction.builder()
                 .redirectUri(redirectUri)
                 .consentJwt(consentJwt)
-                .requestMethod(HttpMethod.POST)
+                .requestMethod(POST)
                 .build());
         log.debug("Response received from AM: {}", responseEntity);
 
@@ -121,7 +121,6 @@ public class ConsentDecisionResponseHandler {
     }
 
     private ResponseEntity sendRcsResponseToAM(String ssoToken, RedirectionAction redirectionAction) {
-        //Return to  AM
         HttpHeaders amHeaderRcsResponse = new HttpHeaders();
         amHeaderRcsResponse.add("Cookie", amConfiguration.getCookieName() + "=" + ssoToken);
         amHeaderRcsResponse.add("Content-Type", "application/x-www-form-urlencoded");
@@ -130,8 +129,8 @@ public class ConsentDecisionResponseHandler {
                 redirectionAction.getRequestMethod(), redirectionAction.getRedirectUri());
         String body = "consent_response=" + redirectionAction.getConsentJwt();
 
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(redirectionAction.getRedirectUri());
-        return amGateway.sendRcsResponse(builder.build(true).toUri().toString(), HttpMethod.POST, amHeaderRcsResponse,
-                new ParameterizedTypeReference<String>() {}, body);
+        String url = fromHttpUrl(redirectionAction.getRedirectUri()).build(true).toUri().toString();
+        ParameterizedTypeReference<String> typeReference = new ParameterizedTypeReference<>() {};
+        return amGateway.sendToAm(url, POST, amHeaderRcsResponse, typeReference, body);
     }
 }

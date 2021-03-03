@@ -16,20 +16,49 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.client.idm;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountConsent;
+import com.forgerock.securebanking.openbanking.uk.rcs.configuration.RcsConfigurationProperties;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import static org.springframework.http.HttpMethod.PUT;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Service
 @Slf4j
 public class AccountConsentService {
+    private static final String CONSENTS_URI = "/account-access-consents";
 
-    // TODO - implement
+    private final RcsConfigurationProperties configurationProperties;
+    private final RestTemplate restTemplate;
+
+    public AccountConsentService(RcsConfigurationProperties configurationProperties, RestTemplate restTemplate) {
+        this.configurationProperties = configurationProperties;
+        this.restTemplate = restTemplate;
+    }
+
     public FRAccountConsent getAccountConsent(String consentId) {
-        // Ideally go via IG
-        throw new UnsupportedOperationException("implement me!");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(APPLICATION_JSON);
+        // TODO - add additional required headers
+        return restTemplate.getForObject(consentIdUrl(consentId), FRAccountConsent.class, headers);
     }
 
     public void updateAccountConsent(FRAccountConsent accountRequest) {
-        throw new UnsupportedOperationException("implement me!");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(APPLICATION_JSON);
+        // TODO - add additional required headers
+        HttpEntity<FRAccountConsent> requestEntity = new HttpEntity<>(accountRequest, headers);
+        restTemplate.exchange(consentIdUrl(accountRequest.getId()), PUT, requestEntity, Void.class);
+    }
+
+    private String consentUrl() {
+        return configurationProperties.getIdmBaseUrl() + CONSENTS_URI;
+    }
+
+    private String consentIdUrl(String consentId) {
+        return consentUrl() + "/" + consentId;
     }
 }

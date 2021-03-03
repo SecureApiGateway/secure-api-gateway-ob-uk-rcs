@@ -59,7 +59,7 @@ public class AccountConsentDetailsServiceTest {
                 .build();
         Tpp tpp = aValidTpp();
         given(accountConsentService.getAccountConsent(request.getIntentId())).willReturn(accessConsent);
-        given(tppService.findById(accessConsent.getAispId())).willReturn(Optional.of(tpp));
+        given(tppService.getTpp(accessConsent.getAispId())).willReturn(Optional.of(tpp));
 
         // When
         AccountsConsentDetails consentDetails = consentDetailsService.getConsentDetails(request);
@@ -115,7 +115,7 @@ public class AccountConsentDetailsServiceTest {
                 .clientId(request.getClientId())
                 .build();
         given(accountConsentService.getAccountConsent(request.getIntentId())).willReturn(accessConsent);
-        given(tppService.findById(accessConsent.getAispId())).willReturn(Optional.empty());
+        given(tppService.getTpp(accessConsent.getAispId())).willReturn(Optional.empty());
 
         // When
         OBErrorException e = catchThrowableOfType(() -> consentDetailsService.getConsentDetails(request), OBErrorException.class);
