@@ -39,8 +39,8 @@ import java.util.List;
 
 import static com.forgerock.securebanking.openbanking.uk.common.api.meta.OBConstants.OIDCClaim.CONSENT_APPROVAL_REDIRECT_URI;
 import static com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType.RCS_CONSENT_RESPONSE_FAILURE;
-import static com.forgerock.securebanking.openbanking.uk.rcs.common.RCSConstants.Claims.CSRF;
-import static com.forgerock.securebanking.openbanking.uk.rcs.common.RCSConstants.Claims.SCOPES;
+import static com.forgerock.securebanking.openbanking.uk.rcs.common.RcsConstants.Claims.CSRF;
+import static com.forgerock.securebanking.openbanking.uk.rcs.common.RcsConstants.Claims.SCOPES;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.web.util.UriComponentsBuilder.fromHttpUrl;
 

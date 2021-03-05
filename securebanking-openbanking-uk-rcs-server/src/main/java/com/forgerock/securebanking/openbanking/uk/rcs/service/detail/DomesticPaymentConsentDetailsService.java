@@ -15,7 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.service.detail;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRBankAccountWithBalance;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRDomesticPaymentConsent;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRRemittanceInformation;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomesticDataInitiation;
@@ -61,13 +61,13 @@ public class DomesticPaymentConsentDetailsService implements ConsentDetailsServi
             log.error("The PISP '{}' is referencing a domestic payment consent {} that doesn't exist", clientId, consentId);
             throw new OBErrorException(PAYMENT_CONSENT_NOT_FOUND, clientId, consentId);
         }
-        List<FRBankAccountWithBalance> accounts = request.getAccounts();
+        List<FRAccountWithBalance> accounts = request.getAccounts();
 
         // Only show the debtor account if specified in consent
         FRWriteDomesticDataInitiation initiation = (FRWriteDomesticDataInitiation) domesticConsent.getInitiation();
         if (initiation.getDebtorAccount() != null) {
             String identification = initiation.getDebtorAccount().getIdentification();
-            Optional<FRBankAccountWithBalance> matchingUserAccount = getMatchingAccount(identification, accounts);
+            Optional<FRAccountWithBalance> matchingUserAccount = getMatchingAccount(identification, accounts);
             if (matchingUserAccount.isEmpty()) {
                 log.error("The PISP '{}' created the payment request '{}' but the debtor account: {} on the payment " +
                         "consent is not one of the user's accounts: {}.", domesticConsent.getPispId(), consentId,

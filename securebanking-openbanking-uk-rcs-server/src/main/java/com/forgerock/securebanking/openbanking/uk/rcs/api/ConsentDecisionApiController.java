@@ -21,7 +21,7 @@ import com.forgerock.securebanking.openbanking.uk.common.claim.JwsClaimsUtils;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.RedirectionAction;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision.ConsentDecision;
-import com.forgerock.securebanking.openbanking.uk.rcs.common.RCSConstants;
+import com.forgerock.securebanking.openbanking.uk.rcs.common.RcsConstants;
 import com.forgerock.securebanking.openbanking.uk.rcs.service.decision.ConsentDecisionService;
 import com.forgerock.securebanking.openbanking.uk.rcs.service.decision.ConsentDecisionServiceDelegate;
 import com.forgerock.securebanking.openbanking.uk.rcs.validator.ConsentDecisionValidator;
@@ -37,7 +37,7 @@ import java.text.ParseException;
 import static com.forgerock.securebanking.openbanking.uk.common.api.meta.OBConstants.IdTokenClaim.INTENT_ID;
 import static com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType.RCS_CONSENT_DECISION_EMPTY;
 import static com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType.RCS_CONSENT_REQUEST_FORMAT;
-import static com.forgerock.securebanking.openbanking.uk.rcs.common.RCSConstants.Claims.CLIENT_ID;
+import static com.forgerock.securebanking.openbanking.uk.rcs.common.RcsConstants.Claims.CLIENT_ID;
 import static com.forgerock.securebanking.openbanking.uk.rcs.util.ConsentDecisionDeserializer.deserializeConsentDecision;
 
 @Controller
@@ -71,8 +71,9 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
         try {
             ConsentDecision consentDecision = deserializeConsentDecision(consentDecisionSerialised, objectMapper, ConsentDecision.class);
             String consentRequestJwt = consentDecision.getConsentJwt();
+            log.debug("The consentRequestJwt is '{}'", consentRequestJwt);
             SignedJWT consentContextJwt = (SignedJWT) JWTParser.parse(consentRequestJwt);
-            boolean decision = RCSConstants.Decision.ALLOW.equals(consentDecision.getDecision());
+            boolean decision = RcsConstants.Decision.ALLOW.equals(consentDecision.getDecision());
             log.debug("The decision is '{}'", decision);
 
             Claims claims = JwsClaimsUtils.getClaims(consentContextJwt);

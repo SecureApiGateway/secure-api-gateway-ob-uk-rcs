@@ -17,7 +17,7 @@ package com.forgerock.securebanking.openbanking.uk.rcs.service.decision;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountAccessConsent;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRBankAccountWithBalance;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.AccountConsentService;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.rs.AccountService;
@@ -32,7 +32,7 @@ import java.util.List;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRExternalRequestStatusCode.AUTHORISED;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRExternalRequestStatusCode.REJECTED;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.account.FRAccountAccessConsentTestDataFactory.aValidFRAccountAccessConsent;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.account.FRBankAccountWithBalanceTestDataFactory.aValidFRBankAccountWithBalance;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.account.FRAccountWithBalanceTestDataFactory.aValidFRAccountWithBalance;
 import static com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType.RCS_CONSENT_DECISION_INVALID_ACCOUNT;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -61,7 +61,7 @@ public class AccountAccessConsentDecisionServiceTest {
         String intentId = "AAC_1234";
         FRAccountAccessConsent accountAccessConsent = aValidFRAccountAccessConsent();
         given(accountConsentService.getAccountConsent(intentId)).willReturn(accountAccessConsent);
-        given(accountService.getAccountsWithBalance(accountAccessConsent.getUserId())).willReturn(List.of(aValidFRBankAccountWithBalance()));
+        given(accountService.getAccountsWithBalance(accountAccessConsent.getUserId())).willReturn(List.of(aValidFRAccountWithBalance()));
 
         // When
         consentDecisionService.processConsentDecision(intentId, consentDecisionSerialised("123456"), true);
@@ -93,7 +93,7 @@ public class AccountAccessConsentDecisionServiceTest {
         String intentId = "AAC_1234";
         FRAccountAccessConsent accountAccessConsent = aValidFRAccountAccessConsent();
         given(accountConsentService.getAccountConsent(intentId)).willReturn(accountAccessConsent);
-        List<FRBankAccountWithBalance> accountsWithBalances = List.of(aValidFRBankAccountWithBalance());
+        List<FRAccountWithBalance> accountsWithBalances = List.of(aValidFRAccountWithBalance());
         given(accountService.getAccountsWithBalance(accountAccessConsent.getUserId())).willReturn(accountsWithBalances);
 
         // When

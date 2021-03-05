@@ -15,8 +15,8 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.util;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRBankAccount;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRBankAccountWithBalance;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccount;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRCashBalance;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRFinancialAccount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRAccountIdentifier;
@@ -44,13 +44,13 @@ public class AccountWithBalanceMatcherTest {
         // Given
         String identification1 = "40400412345678";
         String identification2 = "404004887654321";
-        List<FRBankAccountWithBalance> accounts = List.of(
-                aValidFRBankAccountWithBalance(identification1),
-                aValidFRBankAccountWithBalance(identification2)
+        List<FRAccountWithBalance> accounts = List.of(
+                aValidFRAccountWithBalance(identification1),
+                aValidFRAccountWithBalance(identification2)
         );
 
         // When
-        Optional<FRBankAccountWithBalance> matchingAccount = getMatchingAccount(identification1, accounts);
+        Optional<FRAccountWithBalance> matchingAccount = getMatchingAccount(identification1, accounts);
 
         // Then
         assertThat(matchingAccount.isPresent()).isTrue();
@@ -62,10 +62,10 @@ public class AccountWithBalanceMatcherTest {
     public void shouldNotGetMatchingAccountGivenEmptyAccounts() {
         // Given
         String identification = "40400412345678";
-        List<FRBankAccountWithBalance> accounts = emptyList();
+        List<FRAccountWithBalance> accounts = emptyList();
 
         // When
-        Optional<FRBankAccountWithBalance> matchingAccount = getMatchingAccount(identification, accounts);
+        Optional<FRAccountWithBalance> matchingAccount = getMatchingAccount(identification, accounts);
 
         // Then
         assertThat(matchingAccount.isPresent()).isFalse();
@@ -75,28 +75,28 @@ public class AccountWithBalanceMatcherTest {
     public void shouldNotGetMatchingAccountGivenAccountNotInList() {
         // Given
         String identification = "40400412345678";
-        List<FRBankAccountWithBalance> accounts = List.of(
-                aValidFRBankAccountWithBalance("40121011223344")
+        List<FRAccountWithBalance> accounts = List.of(
+                aValidFRAccountWithBalance("40121011223344")
         );
 
         // When
-        Optional<FRBankAccountWithBalance> matchingAccount = getMatchingAccount(identification, accounts);
+        Optional<FRAccountWithBalance> matchingAccount = getMatchingAccount(identification, accounts);
 
         // Then
         assertThat(matchingAccount.isPresent()).isFalse();
     }
 
-    private FRBankAccountWithBalance aValidFRBankAccountWithBalance(String identification) {
+    private FRAccountWithBalance aValidFRAccountWithBalance(String identification) {
         FRFinancialAccount financialAccount = aValidFRFinancialAccountBuilder()
                 .accounts(List.of(
                         aValidFRAccountIdentifierBuilder().identification(identification).build(),
                         aValidFRAccountIdentifier2()))
                 .build();
-        FRBankAccount bankAccount = FRBankAccount.builder()
+        FRAccount bankAccount = FRAccount.builder()
                 .id(UUID.randomUUID().toString())
                 .account(financialAccount)
                 .build();
         List<FRCashBalance> balances = List.of(aValidFRCashBalance());
-        return new FRBankAccountWithBalance(bankAccount, balances);
+        return new FRAccountWithBalance(bankAccount, balances);
     }
 }

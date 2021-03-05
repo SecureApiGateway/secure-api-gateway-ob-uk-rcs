@@ -61,7 +61,7 @@ public class PaymentConsentDecisionUpdaterTest {
         FRDomesticPaymentConsent paymentConsent = aValidFRDomesticPaymentConsent();
         FRAccount frAccount = aValidFRAccountBuilder()
                 .id(accountId)
-                .userID(userId)
+                .userId(userId)
                 .account(aValidFRFinancialAccount())
                 .build();
         given(accountService.getAccounts(userId)).willReturn(List.of(frAccount));

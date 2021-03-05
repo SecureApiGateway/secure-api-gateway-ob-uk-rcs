@@ -1,0 +1,30 @@
+rcs:
+  issuerId: forgerock-rcs
+
+rs:
+  internal-port: 8443
+  base-url: https://ig:${rs.internal-port}
+
+idm:
+  internal-port: 8444
+  base-url: https://ig:${idm.internal-port}
+
+jwkms:
+  internal-port: 8555
+  base-url: https://ig:${jwkms.internal-port}
+
+dns:
+  hosts:
+    root: hosts-root
+
+am:
+  hostname: as.aspsp.${dns.hosts.root}
+  root: https://${am.hostname}
+  cookie:
+    name: iPlanetDirectoryPro
+  oidc:
+    issuerid: ${am.root}/oauth2
+  userprofile:
+    id: id
+  endpoint:
+    userprofile: ${am.root}/userprofile

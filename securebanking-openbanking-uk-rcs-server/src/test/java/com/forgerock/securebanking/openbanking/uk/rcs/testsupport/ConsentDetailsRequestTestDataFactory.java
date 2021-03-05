@@ -21,7 +21,7 @@ import com.nimbusds.jwt.SignedJWT;
 import java.text.ParseException;
 import java.util.List;
 
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.account.FRBankAccountWithBalanceTestDataFactory.aValidFRBankAccountWithBalance;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.account.FRAccountWithBalanceTestDataFactory.aValidFRAccountWithBalance;
 import static java.util.UUID.randomUUID;
 
 /**
@@ -52,7 +52,7 @@ public class ConsentDetailsRequestTestDataFactory {
                     .consentRequestJwt(SignedJWT.parse("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
                             "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +
                             "SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"))
-                    .accounts(List.of(aValidFRBankAccountWithBalance()))
+                    .accounts(List.of(aValidFRAccountWithBalance()))
                     .username(randomUUID().toString())
                     .clientId(randomUUID().toString());
         } catch (ParseException e) {

@@ -15,7 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.util;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRBankAccountWithBalance;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRAccountIdentifier;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
@@ -28,13 +28,13 @@ import static org.springframework.util.StringUtils.isEmpty;
 @Slf4j
 public class AccountWithBalanceMatcher {
 
-    public static Optional<FRBankAccountWithBalance> getMatchingAccount(String identification,
-                                                                        List<FRBankAccountWithBalance> accounts) {
+    public static Optional<FRAccountWithBalance> getMatchingAccount(String identification,
+                                                                        List<FRAccountWithBalance> accounts) {
         if (isEmpty(identification)) {
             log.error("Debtor account has null or empty identification string");
             return Optional.empty();
         }
-        for (FRBankAccountWithBalance account : accounts) {
+        for (FRAccountWithBalance account : accounts) {
             if (!CollectionUtils.isEmpty(account.getAccount().getAccounts())) {
                 for (FRAccountIdentifier accountIdentifier : account.getAccount().getAccounts()) {
                     if (identification.equals(accountIdentifier.getIdentification())) {

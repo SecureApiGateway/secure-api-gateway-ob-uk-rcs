@@ -33,7 +33,7 @@ public interface ConsentDetailsApi {
             @ApiResponse(code = 200, message = "Consent details", response = ConsentDetails.class)
     })
     @RequestMapping(value = "/api/rcs/consent/details",
-            consumes = {"application/jwt; charset=utf-8"},
+            consumes = {"application/json; charset=utf-8"},
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
     ResponseEntity<ConsentDetails> getConsentDetails(

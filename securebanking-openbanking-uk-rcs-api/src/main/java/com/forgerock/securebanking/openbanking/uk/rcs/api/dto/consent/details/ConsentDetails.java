@@ -15,7 +15,9 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.IntentType;
 
@@ -24,22 +26,25 @@ import com.forgerock.securebanking.openbanking.uk.common.api.meta.IntentType;
  */
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
-        property = "type")
+        property = "type"
+)
 @JsonSubTypes({
         // Required to deserialise the RCS ConsentDetails response into the correct types in RS-API
-        @JsonSubTypes.Type(value = DomesticPaymentConsentDetails.class, name = "domesticPaymentConsentDetails"),
-        @JsonSubTypes.Type(value = DomesticSchedulePaymentConsentDetails.class, name = "domesticSchedulePaymentConsentDetails"),
-        @JsonSubTypes.Type(value = DomesticStandingOrderPaymentConsentDetails.class, name = "domesticStandingOrderPaymentConsentDetails"),
-        @JsonSubTypes.Type(value = InternationalPaymentConsentDetails.class, name = "internationalPaymentConsentDetails"),
-        @JsonSubTypes.Type(value = InternationalSchedulePaymentConsentDetails.class, name = "internationalSchedulePaymentConsentDetails"),
-        @JsonSubTypes.Type(value = InternationalStandingOrderPaymentConsentDetails.class, name = "internationalStandingOrderPaymentConsentDetails"),
-        @JsonSubTypes.Type(value = FilePaymentConsentDetails.class, name = "filePaymentConsentDetails")
+        @Type(value = DomesticPaymentConsentDetails.class, name = "DomesticPaymentConsentDetails"),
+        @Type(value = DomesticSchedulePaymentConsentDetails.class, name = "DomesticSchedulePaymentConsentDetails"),
+        @Type(value = DomesticStandingOrderPaymentConsentDetails.class, name = "DomesticStandingOrderPaymentConsentDetails"),
+        @Type(value = InternationalPaymentConsentDetails.class, name = "InternationalPaymentConsentDetails"),
+        @Type(value = InternationalSchedulePaymentConsentDetails.class, name = "InternationalSchedulePaymentConsentDetails"),
+        @Type(value = InternationalStandingOrderPaymentConsentDetails.class, name = "InternationalStandingOrderPaymentConsentDetails"),
+        @Type(value = FilePaymentConsentDetails.class, name = "FilePaymentConsentDetails")
 })
 public abstract class ConsentDetails {
 
+    protected static String DECISION_API_URI = "/api/rcs/consent/decision/";
+
+    @JsonProperty("intentType")
     public abstract IntentType getIntentType();
 
-    public String getDecisionAPIUri() {
-        return "/api/rcs/consent/decision/";
-    }
+    @JsonProperty("decisionApiUri")
+    public abstract String getDecisionApiUri();
 }

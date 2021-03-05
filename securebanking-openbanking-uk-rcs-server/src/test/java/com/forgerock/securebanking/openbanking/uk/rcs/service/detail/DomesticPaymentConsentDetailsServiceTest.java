@@ -15,7 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.service.detail;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRBankAccountWithBalance;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRDomesticPaymentConsent;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomesticDataInitiation;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.tpp.Tpp;
@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.FRAccountIdentifierTestDataFactory.aValidFRAccountIdentifier2;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.account.FRBankAccountWithBalanceTestDataFactory.aValidFRBankAccountWithBalance;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.account.FRAccountWithBalanceTestDataFactory.aValidFRAccountWithBalance;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.account.FRFinancialAccountTestDataFactory.aValidFRFinancialAccountBuilder;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.payment.FRDomesticPaymentConsentTestDataFactory.aValidFRDomesticPaymentConsentBuilder;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.tpp.TppTestDataFactory.aValidTppBuilder;
@@ -102,7 +102,7 @@ public class DomesticPaymentConsentDetailsServiceTest {
     @Test
     public void shouldFailToGetConsentDetailsGivenDebtorAccountDoesNotBelongToUser() {
         // Given
-        FRBankAccountWithBalance accountWithBalance = aValidFRBankAccountWithBalance();
+        FRAccountWithBalance accountWithBalance = aValidFRAccountWithBalance();
         accountWithBalance.setAccount(aValidFRFinancialAccountBuilder()
                 .accounts(List.of(aValidFRAccountIdentifier2()))
                 .build());
