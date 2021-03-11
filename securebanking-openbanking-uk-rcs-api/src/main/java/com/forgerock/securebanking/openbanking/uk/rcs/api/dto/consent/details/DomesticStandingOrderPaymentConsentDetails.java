@@ -15,7 +15,8 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRBankAccountWithBalance;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.IntentType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,15 +41,15 @@ public class DomesticStandingOrderPaymentConsentDetails extends ConsentDetails {
     
     private OBActiveOrHistoricCurrencyAndAmount instructedAmount; 
     
-    protected String decisionApiUri;
+    private String decisionApiUri;
 
-    protected List<FRBankAccountWithBalance> accounts;
-    protected String username;
-    protected String logo;
-    protected String clientId;
-    protected String merchantName;
-    protected DateTime expiredDate;
-    protected String paymentReference;
+    private List<FRAccountWithBalance> accounts;
+    private String username;
+    private String logo;
+    private String clientId;
+    private String merchantName;
+    private DateTime expiredDate;
+    private String paymentReference;
 
     @Override
     public IntentType getIntentType() {

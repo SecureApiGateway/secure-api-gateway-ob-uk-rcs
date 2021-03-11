@@ -15,7 +15,8 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRBankAccountWithBalance;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.IntentType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,19 +40,24 @@ public class InternationalSchedulePaymentConsentDetails extends ConsentDetails {
     private OBScheduledPayment1 scheduledPayment;
     private OBExchangeRate2 rate;
 
-    protected String decisionApiUri;
+    private String decisionApiUri;
 
-    protected List<FRBankAccountWithBalance> accounts;
-    protected String username;
-    protected String logo;
-    protected String clientId;
-    protected String merchantName;
-    protected DateTime expiredDate;
-    protected String currencyOfTransfer;
-    protected String paymentReference;
+    private List<FRAccountWithBalance> accounts;
+    private String username;
+    private String logo;
+    private String clientId;
+    private String merchantName;
+    private DateTime expiredDate;
+    private String currencyOfTransfer;
+    private String paymentReference;
 
     @Override
     public IntentType getIntentType() {
         return IntentType.PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT;
+    }
+
+    @Override
+    public String getDecisionApiUri() {
+        return ConsentDetails.DECISION_API_URI;
     }
 }

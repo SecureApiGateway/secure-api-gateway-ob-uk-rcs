@@ -15,7 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRBankAccountWithBalance;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRExternalPermissionsCode;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.IntentType;
 import lombok.AllArgsConstructor;
@@ -39,17 +39,22 @@ public class AccountsConsentDetails extends ConsentDetails {
     private DateTime fromTransaction;
     private DateTime toTransaction;
 
-    protected String decisionApiUri;
+    private String decisionApiUri;
 
-    protected List<FRBankAccountWithBalance> accounts;
-    protected String username;
-    protected String logo;
-    protected String clientId;
-    protected String aispName;
-    protected DateTime expiredDate;
+    private List<FRAccountWithBalance> accounts;
+    private String username;
+    private String logo;
+    private String clientId;
+    private String aispName;
+    private DateTime expiredDate;
 
     @Override
     public IntentType getIntentType() {
         return IntentType.ACCOUNT_ACCESS_CONSENT;
+    }
+
+    @Override
+    public String getDecisionApiUri() {
+        return ConsentDetails.DECISION_API_URI;
     }
 }

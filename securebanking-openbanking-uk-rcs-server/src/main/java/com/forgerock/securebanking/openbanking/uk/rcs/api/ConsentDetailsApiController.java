@@ -15,7 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.api;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRBankAccountWithBalance;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.openbanking.uk.common.claim.Claims;
 import com.forgerock.securebanking.openbanking.uk.common.claim.JwsClaimsUtils;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
@@ -57,6 +57,7 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
     @Override
     public ResponseEntity<ConsentDetails> getConsentDetails(String consentRequestJwt, String ssoToken)
             throws OBErrorException {
+
         try {
             log.debug("Parsing consent request JWS...");
             SignedJWT signedJWT = (SignedJWT) JWTParser.parse(consentRequestJwt);
@@ -73,7 +74,7 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
             log.debug("Client Id from the JWT claims '{}'", clientId);
 
             String username = userProfileService.getUsername(ssoToken);
-            List<FRBankAccountWithBalance> accounts = accountService.getAccountsWithBalance(username);
+            List<FRAccountWithBalance> accounts = accountService.getAccountsWithBalance(username);
 
             ConsentDetailsRequest detailsRequest = ConsentDetailsRequest.builder()
                     .intentId(intentId)

@@ -28,7 +28,7 @@ import org.springframework.web.client.RestTemplate;
 @Service
 @Slf4j
 public class JwkmsApiClient {
-    private static final String SIGNING_URI = "api/crypto/";
+    private static final String SIGNING_URI = "/api/crypto/";
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;

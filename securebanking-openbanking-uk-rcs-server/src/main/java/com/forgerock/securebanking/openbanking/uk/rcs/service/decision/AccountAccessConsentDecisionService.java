@@ -17,7 +17,7 @@ package com.forgerock.securebanking.openbanking.uk.rcs.service.decision;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountConsent;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRBankAccountWithBalance;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision.AccountConsentDecision;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.AccountConsentService;
@@ -57,8 +57,8 @@ public class AccountAccessConsentDecisionService implements ConsentDecisionServi
                 objectMapper, AccountConsentDecision.class);
 
         if (decision) {
-            List<FRBankAccountWithBalance> accounts = accountService.getAccountsWithBalance(accountAccessRequest.getUserId());
-            List<String> accountsId = accounts.stream().map(FRBankAccountWithBalance::getId).collect(Collectors.toList());
+            List<FRAccountWithBalance> accounts = accountService.getAccountsWithBalance(accountAccessRequest.getUserId());
+            List<String> accountsId = accounts.stream().map(FRAccountWithBalance::getId).collect(Collectors.toList());
             if (!accountsId.containsAll(accountConsentDecision.getSharedAccounts())) {
                 log.error("The PSU {} is trying to share an account '{}' they do not own. List of their accounts '{}'",
                         accountAccessRequest.getUserId(),

@@ -18,7 +18,7 @@ package com.forgerock.securebanking.openbanking.uk.rcs.common;
 /**
  * All the constants used by the Remote Consent Service
  */
-public class RCSConstants {
+public class RcsConstants {
     public static class Claims {
         public static final String PAYMENT_ID = "payment_id";
         public static final String CSRF = "csrf";

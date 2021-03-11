@@ -16,7 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.client.rs;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccount;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRBankAccountWithBalance;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.openbanking.uk.rcs.configuration.RcsConfigurationProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -58,18 +58,18 @@ public class AccountService {
         return entity.getBody();
     }
 
-    public List<FRBankAccountWithBalance> getAccountsWithBalance(String userID) {
+    public List<FRAccountWithBalance> getAccountsWithBalance(String userID) {
         // This is necessary as auth server always uses lowercase user id
         String lowercaseUserId = userID.toLowerCase();
         log.debug("Searching for accounts with balance for user ID: {}", lowercaseUserId);
 
-        ParameterizedTypeReference<List<FRBankAccountWithBalance>> ptr = new ParameterizedTypeReference<>() {};
+        ParameterizedTypeReference<List<FRAccountWithBalance>> ptr = new ParameterizedTypeReference<>() {};
         UriComponentsBuilder builder = fromHttpUrl(configurationProperties.getRsBaseUrl() + FIND_USER_BY_ID_URI);
         builder.queryParam("userId", lowercaseUserId);
         builder.queryParam("withBalance", true);
 
         URI uri = builder.build().encode().toUri();
-        ResponseEntity<List<FRBankAccountWithBalance>> entity = restTemplate.exchange(uri, GET, null, ptr);
+        ResponseEntity<List<FRAccountWithBalance>> entity = restTemplate.exchange(uri, GET, null, ptr);
         return entity.getBody();
     }
 }
