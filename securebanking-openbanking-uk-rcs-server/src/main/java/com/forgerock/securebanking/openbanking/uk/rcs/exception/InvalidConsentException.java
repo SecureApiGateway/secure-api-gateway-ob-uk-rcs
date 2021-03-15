@@ -15,8 +15,11 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.exception;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
 import lombok.Value;
+
+import java.util.List;
 
 @Value
 public class InvalidConsentException extends RuntimeException {
@@ -24,4 +27,5 @@ public class InvalidConsentException extends RuntimeException {
     OBRIErrorType errorType;
     String clientId;
     String consentId;
+    List<FRAccountWithBalance> accounts;
 }

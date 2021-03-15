@@ -1,0 +1,9 @@
+{
+  "request": {
+    "method": "PUT",
+    "urlPathPattern": "/idm/domestic-payment-consents/.*"
+  },
+  "response": {
+    "status": 200
+  }
+}

@@ -290,7 +290,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 ex.getConsentRequestJwt(),
                 ex.getErrorType(),
                 ex.getClientId(),
-                ex.getConsentId());
+                ex.getConsentId(),
+                ex.getAccounts());
     }
 
     // Required here because these programming errors can get lost in Spring handlers making debug very difficult

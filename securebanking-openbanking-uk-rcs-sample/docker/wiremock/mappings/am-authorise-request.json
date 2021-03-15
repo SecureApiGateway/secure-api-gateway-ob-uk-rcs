@@ -1,0 +1,12 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPathPattern": "/am/oauth2/authorize.*"
+  },
+  "response": {
+    "status": 302,
+    "headers": {
+      "Location": "http://www.google.com"
+    }
+  }
+}

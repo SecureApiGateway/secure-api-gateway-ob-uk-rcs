@@ -34,4 +34,6 @@ public class AmConfigurationProperties {
     private String userProfileId;
     @Value("${am.endpoint.userprofile}")
     private String userProfileEndpoint;
+    @Value("${am.endpoint.authorize}")
+    private String authorizeEndpoint;
 }

@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/am/userprofile"
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "get-user-profile-response.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

@@ -1,3 +1,8 @@
+spring:
+  cloud:
+    config:
+      enabled: false
+
 rcs:
   issuerId: forgerock-rcs
 
@@ -28,3 +33,4 @@ am:
     id: id
   endpoint:
     userprofile: ${am.root}/userprofile
+    authorize: ${am.root}/oauth2/authorize

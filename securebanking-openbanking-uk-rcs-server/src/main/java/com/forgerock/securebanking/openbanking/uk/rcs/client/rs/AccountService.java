@@ -34,7 +34,7 @@ import static org.springframework.web.util.UriComponentsBuilder.fromHttpUrl;
 @Service
 @Slf4j
 public class AccountService {
-    private static final String FIND_USER_BY_ID_URI = "/api/accounts/search/findByUserId";
+    private static final String FIND_USER_BY_ID_URI = "/backoffice/accounts/search/findByUserId";
 
     private final RestTemplate restTemplate;
     private final RcsConfigurationProperties configurationProperties;

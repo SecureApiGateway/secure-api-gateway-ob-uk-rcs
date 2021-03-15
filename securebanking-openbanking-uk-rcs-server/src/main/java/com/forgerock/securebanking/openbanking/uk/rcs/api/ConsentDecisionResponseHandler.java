@@ -130,6 +130,7 @@ public class ConsentDecisionResponseHandler {
         String body = "consent_response=" + redirectionAction.getConsentJwt();
 
         String url = fromHttpUrl(redirectionAction.getRedirectUri()).build(true).toUri().toString();
+        log.debug("Redirect URL: {}", url);
         ParameterizedTypeReference<String> typeReference = new ParameterizedTypeReference<>() {};
         return amGateway.sendToAm(url, POST, amHeaderRcsResponse, typeReference, body);
     }

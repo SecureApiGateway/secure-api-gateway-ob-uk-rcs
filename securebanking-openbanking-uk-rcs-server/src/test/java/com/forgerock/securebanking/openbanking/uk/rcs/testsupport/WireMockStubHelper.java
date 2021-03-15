@@ -48,7 +48,7 @@ public class WireMockStubHelper {
 
     @SneakyThrows
     public void stubGetUserAccounts(List<FRAccountWithBalance> responseBody) {
-        WIRE_MOCK_SERVER.stubFor(get(urlPathMatching("/rs/api/accounts/search/findByUserId.*"))
+        WIRE_MOCK_SERVER.stubFor(get(urlPathMatching("/rs/backoffice/accounts/search/findByUserId.*"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withBody(objectMapper.writeValueAsString(responseBody))

@@ -22,9 +22,9 @@ import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.pay
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.tpp.Tpp;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticPaymentConsentDetails;
-import com.forgerock.securebanking.openbanking.uk.rcs.exception.InvalidConsentException;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.DomesticPaymentConsentService;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.TppService;
+import com.forgerock.securebanking.openbanking.uk.rcs.exception.InvalidConsentException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +33,7 @@ import java.util.Optional;
 
 import static com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType.*;
 import static com.forgerock.securebanking.openbanking.uk.rcs.util.AccountWithBalanceMatcher.getMatchingAccount;
+import static java.util.Collections.emptyList;
 
 @Service
 @Slf4j
@@ -73,7 +74,7 @@ public class DomesticPaymentConsentDetailsService implements ConsentDetailsServi
                         "consent is not one of the user's accounts: {}.", domesticConsent.getPispId(), consentId,
                         initiation.getDebtorAccount(), accounts);
                 throw new InvalidConsentException(consentRequestJwt, RCS_CONSENT_REQUEST_DEBTOR_ACCOUNT_NOT_FOUND,
-                        clientId, consentId);
+                        clientId, consentId, accounts);
             }
             accounts = List.of(matchingUserAccount.get());
         }
@@ -82,7 +83,8 @@ public class DomesticPaymentConsentDetailsService implements ConsentDetailsServi
         if (isTpp.isEmpty()) {
             log.error("The TPP '{}' (Client ID {}) that created this consent id '{}' doesn't exist anymore.",
                     domesticConsent.getPispId(), clientId, consentId);
-            throw new InvalidConsentException(consentRequestJwt, RCS_CONSENT_REQUEST_NOT_FOUND_TPP, clientId, consentId);
+            throw new InvalidConsentException(consentRequestJwt, RCS_CONSENT_REQUEST_NOT_FOUND_TPP, clientId, consentId,
+                    emptyList());
         }
         Tpp tpp = isTpp.get();
 
