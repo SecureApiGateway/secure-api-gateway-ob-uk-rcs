@@ -49,7 +49,6 @@ import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamo
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.tpp.TppTestDataFactory.aValidTppBuilder;
 import static com.forgerock.securebanking.openbanking.uk.rcs.common.RcsConstants.Decision.ALLOW;
 import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.JwtHelper.consentDecisionJwt;
-import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.WireMockServerExtension.SERVER_PORT;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -67,7 +66,7 @@ public class ConsentDecisionApiControllerTest {
 
     private static final String BASE_URL = "http://localhost:";
     private static final String DECISION_URI = "/api/rcs/consent/decision";
-    private static final String CLIENT_ID = "bdddb430-3160-4aeb-85b9-ddebcb0b8ba2";
+    private static final String CLIENT_ID = "fe061f12-135a-44f4-be23-f0a4a5c23eea";
     private static final String USER_ID = "45c6486e-8fc0-3ffc-h6f5-2105164d01j4";
     private static final String INTENT_ID = "PDC_d79e7380-a3a8-4de3-bc93-e4ff9b620098";
     private static final FRAccountWithBalance ACCOUNTS_WITH_BALANCE = aValidFRAccountWithBalance();
@@ -97,7 +96,7 @@ public class ConsentDecisionApiControllerTest {
         wireMockStubHelper.stubGetUserAccounts(List.of(ACCOUNTS_WITH_BALANCE));
         wireMockStubHelper.stubGetPaymentConsent(paymentConsentBuilder.build());
         wireMockStubHelper.stubGetTpp(tpp);
-        consentJwt = consentDecisionJwt(OAUTH2_AUTHORIZE_PATH, SERVER_PORT, CLIENT_ID, INTENT_ID, USER_ID);
+        consentJwt = consentDecisionJwt(OAUTH2_AUTHORIZE_PATH, 9080, CLIENT_ID, INTENT_ID, USER_ID);
         wireMockStubHelper.stubSignClaims(consentJwt);
         wireMockStubHelper.stubRcsResponseToAm(OAUTH2_AUTHORIZE_PATH);
 

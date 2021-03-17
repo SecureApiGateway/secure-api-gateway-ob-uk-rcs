@@ -1,3 +1,4 @@
+#!/bin/sh
 #
 # Copyright © 2020 ForgeRock AS (obst@forgerock.com)
 #
@@ -14,12 +15,12 @@
 # limitations under the License.
 #
 
-version: '3.1'
-services:
 
-  rcs-app:
-    container_name: rcs-app
-    image: eu.gcr.io/openbanking-214714/securebanking/uk-ob-rcs:latest
-    ports:
-      - 8080:8080
+export GIT_SSH_KEY="$(cat ~/.ssh/id_rsa)"
 
+echo "Shutting down previous containers (if applicable)"
+docker-compose -f docker-compose-git.yml down
+echo ""
+
+echo "Starting up containers..."
+docker-compose -f docker-compose-git.yml up

@@ -1,0 +1,14 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/idm/domestic-payment-consents/.*"
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "get-payment-consent-response.json",
+    "transformers": ["response-template"],
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

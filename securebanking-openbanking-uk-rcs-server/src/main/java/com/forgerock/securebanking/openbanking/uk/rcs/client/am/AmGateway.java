@@ -75,11 +75,13 @@ public class AmGateway {
         try {
             builder = UriComponentsBuilder
                     .fromUriString(uri)
-                    .uri(new URI(amConfiguration.getRoot()));
+                    .uri(new URI(amConfiguration.getAuthorizeEndpoint()));
         } catch (URISyntaxException e) {
             throw new RuntimeException("AM path path is not a URI", e);
         }
+        log.debug("Redirect URI before UriComponentsBuilder.build(): {}", uri);
         uri = builder.build().toUriString();
+        log.debug("Redirect URI after UriComponentsBuilder.build(): {}", uri);
 
         //BUG in the UriComponentsBuilder which encode twice
         uri = uri.replace("%20", " ");

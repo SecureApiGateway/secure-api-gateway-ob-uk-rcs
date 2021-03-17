@@ -1,0 +1,54 @@
+{
+  "type": "FRDomesticPaymentConsent",
+  "id": "{{request.path.[2]}}",
+  "status": "AWAITINGAUTHORISATION",
+  "accountId": "ac493f57-7d74-4c51-b78a-06a1422cda13",
+  "userId": "45c6486e-8fc0-3ffc-h6f5-2105164d01j4",
+  "pispId": "fe061f12-135a-44f4-be23-f0a4a5c23eea",
+  "pispName": "Another TPP",
+  "initiation": {
+    "type": "FRWriteDomesticDataInitiation",
+    "instructionIdentification": "12345678",
+    "endToEndIdentification": "12345",
+    "localInstrument": "UK.OBIE.CHAPS",
+    "instructedAmount": {
+      "amount": "10.00",
+      "currency": "GBP"
+    },
+    "debtorAccount": {
+      "schemeName": "UK.OBIE.SortCodeAccountNumber",
+      "identification": "62045440978167",
+      "name": "Docker User"
+    },
+    "creditorAccount": {
+      "schemeName": "UK.OBIE.SortCodeAccountNumber",
+      "identification": "40400422390112",
+      "name": "Mrs B Smith"
+    },
+    "creditorPostalAddress": {
+      "addressType": "RESIDENTIAL",
+      "streetName": "Jagger Road",
+      "buildingNumber": "21",
+      "postCode": "GL5 3AA",
+      "townName": "Stroud",
+      "countrySubDivision": "Gloucestershire",
+      "country": "UK"
+    },
+    "remittanceInformation": {
+      "unstructured": "INV.001",
+      "reference": "123456"
+    }
+  },
+  "risk": {
+    "paymentContextCode": "BILLPAYMENT",
+    "merchantCategoryCode": "ABCD",
+    "deliveryAddress": {
+      "addressLine": [
+        "60 Queens Square"
+      ],
+      "postCode": "BS1 4JZ",
+      "townName": "Bristol",
+      "country": "UK"
+    }
+  }
+}
