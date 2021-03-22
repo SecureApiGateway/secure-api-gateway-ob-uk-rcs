@@ -22,7 +22,7 @@ jwkms:
 
 dns:
   hosts:
-    root: hosts-root
+    root: localhost
 
 am:
   hostname: as.aspsp.${dns.hosts.root}

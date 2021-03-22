@@ -16,6 +16,10 @@
 
 ### Spring Configuration for securebanking-openbanking-uk-rcs running in Docker
 
+dns:
+  hosts:
+    root: localhost
+
 logging:
   level:
     com.forgerock: DEBUG

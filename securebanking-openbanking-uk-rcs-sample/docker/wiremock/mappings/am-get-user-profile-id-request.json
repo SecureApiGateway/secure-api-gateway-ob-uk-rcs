@@ -1,11 +1,11 @@
 {
   "request": {
-    "method": "GET",
-    "urlPathPattern": "/idm/repo/.*"
+    "method": "POST",
+    "url": "/am/userprofile"
   },
   "response": {
     "status": 200,
-    "bodyFileName": "get-tpp-response.json",
+    "bodyFileName": "am-get-user-profile-id-response.json",
     "headers": {
       "Content-Type": "application/json"
     }

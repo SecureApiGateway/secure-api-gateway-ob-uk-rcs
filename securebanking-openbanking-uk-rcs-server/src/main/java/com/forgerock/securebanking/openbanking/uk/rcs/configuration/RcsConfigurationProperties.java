@@ -22,6 +22,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @Data
 public class RcsConfigurationProperties {
+    @Value("${dns.hosts.root}")
+    private String hostRoot;
     @Value("${rcs.issuerId}")
     private String issuerId;
     @Value("${rs.base-url}")

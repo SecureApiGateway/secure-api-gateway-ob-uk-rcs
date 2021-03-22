@@ -1,0 +1,11 @@
+{
+  "username": "matt.wills",
+  "universalId": "id=matt.wills,ou=user,o=openbanking,ou=services,dc=openam,dc=forgerock,dc=org",
+  "realm": "/openbanking",
+  "latestAccessTime": "2021-03-18T16:22:04Z",
+  "maxIdleExpirationTime": "2021-03-18T16:52:04Z",
+  "maxSessionExpirationTime": "2021-03-18T18:22:03Z",
+  "properties": {
+    "AMCtxId": "34fe3361-336a-49ba-9c42-ad568bb8ae27-4719"
+  }
+}
