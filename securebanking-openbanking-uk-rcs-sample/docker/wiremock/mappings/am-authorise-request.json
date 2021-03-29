@@ -6,7 +6,7 @@
   "response": {
     "status": 302,
     "headers": {
-      "Location": "http://www.google.com"
+      "Location": "https://www.google.com"
     }
   }
 }

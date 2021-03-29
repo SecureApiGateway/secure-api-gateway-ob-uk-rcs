@@ -105,11 +105,11 @@ public class DomesticPaymentConsentDetailsTest {
                 "\"id\":\"123456\"," +
                 "\"account\":{" +
                 "\"accountId\":\"1234\"," +
-                "\"status\":\"ENABLED\"," +
+                "\"status\":\"Enabled\"," +
                 "\"statusUpdateDateTime\":\"" + statusUpdateDateTime + "\"," +
                 "\"currency\":\"GBP\"," +
-                "\"accountType\":\"PERSONAL\"," +
-                "\"accountSubType\":\"CURRENTACCOUNT\"," +
+                "\"accountType\":\"Personal\"," +
+                "\"accountSubType\":\"CurrentAccount\"," +
                 "\"description\":\"A personal current account\"," +
                 "\"nickname\":\"House Account\"," +
                 "\"openingDate\":\"" + openingDate + "\"," +
@@ -128,8 +128,8 @@ public class DomesticPaymentConsentDetailsTest {
                 "\"balances\":[" +
                 "{" +
                 "\"accountId\":\"12345\"," +
-                "\"creditDebitIndicator\":\"CREDIT\"," +
-                "\"type\":\"INTERIMAVAILABLE\"," +
+                "\"creditDebitIndicator\":\"Credit\"," +
+                "\"type\":\"InterimAvailable\"," +
                 "\"dateTime\":\""+ dateTime + "\"," +
                 "\"amount\":{" +
                 "\"amount\":\"10.00\"," +

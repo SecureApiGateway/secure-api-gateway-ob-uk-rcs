@@ -34,9 +34,9 @@ import java.text.ParseException;
 import java.util.List;
 
 import static com.forgerock.securebanking.openbanking.uk.common.api.meta.OBConstants.IdTokenClaim.INTENT_ID;
-import static com.forgerock.securebanking.openbanking.uk.common.api.meta.OBConstants.OIDCClaim.CLIENT_ID;
 import static com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType.RCS_CONSENT_REQUEST_FORMAT;
 import static com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType.RCS_CONSENT_REQUEST_INVALID;
+import static com.forgerock.securebanking.openbanking.uk.rcs.common.RcsConstants.Claims.CLIENT_ID;
 
 @Controller
 @Slf4j
@@ -55,8 +55,11 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
     }
 
     @Override
-    public ResponseEntity<ConsentDetails> getConsentDetails(String consentRequestJwt, String ssoToken)
+    public ResponseEntity<ConsentDetails> getConsentDetails(String consentRequestJwt)//, String ssoToken)
             throws OBErrorException {
+
+        // TODO - temporary measure to get UI working without going via AM
+        String ssoToken = "aSsoToken";
 
         try {
             log.debug("Parsing consent request JWS...");

@@ -116,7 +116,7 @@ public class ConsentDecisionResponseHandler {
         requestParameterClaims.claim("scopes", scopes);
         requestParameterClaims.claim("clientId", clientId);
 
-        // TODO - can the RCS sign the JWT instead?
+        // TODO - can the RCS sign the JWT instead? Or call IG?
         return jwkmsApiClient.signClaims(rcsConfigurationProperties.getIssuerId(), requestParameterClaims.build(), false);
     }
 

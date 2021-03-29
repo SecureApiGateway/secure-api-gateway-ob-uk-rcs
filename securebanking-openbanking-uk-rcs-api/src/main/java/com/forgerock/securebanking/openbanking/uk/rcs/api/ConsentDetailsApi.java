@@ -19,7 +19,6 @@ import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetails;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -33,13 +32,14 @@ public interface ConsentDetailsApi {
             @ApiResponse(code = 200, message = "Consent details", response = ConsentDetails.class)
     })
     @RequestMapping(value = "/api/rcs/consent/details",
-            consumes = {"application/json; charset=utf-8"},
+            consumes = {"application/jwt; charset=utf-8", "application/json; charset=utf-8"},
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
     ResponseEntity<ConsentDetails> getConsentDetails(
             @ApiParam(value = "Consent request JWT received by AM", required = true)
-            @RequestBody String consentRequestJwt,
+            @RequestBody String consentRequestJwt) throws OBErrorException;//,
 
-            @ApiParam(value = "Cookie containing the user session", required = true)
-            @CookieValue(value = "${am.cookie.name}") String ssoToken) throws OBErrorException;
+    // TODO - temporary measure to get UI working without going via AM - ssoToken is mandatory
+//            @ApiParam(value = "Cookie containing the user session", required = true)
+//            @CookieValue(value = "${am.cookie.name}") String ssoToken) throws OBErrorException;
 }
