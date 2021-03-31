@@ -23,8 +23,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType.RCS_CONSENT_REQUEST_INVALID;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 /**
  * Unit test for {@link ConsentDecisionServiceDelegate}.
@@ -35,6 +35,10 @@ public class ConsentDecisionServiceDelegateTest {
     private AccountAccessConsentDecisionService accountAccessConsentDecisionService;
     @Mock
     private DomesticPaymentConsentDecisionService domesticPaymentConsentDecisionService;
+    @Mock
+    private DomesticScheduledPaymentConsentDecisionService domesticScheduledPaymentConsentDecisionService;
+    @Mock
+    private DomesticStandingOrderConsentDecisionService domesticStandingOrderConsentDecisionService;
     @InjectMocks
     private ConsentDecisionServiceDelegate delegate;
 
@@ -62,6 +66,32 @@ public class ConsentDecisionServiceDelegateTest {
         // Then
         assertThat(consentDecisionService).isNotNull();
         assertThat(consentDecisionService).isEqualTo(domesticPaymentConsentDecisionService);
+    }
+
+    @Test
+    public void shouldGetDomesticScheduledPaymentConsentDecisionService() throws OBErrorException {
+        // Given
+        String intentId = "PDSC_1234";
+
+        // When
+        ConsentDecisionService consentDecisionService = delegate.getConsentDecisionService(intentId);
+
+        // Then
+        assertThat(consentDecisionService).isNotNull();
+        assertThat(consentDecisionService).isEqualTo(domesticScheduledPaymentConsentDecisionService);
+    }
+
+    @Test
+    public void shouldGetDomesticStandingOrderConsentDecisionService() throws OBErrorException {
+        // Given
+        String intentId = "PDSOC_1234";
+
+        // When
+        ConsentDecisionService consentDecisionService = delegate.getConsentDecisionService(intentId);
+
+        // Then
+        assertThat(consentDecisionService).isNotNull();
+        assertThat(consentDecisionService).isEqualTo(domesticStandingOrderConsentDecisionService);
     }
 
     @Test

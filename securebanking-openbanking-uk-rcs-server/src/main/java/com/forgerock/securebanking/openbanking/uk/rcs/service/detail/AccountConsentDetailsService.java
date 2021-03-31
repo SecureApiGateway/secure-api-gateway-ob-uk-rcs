@@ -47,7 +47,7 @@ public class AccountConsentDetailsService implements ConsentDetailsService {
 
     @Override
     public AccountsConsentDetails getConsentDetails(ConsentDetailsRequest detailsRequest) throws OBErrorException {
-        log.debug("Received a consent detailsRequest with a consent detailsRequest JWT: '{}'", detailsRequest.getConsentRequestJwtString());
+        log.debug("Received an account access consent request with JWT: '{}'", detailsRequest.getConsentRequestJwtString());
         String accountRequestId = detailsRequest.getIntentId();
         log.debug("=> The account detailsRequest id: '{}'", accountRequestId);
         String clientId = detailsRequest.getClientId();

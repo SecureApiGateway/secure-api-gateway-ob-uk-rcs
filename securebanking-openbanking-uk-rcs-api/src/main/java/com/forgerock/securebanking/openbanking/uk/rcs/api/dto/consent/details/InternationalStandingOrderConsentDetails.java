@@ -15,7 +15,6 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.IntentType;
 import lombok.AllArgsConstructor;
@@ -23,24 +22,21 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.joda.time.DateTime;
-import uk.org.openbanking.datamodel.account.OBStandingOrder6;
-import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
+import uk.org.openbanking.datamodel.account.OBStandingOrder5;
 
 import java.util.List;
 
 /**
- * Models the consent data for a domestic standing order.
+ * Models the consent data for an international standing order.
  */
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DomesticStandingOrderPaymentConsentDetails extends ConsentDetails {
+public class InternationalStandingOrderConsentDetails extends ConsentDetails {
 
-    private OBStandingOrder6 standingOrder;
-    
-    private OBActiveOrHistoricCurrencyAndAmount instructedAmount; 
-    
+    private OBStandingOrder5 standingOrder;
+
     private String decisionApiUri;
 
     private List<FRAccountWithBalance> accounts;
@@ -49,10 +45,16 @@ public class DomesticStandingOrderPaymentConsentDetails extends ConsentDetails {
     private String clientId;
     private String merchantName;
     private DateTime expiredDate;
+    private String currencyOfTransfer;
     private String paymentReference;
 
     @Override
     public IntentType getIntentType() {
-        return IntentType.PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT;
+        return IntentType.PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT;
+    }
+
+    @Override
+    public String getDecisionApiUri() {
+        return ConsentDetails.DECISION_API_URI;
     }
 }

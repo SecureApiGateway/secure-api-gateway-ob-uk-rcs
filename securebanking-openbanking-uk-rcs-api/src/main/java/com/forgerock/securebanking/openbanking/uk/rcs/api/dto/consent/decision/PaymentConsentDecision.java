@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DomesticScheduledPaymentConsentDecision {
+public class PaymentConsentDecision {
     private String consentJwt;
     private String decision;
     private String accountId;

@@ -15,30 +15,27 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRAmount;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.IntentType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.joda.time.DateTime;
-import uk.org.openbanking.datamodel.account.OBScheduledPayment1;
-import uk.org.openbanking.datamodel.payment.OBExchangeRate2;
 
 import java.util.List;
 
 /**
- * Models the consent data for an international scheduled payment.
+ * Models the consent data for a domestic scheduled payment.
  */
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class InternationalSchedulePaymentConsentDetails extends ConsentDetails {
+public class DomesticScheduledPaymentConsentDetails extends ConsentDetails {
 
-    private OBScheduledPayment1 scheduledPayment;
-    private OBExchangeRate2 rate;
+    private FRAmount instructedAmount;
 
     private String decisionApiUri;
 
@@ -48,12 +45,11 @@ public class InternationalSchedulePaymentConsentDetails extends ConsentDetails {
     private String clientId;
     private String merchantName;
     private DateTime expiredDate;
-    private String currencyOfTransfer;
     private String paymentReference;
 
     @Override
     public IntentType getIntentType() {
-        return IntentType.PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT;
+        return IntentType.PAYMENT_DOMESTIC_SCHEDULED_CONSENT;
     }
 
     @Override

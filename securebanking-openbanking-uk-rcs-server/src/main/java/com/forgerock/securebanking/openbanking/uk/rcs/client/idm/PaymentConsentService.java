@@ -15,25 +15,51 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.client.idm;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRPaymentConsent;
+import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRPaymentConsent;
+import com.forgerock.securebanking.openbanking.uk.rcs.configuration.RcsConfigurationProperties;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-/**
- * An internal Payment service
- * @param <T> A type of payment consent
- */
-public interface PaymentConsentService<T extends FRPaymentConsent> {
+import static org.springframework.http.HttpMethod.PUT;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
-    /**
-     * Get payment consent by id
-     * @param paymentId Payment id
-     * @return Payment consent
-     */
-    T getConsent(String paymentId);
+@Service
+@Slf4j
+public class PaymentConsentService {
+    private static final String CONSENTS_URI = "/payment-consents";
 
-    /**
-     * Update payment consent
-     * @param payment Payment consent
-     */
-    void updateConsent(T payment);
+    private final RcsConfigurationProperties configurationProperties;
+    private final RestTemplate restTemplate;
 
+    public PaymentConsentService(RcsConfigurationProperties configurationProperties,
+                                 RestTemplate restTemplate) {
+        this.configurationProperties = configurationProperties;
+        this.restTemplate = restTemplate;
+    }
+
+    public <T extends FRPaymentConsent> T getConsent(String consentId, Class<T> clazz) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(APPLICATION_JSON);
+        // TODO - add additional required headers
+        return restTemplate.getForObject(consentIdUrl(consentId), clazz, headers);
+    }
+
+    public <T extends FRPaymentConsent> void updateConsent(T consent) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(APPLICATION_JSON);
+        // TODO - add additional required headers
+        HttpEntity<T> requestEntity = new HttpEntity<>(consent, headers);
+        restTemplate.exchange(consentIdUrl(consent.getId()), PUT, requestEntity, Void.class);
+    }
+
+    private String consentUrl() {
+        return configurationProperties.getIdmBaseUrl() + CONSENTS_URI;
+    }
+
+    private String consentIdUrl(String consentId) {
+        return consentUrl() + "/" + consentId;
+    }
 }

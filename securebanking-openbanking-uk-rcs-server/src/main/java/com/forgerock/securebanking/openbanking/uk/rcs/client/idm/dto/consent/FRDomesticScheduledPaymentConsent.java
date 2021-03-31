@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision;
+package com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,11 +21,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class FilePaymentConsentDecision {
-    private String consentJwt;
-    private String decision;
+@AllArgsConstructor
+@Builder
+public class FRDomesticScheduledPaymentConsent implements FRPaymentConsent {
+    private String id;
+    private FRDomesticScheduledPaymentConsentData data;
     private String accountId;
+    private String resourceOwnerUsername;
+    private String oauth2ClientId;
+    private String oauth2ClientName;
 }

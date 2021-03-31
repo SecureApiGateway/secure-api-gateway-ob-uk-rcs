@@ -16,9 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.service.detail;
 
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
-import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.AccountsConsentDetails;
-import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetails;
-import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticPaymentConsentDetails;
+import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,8 +26,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType.RCS_CONSENT_REQUEST_INVALID;
 import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.ConsentDetailsRequestTestDataFactory.*;
 import static java.util.UUID.randomUUID;
-import static org.assertj.core.api.AssertionsForClassTypes.catchThrowableOfType;
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -42,6 +40,10 @@ public class ConsentDetailsServiceDelegateTest {
     private AccountConsentDetailsService accountConsentDetailsService;
     @Mock
     private DomesticPaymentConsentDetailsService domesticPaymentConsentDetailsService;
+    @Mock
+    private DomesticScheduledPaymentConsentDetailsService domesticScheduledPaymentConsentDetailsService;
+    @Mock
+    private DomesticStandingOrderConsentDetailsService domesticStandingOrderConsentDetailsService;
     @InjectMocks
     private ConsentDetailsServiceDelegate consentDetailsServiceDelegate;
 
@@ -73,6 +75,36 @@ public class ConsentDetailsServiceDelegateTest {
         // Then
         assertThat(consentDetails).isNotNull();
         verify(domesticPaymentConsentDetailsService).getConsentDetails(request);
+    }
+
+    @Test
+    public void shouldGetDomesticScheduledPaymentConsentDetails() throws OBErrorException {
+        // Given
+        ConsentDetailsRequest request = aValidDomesticScheduledPaymentConsentDetailsRequestBuilder().build();
+        DomesticScheduledPaymentConsentDetails paymentConsentDetails = DomesticScheduledPaymentConsentDetails.builder().build();
+        given(domesticScheduledPaymentConsentDetailsService.getConsentDetails(request)).willReturn(paymentConsentDetails);
+
+        // When
+        ConsentDetails consentDetails = consentDetailsServiceDelegate.getConsentDetails(request);
+
+        // Then
+        assertThat(consentDetails).isNotNull();
+        verify(domesticScheduledPaymentConsentDetailsService).getConsentDetails(request);
+    }
+
+    @Test
+    public void shouldGetDomesticStandingOrderConsentDetails() throws OBErrorException {
+        // Given
+        ConsentDetailsRequest request = aValidDomesticStandingOrderConsentDetailsRequestBuilder().build();
+        DomesticStandingOrderConsentDetails paymentConsentDetails = DomesticStandingOrderConsentDetails.builder().build();
+        given(domesticStandingOrderConsentDetailsService.getConsentDetails(request)).willReturn(paymentConsentDetails);
+
+        // When
+        ConsentDetails consentDetails = consentDetailsServiceDelegate.getConsentDetails(request);
+
+        // Then
+        assertThat(consentDetails).isNotNull();
+        verify(domesticStandingOrderConsentDetailsService).getConsentDetails(request);
     }
 
     @Test

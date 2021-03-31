@@ -17,8 +17,8 @@ package com.forgerock.securebanking.openbanking.uk.rcs.testsupport;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRDomesticPaymentConsent;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.tpp.Tpp;
+import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRDomesticPaymentConsent;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -57,7 +57,7 @@ public class WireMockStubHelper {
 
     @SneakyThrows
     public void stubGetPaymentConsent(FRDomesticPaymentConsent responseBody) {
-        WIRE_MOCK_SERVER.stubFor(get(urlPathMatching("/idm/domestic-payment-consents/.*"))
+        WIRE_MOCK_SERVER.stubFor(get(urlPathMatching("/idm/payment-consents/.*"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withBody(objectMapper.writeValueAsString(responseBody))
@@ -88,11 +88,12 @@ public class WireMockStubHelper {
     }
 
     public void stubUpdatePaymentConsent(FRDomesticPaymentConsent expectedRequestBody) {
-        WIRE_MOCK_SERVER.stubFor(put(urlPathMatching("/idm/domestic-payment-consents/.*"))
+        WIRE_MOCK_SERVER.stubFor(put(urlPathMatching("/idm/payment-consents/.*"))
                 .withRequestBody(containing("\"accountId\":\"" + expectedRequestBody.getAccountId() + "\""))
-                .withRequestBody(containing("\"status\":\"" + expectedRequestBody.getStatus().name() + "\""))
-                .withRequestBody(containing("\"userId\":\"" + expectedRequestBody.getUserId() + "\""))
-                .withRequestBody(containing("\"pispId\":\"" + expectedRequestBody.getPispId() + "\""))
+                // Note upper case OB JSON format
+                .withRequestBody(containing("\"Status\":\"" + expectedRequestBody.getData().getStatus().toString() + "\""))
+                .withRequestBody(containing("\"resourceOwnerUsername\":\"" + expectedRequestBody.getResourceOwnerUsername() + "\""))
+                .withRequestBody(containing("\"oauth2ClientId\":\"" + expectedRequestBody.getOauth2ClientId() + "\""))
                 .willReturn(aResponse()
                         .withStatus(OK.value())));
     }

@@ -1,54 +1,50 @@
 {
   "type": "FRDomesticPaymentConsent",
   "id": "{{request.path.[2]}}",
-  "status": "AWAITINGAUTHORISATION",
   "accountId": "ac493f57-7d74-4c51-b78a-06a1422cda13",
-  "userId": "45c6486e-8fc0-3ffc-h6f5-2105164d01j4",
-  "pispId": "a12f9ebc-4966-4543-afe0-03e597835a01",
-  "pispName": "Another TPP",
-  "initiation": {
-    "type": "FRWriteDomesticDataInitiation",
-    "instructionIdentification": "12345678",
-    "endToEndIdentification": "12345",
-    "localInstrument": "UK.OBIE.CHAPS",
-    "instructedAmount": {
-      "amount": "10.00",
-      "currency": "GBP"
-    },
-    "debtorAccount": {
-      "schemeName": "UK.OBIE.SortCodeAccountNumber",
-      "identification": "62045440978167",
-      "name": "Docker User"
-    },
-    "creditorAccount": {
-      "schemeName": "UK.OBIE.SortCodeAccountNumber",
-      "identification": "40400422390112",
-      "name": "Mrs B Smith"
-    },
-    "creditorPostalAddress": {
-      "addressType": "RESIDENTIAL",
-      "streetName": "Jagger Road",
-      "buildingNumber": "21",
-      "postCode": "GL5 3AA",
-      "townName": "Stroud",
-      "countrySubDivision": "Gloucestershire",
-      "country": "UK"
-    },
-    "remittanceInformation": {
-      "unstructured": "INV.001",
-      "reference": "123456"
-    }
-  },
-  "risk": {
-    "paymentContextCode": "BILLPAYMENT",
-    "merchantCategoryCode": "ABCD",
-    "deliveryAddress": {
-      "addressLine": [
-        "60 Queens Square"
-      ],
-      "postCode": "BS1 4JZ",
-      "townName": "Bristol",
-      "country": "UK"
+  "oauth2ClientId": "a12f9ebc-4966-4543-afe0-03e597835a01",
+  "oauth2ClientName": "Another TPP",
+  "resourceOwnerUsername": "45c6486e-8fc0-3ffc-h6f5-2105164d01j4",
+  "data": {
+    "ConsentId": "{{request.path.[2]}}",
+    "CreationDateTime": "2021-03-31T12:59:17.530Z",
+    "Status": "AwaitingAuthorisation",
+    "StatusUpdateDateTime": "2021-03-31T12:59:17.532Z",
+    "ExpectedExecutionDateTime": "2021-03-31T12:59:17.532Z",
+    "ExpectedSettlementDateTime": "2021-04-01T12:59:17.532Z",
+    "Initiation": {
+      "InstructionIdentification": "ANSM021",
+      "EndToEndIdentification": "FRESCO.21302.GFX.02",
+      "LocalInstrument": "UK.OBIE.CHAPS",
+      "InstructedAmount": {
+        "Amount": "10.01",
+        "Currency": "GBP"
+      },
+      "DebtorAccount": {
+        "SchemeName": "UK.OBIE.SortCodeAccountNumber",
+        "Identification": "62045440978167",
+        "Name": "Mr Shaun Ryder",
+        "SecondaryIdentification": "22"
+      },
+      "CreditorAccount": {
+        "SchemeName": "UK.OBIE.SortCodeAccountNumber",
+        "Identification": "08080021325698",
+        "Name": "Mr Tim Burgess",
+        "SecondaryIdentification": "11"
+      },
+      "CreditorPostalAddress": {
+        "AddressType": "Residential",
+        "StreetName": "The Mall",
+        "BuildingNumber": "1",
+        "PostCode": "WC1 1AB",
+        "TownName": "London",
+        "Country": "UK"
+      },
+      "RemittanceInformation": {
+        "Unstructured": "Internal ops code 5120103",
+        "Reference": "FRESCO-037"
+      },
+      "SupplementaryData": {}
     }
   }
 }

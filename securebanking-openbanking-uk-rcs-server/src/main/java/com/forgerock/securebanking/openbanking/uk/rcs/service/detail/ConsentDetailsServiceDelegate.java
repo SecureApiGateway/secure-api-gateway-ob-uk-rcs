@@ -29,11 +29,34 @@ public class ConsentDetailsServiceDelegate {
 
     private final AccountConsentDetailsService accountConsentDetailsService;
     private final DomesticPaymentConsentDetailsService domesticPaymentConsentDetailsService;
+    private final DomesticScheduledPaymentConsentDetailsService domesticScheduledPaymentConsentDetailsService;
+    private final DomesticStandingOrderConsentDetailsService domesticStandingOrderConsentDetailsService;
+    // TODO #66 - add other consent types
+//    private final InternationalPaymentConsentDetailsService internationalPaymentConsentDetailsService;
+//    private final InternationalScheduledPaymentConsentDetailsService internationalScheduledPaymentConsentDetailsService;
+//    private final InternationalStandingOrderConsentDetailsService internationalStandingOrderConsentDetailsService;
+//    private final FilePaymentConsentDetailsService filePaymentConsentDetailsService;
+//    private final FundsConfirmationConsentDetailsService fundsConfirmationConsentDetailsService;
 
-    public ConsentDetailsServiceDelegate(AccountConsentDetailsService accountConsentDetailsService,
-                                         DomesticPaymentConsentDetailsService domesticPaymentConsentDetailsService) {
+    public ConsentDetailsServiceDelegate(
+            AccountConsentDetailsService accountConsentDetailsService,
+            DomesticPaymentConsentDetailsService domesticPaymentConsentDetailsService,
+            DomesticScheduledPaymentConsentDetailsService domesticScheduledPaymentConsentDetailsService,
+            DomesticStandingOrderConsentDetailsService domesticStandingOrderConsentDetailsService) {
+//            InternationalPaymentConsentDetailsService internationalPaymentConsentDetailsService,
+//            InternationalScheduledPaymentConsentDetailsService internationalScheduledPaymentConsentDetailsService,
+//            InternationalStandingOrderConsentDetailsService internationalStandingOrderConsentDetailsService,
+//            FilePaymentConsentDetailsService filePaymentConsentDetailsService,
+//            FundsConfirmationConsentDetailsService fundsConfirmationConsentDetailsService) {
         this.accountConsentDetailsService = accountConsentDetailsService;
         this.domesticPaymentConsentDetailsService = domesticPaymentConsentDetailsService;
+        this.domesticScheduledPaymentConsentDetailsService = domesticScheduledPaymentConsentDetailsService;
+        this.domesticStandingOrderConsentDetailsService = domesticStandingOrderConsentDetailsService;
+//        this.internationalPaymentConsentDetailsService = internationalPaymentConsentDetailsService;
+//        this.internationalScheduledPaymentConsentDetailsService = internationalScheduledPaymentConsentDetailsService;
+//        this.internationalStandingOrderConsentDetailsService = internationalStandingOrderConsentDetailsService;
+//        this.filePaymentConsentDetailsService = filePaymentConsentDetailsService;
+//        this.fundsConfirmationConsentDetailsService = fundsConfirmationConsentDetailsService;
     }
 
     public ConsentDetails getConsentDetails(ConsentDetailsRequest request) throws OBErrorException {
@@ -44,6 +67,20 @@ public class ConsentDetailsServiceDelegate {
                 return accountConsentDetailsService.getConsentDetails(request);
             case PAYMENT_DOMESTIC_CONSENT:
                 return domesticPaymentConsentDetailsService.getConsentDetails(request);
+            case PAYMENT_DOMESTIC_SCHEDULED_CONSENT:
+                return domesticScheduledPaymentConsentDetailsService.getConsentDetails(request);
+            case PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT:
+                return domesticStandingOrderConsentDetailsService.getConsentDetails(request);
+//            case PAYMENT_INTERNATIONAL_CONSENT:
+//                return internationalPaymentConsentDetailsService.getConsentDetails(request);
+//            case PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT:
+//                return internationalScheduledPaymentConsentDetailsService.getConsentDetails(request);
+//            case PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT:
+//                return internationalStandingOrderConsentDetailsService.getConsentDetails(request);
+//            case PAYMENT_FILE_CONSENT:
+//                return filePaymentConsentDetailsService.getConsentDetails(request);
+//            case FUNDS_CONFIRMATION_CONSENT:
+//                return fundsConfirmationConsentDetailsService.getConsentDetails(request);
             default:
                 log.error("Invalid intent ID: '{}'", intentId);
                 throw new OBErrorException(RCS_CONSENT_REQUEST_INVALID, "Invalid intent ID: '" + intentId + "'");

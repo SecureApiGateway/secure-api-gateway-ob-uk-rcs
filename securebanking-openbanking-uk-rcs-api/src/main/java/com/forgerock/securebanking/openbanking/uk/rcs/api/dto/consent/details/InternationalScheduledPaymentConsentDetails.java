@@ -22,20 +22,22 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.joda.time.DateTime;
-import uk.org.openbanking.datamodel.account.OBStandingOrder5;
+import uk.org.openbanking.datamodel.account.OBScheduledPayment1;
+import uk.org.openbanking.datamodel.payment.OBExchangeRate2;
 
 import java.util.List;
 
 /**
- * Models the consent data for an international standing order.
+ * Models the consent data for an international scheduled payment.
  */
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class InternationalStandingOrderPaymentConsentDetails extends ConsentDetails {
+public class InternationalScheduledPaymentConsentDetails extends ConsentDetails {
 
-    private OBStandingOrder5 standingOrder;
+    private OBScheduledPayment1 scheduledPayment;
+    private OBExchangeRate2 rate;
 
     private String decisionApiUri;
 
@@ -50,7 +52,7 @@ public class InternationalStandingOrderPaymentConsentDetails extends ConsentDeta
 
     @Override
     public IntentType getIntentType() {
-        return IntentType.PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT;
+        return IntentType.PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT;
     }
 
     @Override

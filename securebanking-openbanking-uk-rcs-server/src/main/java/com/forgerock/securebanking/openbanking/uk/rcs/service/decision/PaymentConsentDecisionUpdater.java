@@ -16,8 +16,8 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.service.decision;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccount;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRPaymentConsent;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
+import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRPaymentConsent;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.rs.AccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -26,9 +26,9 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRConsentStatusCode.AUTHORISED;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRConsentStatusCode.REJECTED;
 import static com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType.RCS_CONSENT_DECISION_INVALID_ACCOUNT;
+import static com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRConsentStatusCode.AUTHORISED;
+import static com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRConsentStatusCode.REJECTED;
 
 /**
  * Holds common business logic for the payment consent decision updates so that they are not duplicated across many delegates
@@ -60,11 +60,11 @@ public class PaymentConsentDecisionUpdater {
                 throw new OBErrorException(RCS_CONSENT_DECISION_INVALID_ACCOUNT, userId, accountId, accounts);
             }
 
-            paymentConsent.setStatus(AUTHORISED);
+            paymentConsent.getData().setStatus(AUTHORISED);
             paymentConsent.setAccountId(accountId);
         } else {
             log.debug("The current payment consent: '{}' has been rejected by the PSU: {}", paymentConsent.getId(), userId);
-            paymentConsent.setStatus(REJECTED);
+            paymentConsent.getData().setStatus(REJECTED);
         }
         paymentConsentUpdater.accept(paymentConsent);
     }
