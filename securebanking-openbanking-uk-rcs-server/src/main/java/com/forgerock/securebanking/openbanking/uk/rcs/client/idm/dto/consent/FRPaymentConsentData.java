@@ -13,19 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision;
+package com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+public interface FRPaymentConsentData {
 
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class InternationalScheduledPaymentConsentDecision {
-    private String consentJwt;
-    private String decision;
-    private String accountId;
+    FRConsentStatusCode getStatus();
+
+    void setStatus(FRConsentStatusCode status);
 }

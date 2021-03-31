@@ -17,15 +17,15 @@ package com.forgerock.securebanking.openbanking.uk.rcs.service.decision;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.PaymentConsentService;
-import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRDomesticPaymentConsent;
+import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRDomesticScheduledPaymentConsent;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DomesticPaymentConsentDecisionService extends PaymentConsentDecisionService<FRDomesticPaymentConsent> {
+public class DomesticScheduledPaymentConsentDecisionService extends PaymentConsentDecisionService<FRDomesticScheduledPaymentConsent> {
 
-    public DomesticPaymentConsentDecisionService(PaymentConsentService paymentConsentService,
-                                                 ObjectMapper objectMapper,
-                                                 PaymentConsentDecisionUpdater paymentConsentDecisionUpdater) {
-        super(paymentConsentService, objectMapper, paymentConsentDecisionUpdater, FRDomesticPaymentConsent.class);
+    public DomesticScheduledPaymentConsentDecisionService(PaymentConsentService paymentConsentService,
+                                                          ObjectMapper objectMapper,
+                                                          PaymentConsentDecisionUpdater paymentConsentDecisionUpdater) {
+        super(paymentConsentService, objectMapper, paymentConsentDecisionUpdater, FRDomesticScheduledPaymentConsent.class);
     }
 }

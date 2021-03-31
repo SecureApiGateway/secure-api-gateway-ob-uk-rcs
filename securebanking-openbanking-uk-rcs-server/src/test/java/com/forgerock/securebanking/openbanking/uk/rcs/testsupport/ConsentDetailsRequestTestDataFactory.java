@@ -45,6 +45,14 @@ public class ConsentDetailsRequestTestDataFactory {
         return getConsentDetailsRequestBuilder("PDC_");
     }
 
+    public static ConsentDetailsRequest.ConsentDetailsRequestBuilder aValidDomesticScheduledPaymentConsentDetailsRequestBuilder() {
+        return getConsentDetailsRequestBuilder("PDSC_");
+    }
+
+    public static ConsentDetailsRequest.ConsentDetailsRequestBuilder aValidDomesticStandingOrderConsentDetailsRequestBuilder() {
+        return getConsentDetailsRequestBuilder("PDSOC_");
+    }
+
     private static ConsentDetailsRequest.ConsentDetailsRequestBuilder getConsentDetailsRequestBuilder(String intentType) {
         try {
             return ConsentDetailsRequest.builder()

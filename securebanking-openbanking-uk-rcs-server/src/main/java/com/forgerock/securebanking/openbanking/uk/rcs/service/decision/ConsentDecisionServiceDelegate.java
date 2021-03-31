@@ -28,12 +28,18 @@ public class ConsentDecisionServiceDelegate {
 
     private final AccountAccessConsentDecisionService accountAccessConsentDecisionService;
     private final DomesticPaymentConsentDecisionService domesticPaymentConsentDecisionService;
+    private final DomesticScheduledPaymentConsentDecisionService domesticScheduledPaymentConsentDecisionService;
+    private final DomesticStandingOrderConsentDecisionService domesticStandingOrderConsentDecisionService;
 
     public ConsentDecisionServiceDelegate(
             AccountAccessConsentDecisionService accountAccessConsentDecisionService,
-            DomesticPaymentConsentDecisionService domesticPaymentConsentDecisionService) {
+            DomesticPaymentConsentDecisionService domesticPaymentConsentDecisionService,
+            DomesticScheduledPaymentConsentDecisionService domesticScheduledPaymentConsentDecisionService,
+            DomesticStandingOrderConsentDecisionService domesticStandingOrderConsentDecisionService) {
         this.accountAccessConsentDecisionService = accountAccessConsentDecisionService;
-        this.domesticPaymentConsentDecisionService = domesticPaymentConsentDecisionService;;
+        this.domesticPaymentConsentDecisionService = domesticPaymentConsentDecisionService;
+        this.domesticScheduledPaymentConsentDecisionService = domesticScheduledPaymentConsentDecisionService;
+        this.domesticStandingOrderConsentDecisionService = domesticStandingOrderConsentDecisionService;
     }
 
     public ConsentDecisionService getConsentDecisionService(String intentId) throws OBErrorException {
@@ -44,16 +50,17 @@ public class ConsentDecisionServiceDelegate {
             throw new OBErrorException(RCS_CONSENT_REQUEST_INVALID, "Invalid intent ID: '" + intentId + "'");
         }
         switch (intentType) {
-            case ACCOUNT_ACCESS_CONSENT -> {
+            case ACCOUNT_ACCESS_CONSENT :
                 return accountAccessConsentDecisionService;
-            }
-            case PAYMENT_DOMESTIC_CONSENT -> {
+            case PAYMENT_DOMESTIC_CONSENT :
                 return domesticPaymentConsentDecisionService;
-            }
-            default -> {
+            case PAYMENT_DOMESTIC_SCHEDULED_CONSENT:
+                return domesticScheduledPaymentConsentDecisionService;
+            case PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT:
+                return domesticStandingOrderConsentDecisionService;
+            default :
                 log.error("Unsupported intent ID '{}'", intentId);
                 throw new OBErrorException(RCS_CONSENT_REQUEST_INVALID, "Unsupported intent ID: '" + intentId + "'");
-            }
         }
     }
 }

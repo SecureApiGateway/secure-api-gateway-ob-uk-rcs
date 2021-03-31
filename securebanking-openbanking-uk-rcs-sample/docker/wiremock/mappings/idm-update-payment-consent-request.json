@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "PUT",
-    "urlPathPattern": "/idm/domestic-payment-consents/.*"
+    "urlPathPattern": "/idm/payment-consents/.*"
   },
   "response": {
     "status": 200

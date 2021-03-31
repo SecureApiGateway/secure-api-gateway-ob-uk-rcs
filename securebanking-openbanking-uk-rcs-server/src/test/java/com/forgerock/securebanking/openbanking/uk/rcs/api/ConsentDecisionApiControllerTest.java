@@ -17,11 +17,13 @@ package com.forgerock.securebanking.openbanking.uk.rcs.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRDomesticPaymentConsent;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRDomesticPaymentConsent.FRDomesticPaymentConsentBuilder;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.tpp.Tpp;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.RedirectionAction;
-import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision.DomesticPaymentConsentDecision;
+import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision.PaymentConsentDecision;
+import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRConsentStatusCode;
+import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRDomesticPaymentConsent;
+import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRDomesticPaymentConsent.FRDomesticPaymentConsentBuilder;
+import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRDomesticPaymentConsentData;
 import com.forgerock.securebanking.openbanking.uk.rcs.testsupport.TestInitializer;
 import com.forgerock.securebanking.openbanking.uk.rcs.testsupport.WireMockServerExtension;
 import com.forgerock.securebanking.openbanking.uk.rcs.testsupport.WireMockStubHelper;
@@ -42,13 +44,11 @@ import org.springframework.test.context.ContextConfiguration;
 import java.util.List;
 import java.util.Map;
 
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRConsentStatusCode.AUTHORISED;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRConsentStatusCode.AWAITINGAUTHORISATION;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.account.FRAccountWithBalanceTestDataFactory.aValidFRAccountWithBalance;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.payment.FRDomesticPaymentConsentTestDataFactory.aValidFRDomesticPaymentConsentBuilder;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.tpp.TppTestDataFactory.aValidTppBuilder;
 import static com.forgerock.securebanking.openbanking.uk.rcs.common.RcsConstants.Decision.ALLOW;
 import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.JwtHelper.consentDecisionJwt;
+import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.idm.dto.consent.FRDomesticPaymentConsentTestDataFactory.aValidFRDomesticPaymentConsentBuilder;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -90,18 +90,20 @@ public class ConsentDecisionApiControllerTest {
     @BeforeEach
     public void setup() {
         Tpp tpp = aValidTppBuilder().clientId(CLIENT_ID).build();
-        FRDomesticPaymentConsentBuilder paymentConsentBuilder = aFRDomesticPaymentConsentBuilder(tpp);
+        FRDomesticPaymentConsent initialConsent = aFRDomesticPaymentConsentBuilder(tpp).build();
 
         wireMockStubHelper.stubGetUserProfile(Map.of("id", USER_ID));
         wireMockStubHelper.stubGetUserAccounts(List.of(ACCOUNTS_WITH_BALANCE));
-        wireMockStubHelper.stubGetPaymentConsent(paymentConsentBuilder.build());
+        wireMockStubHelper.stubGetPaymentConsent(initialConsent);
         wireMockStubHelper.stubGetTpp(tpp);
         consentJwt = consentDecisionJwt(OAUTH2_AUTHORIZE_PATH, 9080, CLIENT_ID, INTENT_ID, USER_ID);
         wireMockStubHelper.stubSignClaims(consentJwt);
         wireMockStubHelper.stubRcsResponseToAm(OAUTH2_AUTHORIZE_PATH);
 
-        FRDomesticPaymentConsent expectedPaymentConsent = paymentConsentBuilder.status(AUTHORISED).build();
-        wireMockStubHelper.stubUpdatePaymentConsent(expectedPaymentConsent);
+        FRDomesticPaymentConsent updatedConsent = aFRDomesticPaymentConsentBuilder(tpp).build();
+        FRDomesticPaymentConsentData consentData = updatedConsent.getData();
+        consentData.setStatus(FRConsentStatusCode.AUTHORISED);
+        wireMockStubHelper.stubUpdatePaymentConsent(updatedConsent);
     }
 
     @Test
@@ -119,7 +121,7 @@ public class ConsentDecisionApiControllerTest {
 
     @SneakyThrows
     private String consentDecisionSerialised() {
-        return objectMapper.writeValueAsString(DomesticPaymentConsentDecision.builder()
+        return objectMapper.writeValueAsString(PaymentConsentDecision.builder()
                 .consentJwt(consentJwt)
                 .decision(ALLOW)
                 .accountId(ACCOUNT_ID)
@@ -141,10 +143,9 @@ public class ConsentDecisionApiControllerTest {
     private FRDomesticPaymentConsentBuilder aFRDomesticPaymentConsentBuilder(Tpp tpp) {
         FRDomesticPaymentConsentBuilder domesticPaymentConsentBuilder = aValidFRDomesticPaymentConsentBuilder()
                 .accountId(ACCOUNT_ID)
-                .pispId(tpp.getClientId())
-                .pispName(tpp.getName())
-                .userId(USER_ID)
-                .status(AWAITINGAUTHORISATION);
+                .oauth2ClientId(tpp.getClientId())
+                .oauth2ClientName(tpp.getName())
+                .resourceOwnerUsername(USER_ID);
         return domesticPaymentConsentBuilder;
     }
 }

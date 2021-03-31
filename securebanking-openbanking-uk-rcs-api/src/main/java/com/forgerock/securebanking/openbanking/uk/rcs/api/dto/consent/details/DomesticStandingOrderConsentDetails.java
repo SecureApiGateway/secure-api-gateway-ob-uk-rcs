@@ -15,29 +15,31 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRStandingOrderData;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRAmount;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.IntentType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.joda.time.DateTime;
-import uk.org.openbanking.datamodel.account.OBScheduledPayment1;
 
 import java.util.List;
 
 /**
- * Models the consent data for a domestic scheduled payment.
+ * Models the consent data for a domestic standing order.
  */
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DomesticSchedulePaymentConsentDetails extends ConsentDetails {
+public class DomesticStandingOrderConsentDetails extends ConsentDetails {
 
-    private OBScheduledPayment1 scheduledPayment;
-
+    private FRStandingOrderData standingOrder;
+    
+    private FRAmount instructedAmount;
+    
     private String decisionApiUri;
 
     private List<FRAccountWithBalance> accounts;
@@ -50,11 +52,6 @@ public class DomesticSchedulePaymentConsentDetails extends ConsentDetails {
 
     @Override
     public IntentType getIntentType() {
-        return IntentType.PAYMENT_DOMESTIC_SCHEDULED_CONSENT;
-    }
-
-    @Override
-    public String getDecisionApiUri() {
-        return ConsentDetails.DECISION_API_URI;
+        return IntentType.PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT;
     }
 }

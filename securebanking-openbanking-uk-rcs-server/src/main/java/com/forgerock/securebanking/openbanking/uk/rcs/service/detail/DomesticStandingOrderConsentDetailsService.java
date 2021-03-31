@@ -16,21 +16,22 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.service.detail;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRStandingOrderData;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.tpp.Tpp;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
-import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticPaymentConsentDetails;
+import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticStandingOrderConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.PaymentConsentService;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.TppService;
-import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRDomesticPaymentConsent;
+import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRDomesticStandingOrderConsent;
 import com.forgerock.securebanking.openbanking.uk.rcs.exception.InvalidConsentException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiation;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationRemittanceInformation;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3DataInitiation;
 
 import java.util.List;
 import java.util.Optional;
 
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.FRAccountIdentifierConverter.toFRAccountIdentifier;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.FRAmountConverter.toFRAmount;
 import static com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType.*;
 import static com.forgerock.securebanking.openbanking.uk.rcs.util.AccountWithBalanceMatcher.getMatchingAccount;
@@ -38,27 +39,27 @@ import static java.util.Collections.emptyList;
 
 @Service
 @Slf4j
-public class DomesticPaymentConsentDetailsService implements ConsentDetailsService {
+public class DomesticStandingOrderConsentDetailsService implements ConsentDetailsService {
 
     private final PaymentConsentService paymentConsentService;
     private final TppService tppService;
 
-    public DomesticPaymentConsentDetailsService(PaymentConsentService paymentConsentService,
-                                                TppService tppService) {
+    public DomesticStandingOrderConsentDetailsService(PaymentConsentService paymentConsentService,
+                                                         TppService tppService) {
         this.paymentConsentService = paymentConsentService;
         this.tppService = tppService;
     }
 
     @Override
-    public DomesticPaymentConsentDetails getConsentDetails(ConsentDetailsRequest request) throws OBErrorException {
+    public DomesticStandingOrderConsentDetails getConsentDetails(ConsentDetailsRequest request) throws OBErrorException {
         String consentRequestJwt = request.getConsentRequestJwtString();
-        log.debug("Received a domestic payment consent request with JWT: '{}'", consentRequestJwt);
+        log.debug("Received a domestic standing order consent request with JWT: '{}'", consentRequestJwt);
         String consentId = request.getIntentId();
         log.debug("=> The payment's consent id: '{}'", consentId);
         String clientId = request.getClientId();
         log.debug("=> The client id: '{}'", clientId);
 
-        FRDomesticPaymentConsent domesticConsent = paymentConsentService.getConsent(consentId, FRDomesticPaymentConsent.class);
+        FRDomesticStandingOrderConsent domesticConsent = paymentConsentService.getConsent(consentId, FRDomesticStandingOrderConsent.class);
         if (domesticConsent == null) {
             log.error("The PISP '{}' is referencing a domestic payment consent {} that doesn't exist", clientId, consentId);
             throw new OBErrorException(PAYMENT_CONSENT_NOT_FOUND, clientId, consentId);
@@ -66,13 +67,13 @@ public class DomesticPaymentConsentDetailsService implements ConsentDetailsServi
         List<FRAccountWithBalance> accounts = request.getAccounts();
 
         // Only show the debtor account if specified in consent
-        OBWriteDomestic2DataInitiation initiation = domesticConsent.getData().getInitiation();
+        OBWriteDomesticStandingOrder3DataInitiation initiation = domesticConsent.getData().getInitiation();
         if (initiation.getDebtorAccount() != null) {
             String identification = initiation.getDebtorAccount().getIdentification();
             Optional<FRAccountWithBalance> matchingUserAccount = getMatchingAccount(identification, accounts);
             if (matchingUserAccount.isEmpty()) {
                 log.error("The PISP '{}' created the payment request '{}' but the debtor account: {} on the payment " +
-                        "consent is not one of the user's accounts: {}.", domesticConsent.getOauth2ClientId(), consentId,
+                                "consent is not one of the user's accounts: {}.", domesticConsent.getOauth2ClientId(), consentId,
                         initiation.getDebtorAccount(), accounts);
                 throw new InvalidConsentException(consentRequestJwt, RCS_CONSENT_REQUEST_DEBTOR_ACCOUNT_NOT_FOUND,
                         clientId, consentId, accounts);
@@ -96,17 +97,27 @@ public class DomesticPaymentConsentDetailsService implements ConsentDetailsServi
         domesticConsent.setResourceOwnerUsername(request.getUsername());
         paymentConsentService.updateConsent(domesticConsent);
 
-        return DomesticPaymentConsentDetails.builder()
-                .instructedAmount(toFRAmount(initiation.getInstructedAmount()))
+        FRStandingOrderData standingOrderData = FRStandingOrderData.builder()
+                .accountId(domesticConsent.getAccountId())
+                .standingOrderId(domesticConsent.getId())
+                .finalPaymentAmount(toFRAmount(initiation.getFinalPaymentAmount()))
+                .finalPaymentDateTime(initiation.getFinalPaymentDateTime())
+                .firstPaymentAmount(toFRAmount(initiation.getFirstPaymentAmount()))
+                .firstPaymentDateTime(initiation.getFirstPaymentDateTime())
+                .nextPaymentDateTime(initiation.getRecurringPaymentDateTime())
+                .nextPaymentAmount(toFRAmount(initiation.getRecurringPaymentAmount()))
+                .frequency(initiation.getFrequency())
+                .creditorAccount(toFRAccountIdentifier(initiation.getCreditorAccount()))
+                .reference(initiation.getReference())
+                .build();
+        return DomesticStandingOrderConsentDetails.builder()
+                .standingOrder(standingOrderData)
                 .accounts(accounts)
                 .username(request.getUsername())
                 .logo(tpp.getLogoUri())
                 .merchantName(domesticConsent.getOauth2ClientName())
                 .clientId(clientId)
-                .paymentReference(Optional.ofNullable(
-                        initiation.getRemittanceInformation())
-                        .map(OBWriteDomestic2DataInitiationRemittanceInformation::getReference)
-                        .orElse(""))
+                .paymentReference(Optional.ofNullable(initiation.getReference()).orElse(""))
                 .build();
     }
 }

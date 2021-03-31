@@ -19,71 +19,68 @@ import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.acc
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRAccountIdentifier;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.tpp.Tpp;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
-import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticPaymentConsentDetails;
+import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticStandingOrderConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.PaymentConsentService;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.TppService;
-import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRDomesticPaymentConsent;
+import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRDomesticStandingOrderConsent;
 import com.forgerock.securebanking.openbanking.uk.rcs.exception.InvalidConsentException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiation;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3DataInitiation;
 
 import java.util.List;
 import java.util.Optional;
 
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.FRAmountConverter.toFRAmount;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.FRAccountIdentifierTestDataFactory.aValidFRAccountIdentifier2;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.account.FRAccountWithBalanceTestDataFactory.aValidFRAccountWithBalance;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.account.FRFinancialAccountTestDataFactory.aValidFRFinancialAccountBuilder;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.tpp.TppTestDataFactory.aValidTppBuilder;
 import static com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType.*;
-import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.ConsentDetailsRequestTestDataFactory.aValidDomesticPaymentConsentDetailsRequest;
-import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.ConsentDetailsRequestTestDataFactory.aValidDomesticPaymentConsentDetailsRequestBuilder;
-import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.idm.dto.consent.FRDomesticPaymentConsentDataTestDataFactory.aValidDomesticPaymentConsentDataBuilder;
-import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.idm.dto.consent.FRDomesticPaymentConsentTestDataFactory.aValidFRDomesticPaymentConsentBuilder;
+import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.ConsentDetailsRequestTestDataFactory.aValidDomesticStandingOrderConsentDetailsRequestBuilder;
+import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.idm.dto.consent.FRDomesticStandingOrderConsentDataTestDataFactory.aValidDomesticStandingOrderConsentDataBuilder;
+import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.idm.dto.consent.FRDomesticStandingOrderConsentTestDataFactory.aValidFRDomesticStandingOrderConsentBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomestic2DataInitiation;
+import static uk.org.openbanking.testsupport.payment.OBWriteDomesticStandingOrderConsentTestDataFactory.aValidOBWriteDomesticStandingOrder3DataInitiation;
 
 /**
- * Unit test for {@link DomesticPaymentConsentDetailsService}.
+ * Unit test for {@link DomesticStandingOrderConsentDetailsService}.
  */
 @ExtendWith(MockitoExtension.class)
-public class DomesticPaymentConsentDetailsServiceTest {
+public class DomesticStandingOrderConsentDetailsServiceTest {
     @Mock
     private PaymentConsentService paymentConsentService;
     @Mock
     private TppService tppService;
     @InjectMocks
-    private DomesticPaymentConsentDetailsService consentDetailsService;
+    private DomesticStandingOrderConsentDetailsService consentDetailsService;
 
     @Test
     public void shouldGetConsentDetails() throws OBErrorException {
         // Given
-        OBWriteDomestic2DataInitiation initiation = aValidOBWriteDomestic2DataInitiation();
+        OBWriteDomesticStandingOrder3DataInitiation initiation = aValidOBWriteDomesticStandingOrder3DataInitiation();
         ConsentDetailsRequest request = aValidConsentDetailsRequest(initiation);
-        FRDomesticPaymentConsent consent = aValidFRDomesticPaymentConsentBuilder(request.getIntentId())
+        FRDomesticStandingOrderConsent consent = aValidFRDomesticStandingOrderConsentBuilder(request.getIntentId())
                 .oauth2ClientId(request.getClientId())
-                .data(aValidDomesticPaymentConsentDataBuilder(request.getIntentId()).initiation(initiation).build())
+                .data(aValidDomesticStandingOrderConsentDataBuilder(request.getIntentId()).initiation(initiation).build())
                 .build();
         Tpp tpp = aValidTppBuilder()
                 .clientId(request.getClientId())
                 .build();
-        given(paymentConsentService.getConsent(request.getIntentId(), FRDomesticPaymentConsent.class)).willReturn(consent);
+        given(paymentConsentService.getConsent(request.getIntentId(), FRDomesticStandingOrderConsent.class)).willReturn(consent);
         given(tppService.getTpp(consent.getOauth2ClientId())).willReturn(Optional.of(tpp));
 
         // When
-        DomesticPaymentConsentDetails consentDetails = consentDetailsService.getConsentDetails(request);
+        DomesticStandingOrderConsentDetails consentDetails = consentDetailsService.getConsentDetails(request);
 
         // Then
         assertThat(consentDetails).isNotNull();
         assertThat(consent.getResourceOwnerUsername()).isEqualTo(request.getUsername());
-        assertThat(consentDetails.getInstructedAmount()).isEqualTo(toFRAmount(initiation.getInstructedAmount()));
         assertThat(consentDetails.getAccounts()).isEqualTo(request.getAccounts());
         assertThat(consentDetails.getUsername()).isEqualTo(request.getUsername());
         assertThat(consentDetails.getMerchantName()).isEqualTo(consent.getOauth2ClientName());
@@ -94,8 +91,8 @@ public class DomesticPaymentConsentDetailsServiceTest {
     @Test
     public void shouldFailToGetConsentDetailsGivenPaymentConsentNotFound() {
         // Given
-        ConsentDetailsRequest request = aValidDomesticPaymentConsentDetailsRequest();
-        given(paymentConsentService.getConsent(request.getIntentId(), FRDomesticPaymentConsent.class)).willReturn(null);
+        ConsentDetailsRequest request = aValidDomesticStandingOrderConsentDetailsRequestBuilder().build();
+        given(paymentConsentService.getConsent(request.getIntentId(), FRDomesticStandingOrderConsent.class)).willReturn(null);
 
         // When
         OBErrorException e = catchThrowableOfType(() -> consentDetailsService.getConsentDetails(request), OBErrorException.class);
@@ -111,12 +108,12 @@ public class DomesticPaymentConsentDetailsServiceTest {
         accountWithBalance.setAccount(aValidFRFinancialAccountBuilder()
                 .accounts(List.of(aValidFRAccountIdentifier2()))
                 .build());
-        ConsentDetailsRequest request = aValidDomesticPaymentConsentDetailsRequestBuilder()
+        ConsentDetailsRequest request = aValidDomesticStandingOrderConsentDetailsRequestBuilder()
                 .accounts(List.of(accountWithBalance))
                 .build();
-        FRDomesticPaymentConsent consent = aValidFRDomesticPaymentConsentBuilder()
+        FRDomesticStandingOrderConsent consent = aValidFRDomesticStandingOrderConsentBuilder()
                 .build();
-        given(paymentConsentService.getConsent(request.getIntentId(), FRDomesticPaymentConsent.class)).willReturn(consent);
+        given(paymentConsentService.getConsent(request.getIntentId(), FRDomesticStandingOrderConsent.class)).willReturn(consent);
 
         // When
         InvalidConsentException e = catchThrowableOfType(() -> consentDetailsService.getConsentDetails(request), InvalidConsentException.class);
@@ -128,13 +125,13 @@ public class DomesticPaymentConsentDetailsServiceTest {
     @Test
     public void shouldFailToGetConsentDetailsGivenTppNotFound() {
         // Given
-        OBWriteDomestic2DataInitiation initiation = aValidOBWriteDomestic2DataInitiation();
+        OBWriteDomesticStandingOrder3DataInitiation initiation = aValidOBWriteDomesticStandingOrder3DataInitiation();
         ConsentDetailsRequest request = aValidConsentDetailsRequest(initiation);
-        FRDomesticPaymentConsent consent = aValidFRDomesticPaymentConsentBuilder(request.getIntentId())
+        FRDomesticStandingOrderConsent consent = aValidFRDomesticStandingOrderConsentBuilder(request.getIntentId())
                 .oauth2ClientId(request.getClientId())
-                .data(aValidDomesticPaymentConsentDataBuilder(request.getIntentId()).initiation(initiation).build())
+                .data(aValidDomesticStandingOrderConsentDataBuilder(request.getIntentId()).initiation(initiation).build())
                 .build();
-        given(paymentConsentService.getConsent(request.getIntentId(), FRDomesticPaymentConsent.class)).willReturn(consent);
+        given(paymentConsentService.getConsent(request.getIntentId(), FRDomesticStandingOrderConsent.class)).willReturn(consent);
         given(tppService.getTpp(consent.getOauth2ClientId())).willReturn(Optional.empty());
 
         // When
@@ -147,14 +144,14 @@ public class DomesticPaymentConsentDetailsServiceTest {
     @Test
     public void shouldFailToGetConsentDetailsGivenTppDidNotCreateConsent() {
         // Given
-        OBWriteDomestic2DataInitiation initiation = aValidOBWriteDomestic2DataInitiation();
+        OBWriteDomesticStandingOrder3DataInitiation initiation = aValidOBWriteDomesticStandingOrder3DataInitiation();
         ConsentDetailsRequest request = aValidConsentDetailsRequest(initiation);
-        FRDomesticPaymentConsent consent = aValidFRDomesticPaymentConsentBuilder(request.getIntentId())
+        FRDomesticStandingOrderConsent consent = aValidFRDomesticStandingOrderConsentBuilder(request.getIntentId())
                 .oauth2ClientId(request.getClientId())
-                .data(aValidDomesticPaymentConsentDataBuilder(request.getIntentId()).initiation(initiation).build())
+                .data(aValidDomesticStandingOrderConsentDataBuilder(request.getIntentId()).initiation(initiation).build())
                 .build();
         Tpp tpp = aValidTppBuilder().build(); // different client ID to consent
-        given(paymentConsentService.getConsent(request.getIntentId(), FRDomesticPaymentConsent.class)).willReturn(consent);
+        given(paymentConsentService.getConsent(request.getIntentId(), FRDomesticStandingOrderConsent.class)).willReturn(consent);
         given(tppService.getTpp(consent.getOauth2ClientId())).willReturn(Optional.of(tpp));
 
         // When
@@ -164,11 +161,11 @@ public class DomesticPaymentConsentDetailsServiceTest {
         assertThat(e.getObriErrorType()).isEqualTo(RCS_CONSENT_REQUEST_INVALID_PAYMENT_REQUEST);
     }
 
-    private ConsentDetailsRequest aValidConsentDetailsRequest(OBWriteDomestic2DataInitiation initiation) {
+    private ConsentDetailsRequest aValidConsentDetailsRequest(OBWriteDomesticStandingOrder3DataInitiation initiation) {
         FRAccountWithBalance accountWithBalance = aValidFRAccountWithBalance();
         FRAccountIdentifier accountIdentifier = accountWithBalance.getAccount().getAccounts().get(0);
         accountIdentifier.setIdentification(initiation.getDebtorAccount().getIdentification());
-        return aValidDomesticPaymentConsentDetailsRequestBuilder()
+        return aValidDomesticStandingOrderConsentDetailsRequestBuilder()
                 .accounts(List.of(accountWithBalance))
                 .build();
     }

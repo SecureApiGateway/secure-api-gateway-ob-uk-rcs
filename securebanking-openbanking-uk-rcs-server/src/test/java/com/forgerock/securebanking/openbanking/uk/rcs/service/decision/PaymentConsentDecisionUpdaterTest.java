@@ -16,9 +16,9 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.service.decision;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccount;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRDomesticPaymentConsent;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.PaymentConsentService;
+import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRDomesticPaymentConsent;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.rs.AccountService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,14 +28,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRConsentStatusCode.AUTHORISED;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRConsentStatusCode.REJECTED;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.account.FRAccountTestDataFactory.aValidFRAccountBuilder;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.account.FRFinancialAccountTestDataFactory.aValidFRFinancialAccount;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.payment.FRDomesticPaymentConsentTestDataFactory.aValidFRDomesticPaymentConsent;
+import static com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRConsentStatusCode.AUTHORISED;
+import static com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRConsentStatusCode.REJECTED;
+import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.idm.dto.consent.FRDomesticPaymentConsentTestDataFactory.aValidFRDomesticPaymentConsent;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 /**
@@ -48,7 +48,7 @@ public class PaymentConsentDecisionUpdaterTest {
     private AccountService accountService;
 
     @Mock
-    private PaymentConsentService<FRDomesticPaymentConsent> paymentConsentService;
+    private PaymentConsentService paymentConsentService;
 
     @InjectMocks
     private PaymentConsentDecisionUpdater decisionUpdater;
@@ -70,7 +70,7 @@ public class PaymentConsentDecisionUpdaterTest {
         decisionUpdater.applyUpdate(userId, accountId, true, paymentConsentService::updateConsent, paymentConsent);
 
         // Then
-        assertThat(paymentConsent.getStatus()).isEqualTo(AUTHORISED);
+        assertThat(paymentConsent.getData().getStatus()).isEqualTo(AUTHORISED);
     }
 
     @Test
@@ -84,11 +84,11 @@ public class PaymentConsentDecisionUpdaterTest {
         decisionUpdater.applyUpdate(userId, accountId, false, paymentConsentService::updateConsent, paymentConsent);
 
         // Then
-        assertThat(paymentConsent.getStatus()).isEqualTo(REJECTED);
+        assertThat(paymentConsent.getData().getStatus()).isEqualTo(REJECTED);
     }
 
     @Test
-    public void shouldFailToApplyUpdateGivenMissingAccountId() throws OBErrorException {
+    public void shouldFailToApplyUpdateGivenMissingAccountId() {
         // Given
         String userId = randomUUID().toString();
         String accountId = "";

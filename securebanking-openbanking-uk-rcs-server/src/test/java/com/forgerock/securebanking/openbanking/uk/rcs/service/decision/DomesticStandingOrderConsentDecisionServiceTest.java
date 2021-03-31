@@ -18,7 +18,7 @@ package com.forgerock.securebanking.openbanking.uk.rcs.service.decision;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.PaymentConsentService;
-import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRDomesticPaymentConsent;
+import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRDomesticStandingOrderConsent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +26,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType.PAYMENT_CONSENT_NOT_FOUND;
-import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.idm.dto.consent.FRDomesticPaymentConsentTestDataFactory.aValidFRDomesticPaymentConsent;
+import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.idm.dto.consent.FRDomesticStandingOrderConsentTestDataFactory.aValidFRDomesticStandingOrderConsent;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.mockito.ArgumentMatchers.*;
@@ -34,27 +34,27 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 /**
- * Unit test for {@link DomesticPaymentConsentDecisionService}.
+ * Unit test for {@link DomesticStandingOrderConsentDecisionService}.
  */
 @ExtendWith(MockitoExtension.class)
-public class DomesticPaymentConsentDecisionServiceTest {
+public class DomesticStandingOrderConsentDecisionServiceTest {
     @Mock
     private PaymentConsentService paymentConsentService;
     @Mock
     private PaymentConsentDecisionUpdater consentDecisionUpdater;
-    private DomesticPaymentConsentDecisionService consentDecisionService;
+    private DomesticStandingOrderConsentDecisionService consentDecisionService;
 
     @BeforeEach
     public void setup() {
-        consentDecisionService = new DomesticPaymentConsentDecisionService(paymentConsentService, new ObjectMapper(), consentDecisionUpdater);
+        consentDecisionService = new DomesticStandingOrderConsentDecisionService(paymentConsentService, new ObjectMapper(), consentDecisionUpdater);
     }
 
     @Test
     public void shouldApproveConsent() throws OBErrorException {
         // Given
         String intentId = "PDC_1234";
-        FRDomesticPaymentConsent paymentConsent = aValidFRDomesticPaymentConsent();
-        given(paymentConsentService.getConsent(intentId, FRDomesticPaymentConsent.class)).willReturn(paymentConsent);
+        FRDomesticStandingOrderConsent paymentConsent = aValidFRDomesticStandingOrderConsent();
+        given(paymentConsentService.getConsent(intentId, FRDomesticStandingOrderConsent.class)).willReturn(paymentConsent);
 
         // When
         consentDecisionService.processConsentDecision(intentId, consentDecisionSerialized("123456"), true);
@@ -67,8 +67,8 @@ public class DomesticPaymentConsentDecisionServiceTest {
     public void shouldFailToApproveConsentGivenConsentNotFound() {
         // Given
         String intentId = "PDC_1234";
-        FRDomesticPaymentConsent paymentConsent = aValidFRDomesticPaymentConsent();
-        given(paymentConsentService.getConsent(intentId, FRDomesticPaymentConsent.class)).willReturn(null);
+        FRDomesticStandingOrderConsent paymentConsent = aValidFRDomesticStandingOrderConsent();
+        given(paymentConsentService.getConsent(intentId, FRDomesticStandingOrderConsent.class)).willReturn(null);
 
         // When
         OBErrorException e = catchThrowableOfType(() ->

@@ -31,11 +31,11 @@ import com.forgerock.securebanking.openbanking.uk.common.api.meta.IntentType;
 @JsonSubTypes({
         // Required to deserialise the RCS ConsentDetails response into the correct types in RS-API
         @Type(value = DomesticPaymentConsentDetails.class, name = "DomesticPaymentConsentDetails"),
-        @Type(value = DomesticSchedulePaymentConsentDetails.class, name = "DomesticSchedulePaymentConsentDetails"),
-        @Type(value = DomesticStandingOrderPaymentConsentDetails.class, name = "DomesticStandingOrderPaymentConsentDetails"),
+        @Type(value = DomesticScheduledPaymentConsentDetails.class, name = "DomesticScheduledPaymentConsentDetails"),
+        @Type(value = DomesticStandingOrderConsentDetails.class, name = "DomesticStandingOrderConsentDetails"),
         @Type(value = InternationalPaymentConsentDetails.class, name = "InternationalPaymentConsentDetails"),
-        @Type(value = InternationalSchedulePaymentConsentDetails.class, name = "InternationalSchedulePaymentConsentDetails"),
-        @Type(value = InternationalStandingOrderPaymentConsentDetails.class, name = "InternationalStandingOrderPaymentConsentDetails"),
+        @Type(value = InternationalScheduledPaymentConsentDetails.class, name = "InternationalScheduledPaymentConsentDetails"),
+        @Type(value = InternationalStandingOrderConsentDetails.class, name = "InternationalStandingOrderConsentDetails"),
         @Type(value = FilePaymentConsentDetails.class, name = "FilePaymentConsentDetails")
 })
 public abstract class ConsentDetails {
