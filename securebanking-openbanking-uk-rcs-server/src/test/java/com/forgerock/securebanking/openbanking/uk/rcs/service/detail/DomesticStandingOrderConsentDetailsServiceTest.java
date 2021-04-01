@@ -76,7 +76,7 @@ public class DomesticStandingOrderConsentDetailsServiceTest {
         given(tppService.getTpp(consent.getOauth2ClientId())).willReturn(Optional.of(tpp));
 
         // When
-        DomesticStandingOrderConsentDetails consentDetails = consentDetailsService.getConsentDetails(request);
+        DomesticStandingOrderConsentDetails consentDetails = (DomesticStandingOrderConsentDetails) consentDetailsService.getConsentDetails(request);
 
         // Then
         assertThat(consentDetails).isNotNull();

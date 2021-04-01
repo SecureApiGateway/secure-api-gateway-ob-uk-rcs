@@ -21,11 +21,16 @@ import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRD
 import org.springframework.stereotype.Service;
 
 @Service
-public class DomesticScheduledPaymentConsentDecisionService extends PaymentConsentDecisionService<FRDomesticScheduledPaymentConsent> {
+public class DomesticScheduledPaymentConsentDecisionService extends PaymentConsentDecisionService {
 
     public DomesticScheduledPaymentConsentDecisionService(PaymentConsentService paymentConsentService,
                                                           ObjectMapper objectMapper,
                                                           PaymentConsentDecisionUpdater paymentConsentDecisionUpdater) {
-        super(paymentConsentService, objectMapper, paymentConsentDecisionUpdater, FRDomesticScheduledPaymentConsent.class);
+        super(paymentConsentService, objectMapper, paymentConsentDecisionUpdater);
+    }
+
+    @Override
+    protected Class<FRDomesticScheduledPaymentConsent> getConsentClass() {
+        return FRDomesticScheduledPaymentConsent.class;
     }
 }

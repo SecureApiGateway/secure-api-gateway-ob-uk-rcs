@@ -77,7 +77,7 @@ public class DomesticScheduledPaymentConsentDetailsServiceTest {
         given(tppService.getTpp(consent.getOauth2ClientId())).willReturn(Optional.of(tpp));
 
         // When
-        DomesticScheduledPaymentConsentDetails consentDetails = consentDetailsService.getConsentDetails(request);
+        DomesticScheduledPaymentConsentDetails consentDetails = (DomesticScheduledPaymentConsentDetails) consentDetailsService.getConsentDetails(request);
 
         // Then
         assertThat(consentDetails).isNotNull();
