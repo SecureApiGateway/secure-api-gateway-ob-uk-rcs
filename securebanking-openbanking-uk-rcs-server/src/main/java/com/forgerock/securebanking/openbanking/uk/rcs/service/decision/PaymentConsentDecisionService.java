@@ -27,29 +27,24 @@ import static com.forgerock.securebanking.openbanking.uk.rcs.util.ConsentDecisio
 
 /**
  * Abstract class providing a common way to retrieve and update consents for the various payment types.
- *
- * @param <T> The type of {@link FRPaymentConsent} in question.
  */
 @Slf4j
-public abstract class PaymentConsentDecisionService<T extends FRPaymentConsent> implements ConsentDecisionService {
+public abstract class PaymentConsentDecisionService implements ConsentDecisionService {
 
     private final PaymentConsentService paymentConsentService;
     private final ObjectMapper objectMapper;
     private final PaymentConsentDecisionUpdater paymentConsentDecisionUpdater;
-    private final Class<T> consentClass;
 
     public PaymentConsentDecisionService(PaymentConsentService paymentConsentService,
                                          ObjectMapper objectMapper,
-                                         PaymentConsentDecisionUpdater paymentConsentDecisionUpdater,
-                                         Class<T> consentClass) {
+                                         PaymentConsentDecisionUpdater paymentConsentDecisionUpdater) {
         this.paymentConsentService = paymentConsentService;
         this.objectMapper = objectMapper;
         this.paymentConsentDecisionUpdater = paymentConsentDecisionUpdater;
-        this.consentClass = consentClass;
     }
 
     public void processConsentDecision(String intentId, String consentDecisionSerialised, boolean decision) throws OBErrorException {
-        T paymentConsent = getPaymentConsent(intentId);
+        FRPaymentConsent paymentConsent = getPaymentConsent(intentId);
         PaymentConsentDecision consentDecision = deserializeConsentDecision(consentDecisionSerialised,
                 objectMapper, PaymentConsentDecision.class);
         paymentConsentDecisionUpdater.applyUpdate(
@@ -68,12 +63,14 @@ public abstract class PaymentConsentDecisionService<T extends FRPaymentConsent> 
         return getPaymentConsent(intentId).getResourceOwnerUsername();
     }
 
-    private T getPaymentConsent(String intentId) throws OBErrorException {
-        T paymentConsent = paymentConsentService.getConsent(intentId, consentClass);
+    private FRPaymentConsent getPaymentConsent(String intentId) throws OBErrorException {
+        FRPaymentConsent paymentConsent = paymentConsentService.getConsent(intentId, getConsentClass());
         if (paymentConsent == null) {
             log.error("The PISP is referencing a payment request {} that doesn't exist", intentId);
             throw new OBErrorException(PAYMENT_CONSENT_NOT_FOUND, intentId);
         }
         return paymentConsent;
     }
+
+    protected abstract Class<? extends FRPaymentConsent> getConsentClass();
 }
