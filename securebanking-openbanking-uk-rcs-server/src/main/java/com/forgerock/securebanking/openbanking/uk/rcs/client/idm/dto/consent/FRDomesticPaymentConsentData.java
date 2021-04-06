@@ -26,7 +26,9 @@ import uk.org.openbanking.datamodel.payment.*;
 import java.util.List;
 
 /**
- * Closely models {@link }
+ * A copy of {@link OBWriteDomesticConsentResponse5Data} (with the required {@link JsonProperty} annotations, which
+ * deserialize the OB formatted JSON from IDM), but using {@link FRConsentStatusCode} to allow the consent status
+ * to be updated in one place.
  */
 @Data
 @NoArgsConstructor
