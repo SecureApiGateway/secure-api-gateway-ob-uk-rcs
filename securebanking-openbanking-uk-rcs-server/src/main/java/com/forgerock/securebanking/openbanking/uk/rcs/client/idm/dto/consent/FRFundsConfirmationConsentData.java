@@ -21,20 +21,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.joda.time.DateTime;
-import uk.org.openbanking.datamodel.payment.*;
-
-import java.util.List;
+import uk.org.openbanking.datamodel.account.OBCashAccount3;
 
 /**
- * A copy of {@link OBWriteDomesticStandingOrderConsentResponse6Data} (with the required {@link JsonProperty}
- * annotations, which deserialize the OB formatted JSON from IDM), but using {@link FRConsentStatusCode} to allow the
- * consent status to be updated in one place.
+ * A copy of {@link uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentDataResponse1} (with the required
+ * {@link JsonProperty} annotations, which deserialize the OB formatted JSON from IDM), but using
+ * {@link FRConsentStatusCode} to allow the consent status to be updated in one place.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FRDomesticStandingOrderConsentData implements FRPaymentConsentData {
+public class FRFundsConfirmationConsentData implements FRPaymentConsentData {
     @JsonProperty("ConsentId")
     private String consentId;
     @JsonProperty("CreationDateTime")
@@ -43,20 +41,8 @@ public class FRDomesticStandingOrderConsentData implements FRPaymentConsentData 
     private FRConsentStatusCode status;
     @JsonProperty("StatusUpdateDateTime")
     private DateTime statusUpdateDateTime;
-    @JsonProperty("Permission")
-    private OBWriteDomesticStandingOrderConsentResponse6Data.PermissionEnum permission;
-    @JsonProperty("ReadRefundAccount")
-    private OBWriteDomesticStandingOrderConsentResponse6Data.ReadRefundAccountEnum readRefundAccount;
-    @JsonProperty("CutOffDateTime")
-    private DateTime cutOffDateTime;
-    @JsonProperty("Charges")
-    private List<OBWriteDomesticConsentResponse5DataCharges> charges;
-    @JsonProperty("Initiation")
-    private OBWriteDomesticStandingOrder3DataInitiation initiation;
-    @JsonProperty("Authorisation")
-    private OBWriteDomesticConsent4DataAuthorisation authorisation;
-    @JsonProperty("SCASupportData")
-    private OBWriteDomesticConsent4DataSCASupportData scASupportData;
-    @JsonProperty("Debtor")
-    private OBDebtorIdentification1 debtor;
+    @JsonProperty("ExpirationDateTime")
+    private DateTime expirationDateTime;
+    @JsonProperty("DebtorAccount")
+    private OBCashAccount3 debtorAccount;
 }

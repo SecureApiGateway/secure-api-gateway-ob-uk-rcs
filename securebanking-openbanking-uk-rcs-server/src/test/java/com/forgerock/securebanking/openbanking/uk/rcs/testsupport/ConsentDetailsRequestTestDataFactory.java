@@ -53,6 +53,18 @@ public class ConsentDetailsRequestTestDataFactory {
         return getConsentDetailsRequestBuilder("PDSOC_");
     }
 
+    public static ConsentDetailsRequest.ConsentDetailsRequestBuilder aValidInternationalPaymentConsentDetailsRequestBuilder() {
+        return getConsentDetailsRequestBuilder("PIC_");
+    }
+
+    public static ConsentDetailsRequest.ConsentDetailsRequestBuilder aValidInternationalScheduledPaymentConsentDetailsRequestBuilder() {
+        return getConsentDetailsRequestBuilder("PISC_");
+    }
+
+    public static ConsentDetailsRequest.ConsentDetailsRequestBuilder aValidInternationalStandingOrderConsentDetailsRequestBuilder() {
+        return getConsentDetailsRequestBuilder("PISOC_");
+    }
+
     private static ConsentDetailsRequest.ConsentDetailsRequestBuilder getConsentDetailsRequestBuilder(String intentType) {
         try {
             return ConsentDetailsRequest.builder()

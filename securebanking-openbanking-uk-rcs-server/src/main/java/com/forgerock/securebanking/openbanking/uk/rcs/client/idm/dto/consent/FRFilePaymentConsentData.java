@@ -26,15 +26,15 @@ import uk.org.openbanking.datamodel.payment.*;
 import java.util.List;
 
 /**
- * A copy of {@link OBWriteDomesticScheduledConsentResponse5Data} (with the required {@link JsonProperty} annotations,
- * which deserialize the OB formatted JSON from IDM), but using {@link FRConsentStatusCode} to allow the consent status
+ * A copy of {@link OBWriteFileConsentResponse4Data} (with the required {@link JsonProperty} annotations, which
+ * deserialize the OB formatted JSON from IDM), but using {@link FRConsentStatusCode} to allow the consent status
  * to be updated in one place.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FRDomesticScheduledPaymentConsentData implements FRPaymentConsentData {
+public class FRFilePaymentConsentData implements FRPaymentConsentData {
     @JsonProperty("ConsentId")
     private String consentId;
     @JsonProperty("CreationDateTime")
@@ -43,20 +43,12 @@ public class FRDomesticScheduledPaymentConsentData implements FRPaymentConsentDa
     private FRConsentStatusCode status;
     @JsonProperty("StatusUpdateDateTime")
     private DateTime statusUpdateDateTime;
-    @JsonProperty("Permission")
-    private OBWriteDomesticScheduledConsentResponse5Data.PermissionEnum permission;
-    @JsonProperty("ReadRefundAccount")
-    private OBWriteDomesticScheduledConsentResponse5Data.ReadRefundAccountEnum readRefundAccount;
     @JsonProperty("CutOffDateTime")
     private DateTime cutOffDateTime;
-    @JsonProperty("ExpectedExecutionDateTime")
-    private DateTime expectedExecutionDateTime;
-    @JsonProperty("ExpectedSettlementDateTime")
-    private DateTime expectedSettlementDateTime;
     @JsonProperty("Charges")
     private List<OBWriteDomesticConsentResponse5DataCharges> charges;
     @JsonProperty("Initiation")
-    private OBWriteDomesticScheduled2DataInitiation initiation;
+    private OBWriteFile2DataInitiation initiation;
     @JsonProperty("Authorisation")
     private OBWriteDomesticConsent4DataAuthorisation authorisation;
     @JsonProperty("SCASupportData")

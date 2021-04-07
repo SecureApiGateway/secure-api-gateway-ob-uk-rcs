@@ -16,42 +16,41 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.service.detail;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRAmount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.tpp.Tpp;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetails;
-import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticScheduledPaymentConsentDetails;
+import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.FilePaymentConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.PaymentConsentService;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.TppService;
-import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRDomesticScheduledPaymentConsent;
+import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRFilePaymentConsent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationRemittanceInformation;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduled2DataInitiation;
+import uk.org.openbanking.datamodel.payment.OBWriteFile2DataInitiation;
 
 import java.util.List;
 import java.util.Optional;
 
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.FRAmountConverter.toFRAmount;
-
 @Service
 @Slf4j
-public class DomesticScheduledPaymentConsentDetailsService extends PaymentConsentDetailsService<FRDomesticScheduledPaymentConsent> {
+public class FilePaymentConsentDetailsService extends PaymentConsentDetailsService<FRFilePaymentConsent> {
 
     private final PaymentConsentService paymentConsentService;
 
-    public DomesticScheduledPaymentConsentDetailsService(PaymentConsentService paymentConsentService, TppService tppService) {
+    public FilePaymentConsentDetailsService(PaymentConsentService paymentConsentService, TppService tppService) {
         super(paymentConsentService, tppService);
         this.paymentConsentService = paymentConsentService;
     }
 
     @Override
-    protected FRDomesticScheduledPaymentConsent getConsent(String consentId) {
-        log.debug("Retrieving domestic scheduled payment consent with ID {}", consentId);
-        return paymentConsentService.getConsent(consentId, FRDomesticScheduledPaymentConsent.class);
+    protected FRFilePaymentConsent getConsent(String consentId) {
+        log.debug("Retrieving file payment consent with ID {}", consentId);
+        return paymentConsentService.getConsent(consentId, FRFilePaymentConsent.class);
     }
 
     @Override
-    protected String getDebitAccountId(FRDomesticScheduledPaymentConsent paymentConsent) {
-        OBWriteDomesticScheduled2DataInitiation initiation = paymentConsent.getData().getInitiation();
+    protected String getDebitAccountId(FRFilePaymentConsent paymentConsent) {
+        OBWriteFile2DataInitiation initiation = paymentConsent.getData().getInitiation();
         if (initiation.getDebtorAccount() == null) {
             return null;
         }
@@ -59,17 +58,23 @@ public class DomesticScheduledPaymentConsentDetailsService extends PaymentConsen
     }
 
     @Override
-    protected ConsentDetails buildResponse(FRDomesticScheduledPaymentConsent paymentConsent,
+    protected ConsentDetails buildResponse(FRFilePaymentConsent paymentConsent,
                                            List<FRAccountWithBalance> accounts,
                                            Tpp tpp) {
-        OBWriteDomesticScheduled2DataInitiation initiation = paymentConsent.getData().getInitiation();
-        return DomesticScheduledPaymentConsentDetails.builder()
-                .instructedAmount(toFRAmount(initiation.getInstructedAmount()))
+        OBWriteFile2DataInitiation initiation = paymentConsent.getData().getInitiation();
+        return FilePaymentConsentDetails.builder()
                 .accounts(accounts)
                 .username(paymentConsent.getResourceOwnerUsername())
                 .clientId(tpp.getClientId())
-                .logo(tpp.getLogoUri())
                 .merchantName(paymentConsent.getOauth2ClientName())
+                .fileReference(initiation.getFileReference())
+                .numberOfTransactions(initiation.getNumberOfTransactions())
+                .totalAmount(FRAmount.builder()
+                        .amount(initiation.getControlSum().toPlainString())
+                        // TODO - will this always be GBP?
+                        .currency("GBP")
+                        .build())
+                .requestedExecutionDateTime(initiation.getRequestedExecutionDateTime())
                 .paymentReference(Optional.ofNullable(
                         initiation.getRemittanceInformation())
                         .map(OBWriteDomestic2DataInitiationRemittanceInformation::getReference)

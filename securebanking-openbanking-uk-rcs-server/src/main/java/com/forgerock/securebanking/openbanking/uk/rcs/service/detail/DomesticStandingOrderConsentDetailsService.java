@@ -45,7 +45,8 @@ public class DomesticStandingOrderConsentDetailsService extends PaymentConsentDe
     }
 
     @Override
-    protected FRDomesticStandingOrderConsent getPaymentConsent(String consentId) {
+    protected FRDomesticStandingOrderConsent getConsent(String consentId) {
+        log.debug("Retrieving domestic standing order consent with ID {}", consentId);
         return paymentConsentService.getConsent(consentId, FRDomesticStandingOrderConsent.class);
     }
 

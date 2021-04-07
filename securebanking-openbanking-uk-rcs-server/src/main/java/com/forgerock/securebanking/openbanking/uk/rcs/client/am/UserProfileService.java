@@ -51,6 +51,7 @@ public class UserProfileService {
         return getProfile(ssoToken).get(amConfiguration.getUserProfileId());
     }
 
+    @SuppressWarnings({"unchecked"})
     private Map<String, String> getProfile(String ssoToken) {
         log.info("Get user profile behind the sso token");
         HttpHeaders headers = new HttpHeaders();
@@ -61,6 +62,6 @@ public class UserProfileService {
         HttpEntity<Map<String, String>> request = new HttpEntity(headers);
         log.debug("Send user info request to the AS {}", amConfiguration.getUserProfileEndpoint());
         // TODO - deserialize this to an object, rather than just Map
-        return (Map)this.restTemplate.postForObject(amConfiguration.getUserProfileEndpoint(), request, Map.class, new Object[0]);
+        return (Map<String, String>)restTemplate.postForObject(amConfiguration.getUserProfileEndpoint(), request, Map.class, new Object[0]);
     }
 }

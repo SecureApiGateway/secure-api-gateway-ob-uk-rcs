@@ -57,9 +57,9 @@ public abstract class PaymentConsentDetailsService<CONSENT extends FRPaymentCons
         String clientId = request.getClientId();
         log.debug("=> The client id: '{}'", clientId);
 
-        CONSENT paymentConsent = getPaymentConsent(consentId);
+        CONSENT paymentConsent = getConsent(consentId);
         if (paymentConsent == null) {
-            log.error("The PISP '{}' is referencing a payment payment consent {} that doesn't exist", clientId, consentId);
+            log.error("The PISP '{}' is referencing a payment consent {} that doesn't exist", clientId, consentId);
             throw new OBErrorException(PAYMENT_CONSENT_NOT_FOUND, clientId, consentId);
         }
         List<FRAccountWithBalance> accounts = request.getAccounts();
@@ -78,21 +78,8 @@ public abstract class PaymentConsentDetailsService<CONSENT extends FRPaymentCons
             accounts = List.of(matchingUserAccount.get());
         }
 
-        Optional<Tpp> isTpp = tppService.getTpp(paymentConsent.getOauth2ClientId());
-        if (isTpp.isEmpty()) {
-            log.error("The TPP '{}' (Client ID {}) that created this consent id '{}' doesn't exist anymore.",
-                    paymentConsent.getOauth2ClientId(), clientId, consentId);
-            throw new InvalidConsentException(consentRequestJwt, RCS_CONSENT_REQUEST_NOT_FOUND_TPP, clientId, consentId,
-                    emptyList());
-        }
-        Tpp tpp = isTpp.get();
-
-        // Verify the pisp is the same than the one that created this payment
-        verifyTppCreatedPaymentConsent(clientId, tpp.getClientId(), consentId);
-
-        // Associate the payment to this user
-        paymentConsent.setResourceOwnerUsername(request.getUsername());
-        paymentConsentService.updateConsent(paymentConsent);
+        Tpp tpp = getAndVerifyTpp(consentRequestJwt, clientId, paymentConsent);
+        associatePaymentToUser(paymentConsent, request.getUsername());
 
         return buildResponse(paymentConsent, accounts, tpp);
     }
@@ -103,7 +90,7 @@ public abstract class PaymentConsentDetailsService<CONSENT extends FRPaymentCons
      * @param consentId The ID of the {@link FRPaymentConsent} in question.
      * @return The corresponding {@link FRPaymentConsent} (should never be null).
      */
-    protected abstract CONSENT getPaymentConsent(String consentId);
+    protected abstract CONSENT getConsent(String consentId);
 
     /**
      * Overriding classes know which underlying OB "DataInitiation" object they're dealing with, so know how to
@@ -125,4 +112,22 @@ public abstract class PaymentConsentDetailsService<CONSENT extends FRPaymentCons
     protected abstract ConsentDetails buildResponse(CONSENT paymentConsent,
                                                     List<FRAccountWithBalance> accounts,
                                                     Tpp tpp);
+
+    private Tpp getAndVerifyTpp(String consentRequestJwt, String clientId, CONSENT paymentConsent) throws OBErrorException {
+        Optional<Tpp> isTpp = tppService.getTpp(clientId);
+        if (isTpp.isEmpty()) {
+            log.error("The TPP with Client ID '{}' that created this consent '{}' doesn't exist anymore.", clientId, paymentConsent.getId());
+            throw new InvalidConsentException(consentRequestJwt, RCS_CONSENT_REQUEST_NOT_FOUND_TPP, clientId, paymentConsent.getId(), emptyList());
+        }
+        Tpp tpp = isTpp.get();
+
+        // Verify the TPP is the same than the one that created this payment
+        verifyTppCreatedPaymentConsent(clientId, tpp.getClientId(), paymentConsent.getId());
+        return tpp;
+    }
+
+    private void associatePaymentToUser(CONSENT consent, String username) {
+        consent.setResourceOwnerUsername(username);
+        paymentConsentService.updateConsent(consent);
+    }
 }
