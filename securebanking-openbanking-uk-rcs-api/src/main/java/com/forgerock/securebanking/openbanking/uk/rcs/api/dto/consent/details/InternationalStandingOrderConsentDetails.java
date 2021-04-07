@@ -16,13 +16,13 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRStandingOrderData;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.IntentType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.joda.time.DateTime;
-import uk.org.openbanking.datamodel.account.OBStandingOrder5;
 
 import java.util.List;
 
@@ -35,7 +35,7 @@ import java.util.List;
 @NoArgsConstructor
 public class InternationalStandingOrderConsentDetails extends ConsentDetails {
 
-    private OBStandingOrder5 standingOrder;
+    private FRStandingOrderData standingOrder;
 
     private String decisionApiUri;
 

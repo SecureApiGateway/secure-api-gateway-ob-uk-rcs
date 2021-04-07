@@ -45,7 +45,8 @@ public class DomesticPaymentConsentDetailsService extends PaymentConsentDetailsS
     }
 
     @Override
-    protected FRDomesticPaymentConsent getPaymentConsent(String consentId) {
+    protected FRDomesticPaymentConsent getConsent(String consentId) {
+        log.debug("Retrieving domestic payment consent with ID {}", consentId);
         return paymentConsentService.getConsent(consentId, FRDomesticPaymentConsent.class);
     }
 

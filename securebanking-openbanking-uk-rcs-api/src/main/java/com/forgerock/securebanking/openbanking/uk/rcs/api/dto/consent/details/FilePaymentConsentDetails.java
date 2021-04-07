@@ -15,15 +15,14 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRAmount;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.IntentType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.joda.time.DateTime;
-import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
 
 import java.util.List;
 
@@ -46,7 +45,7 @@ public class FilePaymentConsentDetails extends ConsentDetails {
     private DateTime expiredDate;
 
     private String fileReference;
-    private OBActiveOrHistoricCurrencyAndAmount totalAmount;
+    private FRAmount totalAmount;
     private String numberOfTransactions;
 
     private String paymentReference;

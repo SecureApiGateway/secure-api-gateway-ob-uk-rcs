@@ -19,13 +19,13 @@ import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.acc
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRStandingOrderData;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.tpp.Tpp;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetails;
-import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticStandingOrderConsentDetails;
+import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.InternationalStandingOrderConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.PaymentConsentService;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.TppService;
-import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRDomesticStandingOrderConsent;
+import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRInternationalStandingOrderConsent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3DataInitiation;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder4DataInitiation;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,24 +35,25 @@ import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamo
 
 @Service
 @Slf4j
-public class DomesticStandingOrderConsentDetailsService extends PaymentConsentDetailsService<FRDomesticStandingOrderConsent> {
+public class InternationalStandingOrderConsentDetailsService extends PaymentConsentDetailsService<FRInternationalStandingOrderConsent> {
 
     private final PaymentConsentService paymentConsentService;
 
-    public DomesticStandingOrderConsentDetailsService(PaymentConsentService paymentConsentService, TppService tppService) {
+    public InternationalStandingOrderConsentDetailsService(PaymentConsentService paymentConsentService,
+                                                              TppService tppService) {
         super(paymentConsentService, tppService);
         this.paymentConsentService = paymentConsentService;
     }
 
     @Override
-    protected FRDomesticStandingOrderConsent getConsent(String consentId) {
-        log.debug("Retrieving domestic standing order consent with ID {}", consentId);
-        return paymentConsentService.getConsent(consentId, FRDomesticStandingOrderConsent.class);
+    protected FRInternationalStandingOrderConsent getConsent(String consentId) {
+        log.debug("Retrieving international standing order consent with ID {}", consentId);
+        return paymentConsentService.getConsent(consentId, FRInternationalStandingOrderConsent.class);
     }
 
     @Override
-    protected String getDebitAccountId(FRDomesticStandingOrderConsent paymentConsent) {
-        OBWriteDomesticStandingOrder3DataInitiation initiation = paymentConsent.getData().getInitiation();
+    protected String getDebitAccountId(FRInternationalStandingOrderConsent paymentConsent) {
+        OBWriteInternationalStandingOrder4DataInitiation initiation = paymentConsent.getData().getInitiation();
         if (initiation.getDebtorAccount() == null) {
             return null;
         }
@@ -60,31 +61,35 @@ public class DomesticStandingOrderConsentDetailsService extends PaymentConsentDe
     }
 
     @Override
-    protected ConsentDetails buildResponse(FRDomesticStandingOrderConsent paymentConsent,
+    protected ConsentDetails buildResponse(FRInternationalStandingOrderConsent paymentConsent,
                                            List<FRAccountWithBalance> accounts,
                                            Tpp tpp) {
-        OBWriteDomesticStandingOrder3DataInitiation initiation = paymentConsent.getData().getInitiation();
-        FRStandingOrderData standingOrderData = FRStandingOrderData.builder()
+        OBWriteInternationalStandingOrder4DataInitiation initiation = paymentConsent.getData().getInitiation();
+        FRStandingOrderData standingOrder = FRStandingOrderData.builder()
                 .accountId(paymentConsent.getAccountId())
                 .standingOrderId(paymentConsent.getId())
-                .finalPaymentAmount(toFRAmount(initiation.getFinalPaymentAmount()))
+                .finalPaymentAmount(toFRAmount(initiation.getInstructedAmount()))
                 .finalPaymentDateTime(initiation.getFinalPaymentDateTime())
-                .firstPaymentAmount(toFRAmount(initiation.getFirstPaymentAmount()))
+                .firstPaymentAmount(toFRAmount(initiation.getInstructedAmount()))
                 .firstPaymentDateTime(initiation.getFirstPaymentDateTime())
-                .nextPaymentDateTime(initiation.getRecurringPaymentDateTime())
-                .nextPaymentAmount(toFRAmount(initiation.getRecurringPaymentAmount()))
+                .nextPaymentDateTime(initiation.getFirstPaymentDateTime())
+                .nextPaymentAmount(toFRAmount(initiation.getInstructedAmount()))
                 .frequency(initiation.getFrequency())
                 .creditorAccount(toFRAccountIdentifier(initiation.getCreditorAccount()))
                 .reference(initiation.getReference())
                 .build();
-        return DomesticStandingOrderConsentDetails.builder()
-                .standingOrder(standingOrderData)
+
+        return InternationalStandingOrderConsentDetails.builder()
+                .standingOrder(standingOrder)
                 .accounts(accounts)
                 .username(paymentConsent.getResourceOwnerUsername())
                 .clientId(tpp.getClientId())
                 .logo(tpp.getLogoUri())
                 .merchantName(paymentConsent.getOauth2ClientName())
-                .paymentReference(Optional.ofNullable(initiation.getReference()).orElse(""))
+                .currencyOfTransfer(initiation.getCurrencyOfTransfer())
+                .paymentReference(Optional.ofNullable(
+                        initiation.getReference())
+                        .orElse(""))
                 .build();
     }
 }

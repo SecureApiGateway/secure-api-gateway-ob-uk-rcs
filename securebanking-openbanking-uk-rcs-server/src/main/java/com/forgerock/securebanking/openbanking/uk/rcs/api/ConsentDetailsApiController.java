@@ -55,11 +55,8 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
     }
 
     @Override
-    public ResponseEntity<ConsentDetails> getConsentDetails(String consentRequestJwt)//, String ssoToken)
+    public ResponseEntity<ConsentDetails> getConsentDetails(String consentRequestJwt, String ssoToken)
             throws OBErrorException {
-
-        // TODO - temporary measure to get UI working without going via AM
-        String ssoToken = "aSsoToken";
 
         try {
             log.debug("Parsing consent request JWS...");

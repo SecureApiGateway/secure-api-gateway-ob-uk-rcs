@@ -15,16 +15,15 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRAmount;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRExchangeRateInformation;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.IntentType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.joda.time.DateTime;
-import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
-import uk.org.openbanking.datamodel.payment.OBExchangeRate2;
 
 import java.util.List;
 
@@ -37,8 +36,8 @@ import java.util.List;
 @NoArgsConstructor
 public class InternationalPaymentConsentDetails extends ConsentDetails {
 
-    private OBActiveOrHistoricCurrencyAndAmount instructedAmount;
-    private OBExchangeRate2 rate;
+    private FRAmount instructedAmount;
+    private FRExchangeRateInformation rate;
 
     private String decisionApiUri;
 

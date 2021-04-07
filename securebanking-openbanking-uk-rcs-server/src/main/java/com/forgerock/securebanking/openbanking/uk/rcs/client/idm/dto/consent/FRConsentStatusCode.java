@@ -22,7 +22,8 @@ public enum FRConsentStatusCode {
     AWAITINGAUTHORISATION("AwaitingAuthorisation"),
     REJECTED("Rejected"),
     AUTHORISED("Authorised"),
-    CONSUMED("Consumed");
+    CONSUMED("Consumed"),
+    AWAITINGUPLOAD("AwaitingUpload"); // file payments
 
     private final String value;
 
