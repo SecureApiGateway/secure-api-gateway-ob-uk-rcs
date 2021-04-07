@@ -16,14 +16,14 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRScheduledPaymentData;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRExchangeRateInformation;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.IntentType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.joda.time.DateTime;
-import uk.org.openbanking.datamodel.account.OBScheduledPayment1;
-import uk.org.openbanking.datamodel.payment.OBExchangeRate2;
 
 import java.util.List;
 
@@ -36,8 +36,8 @@ import java.util.List;
 @NoArgsConstructor
 public class InternationalScheduledPaymentConsentDetails extends ConsentDetails {
 
-    private OBScheduledPayment1 scheduledPayment;
-    private OBExchangeRate2 rate;
+    private FRScheduledPaymentData scheduledPayment;
+    private FRExchangeRateInformation rate;
 
     private String decisionApiUri;
 
