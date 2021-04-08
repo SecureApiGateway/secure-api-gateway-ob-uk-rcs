@@ -65,6 +65,14 @@ public class ConsentDetailsRequestTestDataFactory {
         return getConsentDetailsRequestBuilder("PISOC_");
     }
 
+    public static ConsentDetailsRequest.ConsentDetailsRequestBuilder aValidFilePaymentConsentDetailsRequestBuilder() {
+        return getConsentDetailsRequestBuilder("PFC_");
+    }
+
+    public static ConsentDetailsRequest.ConsentDetailsRequestBuilder aValidFundsConfirmationConsentDetailsRequestBuilder() {
+        return getConsentDetailsRequestBuilder("FCC_");
+    }
+
     private static ConsentDetailsRequest.ConsentDetailsRequestBuilder getConsentDetailsRequestBuilder(String intentType) {
         try {
             return ConsentDetailsRequest.builder()
