@@ -19,7 +19,9 @@ import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.acc
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.tpp.Tpp;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision.PaymentConsentDecision;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRDomesticPaymentConsent;
-import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRDomesticPaymentConsent.FRDomesticPaymentConsentBuilder;
+import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRFilePaymentConsent;
+import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRFundsConfirmationConsent;
+import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRInternationalPaymentConsent;
 import com.forgerock.securebanking.openbanking.uk.rcs.testsupport.TestInitializer;
 import com.forgerock.securebanking.openbanking.uk.rcs.testsupport.WireMockServerExtension;
 import com.forgerock.securebanking.openbanking.uk.rcs.testsupport.WireMockStubHelper;
@@ -41,12 +43,25 @@ import java.util.Map;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.account.FRAccountWithBalanceTestDataFactory.aValidFRAccountWithBalance;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.tpp.TppTestDataFactory.aValidTppBuilder;
+import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.JwtHelper.consentRequestJwt;
+import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.idm.dto.consent.FRDomesticPaymentConsentDataTestDataFactory.aValidDomesticPaymentConsentDataBuilder;
 import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.idm.dto.consent.FRDomesticPaymentConsentTestDataFactory.aValidFRDomesticPaymentConsentBuilder;
+import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.idm.dto.consent.FRFilePaymentConsentDataTestDataFactory.aValidFilePaymentConsentDataBuilder;
+import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.idm.dto.consent.FRFilePaymentConsentTestDataFactory.aValidFRFilePaymentConsentBuilder;
+import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.idm.dto.consent.FRFundsConfirmationConsentDataTestDataFactory.aValidFundsConfirmationConsentDataBuilder;
+import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.idm.dto.consent.FRFundsConfirmationConsentTestDataFactory.aValidFRFundsConfirmationConsentBuilder;
+import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.idm.dto.consent.FRInternationalPaymentConsentDataTestDataFactory.aValidInternationalPaymentConsentDataBuilder;
+import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.idm.dto.consent.FRInternationalPaymentConsentTestDataFactory.aValidFRInternationalPaymentConsentBuilder;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static uk.org.openbanking.testsupport.payment.OBAccountTestDataFactory.aValidOBCashAccount3;
+import static uk.org.openbanking.testsupport.payment.OBAccountTestDataFactory.aValidOBWriteDomestic2DataInitiationDebtorAccount;
+import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomestic2DataInitiation;
+import static uk.org.openbanking.testsupport.payment.OBWriteFileConsentTestDataFactory.aValidOBWriteFile2DataInitiation;
+import static uk.org.openbanking.testsupport.payment.OBWriteInternationalConsentTestDataFactory.aValidOBWriteInternational3DataInitiation;
 
 /**
  * Spring Boot Test for {@link ConsentDetailsApiController}.
@@ -63,6 +78,8 @@ public class ConsentDetailsApiControllerTest {
     private static final String USER_ID = "45c6486e-8fc0-3ffc-h6f5-2105164d01j4";
     private static final FRAccountWithBalance ACCOUNTS_WITH_BALANCE = aValidFRAccountWithBalance();
     private static final String ACCOUNT_ID = ACCOUNTS_WITH_BALANCE.getId();
+    private static final String OAUTH2_AUTHORIZE_PATH = "/am/oauth2/authorize";
+    private static final Tpp TPP = aValidTppBuilder().clientId(CLIENT_ID).build();
 
     @LocalServerPort
     private int port;
@@ -75,25 +92,78 @@ public class ConsentDetailsApiControllerTest {
 
     @BeforeEach
     public void setup() {
-        Tpp tpp = aValidTppBuilder().clientId(CLIENT_ID).build();
-        FRDomesticPaymentConsent initialConsent = aFRDomesticPaymentConsentBuilder(tpp).build();
-        String debitIdentification = ACCOUNTS_WITH_BALANCE.getAccount().getAccounts().get(0).getIdentification();
-        initialConsent.getData().getInitiation().getDebtorAccount().setIdentification(debitIdentification);
-
         wireMockStubHelper.stubGetUserProfile(Map.of("id", USER_ID));
         wireMockStubHelper.stubGetUserAccounts(List.of(ACCOUNTS_WITH_BALANCE));
-        wireMockStubHelper.stubGetPaymentConsent(initialConsent);
-        wireMockStubHelper.stubGetTpp(tpp);
-
-        FRDomesticPaymentConsent updatedConsent = aFRDomesticPaymentConsentBuilder(tpp)
-                .resourceOwnerUsername(USER_ID).build();
-        wireMockStubHelper.stubUpdatePaymentConsent(updatedConsent);
+        wireMockStubHelper.stubGetTpp(TPP);
     }
 
     @Test
     public void shouldGetDomesticPaymentConsentDetails() {
         // Given
-        HttpEntity<String> request = new HttpEntity<>(consentRequestJwt(), headers());
+        String intentId = "PDC_d79e7380-a3a8-4de3-bc93-e4ff9b620098";
+        FRDomesticPaymentConsent initialConsent = aValidDomesticPaymentConsent(intentId, null);
+        wireMockStubHelper.stubGetPaymentConsent(initialConsent);
+        FRDomesticPaymentConsent authorisedConsent = aValidDomesticPaymentConsent(intentId, USER_ID);
+        wireMockStubHelper.stubUpdatePaymentConsent(authorisedConsent);
+        String consentJwt = consentRequestJwt(OAUTH2_AUTHORIZE_PATH, 9080, CLIENT_ID, intentId, USER_ID);
+        HttpEntity<String> request = new HttpEntity<>(consentJwt, headers());
+        String url = detailsUrl();
+
+        // When
+        ResponseEntity<PaymentConsentDecision> response = restTemplate.postForEntity(url, request, PaymentConsentDecision.class);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(OK);
+    }
+
+    @Test
+    public void shouldGetInternationalPaymentConsentDetails() {
+        // Given
+        String intentId = "PIC_d79e7380-a3a8-4de3-bc93-e4ff9b620098";
+        FRInternationalPaymentConsent initialConsent = aValidInternationalPaymentConsent(intentId, null);
+        wireMockStubHelper.stubGetPaymentConsent(initialConsent);
+        FRInternationalPaymentConsent authorisedConsent = aValidInternationalPaymentConsent(intentId, USER_ID);
+        wireMockStubHelper.stubUpdatePaymentConsent(authorisedConsent);
+        String consentJwt = consentRequestJwt(OAUTH2_AUTHORIZE_PATH, 9080, CLIENT_ID, intentId, USER_ID);
+        HttpEntity<String> request = new HttpEntity<>(consentJwt, headers());
+        String url = detailsUrl();
+
+        // When
+        ResponseEntity<PaymentConsentDecision> response = restTemplate.postForEntity(url, request, PaymentConsentDecision.class);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(OK);
+    }
+
+    @Test
+    public void shouldGetFilePaymentConsentDetails() {
+        // Given
+        String intentId = "PFC_d79e7380-a3a8-4de3-bc93-e4ff9b620098";
+        FRFilePaymentConsent initialConsent = aValidFilePaymentConsent(intentId, null);
+        wireMockStubHelper.stubGetPaymentConsent(initialConsent);
+        FRFilePaymentConsent authorisedConsent = aValidFilePaymentConsent(intentId, USER_ID);
+        wireMockStubHelper.stubUpdatePaymentConsent(authorisedConsent);
+        String consentJwt = consentRequestJwt(OAUTH2_AUTHORIZE_PATH, 9080, CLIENT_ID, intentId, USER_ID);
+        HttpEntity<String> request = new HttpEntity<>(consentJwt, headers());
+        String url = detailsUrl();
+
+        // When
+        ResponseEntity<PaymentConsentDecision> response = restTemplate.postForEntity(url, request, PaymentConsentDecision.class);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(OK);
+    }
+
+    @Test
+    public void shouldGetFundsConfirmationConsentDetails() {
+        // Given
+        String intentId = "FCC_d79e7380-a3a8-4de3-bc93-e4ff9b620098";
+        FRFundsConfirmationConsent initialConsent = aValidFundsConfirmationConsent(intentId, null);
+        wireMockStubHelper.stubGetPaymentConsent(initialConsent);
+        FRFundsConfirmationConsent authorisedConsent = aValidFundsConfirmationConsent(intentId, USER_ID);
+        wireMockStubHelper.stubUpdatePaymentConsent(authorisedConsent);
+        String consentJwt = consentRequestJwt(OAUTH2_AUTHORIZE_PATH, 9080, CLIENT_ID, intentId, USER_ID);
+        HttpEntity<String> request = new HttpEntity<>(consentJwt, headers());
         String url = detailsUrl();
 
         // When
@@ -115,19 +185,66 @@ public class ConsentDetailsApiControllerTest {
         return BASE_URL + port + DETAILS_URI;
     }
 
-
-    private FRDomesticPaymentConsentBuilder aFRDomesticPaymentConsentBuilder(Tpp tpp) {
-        FRDomesticPaymentConsentBuilder domesticPaymentConsentBuilder = aValidFRDomesticPaymentConsentBuilder()
+    private FRDomesticPaymentConsent aValidDomesticPaymentConsent(String intentId, String resourceOwnerUsername) {
+        String debitIdentification = ACCOUNTS_WITH_BALANCE.getAccount().getAccounts().get(0).getIdentification();
+        return aValidFRDomesticPaymentConsentBuilder()
+                .id(intentId)
+                .data(aValidDomesticPaymentConsentDataBuilder(intentId)
+                        .initiation(aValidOBWriteDomestic2DataInitiation()
+                                .debtorAccount(aValidOBWriteDomestic2DataInitiationDebtorAccount()
+                                        .identification(debitIdentification)))
+                        .build())
                 .accountId(ACCOUNT_ID)
-                .oauth2ClientId(tpp.getClientId())
-                .oauth2ClientName(tpp.getName())
-                .resourceOwnerUsername(null);
-        return domesticPaymentConsentBuilder;
+                .oauth2ClientId(TPP.getClientId())
+                .oauth2ClientName(TPP.getName())
+                .resourceOwnerUsername(resourceOwnerUsername)
+                .build();
     }
 
-    private String consentRequestJwt() {
-        return "eyJ0eXAiOiJKV1QiLCJraWQiOiJ3VTNpZklJYUxPVUFSZVJCL0ZHNmVNMVAxUU09IiwiYWxnIjoiUFMyNTYifQ." +
-                "eyJjbGllbnRJZCI6ImExMmY5ZWJjLTQ5NjYtNDU0My1hZmUwLTAzZTU5NzgzNWEwMSIsImlzcyI6Imh0dHBzOi8vYXMuYXNwc3AuZGV2LW9iLmZvcmdlcm9jay5maW5hbmNpYWw6ODA3NC9vYXV0aDIiLCJjc3JmIjoiQlBWUmxvUHFqS2YrcWQxUHVscHFESHFiMEF1aWRZaGxhVWE5ZjVia2hnYz0iLCJjbGllbnRfZGVzY3JpcHRpb24iOiIiLCJhdWQiOiJmb3JnZXJvY2stcmNzIiwic2F2ZV9jb25zZW50X2VuYWJsZWQiOnRydWUsImNsYWltcyI6eyJpZF90b2tlbiI6eyJhY3IiOnsidmFsdWUiOiJ1cm46b3BlbmJhbmtpbmc6cHNkMjpzY2EiLCJlc3NlbnRpYWwiOnRydWV9LCJvcGVuYmFua2luZ19pbnRlbnRfaWQiOnsidmFsdWUiOiJQRENfZDkxYTU3MzgtODMwZi00NDdhLTliYzktMGVmNDYzN2UzM2MzIiwiZXNzZW50aWFsIjp0cnVlfX0sInVzZXJpbmZvIjp7Im9wZW5iYW5raW5nX2ludGVudF9pZCI6eyJ2YWx1ZSI6IlBEQ19kOTFhNTczOC04MzBmLTQ0N2EtOWJjOS0wZWY0NjM3ZTMzYzMiLCJlc3NlbnRpYWwiOnRydWV9fX0sInNjb3BlcyI6eyJhY2NvdW50cyI6ImFjY291bnRzIiwib3BlbmlkIjoib3BlbmlkIiwicGF5bWVudHMiOiJwYXltZW50cyJ9LCJleHAiOjE2MTYwODAwNDEsImlhdCI6MTYxNjA3OTg2MSwiY2xpZW50X25hbWUiOiJNYXR0J3MgVFBQIiwiY29uc2VudEFwcHJvdmFsUmVkaXJlY3RVcmkiOiJodHRwczovL2FzLmFzcHNwLmRldi1vYi5mb3JnZXJvY2suZmluYW5jaWFsOjgwNzQvb2F1dGgyL2F1dGhvcml6ZT9yZXNwb25zZV90eXBlPWNvZGUraWRfdG9rZW4mY2xpZW50X2lkPWExMmY5ZWJjLTQ5NjYtNDU0My1hZmUwLTAzZTU5NzgzNWEwMSZzdGF0ZT0xMGQyNjBiZi1hN2Q5LTQ0NGEtOTJkOS03YjdhNWYwODgyMDgmbm9uY2U9MTBkMjYwYmYtYTdkOS00NDRhLTkyZDktN2I3YTVmMDg4MjA4JnNjb3BlPW9wZW5pZCtwYXltZW50cythY2NvdW50cyZyZWRpcmVjdF91cmk9aHR0cHMlM0ElMkYlMkZ3d3cuZ29vZ2xlLmNvbSZyZXF1ZXN0PWV5SnJhV1FpT2lKa016WTJOalUxWmpjME16YzJPRFl6TURjNU16Y3lNR1UwWW1NeU1HUTBNekV5WlRZd09UZ3dJaXdpWVd4bklqb2lVRk15TlRZaWZRLmV5SnBjM01pT2lKaE1USm1PV1ZpWXkwME9UWTJMVFExTkRNdFlXWmxNQzB3TTJVMU9UYzRNelZoTURFaUxDSnlaWE53YjI1elpWOTBlWEJsSWpvaVkyOWtaU0JwWkY5MGIydGxiaUlzSW01dmJtTmxJam9pTVRCa01qWXdZbVl0WVRka09TMDBORFJoTFRreVpEa3ROMkkzWVRWbU1EZzRNakE0SWl3aVkyeHBaVzUwWDJsa0lqb2lZVEV5WmpsbFltTXRORGsyTmkwME5UUXpMV0ZtWlRBdE1ETmxOVGszT0RNMVlUQXhJaXdpWVhWa0lqb2lhSFIwY0hNNlhDOWNMMkZ6TG1GemNITndMbVJsZGkxdllpNW1iM0puWlhKdlkyc3VabWx1WVc1amFXRnNPamd3TnpSY0wyOWhkWFJvTWlJc0luTmpiM0JsSWpvaWIzQmxibWxrSUdGalkyOTFiblJ6SUhCaGVXMWxiblJ6SWl3aVkyeGhhVzF6SWpwN0ltbGtYM1J2YTJWdUlqcDdJbUZqY2lJNmV5SjJZV3gxWlNJNkluVnlianB2Y0dWdVltRnVhMmx1Wnpwd2MyUXlPbk5qWVNJc0ltVnpjMlZ1ZEdsaGJDSTZkSEoxWlgwc0ltOXdaVzVpWVc1cmFXNW5YMmx1ZEdWdWRGOXBaQ0k2ZXlKMllXeDFaU0k2SWxCRVExOWtPVEZoTlRjek9DMDRNekJtTFRRME4yRXRPV0pqT1Mwd1pXWTBOak0zWlRNell6TWlMQ0psYzNObGJuUnBZV3dpT25SeWRXVjlmU3dpZFhObGNtbHVabThpT25zaWIzQmxibUpoYm10cGJtZGZhVzUwWlc1MFgybGtJanA3SW5aaGJIVmxJam9pVUVSRFgyUTVNV0UxTnpNNExUZ3pNR1l0TkRRM1lTMDVZbU01TFRCbFpqUTJNemRsTXpOak15SXNJbVZ6YzJWdWRHbGhiQ0k2ZEhKMVpYMTlmU3dpY21Wa2FYSmxZM1JmZFhKcElqb2lhSFIwY0hNNlhDOWNMM2QzZHk1bmIyOW5iR1V1WTI5dElpd2ljM1JoZEdVaU9pSXhNR1F5TmpCaVppMWhOMlE1TFRRME5HRXRPVEprT1MwM1lqZGhOV1l3T0RneU1EZ2lMQ0psZUhBaU9qRTJNVFl3T0RBeE16VXNJbWxoZENJNk1UWXhOakEzT1Rnek5Td2lhblJwSWpvaVpUTmpNV1ptTUdFdFkyWmpOQzAwT0RoakxUaGhOMk10TlRaaVptRmhOMlZqWW1NekluMC5WRGpfUVVvVGU4a05xc0h0dGc3NEl6OXZYTUdmcmtpZ2xQbmstcHJUcVZ5WjRGd0VoMUxqdUNkTGN6NlI0ZVV6TU9YdjdGLVdoTnY1S0hvLTlfakhETFlDSlVEZGgzdC1ibVBsLW1UZEpEdWp6N1VmRVdiUks0eS1qQ2k2TDZBdkRsRWpCZUhvUzZ3aTZMUTY1SDdNV2pkTlpFbkhlSFlzUGZxMnZPYnItRjB1QWJ6elNNRlpqT2hBblRTejQtR1k4RUF2UlliMlNTbjRXckJHX3lpR2pOWjlFdGVvV0VLdmxDUVRrd05HcFV5bi1MTEZpclk5XzlnQkRFVHI3SHRObTVhZzZyanFkVUtGNVI3RUFyZS1UTE9YSE5FNVp1WGxtQXZpSUN1eUg0b25mSGZMQ1cwLW01Qmh1UEUtdGdPTEhLZmg1SllDYy04ZUZCU1h6T2ZTN3ciLCJ1c2VybmFtZSI6Im1hdHQud2lsbHMifQ." +
-                "D3LNRrjok6laTUIqNxC-VIfcMSX82BDKVii2_TqYVUvXyeT99GZKAAW-ih4WOCY__kJzgP8PtSDgXqrVaNjR4yBN6loX4Tw5bTEoA7cwn7V7MUPlcHweSQPaABjogtdJQVDACH_OCryw1Yikf4lMeuq125JWvvXXMht5MsMahdNYTS-THQadxNVGHlKsSS1wrgfqI-u4FwKBuLvcApKMaxfNIiTOjrbCXaZwsVHQk6A0YriV6znkp5ptTgxXEVaxJGfoyPPMg_0_d8Iqb7gxZ73PACmEKuj3hOOyBlfd16uyLkvQ8qZjAbSj0xuevG-BpqN4BEqfwV9RZD91zxxZyQ";
+    private FRInternationalPaymentConsent aValidInternationalPaymentConsent(String intentId, String resourceOwnerUsername) {
+        String debitIdentification = ACCOUNTS_WITH_BALANCE.getAccount().getAccounts().get(0).getIdentification();
+        return aValidFRInternationalPaymentConsentBuilder()
+                .id(intentId)
+                .data(aValidInternationalPaymentConsentDataBuilder(intentId)
+                        .initiation(aValidOBWriteInternational3DataInitiation()
+                                .debtorAccount(aValidOBWriteDomestic2DataInitiationDebtorAccount()
+                                        .identification(debitIdentification)))
+                        .build())
+                .accountId(ACCOUNT_ID)
+                .oauth2ClientId(TPP.getClientId())
+                .oauth2ClientName(TPP.getName())
+                .resourceOwnerUsername(resourceOwnerUsername)
+                .build();
+    }
+
+    private FRFilePaymentConsent aValidFilePaymentConsent(String intentId, String resourceOwnerUsername) {
+        String debitIdentification = ACCOUNTS_WITH_BALANCE.getAccount().getAccounts().get(0).getIdentification();
+        return aValidFRFilePaymentConsentBuilder()
+                .id(intentId)
+                .data(aValidFilePaymentConsentDataBuilder(intentId)
+                        .initiation(aValidOBWriteFile2DataInitiation()
+                                .debtorAccount(aValidOBWriteDomestic2DataInitiationDebtorAccount()
+                                        .identification(debitIdentification)))
+                        .build())
+                .accountId(ACCOUNT_ID)
+                .oauth2ClientId(TPP.getClientId())
+                .oauth2ClientName(TPP.getName())
+                .resourceOwnerUsername(resourceOwnerUsername)
+                .build();
+    }
+
+    private FRFundsConfirmationConsent aValidFundsConfirmationConsent(String intentId, String resourceOwnerUsername) {
+        String debitIdentification = ACCOUNTS_WITH_BALANCE.getAccount().getAccounts().get(0).getIdentification();
+        return aValidFRFundsConfirmationConsentBuilder()
+                .id(intentId)
+                .data(aValidFundsConfirmationConsentDataBuilder(intentId)
+                        .debtorAccount(aValidOBCashAccount3()
+                                .identification(debitIdentification))
+                        .build())
+                .accountId(ACCOUNT_ID)
+                .oauth2ClientId(TPP.getClientId())
+                .oauth2ClientName(TPP.getName())
+                .resourceOwnerUsername(resourceOwnerUsername)
+                .build();
     }
 }

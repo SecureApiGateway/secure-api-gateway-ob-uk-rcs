@@ -18,7 +18,7 @@ package com.forgerock.securebanking.openbanking.uk.rcs.testsupport;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.tpp.Tpp;
-import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRDomesticPaymentConsent;
+import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRPaymentConsent;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -56,7 +56,7 @@ public class WireMockStubHelper {
     }
 
     @SneakyThrows
-    public void stubGetPaymentConsent(FRDomesticPaymentConsent responseBody) {
+    public void stubGetPaymentConsent(FRPaymentConsent responseBody) {
         WIRE_MOCK_SERVER.stubFor(get(urlPathMatching("/idm/payment-consents/.*"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
@@ -87,7 +87,7 @@ public class WireMockStubHelper {
                         .withStatus(FOUND.value())));
     }
 
-    public void stubUpdatePaymentConsent(FRDomesticPaymentConsent expectedRequestBody) {
+    public void stubUpdatePaymentConsent(FRPaymentConsent expectedRequestBody) {
         WIRE_MOCK_SERVER.stubFor(put(urlPathMatching("/idm/payment-consents/.*"))
                 .withRequestBody(containing("\"accountId\":\"" + expectedRequestBody.getAccountId() + "\""))
                 // Note upper case OB JSON format

@@ -30,16 +30,31 @@ public class ConsentDecisionServiceDelegate {
     private final DomesticPaymentConsentDecisionService domesticPaymentConsentDecisionService;
     private final DomesticScheduledPaymentConsentDecisionService domesticScheduledPaymentConsentDecisionService;
     private final DomesticStandingOrderConsentDecisionService domesticStandingOrderConsentDecisionService;
+    private final InternationalPaymentConsentDecisionService internationalPaymentConsentDecisionService;
+    private final InternationalScheduledPaymentConsentDecisionService internationalScheduledPaymentConsentDecisionService;
+    private final InternationalStandingOrderConsentDecisionService internationalStandingOrderConsentDecisionService;
+    private final FilePaymentConsentDecisionService filePaymentConsentDecisionService;
+    private final FundsConfirmationConsentDecisionService fundsConfirmationConsentDecisionService;
 
     public ConsentDecisionServiceDelegate(
             AccountAccessConsentDecisionService accountAccessConsentDecisionService,
             DomesticPaymentConsentDecisionService domesticPaymentConsentDecisionService,
             DomesticScheduledPaymentConsentDecisionService domesticScheduledPaymentConsentDecisionService,
-            DomesticStandingOrderConsentDecisionService domesticStandingOrderConsentDecisionService) {
+            DomesticStandingOrderConsentDecisionService domesticStandingOrderConsentDecisionService,
+            InternationalPaymentConsentDecisionService internationalPaymentConsentDecisionService,
+            InternationalScheduledPaymentConsentDecisionService internationalScheduledPaymentConsentDecisionService,
+            InternationalStandingOrderConsentDecisionService internationalStandingOrderConsentDecisionService,
+            FilePaymentConsentDecisionService filePaymentConsentDecisionService,
+            FundsConfirmationConsentDecisionService fundsConfirmationConsentDecisionService) {
         this.accountAccessConsentDecisionService = accountAccessConsentDecisionService;
         this.domesticPaymentConsentDecisionService = domesticPaymentConsentDecisionService;
         this.domesticScheduledPaymentConsentDecisionService = domesticScheduledPaymentConsentDecisionService;
         this.domesticStandingOrderConsentDecisionService = domesticStandingOrderConsentDecisionService;
+        this.internationalPaymentConsentDecisionService = internationalPaymentConsentDecisionService;
+        this.internationalScheduledPaymentConsentDecisionService = internationalScheduledPaymentConsentDecisionService;
+        this.internationalStandingOrderConsentDecisionService = internationalStandingOrderConsentDecisionService;
+        this.filePaymentConsentDecisionService = filePaymentConsentDecisionService;
+        this.fundsConfirmationConsentDecisionService = fundsConfirmationConsentDecisionService;
     }
 
     public ConsentDecisionService getConsentDecisionService(String intentId) throws OBErrorException {
@@ -58,6 +73,16 @@ public class ConsentDecisionServiceDelegate {
                 return domesticScheduledPaymentConsentDecisionService;
             case PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT:
                 return domesticStandingOrderConsentDecisionService;
+            case PAYMENT_INTERNATIONAL_CONSENT :
+                return internationalPaymentConsentDecisionService;
+            case PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT:
+                return internationalScheduledPaymentConsentDecisionService;
+            case PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT:
+                return internationalStandingOrderConsentDecisionService;
+            case PAYMENT_FILE_CONSENT:
+                return filePaymentConsentDecisionService;
+            case FUNDS_CONFIRMATION_CONSENT:
+                return fundsConfirmationConsentDecisionService;
             default :
                 log.error("Unsupported intent ID '{}'", intentId);
                 throw new OBErrorException(RCS_CONSENT_REQUEST_INVALID, "Unsupported intent ID: '" + intentId + "'");

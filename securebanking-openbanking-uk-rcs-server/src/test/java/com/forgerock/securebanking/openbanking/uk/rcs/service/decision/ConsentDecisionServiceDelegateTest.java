@@ -39,6 +39,17 @@ public class ConsentDecisionServiceDelegateTest {
     private DomesticScheduledPaymentConsentDecisionService domesticScheduledPaymentConsentDecisionService;
     @Mock
     private DomesticStandingOrderConsentDecisionService domesticStandingOrderConsentDecisionService;
+    @Mock
+    private InternationalPaymentConsentDecisionService internationalPaymentConsentDecisionService;
+    @Mock
+    private InternationalScheduledPaymentConsentDecisionService internationalScheduledPaymentConsentDecisionService;
+    @Mock
+    private InternationalStandingOrderConsentDecisionService internationalStandingOrderConsentDecisionService;
+    @Mock
+    private FilePaymentConsentDecisionService filePaymentConsentDecisionService;
+    @Mock
+    private FundsConfirmationConsentDecisionService fundsConfirmationConsentDecisionService;
+
     @InjectMocks
     private ConsentDecisionServiceDelegate delegate;
 
@@ -92,6 +103,71 @@ public class ConsentDecisionServiceDelegateTest {
         // Then
         assertThat(consentDecisionService).isNotNull();
         assertThat(consentDecisionService).isEqualTo(domesticStandingOrderConsentDecisionService);
+    }
+
+    @Test
+    public void shouldGetInternationalPaymentConsentDecisionService() throws OBErrorException {
+        // Given
+        String intentId = "PIC_1234";
+
+        // When
+        ConsentDecisionService consentDecisionService = delegate.getConsentDecisionService(intentId);
+
+        // Then
+        assertThat(consentDecisionService).isNotNull();
+        assertThat(consentDecisionService).isEqualTo(internationalPaymentConsentDecisionService);
+    }
+
+    @Test
+    public void shouldGetInternationalScheduledPaymentConsentDecisionService() throws OBErrorException {
+        // Given
+        String intentId = "PISC_1234";
+
+        // When
+        ConsentDecisionService consentDecisionService = delegate.getConsentDecisionService(intentId);
+
+        // Then
+        assertThat(consentDecisionService).isNotNull();
+        assertThat(consentDecisionService).isEqualTo(internationalScheduledPaymentConsentDecisionService);
+    }
+
+    @Test
+    public void shouldGetInternationalStandingOrderConsentDecisionService() throws OBErrorException {
+        // Given
+        String intentId = "PISOC_1234";
+
+        // When
+        ConsentDecisionService consentDecisionService = delegate.getConsentDecisionService(intentId);
+
+        // Then
+        assertThat(consentDecisionService).isNotNull();
+        assertThat(consentDecisionService).isEqualTo(internationalStandingOrderConsentDecisionService);
+    }
+
+    @Test
+    public void shouldGetFilePaymentConsentDecisionService() throws OBErrorException {
+        // Given
+        String intentId = "PFC_1234";
+
+        // When
+        ConsentDecisionService consentDecisionService = delegate.getConsentDecisionService(intentId);
+
+        // Then
+        assertThat(consentDecisionService).isNotNull();
+        assertThat(consentDecisionService).isEqualTo(filePaymentConsentDecisionService);
+    }
+
+    @Test
+    public void shouldGetFundsConfirmationConsentDecisionService() throws OBErrorException {
+        // Given
+        String intentId = "FCC_1234";
+
+        // When
+        ConsentDecisionService consentDecisionService = delegate.getConsentDecisionService(intentId);
+
+        // Then
+        assertThat(consentDecisionService).isNotNull();
+        assertThat(consentDecisionService).isEqualTo(fundsConfirmationConsentDecisionService);
     }
 
     @Test

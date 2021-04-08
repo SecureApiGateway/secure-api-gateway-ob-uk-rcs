@@ -44,6 +44,16 @@ public class ConsentDetailsServiceDelegateTest {
     private DomesticScheduledPaymentConsentDetailsService domesticScheduledPaymentConsentDetailsService;
     @Mock
     private DomesticStandingOrderConsentDetailsService domesticStandingOrderConsentDetailsService;
+    @Mock
+    private InternationalPaymentConsentDetailsService internationalPaymentConsentDetailsService;
+    @Mock
+    private InternationalScheduledPaymentConsentDetailsService internationalScheduledPaymentConsentDetailsService;
+    @Mock
+    private InternationalStandingOrderConsentDetailsService internationalStandingOrderConsentDetailsService;
+    @Mock
+    private FilePaymentConsentDetailsService filePaymentConsentDetailsService;
+    @Mock
+    private FundsConfirmationConsentDetailsService fundsConfirmationConsentDetailsService;
     @InjectMocks
     private ConsentDetailsServiceDelegate consentDetailsServiceDelegate;
 
@@ -108,7 +118,82 @@ public class ConsentDetailsServiceDelegateTest {
     }
 
     @Test
-    public void shouldFailToGetConsentDetailsGivenUnsupportedIntentType() throws OBErrorException {
+    public void shouldGetInternationalPaymentConsentDetails() throws OBErrorException {
+        // Given
+        ConsentDetailsRequest request = aValidInternationalPaymentConsentDetailsRequestBuilder().build();
+        InternationalPaymentConsentDetails paymentConsentDetails = InternationalPaymentConsentDetails.builder().build();
+        given(internationalPaymentConsentDetailsService.getConsentDetails(request)).willReturn(paymentConsentDetails);
+
+        // When
+        ConsentDetails consentDetails = consentDetailsServiceDelegate.getConsentDetails(request);
+
+        // Then
+        assertThat(consentDetails).isNotNull();
+        verify(internationalPaymentConsentDetailsService).getConsentDetails(request);
+    }
+
+    @Test
+    public void shouldGetInternationalScheduledPaymentConsentDetails() throws OBErrorException {
+        // Given
+        ConsentDetailsRequest request = aValidInternationalScheduledPaymentConsentDetailsRequestBuilder().build();
+        InternationalScheduledPaymentConsentDetails paymentConsentDetails = InternationalScheduledPaymentConsentDetails.builder().build();
+        given(internationalScheduledPaymentConsentDetailsService.getConsentDetails(request)).willReturn(paymentConsentDetails);
+
+        // When
+        ConsentDetails consentDetails = consentDetailsServiceDelegate.getConsentDetails(request);
+
+        // Then
+        assertThat(consentDetails).isNotNull();
+        verify(internationalScheduledPaymentConsentDetailsService).getConsentDetails(request);
+    }
+
+    @Test
+    public void shouldGetInternationalStandingOrderConsentDetails() throws OBErrorException {
+        // Given
+        ConsentDetailsRequest request = aValidInternationalStandingOrderConsentDetailsRequestBuilder().build();
+        InternationalStandingOrderConsentDetails paymentConsentDetails = InternationalStandingOrderConsentDetails.builder().build();
+        given(internationalStandingOrderConsentDetailsService.getConsentDetails(request)).willReturn(paymentConsentDetails);
+
+        // When
+        ConsentDetails consentDetails = consentDetailsServiceDelegate.getConsentDetails(request);
+
+        // Then
+        assertThat(consentDetails).isNotNull();
+        verify(internationalStandingOrderConsentDetailsService).getConsentDetails(request);
+    }
+
+    @Test
+    public void shouldGetFilePaymentConsentDetails() throws OBErrorException {
+        // Given
+        ConsentDetailsRequest request = aValidFilePaymentConsentDetailsRequestBuilder().build();
+        FilePaymentConsentDetails paymentConsentDetails = FilePaymentConsentDetails.builder().build();
+        given(filePaymentConsentDetailsService.getConsentDetails(request)).willReturn(paymentConsentDetails);
+
+        // When
+        ConsentDetails consentDetails = consentDetailsServiceDelegate.getConsentDetails(request);
+
+        // Then
+        assertThat(consentDetails).isNotNull();
+        verify(filePaymentConsentDetailsService).getConsentDetails(request);
+    }
+
+    @Test
+    public void shouldGetFundsConfirmationConsentDetails() throws OBErrorException {
+        // Given
+        ConsentDetailsRequest request = aValidFundsConfirmationConsentDetailsRequestBuilder().build();
+        FundsConfirmationConsentDetails paymentConsentDetails = FundsConfirmationConsentDetails.builder().build();
+        given(fundsConfirmationConsentDetailsService.getConsentDetails(request)).willReturn(paymentConsentDetails);
+
+        // When
+        ConsentDetails consentDetails = consentDetailsServiceDelegate.getConsentDetails(request);
+
+        // Then
+        assertThat(consentDetails).isNotNull();
+        verify(fundsConfirmationConsentDetailsService).getConsentDetails(request);
+    }
+
+    @Test
+    public void shouldFailToGetConsentDetailsGivenUnsupportedIntentType() {
         // Given
         ConsentDetailsRequest request = aValidAccountAccessConsentDetailsRequestBuilder()
                 .intentId("AR_" + randomUUID().toString())
