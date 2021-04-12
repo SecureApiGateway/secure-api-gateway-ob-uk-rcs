@@ -44,7 +44,7 @@ public class DomesticPaymentConsentDetailsTest {
     public void setup() {
         mapper = new ObjectMapper();
         mapper.registerModule(new JodaModule());
-        mapper.setTimeZone(TimeZone.getTimeZone("Europe/London"));
+        mapper.setTimeZone(TimeZone.getDefault());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
