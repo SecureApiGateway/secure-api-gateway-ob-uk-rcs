@@ -24,7 +24,14 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         property = "type"
 )
 @JsonSubTypes({
-        @Type(value = FRDomesticPaymentConsent.class, name = "FRDomesticPaymentConsent")
+        @Type(value = FRDomesticPaymentConsent.class, name = "FRDomesticPaymentConsent"),
+        @Type(value = FRDomesticScheduledPaymentConsent.class, name = "FRDomesticScheduledPaymentConsent"),
+        @Type(value = FRDomesticStandingOrderConsent.class, name = "FRDomesticStandingOrderConsent"),
+        @Type(value = FRInternationalPaymentConsent.class, name = "FRInternationalPaymentConsent"),
+        @Type(value = FRInternationalScheduledPaymentConsent.class, name = "FRInternationalScheduledPaymentConsent"),
+        @Type(value = FRInternationalStandingOrderConsent.class, name = "FRInternationalStandingOrderConsent"),
+        @Type(value = FRFilePaymentConsent.class, name = "FRFilePaymentConsent"),
+        @Type(value = FRFundsConfirmationConsent.class, name = "FRFundsConfirmationConsent")
 })
 public interface FRPaymentConsent {
 

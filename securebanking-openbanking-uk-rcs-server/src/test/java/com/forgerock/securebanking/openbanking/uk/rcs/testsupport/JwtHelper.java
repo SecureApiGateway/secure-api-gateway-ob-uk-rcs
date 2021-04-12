@@ -29,7 +29,8 @@ import org.apache.commons.lang3.RandomStringUtils;
 public class JwtHelper {
 
     /**
-     * Creates a JWT that mimics the value that's sent from the UI when the user grants consent.
+     * Creates a JWT that mimics the value that's sent from the UI when requesting a consent's details, or when the
+     * user grants consent.
      *
      * @param amPath The path to the WireMock instance, simulating AM. This is used for the `consentApprovalRedirectUri`.
      * @param serverPort The dynamic port that WireMock is running on.
@@ -39,7 +40,7 @@ public class JwtHelper {
      * @return A {@link String} representation of the consent decision JWT.
      */
     @SneakyThrows
-    public static String consentDecisionJwt(String amPath, int serverPort, String clientId, String intentId, String username) {
+    public static String consentRequestJwt(String amPath, int serverPort, String clientId, String intentId, String username) {
         String amUri = "http://localhost:" + serverPort + amPath;
         String payload = "{\n" +
                 "\"clientId\":\"" + clientId + "\"," +
