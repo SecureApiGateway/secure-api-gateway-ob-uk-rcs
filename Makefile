@@ -1,27 +1,34 @@
 name := securebanking-openbanking-uk-rcs
 repo := sbat-gcr-develop
+tag  := $(shell mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
 
 .PHONY: all
 all: clean test package
 
 clean:
 	rm -f ${name}.jar
+	rm -f ${name}-*.tgz
 	mvn clean
 
-test:
+verify: clean
 	mvn verify
 
-package:
-	mvn package -DskipTests -DskipITs --file pom.xml
+docker: clean
+	mvn package dockerfile:push -DskipTests=true -Dtag=${tag} \
+	  -DgcrRepo=${repo} --file ${name}-sample/pom.xml
 
-docker: clean package
-ifndef tag
-	$(error "You must supply a docker tag")
+helm: clean
+ifndef version
+	$(error A version must be supplied, Eg. make helm version=1.0.0)
 endif
-	cp ${name}-sample/target/${name}-*.jar ./${name}.jar
-	docker build -t eu.gcr.io/${repo}/securebanking/${name}:${tag} .
-	docker push eu.gcr.io/${repo}/securebanking/${name}:${tag}
+	helm dep up _infra/helm/${name}
+	helm template _infra/helm/${name}
+	helm package _infra/helm/${name}
+	cp ./${name}-*.tgz ./${name}-${version}.tgz
 
-dev: clean package
-	cp ${name}-sample/target/${name}-*.jar ./${name}.jar
-	docker build -t eu.gcr.io/${repo}/securebanking/${name}:latest .
+dev: clean
+	mvn package -DskipTests=true -Dtag=latest -DgcrRepo=${repo} \
+	  --file ${name}-sample/pom.xml
+
+version:
+	@echo $(tag)
