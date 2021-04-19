@@ -40,12 +40,14 @@
     </organization>
     <url>http://www.forgerock.org</url>
 
-    <properties>
-        <securebanking-openbanking-uk-rcs-api.version>1.0.0-SNAPSHOT</securebanking-openbanking-uk-rcs-api.version>
-    </properties>
-
     <dependencies>
         <!-- ForgeRock dependencies -->
+        <dependency>
+            <groupId>com.forgerock.securebanking</groupId>
+            <artifactId>securebanking-openbanking-uk-rcs-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>com.forgerock.securebanking</groupId>
             <artifactId>securebanking-openbanking-uk-common</artifactId>
@@ -53,12 +55,6 @@
         <dependency>
             <groupId>com.forgerock.securebanking</groupId>
             <artifactId>securebanking-openbanking-uk-forgerock-datamodel</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.forgerock.securebanking</groupId>
-            <artifactId>securebanking-openbanking-uk-rcs-api</artifactId>
-            <version>${securebanking-openbanking-uk-rcs-api.version}</version>
         </dependency>
 
         <!-- External dependencies -->
