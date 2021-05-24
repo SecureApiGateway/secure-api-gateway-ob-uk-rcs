@@ -44,7 +44,7 @@ public class FRInternationalPaymentConsentData implements FRPaymentConsentData {
     @JsonProperty("StatusUpdateDateTime")
     private DateTime statusUpdateDateTime;
     @JsonProperty("ReadRefundAccount")
-    private OBWriteInternationalConsentResponse6Data.ReadRefundAccountEnum readRefundAccount;
+    private OBReadRefundAccountEnum readRefundAccount;
     @JsonProperty("CutOffDateTime")
     private DateTime cutOffDateTime;
     @JsonProperty("ExpectedExecutionDateTime")

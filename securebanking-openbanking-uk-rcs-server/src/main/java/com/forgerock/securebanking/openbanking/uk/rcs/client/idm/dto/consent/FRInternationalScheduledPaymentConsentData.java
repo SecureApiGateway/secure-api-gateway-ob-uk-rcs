@@ -44,9 +44,9 @@ public class FRInternationalScheduledPaymentConsentData implements FRPaymentCons
     @JsonProperty("StatusUpdateDateTime")
     private DateTime statusUpdateDateTime;
     @JsonProperty("Permission")
-    private OBWriteInternationalScheduledConsentResponse6Data.PermissionEnum permission;
+    private OBExternalPermissions2Code permission;
     @JsonProperty("ReadRefundAccount")
-    private OBWriteInternationalScheduledConsentResponse6Data.ReadRefundAccountEnum readRefundAccount;
+    private OBReadRefundAccountEnum readRefundAccount;
     @JsonProperty("CutOffDateTime")
     private DateTime cutOffDateTime;
     @JsonProperty("ExpectedExecutionDateTime")

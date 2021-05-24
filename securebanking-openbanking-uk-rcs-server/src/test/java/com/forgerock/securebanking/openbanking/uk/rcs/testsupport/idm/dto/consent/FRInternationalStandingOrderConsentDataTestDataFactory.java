@@ -17,7 +17,7 @@ package com.forgerock.securebanking.openbanking.uk.rcs.testsupport.idm.dto.conse
 
 import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRInternationalStandingOrderConsentData;
 import org.joda.time.DateTime;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsentResponse7Data;
+import uk.org.openbanking.datamodel.payment.OBExternalPermissions2Code;
 
 import static com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRConsentStatusCode.AWAITINGAUTHORISATION;
 import static java.util.UUID.randomUUID;
@@ -38,7 +38,7 @@ public class FRInternationalStandingOrderConsentDataTestDataFactory {
                .consentId(consentId)
                 .creationDateTime(DateTime.now())
                 .status(AWAITINGAUTHORISATION)
-                .permission(OBWriteInternationalStandingOrderConsentResponse7Data.PermissionEnum.CREATE)
+                .permission(OBExternalPermissions2Code.CREATE)
                 .statusUpdateDateTime(DateTime.now())
                 .initiation(aValidOBWriteInternationalStandingOrder4DataInitiation());
     }
