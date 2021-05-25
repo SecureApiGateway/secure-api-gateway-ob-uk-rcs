@@ -44,9 +44,9 @@ public class FRDomesticScheduledPaymentConsentData implements FRPaymentConsentDa
     @JsonProperty("StatusUpdateDateTime")
     private DateTime statusUpdateDateTime;
     @JsonProperty("Permission")
-    private OBWriteDomesticScheduledConsentResponse5Data.PermissionEnum permission;
+    private OBExternalPermissions2Code permission;
     @JsonProperty("ReadRefundAccount")
-    private OBWriteDomesticScheduledConsentResponse5Data.ReadRefundAccountEnum readRefundAccount;
+    private OBReadRefundAccountEnum readRefundAccount;
     @JsonProperty("CutOffDateTime")
     private DateTime cutOffDateTime;
     @JsonProperty("ExpectedExecutionDateTime")

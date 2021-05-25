@@ -44,9 +44,9 @@ public class FRInternationalStandingOrderConsentData implements FRPaymentConsent
     @JsonProperty("StatusUpdateDateTime")
     private DateTime statusUpdateDateTime;
     @JsonProperty("Permission")
-    private OBWriteInternationalStandingOrderConsentResponse7Data.PermissionEnum permission;
+    private OBExternalPermissions2Code permission;
     @JsonProperty("ReadRefundAccount")
-    private OBWriteInternationalStandingOrderConsentResponse7Data.ReadRefundAccountEnum readRefundAccount;
+    private OBReadRefundAccountEnum readRefundAccount;
     @JsonProperty("CutOffDateTime")
     private DateTime cutOffDateTime;
     @JsonProperty("Charges")
