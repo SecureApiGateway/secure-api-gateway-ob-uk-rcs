@@ -26,7 +26,7 @@
     <packaging>pom</packaging>
 
     <name>securebanking-openbanking-uk-rcs</name>
-    <description>A UK Open Banking Remote Consent Service for the Secure Banking Accelerator Toolkit</description>
+    <description>A UK Open Banking Remote Consent Service for the Secure Banking Access Toolkit</description>
 
     <modules>
         <module>securebanking-openbanking-uk-rcs-api</module>
