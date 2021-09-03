@@ -15,7 +15,8 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.service.detail;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountConsent;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRAccountAccessConsent;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.tpp.Tpp;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.AccountsConsentDetails;
@@ -53,7 +54,8 @@ public class AccountConsentDetailsService implements ConsentDetailsService {
         String clientId = detailsRequest.getClientId();
         log.debug("=> The client id: '{}'", clientId);
 
-        FRAccountConsent accountConsent = accountConsentService.getAccountConsent(accountRequestId);
+        FRAccountAccessConsent accountConsent = accountConsentService.getAccountConsent(detailsRequest);
+        //FRAccountAccessConsent accountConsent = accountConsentService.getAccountConsent(accountRequestId);
         if (accountConsent == null) {
             log.error("The AISP '{}' is referencing an account detailsRequest {} that doesn't exist", clientId, accountRequestId);
             throw new OBErrorException(RCS_CONSENT_REQUEST_UNKNOWN_ACCOUNT_REQUEST, clientId, accountRequestId);
@@ -62,9 +64,9 @@ public class AccountConsentDetailsService implements ConsentDetailsService {
         // Verify the AISP is the same than the one that created this accountConsent ^
         if (!clientId.equals(accountConsent.getClientId())) {
             log.error("The AISP '{}' created the account detailsRequest '{}' but it's AISP '{}' that is trying to get" +
-                    " consent for it.", accountConsent.getClientId(), clientId, accountRequestId);
-            throw new OBErrorException(RCS_CONSENT_REQUEST_INVALID_CONSENT, accountConsent.getClientId(), clientId,
-                    accountRequestId);
+                    " consent for it.", accountConsent.getClientId(), accountRequestId, clientId);
+            throw new OBErrorException(RCS_CONSENT_REQUEST_INVALID_CONSENT, accountConsent.getClientId(), accountRequestId,
+                    clientId);
         }
 
         Optional<Tpp> isTpp = tppService.getTpp(accountConsent.getAispId());

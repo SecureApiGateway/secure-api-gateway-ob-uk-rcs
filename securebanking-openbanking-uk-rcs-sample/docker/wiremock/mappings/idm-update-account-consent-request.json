@@ -1,0 +1,9 @@
+{
+  "request": {
+    "method": "PUT",
+    "urlPathPattern": "/idm/account-access-consents/.*"
+  },
+  "response": {
+    "status": 200
+  }
+}

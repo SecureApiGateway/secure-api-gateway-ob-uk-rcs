@@ -7,6 +7,10 @@ springfox:
 
 rcs:
   issuerId: forgerock-rcs
+  consent:
+    request:
+      jwt:
+        must-be-validated: false
 
 rs:
   internal-port: 8443

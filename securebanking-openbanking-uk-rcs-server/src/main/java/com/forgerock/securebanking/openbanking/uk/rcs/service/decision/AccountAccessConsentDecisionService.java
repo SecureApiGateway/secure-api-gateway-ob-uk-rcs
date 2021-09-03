@@ -16,7 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.service.decision;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountConsent;
+import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRAccountAccessConsent;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision.AccountConsentDecision;
@@ -28,8 +28,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRExternalRequestStatusCode.AUTHORISED;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRExternalRequestStatusCode.REJECTED;
+import static com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRConsentStatusCode.AUTHORISED;
+import static com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRConsentStatusCode.REJECTED;
 import static com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType.RCS_CONSENT_DECISION_INVALID_ACCOUNT;
 import static com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType.RCS_CONSENT_REQUEST_UNKNOWN_ACCOUNT_REQUEST;
 import static com.forgerock.securebanking.openbanking.uk.rcs.util.ConsentDecisionDeserializer.deserializeConsentDecision;
@@ -52,7 +52,7 @@ public class AccountAccessConsentDecisionService implements ConsentDecisionServi
 
     @Override
     public void processConsentDecision(String intentId, String consentDecisionSerialised, boolean decision) throws OBErrorException {
-        FRAccountConsent accountAccessRequest = getAccountConsent(intentId);
+        FRAccountAccessConsent accountAccessRequest = getAccountConsent(intentId);
         AccountConsentDecision accountConsentDecision = deserializeConsentDecision(consentDecisionSerialised,
                 objectMapper, AccountConsentDecision.class);
 
@@ -88,8 +88,8 @@ public class AccountAccessConsentDecisionService implements ConsentDecisionServi
         return getAccountConsent(intentId).getUserId();
     }
 
-    private FRAccountConsent getAccountConsent(String intentId) throws OBErrorException {
-        FRAccountConsent accountRequest = accountConsentService.getAccountConsent(intentId);
+    private FRAccountAccessConsent getAccountConsent(String intentId) throws OBErrorException {
+        FRAccountAccessConsent accountRequest = accountConsentService.getAccountConsent(intentId);
         if (accountRequest == null) {
             log.error("The AISP is referencing an account request {} that doesn't exist", intentId);
             throw new OBErrorException(RCS_CONSENT_REQUEST_UNKNOWN_ACCOUNT_REQUEST, intentId);

@@ -38,8 +38,5 @@ public interface ConsentDetailsApi {
             method = RequestMethod.POST)
     ResponseEntity<ConsentDetails> getConsentDetails(
             @ApiParam(value = "Consent request JWT received by AM", required = true)
-            @RequestBody String consentRequestJwt,
-
-            @ApiParam(value = "Cookie containing the user session", required = true)
-            @CookieValue(value = "${am.cookie.name}") String ssoToken) throws OBErrorException;
+            @RequestBody String consentRequestJwt) throws OBErrorException;
 }

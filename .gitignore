@@ -3,3 +3,5 @@
 .vscode/
 .classpath
 .mongo/
+!.gitignore
+.java-version
