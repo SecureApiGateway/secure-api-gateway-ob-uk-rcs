@@ -55,7 +55,6 @@ public class AccountConsentDetailsService implements ConsentDetailsService {
         log.debug("=> The client id: '{}'", clientId);
 
         FRAccountAccessConsent accountConsent = accountConsentService.getAccountConsent(detailsRequest);
-        //FRAccountAccessConsent accountConsent = accountConsentService.getAccountConsent(accountRequestId);
         if (accountConsent == null) {
             log.error("The AISP '{}' is referencing an account detailsRequest {} that doesn't exist", clientId, accountRequestId);
             throw new OBErrorException(RCS_CONSENT_REQUEST_UNKNOWN_ACCOUNT_REQUEST, clientId, accountRequestId);

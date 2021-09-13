@@ -57,7 +57,7 @@ public class AccountConsentDetailsServiceTest {
                 .clientId(request.getClientId())
                 .build();
         Tpp tpp = aValidTpp();
-        given(accountConsentService.getAccountConsent(request.getIntentId())).willReturn(accessConsent);
+        given(accountConsentService.getAccountConsent(request)).willReturn(accessConsent);
         given(tppService.getTpp(accessConsent.getAispId())).willReturn(Optional.of(tpp));
 
         // When
@@ -82,7 +82,7 @@ public class AccountConsentDetailsServiceTest {
     public void shouldFailToGetConsentDetailsGivenAccountConsentNotFound() {
         // Given
         ConsentDetailsRequest request = aValidAccountAccessConsentDetailsRequest();
-        given(accountConsentService.getAccountConsent(request.getIntentId())).willReturn(null);
+        given(accountConsentService.getAccountConsent(request)).willReturn(null);
 
         // When
         OBErrorException e = catchThrowableOfType(() -> consentDetailsService.getConsentDetails(request), OBErrorException.class);
@@ -97,7 +97,7 @@ public class AccountConsentDetailsServiceTest {
         ConsentDetailsRequest request = aValidAccountAccessConsentDetailsRequest();
         FRAccountAccessConsent accessConsent = aValidFRAccountAccessConsentBuilder()
                 .build();
-        given(accountConsentService.getAccountConsent(request.getIntentId())).willReturn(accessConsent);
+        given(accountConsentService.getAccountConsent(request)).willReturn(accessConsent);
 
         // When
         OBErrorException e = catchThrowableOfType(() -> consentDetailsService.getConsentDetails(request), OBErrorException.class);
@@ -113,7 +113,7 @@ public class AccountConsentDetailsServiceTest {
         FRAccountAccessConsent accessConsent = aValidFRAccountAccessConsentBuilder()
                 .clientId(request.getClientId())
                 .build();
-        given(accountConsentService.getAccountConsent(request.getIntentId())).willReturn(accessConsent);
+        given(accountConsentService.getAccountConsent(request)).willReturn(accessConsent);
         given(tppService.getTpp(accessConsent.getAispId())).willReturn(Optional.empty());
 
         // When
