@@ -5,8 +5,9 @@ services:
     container_name: securebanking-config-server
     image: eu.gcr.io/sbat-gcr-develop/securebanking/securebanking-spring-config-server
     environment:
-      - SSH_KEY=${GIT_SSH_KEY}
-      - SPRING_CLOUD_CONFIG_SERVER_GIT_URI=git@github.com:SecureBankingAcceleratorToolkit/securebanking-openbanking-spring-config.git
+      - CONFIG_GIT_IGNORE_LOCAL_SSH=true
+      - GIT_CONFIG_SSH_KEY=${GIT_SSH_KEY}
+      - SPRING_CLOUD_CONFIG_SERVER_GIT_URI=git@github.com:SecureBankingAccessToolkit/securebanking-openbanking-spring-config.git
       - SPRING_CLOUD_CONFIG_SERVER_GIT_DEFAULT-LABEL=master
     ports:
       - 8888:8888
@@ -16,9 +17,11 @@ services:
     image: eu.gcr.io/sbat-gcr-develop/securebanking/securebanking-openbanking-uk-rcs
     ports:
       - 8080:8080
+      - 9095:9095
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CLOUD_CONFIG_URI=http://securebanking-config-server:8888
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,address=*:9095,server=y,suspend=n
     command: /app/wait-for.sh securebanking-config-server:8888 -- java -jar securebanking-openbanking-uk-rcs.jar
     restart: on-failure
     depends_on:
@@ -35,10 +38,12 @@ services:
     image: eu.gcr.io/sbat-gcr-develop/securebanking/securebanking-openbanking-uk-rs
     ports:
       - 8081:8080
+      - 9096:9096
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CLOUD_CONFIG_URI=http://securebanking-config-server:8888
       - SPRING_DATA_MONGODB_HOST=rs-mongo
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,address=*:9096,server=y,suspend=n
     command: /app/wait-for.sh securebanking-config-server:8888 -- java -jar securebanking-openbanking-uk-rs.jar
     restart: on-failure
     depends_on:
@@ -54,13 +59,13 @@ services:
     ports:
       - 27017:27017
     volumes:
-      - ./docker/.mongo/data:/data/db
+      - ./.mongo/data:/data/db
 
   wiremock:
     container_name: wiremock
     image: rodolpheche/wiremock
-    command: --port 9080 --local-response-templating
+    command: --port 9080 --global-response-templating --permitted-system-keys --verbose
     ports:
       - 9080:9080
     volumes:
-      - ./docker/wiremock:/home/wiremock
+      - ./wiremock:/home/wiremock

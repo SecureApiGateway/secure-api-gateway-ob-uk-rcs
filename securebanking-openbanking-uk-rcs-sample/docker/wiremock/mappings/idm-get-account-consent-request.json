@@ -1,0 +1,15 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/idm/account-access-consents/.*"
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "idm-get-account-consent-response.json",
+    "transformers": ["response-template"],
+    "headers": {
+      "Content-Type": "application/json",
+      "my-header": "{{request.headers.x-client-id}}"
+    }
+  }
+}

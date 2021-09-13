@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @Data
 public class RcsConfigurationProperties {
-    @Value("${dns.hosts.root}")
+    @Value("${dns.hosts.root:localhost}")
     private String hostRoot;
     @Value("${rcs.issuerId}")
     private String issuerId;

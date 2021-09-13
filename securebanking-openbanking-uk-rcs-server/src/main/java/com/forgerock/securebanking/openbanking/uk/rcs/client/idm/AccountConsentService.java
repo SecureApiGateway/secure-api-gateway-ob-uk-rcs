@@ -15,13 +15,17 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.client.idm;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountConsent;
+import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRAccountAccessConsent;
 import com.forgerock.securebanking.openbanking.uk.rcs.configuration.RcsConfigurationProperties;
+import com.forgerock.securebanking.openbanking.uk.rcs.service.detail.ConsentDetailsRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Map;
 
 import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -30,7 +34,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @Slf4j
 public class AccountConsentService {
     private static final String CONSENTS_URI = "/account-access-consents";
-
     private final RcsConfigurationProperties configurationProperties;
     private final RestTemplate restTemplate;
 
@@ -39,18 +42,28 @@ public class AccountConsentService {
         this.restTemplate = restTemplate;
     }
 
-    public FRAccountConsent getAccountConsent(String consentId) {
+    public FRAccountAccessConsent getAccountConsent(String consentId) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(APPLICATION_JSON);
         // TODO - add additional required headers
-        return restTemplate.getForObject(consentIdUrl(consentId), FRAccountConsent.class, headers);
+        return restTemplate.getForObject(consentIdUrl(consentId), FRAccountAccessConsent.class, headers);
     }
 
-    public void updateAccountConsent(FRAccountConsent accountRequest) {
+    public FRAccountAccessConsent getAccountConsent(ConsentDetailsRequest detailsRequest) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(APPLICATION_JSON);
         // TODO - add additional required headers
-        HttpEntity<FRAccountConsent> requestEntity = new HttpEntity<>(accountRequest, headers);
+
+        headers.add("x-client-id", detailsRequest.getClientId());
+        HttpEntity<Map<String, String>> request = new HttpEntity(headers);
+        return restTemplate.exchange(consentIdUrl(detailsRequest.getIntentId()), HttpMethod.GET,request,FRAccountAccessConsent.class).getBody();
+    }
+
+    public void updateAccountConsent(FRAccountAccessConsent accountRequest) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(APPLICATION_JSON);
+        // TODO - add additional required headers
+        HttpEntity<FRAccountAccessConsent> requestEntity = new HttpEntity<>(accountRequest, headers);
         restTemplate.exchange(consentIdUrl(accountRequest.getId()), PUT, requestEntity, Void.class);
     }
 
