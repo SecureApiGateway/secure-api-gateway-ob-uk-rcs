@@ -32,4 +32,6 @@ public class RcsConfigurationProperties {
     private String idmBaseUrl;
     @Value("${jwkms.base-url}")
     private String jwkmsBaseUrl;
+    @Value("${jwkms.consent-signing-path}")
+    private String jwkmsConsentSigningPath;
 }

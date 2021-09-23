@@ -41,7 +41,8 @@ idm:
 
 jwkms:
   internal-port: 9080
-  base-url: http://wiremock:${jwkms.internal-port}/jwkms
+  base-url: http://wiremock:${jwkms.internal-port}
+  consent-signing-path: /jwkms/rcs/signresponse
 
 am:
   hostname: am

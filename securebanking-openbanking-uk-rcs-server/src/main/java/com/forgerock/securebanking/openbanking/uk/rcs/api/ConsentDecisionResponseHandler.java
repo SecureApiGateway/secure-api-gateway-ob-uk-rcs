@@ -117,7 +117,7 @@ public class ConsentDecisionResponseHandler {
         requestParameterClaims.claim("clientId", clientId);
 
         // TODO - can the RCS sign the JWT instead? Or call IG?
-        return jwkmsApiClient.signClaims(rcsConfigurationProperties.getIssuerId(), requestParameterClaims.build(), false);
+        return jwkmsApiClient.signClaims(requestParameterClaims.build());
     }
 
     private ResponseEntity sendRcsResponseToAM(String ssoToken, RedirectionAction redirectionAction) {
