@@ -3,5 +3,6 @@
 .vscode/
 .classpath
 .mongo/
-!.gitignore
 .java-version
+target/
+.factorypath

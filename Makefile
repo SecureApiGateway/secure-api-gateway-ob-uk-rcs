@@ -22,7 +22,7 @@ endif
 	helm dep up _infra/helm/${name}
 	helm template _infra/helm/${name}
 	helm package _infra/helm/${name}
-	cp ./${name}-*.tgz ./${name}-${version}.tgz
+	mv ./${name}-*.tgz ./${name}-${version}.tgz
 
 dev: clean
 	mvn package -DskipTests=true -Dtag=latest -DgcrRepo=${repo} \
