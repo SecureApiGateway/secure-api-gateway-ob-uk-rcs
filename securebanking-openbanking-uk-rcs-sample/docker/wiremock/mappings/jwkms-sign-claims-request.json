@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "POST",
-    "url": "/jwkms/api/crypto/signClaims"
+    "url": "/jwkms/rcs/signresponse"
   },
   "response": {
     "status": 200,

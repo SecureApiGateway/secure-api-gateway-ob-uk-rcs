@@ -74,7 +74,7 @@ public class WireMockStubHelper {
     }
 
     public void stubSignClaims(String responseBody) {
-        WIRE_MOCK_SERVER.stubFor(post(urlEqualTo("/jwkms/api/crypto/signClaims"))
+        WIRE_MOCK_SERVER.stubFor(post(urlEqualTo("/jwkms/rcs/signresponse"))
                 .willReturn(aResponse()
                         .withBody(responseBody)
                         .withStatus(OK.value())));

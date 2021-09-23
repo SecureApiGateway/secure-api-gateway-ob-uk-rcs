@@ -17,6 +17,7 @@ idm:
 jwkms:
   internal-port: 8555
   base-url: https://ig:${jwkms.internal-port}
+  consent-signing-path: /jwkms/rcs/signresponse
 
 dns:
   hosts:

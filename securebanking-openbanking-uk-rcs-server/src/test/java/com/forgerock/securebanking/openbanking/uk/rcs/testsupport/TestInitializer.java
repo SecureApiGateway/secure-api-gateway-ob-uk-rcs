@@ -32,8 +32,8 @@ public class TestInitializer implements ApplicationContextInitializer<Configurab
                 "am.endpoint.userprofile=http://localhost:" + SERVER_PORT + "/am/userprofile",
                 "rs.base-url=http://localhost:" + SERVER_PORT + "/rs",
                 "idm.base-url=http://localhost:" + SERVER_PORT + "/idm",
-                "jwkms.base-url=http://localhost:" + SERVER_PORT + "/jwkms",
-                "jwkms.base-url=http://localhost:" + SERVER_PORT + "/jwkms",
+                "jwkms.base-url=http://localhost:" + SERVER_PORT,
+                "jwkms.base-url=http://localhost:" + SERVER_PORT,
                 "am.root=http://localhost:" + SERVER_PORT + "/am/oauth2/authorize"
         );
         values.applyTo(applicationContext);

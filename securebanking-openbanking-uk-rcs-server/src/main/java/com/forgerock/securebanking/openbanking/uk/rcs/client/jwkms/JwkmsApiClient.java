@@ -28,7 +28,6 @@ import org.springframework.web.client.RestTemplate;
 @Service
 @Slf4j
 public class JwkmsApiClient {
-    private static final String SIGNING_URI = "/api/crypto/";
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
@@ -42,38 +41,19 @@ public class JwkmsApiClient {
         this.rcsProperties = rcsProperties;
     }
 
-    public String signClaims(String issuerId, JWTClaimsSet jwtClaimsSet, boolean includeKey) {
-        return this.signClaims(restTemplate, null, issuerId, jwtClaimsSet.toString(), "signClaims", includeKey);
+    public String signClaims(JWTClaimsSet jwtClaimsSet) {
+        return this.signClaims(restTemplate, jwtClaimsSet.toString());
     }
 
     private String signClaims(RestTemplate restTemplate,
-                              SigningRequest signingRequest,
-                              String issuerId,
-                              String payload,
-                              String path,
-                              boolean includeKey) {
+                              String payload) {
         HttpHeaders headers = new HttpHeaders();
-        if (issuerId != null) {
-            headers.add("issuerId", issuerId);
-        }
-
-        if (includeKey) {
-            headers.add("includeKey", "true");
-        }
-
-        if (signingRequest != null) {
-            try {
-                headers.add("signingRequest", objectMapper.writeValueAsString(signingRequest));
-            } catch (JsonProcessingException var9) {
-                log.error("Can't serialise signing request '{}' into a string", signingRequest, var9);
-            }
-        }
 
         HttpEntity<String> request = new HttpEntity<>(payload, headers);
         if (log.isDebugEnabled()) {
             log.debug("Sign claims {}", payload);
         }
 
-        return restTemplate.postForObject(rcsProperties.getJwkmsBaseUrl() + SIGNING_URI + path, request, String.class);
+        return restTemplate.postForObject(rcsProperties.getJwkmsBaseUrl() + rcsProperties.getJwkmsConsentSigningPath(), request, String.class);
     }
 }
