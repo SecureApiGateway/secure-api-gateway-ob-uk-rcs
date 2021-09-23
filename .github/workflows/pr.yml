@@ -9,7 +9,7 @@ on:
 
 env:
   HELM_DIRECTORY: _infra/helm/
-  SERVICE_NAME: securebanking-openbanking-uk-rs
+  SERVICE_NAME: securebanking-openbanking-uk-rcs
   PR_NUMBER: pr-${{ github.event.number }}
 
 jobs:
