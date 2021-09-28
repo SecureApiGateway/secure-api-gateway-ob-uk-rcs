@@ -1,4 +1,4 @@
-## SBA Toolkit's UK Open Banking RCS
+## SBA Toolkit's UK Open Banking RCS 
 
 A multi-module maven project providing a UK Open Banking Remote Consent Service for the Secure Banking Accelerator Toolkit.
 
