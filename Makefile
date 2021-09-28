@@ -17,7 +17,7 @@ docker: clean
 
 helm: clean
 ifndef version
-	$(error A version must be supplied, Eg. make helm version=1.0.0)
+	$(error A version must be supplied, Eg. make helm version=1.0.0 )
 endif
 	helm dep up _infra/helm/${name}
 	helm template _infra/helm/${name}
