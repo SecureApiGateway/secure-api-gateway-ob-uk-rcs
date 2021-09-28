@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright © 2021 ForgeRock AS (obst@forgerock.com)
+    Copyright © 2020 ForgeRock AS (obst@forgerock.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@
     <packaging>pom</packaging>
 
     <name>securebanking-openbanking-uk-rcs</name>
-    <description>A UK Open Banking Remote Consent Service for the Secure Banking Accelerator Toolkit</description>
+    <description>A UK Open Banking Remote Consent Service for the Secure Banking Accelerator Toolkit </description>
 
     <modules>
         <module>securebanking-openbanking-uk-rcs-api</module>
