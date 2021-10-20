@@ -1,5 +1,5 @@
 /**
- * Copyright © 2020 ForgeRock AS (obst@forgerock.com)
+ * Copyright © 2020-2021 ForgeRock AS (obst@forgerock.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -284,14 +284,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(value = {InvalidConsentException.class})
-    protected ResponseEntity<RedirectionAction> handleInvalidConsentException(InvalidConsentException ex)
-            throws OBErrorException {
-        return rcsErrorService.invalidConsentError(
-                ex.getConsentRequestJwt(),
-                ex.getErrorType(),
-                ex.getClientId(),
-                ex.getConsentId(),
-                ex.getAccounts());
+    protected ResponseEntity<RedirectionAction> handleInvalidConsentException(InvalidConsentException ex) {
+        return rcsErrorService.invalidConsentError(ex);
     }
 
     // Required here because these programming errors can get lost in Spring handlers making debug very difficult

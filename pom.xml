@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright © 2020 ForgeRock AS (obst@forgerock.com)
+    Copyright © 2020-2021 ForgeRock AS (obst@forgerock.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -20,45 +20,58 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.forgerock.securebanking</groupId>
+    <groupId>com.forgerock.securebanking.uk</groupId>
     <artifactId>securebanking-openbanking-uk-rcs</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
-
     <name>securebanking-openbanking-uk-rcs</name>
     <description>A UK Open Banking Remote Consent Service for the Secure Banking Accelerator Toolkit</description>
+    <url>https://github.com/SecureBankingAccessToolkit/securebanking-openbanking-uk-rcs.git</url>
 
     <modules>
         <module>securebanking-openbanking-uk-rcs-api</module>
         <module>securebanking-openbanking-uk-rcs-server</module>
         <module>securebanking-openbanking-uk-rcs-sample</module>
+        <module>securebanking-forgerock-cloud-client</module>
     </modules>
 
     <parent>
         <groupId>com.forgerock.securebanking</groupId>
         <artifactId>securebanking-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.3-SNAPSHOT</version>
     </parent>
 
     <dependencyManagement>
         <dependencies>
             <!-- ForgeRock BOM -->
             <dependency>
-                <groupId>com.forgerock.securebanking</groupId>
+                <groupId>com.forgerock.securebanking.uk</groupId>
                 <artifactId>securebanking-openbanking-uk-bom</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>1.0.3-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <!-- Necessary to support for http PATCH calls used by the platform module client-->
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>4.5.13</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+        </dependency>
+    </dependencies>
 
     <scm>
-        <connection>scm:git:git@github.com:SecureBankingAcceleratorToolkit/securebanking-openbanking-uk-rcs.git
+        <connection>scm:git:git@github.com:SecureBankingAccessToolkit/securebanking-openbanking-uk-rcs.git
         </connection>
-        <developerConnection>scm:git:git@github.com:SecureBankingAcceleratorToolkit/securebanking-openbanking-uk-rcs.git
+        <developerConnection>scm:git:git@github.com:SecureBankingAccessToolkit/securebanking-openbanking-uk-rcs.git
         </developerConnection>
-        <url>https://github.com/SecureBankingAcceleratorToolkit/securebanking-openbanking-uk-rcs.git</url>
+        <url>https://github.com/SecureBankingAccessToolkit/securebanking-openbanking-uk-rcs.git</url>
         <tag>HEAD</tag>
     </scm>
 

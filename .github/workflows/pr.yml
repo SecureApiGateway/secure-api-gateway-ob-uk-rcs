@@ -29,11 +29,11 @@ jobs:
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven2-${{ hashFiles('**/pom.xml') }}
-      
+
       - uses: google-github-actions/setup-gcloud@master
         with:
           service_account_key: ${{ secrets.GCR_KEY }}
-      
+
       - name: template helm
         run: |
           helm template $HELM_DIRECTORY/$SERVICE_NAME
@@ -44,10 +44,10 @@ jobs:
       - name: test
         run: |
           make verify
-      
+
       - run: |
           gcloud auth configure-docker
-      
+
       - name: Build Docker Image
         run: |
           make docker tag=${{ env.PR_NUMBER }}
@@ -55,7 +55,7 @@ jobs:
       - uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_ACCESS_TOKEN }}
-      
+
       - name: 'run functional tests'
         uses: codefresh-io/codefresh-pipeline-runner@master
         with:

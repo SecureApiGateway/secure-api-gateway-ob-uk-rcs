@@ -1,5 +1,5 @@
 /**
- * Copyright © 2020 ForgeRock AS (obst@forgerock.com)
+ * Copyright © 2020-2021 ForgeRock AS (obst@forgerock.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Deprecated
 public class AccountConsentDecision {
     private String consentJwt;
     private String decision;

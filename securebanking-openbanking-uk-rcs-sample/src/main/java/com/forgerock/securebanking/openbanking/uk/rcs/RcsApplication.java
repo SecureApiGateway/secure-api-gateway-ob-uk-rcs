@@ -1,5 +1,5 @@
 /**
- * Copyright © 2020 ForgeRock AS (obst@forgerock.com)
+ * Copyright © 2020-2021 ForgeRock AS (obst@forgerock.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class RcsApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(RcsApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(RcsApplication.class, args);
+    }
 }

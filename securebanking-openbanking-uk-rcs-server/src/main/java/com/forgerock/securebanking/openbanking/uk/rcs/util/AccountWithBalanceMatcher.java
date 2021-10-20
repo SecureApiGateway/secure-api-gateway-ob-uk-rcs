@@ -1,5 +1,5 @@
 /**
- * Copyright © 2020 ForgeRock AS (obst@forgerock.com)
+ * Copyright © 2020-2021 ForgeRock AS (obst@forgerock.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import static org.springframework.util.StringUtils.isEmpty;
 public class AccountWithBalanceMatcher {
 
     public static Optional<FRAccountWithBalance> getMatchingAccount(String identification,
-                                                                        List<FRAccountWithBalance> accounts) {
+                                                                    List<FRAccountWithBalance> accounts) {
         if (isEmpty(identification)) {
             log.error("Debtor account has null or empty identification string");
             return Optional.empty();

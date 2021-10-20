@@ -5,6 +5,36 @@ springfox:
       v2:
         path: /api-docs
 
+# identity-platform properties for client
+identity-platform:
+  client:
+    base_url: https://obdemo.dev.forgerock.financial
+    iam_base_uri: https://iam.dev.forgerock.financial
+    jwk_uri: ${identity-platform.client.iam_base_uri}/am/oauth2/connect/jwk_uri
+    contexts_api_client:
+      get: /repo/apiclients/@ClientId@
+      put: /repo/apiclients/@ClientId@
+      patch: /repo/apiclients/@ClientId@
+      delete: /repo/apiclients/@ClientId@
+    contexts_user:
+      get: /repo/users/@UserId@
+      put: /repo/users/@UserId@
+      patch: /repo/users/@UserId@
+      delete: /repo/users/@UserId@
+    contexts_accounts_consent:
+      get: /repo/consents/account-access/@AccountIntentId@
+      put: /repo/consents/account-access/@AccountIntentId@
+      patch: /repo/consents/account-access/@AccountIntentId@
+      delete: /repo/consents/account-access/@AccountIntentId@
+    contexts_domestic_payment_consent:
+      get: /repo/consents/domestic-payment/@PaymentIntentId@
+      put: /repo/consents/domestic-payment/@PaymentIntentId@
+      patch: /repo/consents/domestic-payment/@PaymentIntentId@
+      delete: /repo/consents/domestic-payment/@PaymentIntentId@
+    #jwk signing service
+    jwkms_request_method: POST
+    jwkms_consent_signing_endpoint: /jwkms/rcs/signresponse
+
 rcs:
   issuerId: forgerock-rcs
   consent:
@@ -13,31 +43,13 @@ rcs:
         must-be-validated: false
 
 rs:
-  internal-port: 8443
-  base-url: https://ig:${rs.internal-port}
+  internal-port: 8081
+  base-url: https://rs-simulator:${rs.internal-port}
 
-idm:
-  internal-port: 8444
-  base-url: https://ig:${idm.internal-port}
-
-jwkms:
-  internal-port: 8555
-  base-url: https://ig:${jwkms.internal-port}
-  consent-signing-path: /jwkms/rcs/signresponse
-
-dns:
-  hosts:
-    root: localhost
-
-am:
-  hostname: as.aspsp.${dns.hosts.root}
-  root: https://${am.hostname}
-  cookie:
-    name: iPlanetDirectoryPro
-  oidc:
-    issuerid: ${am.root}/oauth2
-  userprofile:
-    id: id
-  endpoint:
-    userprofile: ${am.root}/userprofile
-    authorize: ${am.root}/oauth2/authorize
+filters:
+  cors: # CorsFilter
+    expected_origin_ends_with: localhost # dev.forgerock.financial # default value localhost
+    allowed_headers: accept-api-version, x-requested-with, authorization, Content-Type, Authorization, credential, X-XSRF-TOKEN, Id-Token
+    allowed_methods: GET, PUT, POST, DELETE, OPTIONS, PATCH
+    allowed_credentials: true # default value true
+    max_age: 3600 # default value 3600

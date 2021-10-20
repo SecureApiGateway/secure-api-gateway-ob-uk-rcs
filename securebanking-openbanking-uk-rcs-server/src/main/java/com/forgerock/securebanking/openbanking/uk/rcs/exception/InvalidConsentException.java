@@ -1,5 +1,5 @@
 /**
- * Copyright © 2020 ForgeRock AS (obst@forgerock.com)
+ * Copyright © 2020-2021 ForgeRock AS (obst@forgerock.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,17 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.exception;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
+import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import lombok.Value;
-
-import java.util.List;
 
 @Value
 public class InvalidConsentException extends RuntimeException {
     String consentRequestJwt;
-    OBRIErrorType errorType;
+    ErrorType errorType;
+    OBRIErrorType obriErrorType;
+    String reason;
     String clientId;
     String consentId;
-    List<FRAccountWithBalance> accounts;
+//    List<FRAccountWithBalance> accounts;
 }

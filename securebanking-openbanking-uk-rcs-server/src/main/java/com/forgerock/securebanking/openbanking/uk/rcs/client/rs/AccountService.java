@@ -1,5 +1,5 @@
 /**
- * Copyright © 2020 ForgeRock AS (obst@forgerock.com)
+ * Copyright © 2020-2021 ForgeRock AS (obst@forgerock.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,8 @@ public class AccountService {
         String lowercaseUserId = userID.toLowerCase();
         log.debug("Searching for accounts with user ID: {}", lowercaseUserId);
 
-        ParameterizedTypeReference<List<FRAccount>> ptr = new ParameterizedTypeReference<>() {};
+        ParameterizedTypeReference<List<FRAccount>> ptr = new ParameterizedTypeReference<>() {
+        };
         UriComponentsBuilder builder = fromHttpUrl(configurationProperties.getRsBaseUrl() + FIND_USER_BY_ID_URI);
         builder.queryParam("userId", lowercaseUserId);
 
@@ -63,7 +64,8 @@ public class AccountService {
         String lowercaseUserId = userID.toLowerCase();
         log.debug("Searching for accounts with balance for user ID: {}", lowercaseUserId);
 
-        ParameterizedTypeReference<List<FRAccountWithBalance>> ptr = new ParameterizedTypeReference<>() {};
+        ParameterizedTypeReference<List<FRAccountWithBalance>> ptr = new ParameterizedTypeReference<>() {
+        };
         UriComponentsBuilder builder = fromHttpUrl(configurationProperties.getRsBaseUrl() + FIND_USER_BY_ID_URI);
         builder.queryParam("userId", lowercaseUserId);
         builder.queryParam("withBalance", true);

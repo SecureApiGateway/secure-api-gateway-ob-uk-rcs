@@ -1,5 +1,5 @@
 /**
- * Copyright © 2020 ForgeRock AS (obst@forgerock.com)
+ * Copyright © 2020-2021 ForgeRock AS (obst@forgerock.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,16 +22,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @Data
 public class RcsConfigurationProperties {
-    @Value("${dns.hosts.root:localhost}")
-    private String hostRoot;
     @Value("${rcs.issuerId}")
     private String issuerId;
     @Value("${rs.base-url}")
     private String rsBaseUrl;
-    @Value("${idm.base-url}")
-    private String idmBaseUrl;
-    @Value("${jwkms.base-url}")
-    private String jwkmsBaseUrl;
-    @Value("${jwkms.consent-signing-path}")
-    private String jwkmsConsentSigningPath;
 }

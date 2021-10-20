@@ -1,5 +1,5 @@
 /**
- * Copyright © 2020 ForgeRock AS (obst@forgerock.com)
+ * Copyright © 2020-2021 ForgeRock AS (obst@forgerock.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.forgerock.securebanking.openbanking.uk.rcs.exception;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.RedirectionAction;
+import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import com.google.common.base.Splitter;
 import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.SignedJWT;
@@ -35,6 +36,8 @@ import java.util.Map;
 
 import static com.forgerock.securebanking.openbanking.uk.common.api.meta.OBConstants.OIDCClaim.CONSENT_APPROVAL_REDIRECT_URI;
 import static com.forgerock.securebanking.openbanking.uk.common.api.meta.OBConstants.OIDCClaim.STATE;
+import static com.forgerock.securebanking.platform.client.exceptions.ErrorType.INVALID_REQUEST;
+import static com.forgerock.securebanking.platform.client.exceptions.ErrorType.SERVER_ERROR;
 
 /**
  * This service is intended for scenarios where the consent provided by the TPP is invalid so we cannot proceed with
@@ -59,15 +62,84 @@ public class RcsErrorService {
     public ResponseEntity<RedirectionAction> invalidConsentError(String consentContextJwt,
                                                                  OBRIErrorType obriErrorType,
                                                                  Object... args) throws OBErrorException {
-
         return invalidConsentError(consentContextJwt, new OBErrorException(obriErrorType, args));
+    }
+
+    /**
+     *
+     * @param invalidConsentException Exception object to populate the response
+     * @return The HTTP response for the RCS UI.
+     */
+    public ResponseEntity<RedirectionAction> invalidConsentError(InvalidConsentException invalidConsentException) {
+
+        return invalidConsentError(invalidConsentException.getConsentRequestJwt(), invalidConsentException);
+    }
+
+    public ResponseEntity<RedirectionAction> invalidConsentError(String consentContextJwt, InvalidConsentException invalidConsentException) {
+        ErrorType errorType = invalidConsentException.getErrorType();
+        OBRIErrorType obriErrorType = invalidConsentException.getObriErrorType();
+        try {
+            Map<String, String> params = extractParams(consentContextJwt);
+
+            String redirectURL = params.get("redirect_uri") != null ? URLDecoder.decode(params.get("redirect_uri"), "UTF-8") : "";
+            if (StringUtils.isEmpty(redirectURL)) {
+                String message = "Null or empty redirect URL. Falling back to just throwing error back to UI";
+                String errorMessage = obriErrorType != null ? String.format(obriErrorType.getMessage(), message) : message;
+                log.warn(errorMessage);
+                return ResponseEntity
+                        .status(INVALID_REQUEST.getHttpStatus().value())
+                        .body(RedirectionAction.builder()
+                                .errorMessage(errorMessage)
+                                .build());
+            }
+
+            String state = "";
+
+            if (params.get("state") != null) {
+                state = URLDecoder.decode(params.get("state"), "UTF-8");
+            } else {
+                String requestParameter = params.get("request");
+                if (requestParameter != null) {
+                    SignedJWT requestParameterJwt = (SignedJWT) JWTParser.parse(requestParameter);
+                    state = requestParameterJwt.getJWTClaimsSet().getStringClaim(STATE);
+                }
+            }
+
+            String errorDescription = errorType.getDescription() +
+                    invalidConsentException.getReason() != null ? " " + invalidConsentException.getReason() : "";
+            UriComponents uriComponents = UriComponentsBuilder
+                    .fromHttpUrl(redirectURL)
+                    .fragment("error=" + errorType.getErrorCode() + "&state=" + state +
+                            "&error_description=" + String.format(errorDescription) +
+                            "error_uri=" + errorType.getErrorUri(errorType.getInternalCode()))
+                    .encode()
+                    .build();
+
+            return ResponseEntity
+                    .status(errorType.getHttpStatus())
+                    .body(RedirectionAction.builder()
+                            .consentJwt(consentContextJwt)
+                            .redirectUri(uriComponents.toUriString())
+                            .requestMethod(HttpMethod.GET)
+                            .build());
+        } catch (Exception e) {
+            String message = String.format("Failed to turn error into a redirect back to TPP with and Exception. " +
+                    "Falling back to just throwing error back to UI. %s", e.getMessage());
+            String errorMessage = obriErrorType != null ? String.format(obriErrorType.getMessage(), message) : message;
+            log.warn(errorMessage, e);
+            return ResponseEntity
+                    .status(SERVER_ERROR.getHttpStatus().value())
+                    .body(RedirectionAction.builder()
+                            .errorMessage(errorMessage)
+                            .build());
+        }
     }
 
     public ResponseEntity<RedirectionAction> invalidConsentError(String consentContextJwt, OBErrorException obError)
             throws OBErrorException {
         try {
             Map<String, String> params = extractParams(consentContextJwt);
-            String redirectURL =  URLDecoder.decode(params.get("redirect_uri"), "UTF-8");
+            String redirectURL = URLDecoder.decode(params.get("redirect_uri"), "UTF-8");
             String state = "";
 
             if (params.get("state") != null) {
@@ -107,7 +179,7 @@ public class RcsErrorService {
     private Map<String, String> extractParams(String consentContextJwt) throws ParseException {
         log.debug("Parse consent request JWS: {}", consentContextJwt);
         SignedJWT signedJWT = (SignedJWT) JWTParser.parse(consentContextJwt);
-        log.debug("Get claim: {} from JWT: {}", CONSENT_APPROVAL_REDIRECT_URI, signedJWT);
+        log.debug("Get claim: {} from JWT: {}", CONSENT_APPROVAL_REDIRECT_URI, signedJWT.getParsedString());
         String amRedirectUri = signedJWT.getJWTClaimsSet()
                 .getStringClaim(CONSENT_APPROVAL_REDIRECT_URI);
         log.debug("Get TPP callback URL from AM URL: {}", amRedirectUri);
