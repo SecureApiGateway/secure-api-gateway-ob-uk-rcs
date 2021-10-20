@@ -12,7 +12,7 @@ verify: clean
 	mvn verify
 
 docker: clean
-	mvn install dockerfile:push -DskipTests=true -Dtag=${tag} \
+	mvn install package dockerfile:push -DskipTests=true -Dtag=${tag} \
 	  -DgcrRepo=${repo} --file ${name}-sample/pom.xml
 
 helm: clean
