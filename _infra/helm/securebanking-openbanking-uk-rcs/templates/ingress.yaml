@@ -4,8 +4,8 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: {{ .Values.ingress.class }}
     {{- with .Values.ingress.additionalAnnotations }}
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
   labels:
     app: {{ .Chart.Name }}
     appVersion: {{ .Chart.AppVersion }}
@@ -13,14 +13,14 @@ metadata:
   name: {{ .Chart.Name }}
 spec:
   rules:
-    - host: {{ .Values.ingress.subdomain }}.{{ .Values.ingress.domain }}
-      http:
-        paths:
-          - backend:
-              serviceName: {{ .Chart.Name }}
-              servicePort: 8080
-            path: /
+  - host: {{ .Values.ingress.subdomain }}.{{ .Values.ingress.domain }}
+    http:
+      paths:
+      - backend:
+          serviceName: {{ .Chart.Name }}
+          servicePort: 8080
+        path: /
   tls:
-    - hosts:
-        - "{{ .Values.ingress.tls.subdomain }}.{{ .Values.ingress.domain }}"
-      secretName: {{ .Values.ingress.tls.secretName }}
+  - hosts:
+    - "{{ .Values.ingress.tls.subdomain }}.{{ .Values.ingress.domain }}"
+    secretName: {{ .Values.ingress.tls.secretName }}
