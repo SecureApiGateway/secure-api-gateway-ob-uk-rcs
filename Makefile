@@ -12,7 +12,7 @@ verify: clean
 	mvn verify
 
 docker: clean
-	mvn package dockerfile:push -DskipTests=true -Dtag=${tag} \
+	mvn install package dockerfile:push -DskipTests=true -Dtag=${tag} \
 	  -DgcrRepo=${repo} --file ${name}-sample/pom.xml
 
 helm: clean
@@ -25,7 +25,7 @@ endif
 	mv ./${name}-*.tgz ./${name}-${version}.tgz
 
 dev: clean
-	mvn package -DskipTests=true -Dtag=latest -DgcrRepo=${repo} \
+	mvn install package -DskipTests=true -Dtag=latest -DgcrRepo=${repo} \
 	  --file ${name}-sample/pom.xml
 
 version:

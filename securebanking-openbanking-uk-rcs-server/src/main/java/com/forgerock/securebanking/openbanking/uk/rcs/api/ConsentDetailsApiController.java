@@ -1,5 +1,5 @@
 /**
- * Copyright © 2020 ForgeRock AS (obst@forgerock.com)
+ * Copyright © 2020-2021 ForgeRock AS (obst@forgerock.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,140 +16,120 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.api;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.IntentType;
 import com.forgerock.securebanking.openbanking.uk.common.claim.Claims;
-import com.forgerock.securebanking.openbanking.uk.common.claim.JwsClaimsUtils;
-import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
+import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetails;
-import com.forgerock.securebanking.openbanking.uk.rcs.client.am.UserProfileService;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.rs.AccountService;
-import com.forgerock.securebanking.openbanking.uk.rcs.service.detail.ConsentDetailsRequest;
-import com.forgerock.securebanking.openbanking.uk.rcs.service.detail.ConsentDetailsServiceDelegate;
-import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.jwk.source.JWKSource;
-import com.nimbusds.jose.jwk.source.RemoteJWKSet;
-import com.nimbusds.jose.proc.BadJOSEException;
-import com.nimbusds.jose.proc.JWSKeySelector;
-import com.nimbusds.jose.proc.JWSVerificationKeySelector;
-import com.nimbusds.jose.proc.SecurityContext;
-import com.nimbusds.jwt.JWTParser;
+import com.forgerock.securebanking.openbanking.uk.rcs.converters.ConsentDetailsBuilderFactory;
+import com.forgerock.securebanking.openbanking.uk.rcs.exception.InvalidConsentException;
+import com.forgerock.securebanking.platform.client.Constants;
+import com.forgerock.securebanking.platform.client.configuration.ConfigurationPropertiesClient;
+import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
+import com.forgerock.securebanking.platform.client.models.ApiClient;
+import com.forgerock.securebanking.platform.client.models.Consent;
+import com.forgerock.securebanking.platform.client.models.ConsentRequest;
+import com.forgerock.securebanking.platform.client.models.User;
+import com.forgerock.securebanking.platform.client.services.ApiClientServiceClient;
+import com.forgerock.securebanking.platform.client.services.ConsentServiceClient;
+import com.forgerock.securebanking.platform.client.services.UserServiceClient;
+import com.forgerock.securebanking.platform.client.utils.jwt.JwtUtil;
 import com.nimbusds.jwt.SignedJWT;
-import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
-import com.nimbusds.jwt.proc.DefaultJWTClaimsVerifier;
-import com.nimbusds.jwt.proc.DefaultJWTProcessor;
-import com.nimbusds.jwt.proc.JWTClaimsSetVerifier;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.ParseException;
 import java.util.List;
 
-import static com.forgerock.securebanking.openbanking.uk.common.api.meta.OBConstants.IdTokenClaim.INTENT_ID;
-import static com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType.*;
-import static com.forgerock.securebanking.openbanking.uk.rcs.common.RcsConstants.Claims.CLIENT_ID;
-import static com.forgerock.securebanking.openbanking.uk.rcs.common.RcsConstants.Claims.USER_NAME;
+import static com.forgerock.securebanking.platform.client.exceptions.ErrorType.INVALID_REQUEST;
 
 @Controller
 @Slf4j
+@ComponentScan(basePackages = "com.forgerock.securebanking.platform.client.services")
 public class ConsentDetailsApiController implements ConsentDetailsApi {
 
-    private final ConsentDetailsServiceDelegate consentDetailsServiceDelegate;
-    private final UserProfileService userProfileService;
+    private final ConsentServiceClient consentServiceClient;
+    private final ApiClientServiceClient apiClientService;
+    private final UserServiceClient userServiceClient;
     private final AccountService accountService;
+    private final ConfigurationPropertiesClient configurationPropertiesClient;
 
     @Value("${rcs.consent.request.jwt.must-be-validated:false}")
     private Boolean jwtMustBeValidated;
 
-    public ConsentDetailsApiController(ConsentDetailsServiceDelegate consentDetailsServiceDelegate,
-                                       UserProfileService userProfileService,
-                                       AccountService accountService) {
-        this.consentDetailsServiceDelegate = consentDetailsServiceDelegate;
-        this.userProfileService = userProfileService;
+    public ConsentDetailsApiController(ConsentServiceClient consentServiceClient,
+                                       ApiClientServiceClient apiClientService,
+                                       UserServiceClient userServiceClient,
+                                       AccountService accountService, ConfigurationPropertiesClient configurationPropertiesClient) {
+        this.consentServiceClient = consentServiceClient;
+        this.apiClientService = apiClientService;
+        this.userServiceClient = userServiceClient;
         this.accountService = accountService;
+        this.configurationPropertiesClient = configurationPropertiesClient;
     }
 
     @Override
-    public ResponseEntity<ConsentDetails> getConsentDetails(String consentRequestJwt)
-            throws OBErrorException {
-        // TODO: the jwt should be validate here or in IG (JWTValidatorFilter)?
+    public ResponseEntity<ConsentDetails> getConsentDetails(String consentRequestJws) throws InvalidConsentException {
         try {
-
-            log.debug("Parsing consent request JWS...");
-            SignedJWT signedJWT = (SignedJWT) JWTParser.parse(consentRequestJwt);
+            // TODO: the jwt should be validate here or in IG (JWTValidatorFilter)?
             if (jwtMustBeValidated) {
-                ValidateJWT(signedJWT);
+                JwtUtil.validateJWT(consentRequestJws, configurationPropertiesClient.getJwkUri());
             }
-            log.debug("Reading Intent ID from the claims...");
-            // Read the claims
-            Claims claims = JwsClaimsUtils.getClaims(signedJWT);
 
-            if (!claims.getIdTokenClaims().containsKey(INTENT_ID)) {
-                throw new OBErrorException(RCS_CONSENT_REQUEST_INVALID, "No intent ID");
+            SignedJWT signedJWT = JwtUtil.getSignedJWT(consentRequestJws);
+            Claims claims = JwtUtil.getClaims(signedJWT);
+
+            if (!claims.getIdTokenClaims().containsKey(Constants.Claims.INTENT_ID)) {
+                log.error("(ConsentDetailsApiController#getConsentDetails) Missing Intent ID");
+                throw new InvalidConsentException(consentRequestJws, INVALID_REQUEST,
+                        OBRIErrorType.RCS_CONSENT_REQUEST_INVALID_CONSENT,
+                        "Missing intent Id", null, null);
             }
-            String intentId = claims.getIdTokenClaims().get(INTENT_ID).getValue();
-            log.debug("Intent Id from the requested claims '{}'", intentId);
-            String clientId = signedJWT.getJWTClaimsSet().getStringClaim(CLIENT_ID);
-            log.debug("Client Id from the JWT claims '{}'", clientId);
-            String username = signedJWT.getJWTClaimsSet().getStringClaim(USER_NAME);
-            log.debug("Username from the JWT claims '{}'", username);
-            // TODO: we not need call the am to get the user profile
-            // String username = userProfileService.getUsername(username);
-            List<FRAccountWithBalance> accounts = accountService.getAccountsWithBalance(username);
 
-            ConsentDetailsRequest detailsRequest = ConsentDetailsRequest.builder()
-                    .intentId(intentId)
-                    .consentRequestJwt(signedJWT)
-                    .accounts(accounts)
-                    .username(username)
-                    .clientId(clientId)
-                    .build();
-            ConsentDetails consentDetails = consentDetailsServiceDelegate.getConsentDetails(detailsRequest);
+
+            ConsentRequest consentRequest = buildConsentRequest(signedJWT);
+
+            log.debug("Retrieve consent details:\n- Type '{}'\n-Id '{}'\n",
+                    IntentType.identify(consentRequest.getIntentId()).name(), consentRequest.getIntentId());
+            Consent consent = consentServiceClient.getConsent(consentRequest);
+
+            log.debug("Retrieve to api client details for client Id '{}'", consentRequest.getClientId());
+            ApiClient apiClient = apiClientService.getApiClient(consentRequest.getClientId());
+
+            // build the consent details object for the response
+            ConsentDetails consentDetails = ConsentDetailsBuilderFactory.build(consent, consentRequest, apiClient);
+
             return ResponseEntity.ok(consentDetails);
 
-        } catch (ParseException e) {
-            log.error("Could not parse the JWT", e);
-            throw new OBErrorException(RCS_CONSENT_REQUEST_FORMAT);
+        } catch (ExceptionClient e) {
+            String errorMessage = String.format("%s", e.getMessage());
+            log.error(errorMessage);
+            throw new InvalidConsentException(consentRequestJws, e.getErrorClient().getErrorType(),
+                    OBRIErrorType.REQUEST_BINDING_FAILED, errorMessage,
+                    e.getErrorClient().getClientId(),
+                    e.getErrorClient().getIntentId());
         }
     }
 
-    // TODO: must be moved a util library (method not finished yet)
-    private void ValidateJWT(String jwt) throws OBErrorException {
-        try {
-            SignedJWT signedJWT = (SignedJWT) JWTParser.parse(jwt);
-            ValidateJWT(signedJWT);
-        } catch (ParseException e) {
-            log.error("Could not parse the JWT", e);
-            throw new OBErrorException(RCS_CONSENT_REQUEST_FORMAT);
-        }
-    }
+    private ConsentRequest buildConsentRequest(SignedJWT signedJWT) throws ExceptionClient {
+        String intentId = JwtUtil.getIdTokenClaim(signedJWT, Constants.Claims.INTENT_ID);
+        log.debug("Intent Id from the requested claims '{}'", intentId);
+        String clientId = JwtUtil.getClaimValue(signedJWT, Constants.Claims.CLIENT_ID);
+        log.debug("Client Id from the JWT claims '{}'", clientId);
+        String userId = JwtUtil.getClaimValue(signedJWT, Constants.Claims.USER_NAME);
+        log.debug("User Id from the JWT claims '{}'", userId);
+        List<FRAccountWithBalance> accounts = accountService.getAccountsWithBalance(userId);
+        log.debug("Retrieve the user details for user Id '{}'", userId);
+        User user = userServiceClient.getUser(userId);
 
-    private void ValidateJWT(SignedJWT signedJWT) throws OBErrorException {
-        // TODO: create a config parameter in config server, for the moment is hardcoded for tests purposes
-        String jwk_uri = "https://iam.dev.forgerock.financial/am/oauth2/connect/jwk_uri";
-        try {
-            if (signedJWT.getHeader().getAlgorithm() != null && jwk_uri != null) {
-                JWSAlgorithm expectedJWSAlg = JWSAlgorithm.parse(signedJWT.getHeader().getAlgorithm().getName());
-                JWKSource<SecurityContext> keySource = new RemoteJWKSet<>(new URL(jwk_uri));
-                JWSKeySelector<SecurityContext> keySelector = new JWSVerificationKeySelector<>(expectedJWSAlg, keySource);
-
-                // Create a JWT processor
-                ConfigurableJWTProcessor<SecurityContext> jwtProcessor = new DefaultJWTProcessor<>();
-                jwtProcessor.setJWSKeySelector(keySelector);
-                JWTClaimsSetVerifier<SecurityContext> claimsVerifier = new DefaultJWTClaimsVerifier<>();
-                jwtProcessor.setJWTClaimsSetVerifier(claimsVerifier);
-
-                // Process the JWT
-                SecurityContext ctx = null; // optional context parameter, not required here
-                jwtProcessor.process(signedJWT, ctx);
-            }
-        } catch (BadJOSEException | JOSEException | MalformedURLException e) {
-            String messageError = String.format("(%s) Error verifying the consent request JWT. Reason: %s", this.getClass().getSimpleName(), e.getMessage());
-            log.error(messageError);
-            throw new OBErrorException(REQUEST_PARAMETER_JWT_INVALID, e.getMessage());
-        }
+        return ConsentRequest.builder()
+                .intentId(intentId)
+                .consentRequestJwt(signedJWT)
+                .accounts(accounts)
+                .user(user)
+                .clientId(clientId)
+                .build();
     }
 }

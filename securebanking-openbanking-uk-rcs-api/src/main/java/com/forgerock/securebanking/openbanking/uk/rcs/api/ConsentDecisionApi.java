@@ -1,5 +1,5 @@
 /**
- * Copyright © 2020 ForgeRock AS (obst@forgerock.com)
+ * Copyright © 2020-2021 ForgeRock AS (obst@forgerock.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.RedirectionAction;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -43,8 +42,5 @@ public interface ConsentDecisionApi {
             method = RequestMethod.POST)
     ResponseEntity<RedirectionAction> submitConsentDecision(
             @ApiParam(value = "Consent decision JWT", required = true)
-            @RequestBody String consentDecisionSerialised,
-
-            @ApiParam(value = "Cookie containing the user session", required = true)
-            @CookieValue(value = "${am.cookie.name}") String ssoToken) throws OBErrorException;
+            @RequestBody String consentDecisionSerialised) throws OBErrorException;
 }

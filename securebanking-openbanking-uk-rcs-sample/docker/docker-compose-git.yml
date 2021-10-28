@@ -60,12 +60,3 @@ services:
       - 27017:27017
     volumes:
       - ./.mongo/data:/data/db
-
-  wiremock:
-    container_name: wiremock
-    image: rodolpheche/wiremock
-    command: --port 9080 --global-response-templating --permitted-system-keys --verbose
-    ports:
-      - 9080:9080
-    volumes:
-      - ./wiremock:/home/wiremock

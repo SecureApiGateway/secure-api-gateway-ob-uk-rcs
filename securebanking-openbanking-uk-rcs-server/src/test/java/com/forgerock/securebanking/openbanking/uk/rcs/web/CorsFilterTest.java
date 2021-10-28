@@ -1,5 +1,5 @@
 /**
- * Copyright © 2020 ForgeRock AS (obst@forgerock.com)
+ * Copyright © 2020-2021 ForgeRock AS (obst@forgerock.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.web;
 
-import com.forgerock.securebanking.openbanking.uk.rcs.configuration.RcsConfigurationProperties;
+import com.forgerock.securebanking.openbanking.uk.rcs.configuration.FilterConfigurationProperties;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -39,18 +39,29 @@ import static org.mockito.Mockito.*;
 public class CorsFilterTest {
 
     @Mock
-    private RcsConfigurationProperties configurationProperties;
+    private FilterConfigurationProperties filterConfigurationProperties;
 
     @InjectMocks
     private CorsFilter corsFilter;
+
+    private static final String ALLOWED_HEADERS = "accept-api-version, x-requested-with, " +
+            "authorization, Content-Type, Authorization, credential, X-XSRF-TOKEN, Id-Token";
+    private static final String ALLOWED_METHODS = "GET, PUT, POST, DELETE, OPTIONS, PATCH";
+    private static final String MAX_AGE = "3600";
+    private static final String EXPECTED_ORIGIN_ENDS_WITH = "localhost";
+    private static final String ORIGIN = "https://" + EXPECTED_ORIGIN_ENDS_WITH;
 
     @Test
     public void shouldDoFilterGivenCorsRequest() throws IOException, ServletException {
         // Given
         HttpServletRequest request = mock(HttpServletRequest.class);
-        given(request.getHeader("Origin")).willReturn("http://localhost");
+        given(request.getHeader(CorsFilter.ORIGIN_HEADER)).willReturn(ORIGIN);
         given(request.getMethod()).willReturn("OPTIONS");
-        given(configurationProperties.getHostRoot()).willReturn("localhost");
+        given(filterConfigurationProperties.getExpectedOriginEndsWith()).willReturn(EXPECTED_ORIGIN_ENDS_WITH);
+        given(filterConfigurationProperties.getAllowedHeaders()).willReturn(ALLOWED_HEADERS);
+        given(filterConfigurationProperties.getAllowedMethods()).willReturn(ALLOWED_METHODS);
+        given(filterConfigurationProperties.getMaxAge()).willReturn(MAX_AGE);
+        given(filterConfigurationProperties.isAllowedCredentials()).willReturn(true);
         HttpServletResponse response = mock(HttpServletResponse.class);
         FilterChain chain = mock(FilterChain.class);
 
@@ -58,11 +69,10 @@ public class CorsFilterTest {
         corsFilter.doFilter(request, response, chain);
 
         // Then
-        verify(response).addHeader("Access-Control-Allow-Origin", "http://localhost");
-        verify(response).addHeader("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
-        verify(response).addHeader("Access-Control-Max-Age", "3600");
-        verify(response).addHeader("Access-Control-Allow-Headers", "accept-api-version, x-requested-with, " +
-                "authorization, Content-Type, Authorization, credential, X-XSRF-TOKEN, Id-Token");
+        verify(response).addHeader("Access-Control-Allow-Origin", ORIGIN);
+        verify(response).addHeader("Access-Control-Allow-Methods", ALLOWED_METHODS);
+        verify(response).addHeader("Access-Control-Max-Age", MAX_AGE);
+        verify(response).addHeader("Access-Control-Allow-Headers", ALLOWED_HEADERS);
         verify(response).addHeader("Access-Control-Allow-Credentials", "true");
         verify(response).setStatus(SC_ACCEPTED);
         verifyNoInteractions(chain);
@@ -72,7 +82,7 @@ public class CorsFilterTest {
     public void shouldDoFilterGivenNonCorsRequest() throws IOException, ServletException {
         // Given
         HttpServletRequest request = mock(HttpServletRequest.class);
-        given(request.getHeader("Origin")).willReturn(null);
+        given(request.getHeader(CorsFilter.ORIGIN_HEADER)).willReturn(null);
         HttpServletResponse response = mock(HttpServletResponse.class);
         FilterChain chain = mock(FilterChain.class);
 

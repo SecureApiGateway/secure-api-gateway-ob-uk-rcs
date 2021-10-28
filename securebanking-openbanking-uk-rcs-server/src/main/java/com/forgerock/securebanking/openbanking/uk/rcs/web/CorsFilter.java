@@ -1,5 +1,5 @@
 /**
- * Copyright © 2020 ForgeRock AS (obst@forgerock.com)
+ * Copyright © 2020-2021 ForgeRock AS (obst@forgerock.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.web;
 
-import com.forgerock.securebanking.openbanking.uk.rcs.configuration.RcsConfigurationProperties;
+import com.forgerock.securebanking.openbanking.uk.rcs.configuration.FilterConfigurationProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -37,15 +37,12 @@ import static org.springframework.http.HttpMethod.OPTIONS;
 @Slf4j
 public class CorsFilter implements Filter {
 
-    private static final String ALLOWED_HEADERS = "accept-api-version, x-requested-with, authorization, Content-Type, Authorization, credential, X-XSRF-TOKEN, Id-Token";
-    private static final String ALLOWED_METHODS = "GET, PUT, POST, DELETE, OPTIONS";
-    private static final Boolean ALLOWED_CREDENTIALS = true;
-    private static final String MAX_AGE = "3600";
+    protected static final String ORIGIN_HEADER = "Origin";
 
-    private final RcsConfigurationProperties configurationProperties;
+    private final FilterConfigurationProperties filterConfigurationProperties;
 
-    public CorsFilter(RcsConfigurationProperties configurationProperties) {
-        this.configurationProperties = configurationProperties;
+    public CorsFilter(FilterConfigurationProperties filterConfigurationProperties) {
+        this.filterConfigurationProperties = filterConfigurationProperties;
     }
 
     /**
@@ -54,25 +51,28 @@ public class CorsFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain)
             throws IOException, ServletException {
 
+        String methodName = "doFilter(servletRequest, servletResponse, chain)";
+
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         if (isCorsRequest(request)) {
-            log.debug("CORS HTTP Request method: {}", request.getMethod());
+            log.debug("{} CORS HTTP Request method: {}", methodName, request.getMethod());
 
             HttpServletResponse response = (HttpServletResponse) servletResponse;
-            String originHeader = request.getHeader("Origin");
+            String originHeader = request.getHeader(ORIGIN_HEADER);
             URI originUri = URI.create(originHeader);
-            String hostRoot = configurationProperties.getHostRoot();
-            if (!originUri.getHost().endsWith(hostRoot)) {
-                log.warn("Origin header host [{}] does not match the expected host root [{}]", originUri.getHost(), hostRoot);
+
+            String expectedOriginEndsWith = filterConfigurationProperties.getExpectedOriginEndsWith();
+            if (!originUri.getHost().endsWith(expectedOriginEndsWith)) {
+                log.warn("{} Origin header host [{}] does not match the expected host root [{}]", methodName, originUri.getHost(), expectedOriginEndsWith);
                 response.setStatus(SC_UNAUTHORIZED);
                 return;
             }
 
             response.addHeader("Access-Control-Allow-Origin", originHeader);
-            response.addHeader("Access-Control-Allow-Methods", ALLOWED_METHODS);
-            response.addHeader("Access-Control-Max-Age", MAX_AGE);
-            response.addHeader("Access-Control-Allow-Headers", ALLOWED_HEADERS);
-            response.addHeader("Access-Control-Allow-Credentials", ALLOWED_CREDENTIALS.toString());
+            response.addHeader("Access-Control-Allow-Methods", filterConfigurationProperties.getAllowedMethods());
+            response.addHeader("Access-Control-Max-Age", filterConfigurationProperties.getMaxAge());
+            response.addHeader("Access-Control-Allow-Headers", filterConfigurationProperties.getAllowedHeaders());
+            response.addHeader("Access-Control-Allow-Credentials", String.valueOf(filterConfigurationProperties.isAllowedCredentials()));
 
             // For HTTP OPTIONS verb/method reply with ACCEPTED status code -- per CORS handshake
             if (request.getMethod().equals(OPTIONS.name())) {
@@ -86,6 +86,6 @@ public class CorsFilter implements Filter {
     }
 
     private static boolean isCorsRequest(HttpServletRequest request) {
-        return !StringUtils.isEmpty(request.getHeader("Origin"));
+        return !StringUtils.isEmpty(request.getHeader(ORIGIN_HEADER));
     }
 }

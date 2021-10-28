@@ -1,5 +1,5 @@
 /**
- * Copyright © 2020 ForgeRock AS (obst@forgerock.com)
+ * Copyright © 2020-2021 ForgeRock AS (obst@forgerock.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,9 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.api;
 
-import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetails;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,5 +36,5 @@ public interface ConsentDetailsApi {
             method = RequestMethod.POST)
     ResponseEntity<ConsentDetails> getConsentDetails(
             @ApiParam(value = "Consent request JWT received by AM", required = true)
-            @RequestBody String consentRequestJwt) throws OBErrorException;
+            @RequestBody String consentRequestJwt);
 }

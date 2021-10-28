@@ -1,7 +1,7 @@
 name: Publish package to the ForgeRock artifactory
 on:
   release:
-    types: [published]
+    types: [ published ]
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -46,13 +46,13 @@ jobs:
         run: |
           make helm version=${{ steps.helm.outputs.version }}
 
-      - name: Publish Release Chart 
+      - name: Publish Release Chart
         id: upload
         uses: google-github-actions/upload-cloud-storage@main
         with:
           path: ${{ env.SERVICE_NAME }}-${{ steps.helm.outputs.version }}.tgz
           destination: ${{ secrets.HELM_RELEASE_BUCKET }}/${{ env.SERVICE_NAME }}
-      
+
       - name: Build Docker Image
         run: |
           make docker tag=${{ github.event.release.tag_name }} repo=${{ secrets.RELEASE_REPO }}

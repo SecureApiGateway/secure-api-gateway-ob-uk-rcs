@@ -1,5 +1,5 @@
 /**
- * Copyright © 2020 ForgeRock AS (obst@forgerock.com)
+ * Copyright © 2020-2021 ForgeRock AS (obst@forgerock.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,16 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.forgerock.securebanking.openbanking.uk.common.api.meta.IntentType;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
+import com.forgerock.securebanking.platform.client.IntentType;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+
+import java.util.List;
 
 /**
  * Interface for each type of consent data.
@@ -38,13 +43,21 @@ import com.forgerock.securebanking.openbanking.uk.common.api.meta.IntentType;
         @Type(value = InternationalStandingOrderConsentDetails.class, name = "InternationalStandingOrderConsentDetails"),
         @Type(value = FilePaymentConsentDetails.class, name = "FilePaymentConsentDetails")
 })
+@Data
+@NoArgsConstructor
+@SuperBuilder
 public abstract class ConsentDetails {
 
-    protected static String DECISION_API_URI = "/api/rcs/consent/decision/";
+    private String decisionApiUri;
+    private String username;
+    private String userId;
+    private String logo;
+    private String clientId;
+    private List<FRAccountWithBalance> accounts;
 
-    @JsonProperty("intentType")
     public abstract IntentType getIntentType();
 
-    @JsonProperty("decisionApiUri")
-    public abstract String getDecisionApiUri();
+    public String getDecisionApiUri() {
+        return "/api/rcs/consent/decision/";
+    }
 }

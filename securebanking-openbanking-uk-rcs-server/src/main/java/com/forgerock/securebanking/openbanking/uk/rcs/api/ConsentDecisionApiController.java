@@ -1,5 +1,5 @@
 /**
- * Copyright © 2020 ForgeRock AS (obst@forgerock.com)
+ * Copyright © 2020-2021 ForgeRock AS (obst@forgerock.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,80 +16,122 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.securebanking.openbanking.uk.common.claim.Claims;
-import com.forgerock.securebanking.openbanking.uk.common.claim.JwsClaimsUtils;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
+import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.RedirectionAction;
-import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision.ConsentDecision;
-import com.forgerock.securebanking.openbanking.uk.rcs.common.RcsConstants;
-import com.forgerock.securebanking.openbanking.uk.rcs.service.decision.ConsentDecisionService;
-import com.forgerock.securebanking.openbanking.uk.rcs.service.decision.ConsentDecisionServiceDelegate;
-import com.forgerock.securebanking.openbanking.uk.rcs.validator.ConsentDecisionValidator;
+import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision.ConsentDecisionRequest;
+import com.forgerock.securebanking.openbanking.uk.rcs.converters.ConsentDecisionBuilderFactory;
+import com.forgerock.securebanking.openbanking.uk.rcs.exception.InvalidConsentException;
+import com.forgerock.securebanking.platform.client.Constants;
+import com.forgerock.securebanking.platform.client.exceptions.ErrorClient;
+import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
+import com.forgerock.securebanking.platform.client.models.Consent;
+import com.forgerock.securebanking.platform.client.models.ConsentDecision;
+import com.forgerock.securebanking.platform.client.services.ConsentServiceClient;
+import com.forgerock.securebanking.platform.client.services.JwkServiceClient;
+import com.forgerock.securebanking.platform.client.utils.jwt.JwtUtil;
 import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.JWTParser;
-import com.nimbusds.jwt.SignedJWT;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import java.text.ParseException;
 
-import static com.forgerock.securebanking.openbanking.uk.common.api.meta.OBConstants.IdTokenClaim.INTENT_ID;
 import static com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType.RCS_CONSENT_DECISION_EMPTY;
-import static com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType.RCS_CONSENT_REQUEST_FORMAT;
-import static com.forgerock.securebanking.openbanking.uk.rcs.common.RcsConstants.Claims.CLIENT_ID;
 import static com.forgerock.securebanking.openbanking.uk.rcs.util.ConsentDecisionDeserializer.deserializeConsentDecision;
+import static com.forgerock.securebanking.platform.client.exceptions.ErrorType.JWT_INVALID;
 
 @Controller
 @Slf4j
+@ComponentScan(basePackages = "com.forgerock.securebanking.platform.client.services")
 public class ConsentDecisionApiController implements ConsentDecisionApi {
 
-    private final ConsentDecisionResponseHandler consentDecisionResponseHandler;
     private final ObjectMapper objectMapper;
-    private final ConsentDecisionServiceDelegate consentServiceDelegate;
-    private final ConsentDecisionValidator consentDecisionValidator;
+    private final ConsentServiceClient consentServiceClient;
+    private final JwkServiceClient jwkServiceClient;
+//    private final RestTemplate restTemplate;
 
-    public ConsentDecisionApiController(ConsentDecisionResponseHandler consentDecisionResponseHandler,
-                                        ObjectMapper objectMapper,
-                                        ConsentDecisionServiceDelegate consentServiceDelegate,
-                                        ConsentDecisionValidator consentDecisionValidator) {
-        this.consentDecisionResponseHandler = consentDecisionResponseHandler;
+//    public ConsentDecisionApiController(ObjectMapper objectMapper, ConsentServiceClient consentServiceClient, JwkServiceClient jwkServiceClient, RestTemplate restTemplate) {
+//        this.objectMapper = objectMapper;
+//        this.consentServiceClient = consentServiceClient;
+//        this.jwkServiceClient = jwkServiceClient;
+//        this.restTemplate = restTemplate;
+//    }
+
+    public ConsentDecisionApiController(ObjectMapper objectMapper, ConsentServiceClient consentServiceClient, JwkServiceClient jwkServiceClient) {
         this.objectMapper = objectMapper;
-        this.consentServiceDelegate = consentServiceDelegate;
-        this.consentDecisionValidator = consentDecisionValidator;
+        this.consentServiceClient = consentServiceClient;
+        this.jwkServiceClient = jwkServiceClient;
     }
 
     @Override
-    public ResponseEntity<RedirectionAction> submitConsentDecision(String consentDecisionSerialised,
-                                                                   String ssoToken) throws OBErrorException {
+    public ResponseEntity<RedirectionAction> submitConsentDecision(String consentDecisionSerialised) throws OBErrorException {
+        log.debug("submitConsentDecision(consentDecisionSerialised) '{}'", consentDecisionSerialised);
         if (consentDecisionSerialised == null) {
             log.debug("Consent decision is empty");
             throw new OBErrorException(RCS_CONSENT_DECISION_EMPTY);
         }
-        log.debug("Received a consent decision request");
+
+        ConsentDecisionRequest consentDecisionRequest = deserializeConsentDecision(
+                consentDecisionSerialised,
+                objectMapper,
+                ConsentDecisionRequest.class);
 
         try {
-            ConsentDecision consentDecision = deserializeConsentDecision(consentDecisionSerialised, objectMapper, ConsentDecision.class);
-            String consentRequestJwt = consentDecision.getConsentJwt();
-            log.debug("The consentRequestJwt is '{}'", consentRequestJwt);
-            SignedJWT consentContextJwt = (SignedJWT) JWTParser.parse(consentRequestJwt);
-            boolean decision = RcsConstants.Decision.ALLOW.equals(consentDecision.getDecision());
-            log.debug("The decision is '{}'", decision);
 
-            Claims claims = JwsClaimsUtils.getClaims(consentContextJwt);
-            String intentId = claims.getIdTokenClaims().get(INTENT_ID).getValue();
-            JWTClaimsSet jwtClaimsSet = consentContextJwt.getJWTClaimsSet();
-            String clientId = jwtClaimsSet.getStringClaim(CLIENT_ID);
+            boolean decision = Constants.ConsentDecision.APPROVED.equals(consentDecisionRequest.getDecision());
+            log.debug("submitConsentDecision(consentDecisionSerialised) The decision is '{}'", decision);
 
-            // Get the right decision service, cased on the intent type
-            ConsentDecisionService consentDecisionService = consentServiceDelegate.getConsentDecisionService(intentId);
-            consentDecisionValidator.validateConsent(intentId, clientId, ssoToken, consentDecisionService);
-            consentDecisionService.processConsentDecision(intentId, consentDecisionSerialised, decision);
+            ConsentDecision consentDecision =
+                    ConsentDecisionBuilderFactory.build(consentDecisionRequest);
 
-            return consentDecisionResponseHandler.handleResponse(ssoToken, consentContextJwt, decision, jwtClaimsSet, clientId);
-        } catch (ParseException e) {
-            log.error("Could not parse the JWT", e);
-            throw new OBErrorException(RCS_CONSENT_REQUEST_FORMAT);
+            Consent consentUpdated = consentServiceClient.updateConsent(consentDecision);
+            log.debug("submitConsentDecision(consentDecisionSerialised) Consent updated '{}", consentUpdated);
+
+            JWTClaimsSet jwtClaimsSetGenerated = generateConsentResponse(decision, consentDecision);
+            log.debug("submitConsentDecision(consentDecisionSerialised) jwt claims generated '{}'", jwtClaimsSetGenerated.toJSONObject());
+            String consentSignedJwt = jwkServiceClient.signClaims(jwtClaimsSetGenerated, consentDecision.getIntentId());
+            log.debug("submitConsentDecision(consentDecisionSerialised) consentSignedJwt '{}'", consentSignedJwt);
+            String consentApprovalRedirectUri = JwtUtil.getClaimValue(consentSignedJwt, "consentApprovalRedirectUri");
+            log.debug("submitConsentDecision(consentDecisionSerialised) CONSENT_APPROVAL_REDIRECT_URI: {} ", consentApprovalRedirectUri);
+            return ResponseEntity.ok(RedirectionAction.builder()
+                    .redirectUri(consentApprovalRedirectUri)
+                    .consentJwt(consentSignedJwt)
+                    .build());
+
+        } catch (ExceptionClient e) {
+            String errorMessage = String.format("%s", e.getMessage());
+            log.error(errorMessage);
+            throw new InvalidConsentException(consentDecisionRequest.getConsentJwt(), e.getErrorClient().getErrorType(),
+                    OBRIErrorType.REQUEST_BINDING_FAILED, errorMessage,
+                    e.getErrorClient().getClientId(),
+                    e.getErrorClient().getIntentId());
+        }
+    }
+
+    public JWTClaimsSet generateConsentResponse(
+            boolean decision, ConsentDecision consentDecision
+    ) throws ExceptionClient {
+        try {
+            JWTClaimsSet jwtClaimsSet = JWTClaimsSet.parse(consentDecision.getJwtClaimsSet().toJSONObject());
+            return new JWTClaimsSet.Builder(jwtClaimsSet)
+                    .claim("decision", decision)
+                    .claim("scopes", consentDecision.getScopes().toArray())
+                    .expirationTime(DateTime.now().plusMinutes(5).toDate())
+                    .issuer(jwtClaimsSet.getIssuer())
+                    .audience(jwtClaimsSet.getIssuer())
+                    .build();
+        } catch (ParseException exception) {
+            log.error("generateConsentResponse(decision, consentDecision) Could not parse the consentJwt from consent decision object.", exception);
+            throw new ExceptionClient(
+                    ErrorClient.builder()
+                            .errorType(JWT_INVALID)
+                            .build(),
+                    String.format(JWT_INVALID.getDescription(), exception.getMessage()),
+                    exception
+            );
         }
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright © 2020 ForgeRock AS (obst@forgerock.com)
+ * Copyright © 2020-2021 ForgeRock AS (obst@forgerock.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,36 +15,26 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRScheduledPaymentData;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRExchangeRateInformation;
-import com.forgerock.securebanking.openbanking.uk.common.api.meta.IntentType;
+import com.forgerock.securebanking.platform.client.IntentType;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.joda.time.DateTime;
-
-import java.util.List;
 
 /**
  * Models the consent data for an international scheduled payment.
  */
 @Data
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 public class InternationalScheduledPaymentConsentDetails extends ConsentDetails {
 
     private FRScheduledPaymentData scheduledPayment;
     private FRExchangeRateInformation rate;
-
-    private String decisionApiUri;
-
-    private List<FRAccountWithBalance> accounts;
-    private String username;
-    private String logo;
-    private String clientId;
     private String merchantName;
     private DateTime expiredDate;
     private String currencyOfTransfer;
@@ -55,8 +45,4 @@ public class InternationalScheduledPaymentConsentDetails extends ConsentDetails 
         return IntentType.PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT;
     }
 
-    @Override
-    public String getDecisionApiUri() {
-        return ConsentDetails.DECISION_API_URI;
-    }
 }

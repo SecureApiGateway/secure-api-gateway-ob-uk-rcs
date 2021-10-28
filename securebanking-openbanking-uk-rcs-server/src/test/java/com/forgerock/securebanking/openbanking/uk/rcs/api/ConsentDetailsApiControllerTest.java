@@ -1,5 +1,5 @@
 /**
- * Copyright © 2020 ForgeRock AS (obst@forgerock.com)
+ * Copyright © 2020-2021 ForgeRock AS (obst@forgerock.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,161 +16,206 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.api;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.tpp.Tpp;
-import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision.PaymentConsentDecision;
-import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRDomesticPaymentConsent;
-import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRFilePaymentConsent;
-import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRFundsConfirmationConsent;
-import com.forgerock.securebanking.openbanking.uk.rcs.client.idm.dto.consent.FRInternationalPaymentConsent;
-import com.forgerock.securebanking.openbanking.uk.rcs.testsupport.TestInitializer;
-import com.forgerock.securebanking.openbanking.uk.rcs.testsupport.WireMockServerExtension;
-import com.forgerock.securebanking.openbanking.uk.rcs.testsupport.WireMockStubHelper;
-import org.junit.jupiter.api.BeforeEach;
+import com.forgerock.securebanking.openbanking.uk.rcs.RcsApplicationTestSupport;
+import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.RedirectionAction;
+import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.AccountsConsentDetails;
+import com.forgerock.securebanking.openbanking.uk.rcs.client.rs.AccountService;
+import com.forgerock.securebanking.openbanking.uk.rcs.testsupport.JwtTestHelper;
+import com.forgerock.securebanking.platform.client.IntentType;
+import com.forgerock.securebanking.platform.client.exceptions.ErrorClient;
+import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
+import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
+import com.forgerock.securebanking.platform.client.models.AccountConsentDetails;
+import com.forgerock.securebanking.platform.client.models.ApiClient;
+import com.forgerock.securebanking.platform.client.models.ConsentRequest;
+import com.forgerock.securebanking.platform.client.models.User;
+import com.forgerock.securebanking.platform.client.services.AccountConsentService;
+import com.forgerock.securebanking.platform.client.services.ApiClientServiceClient;
+import com.forgerock.securebanking.platform.client.services.UserServiceClient;
+import com.forgerock.securebanking.platform.client.test.support.ApiClientTestDataFactory;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 
 import java.util.List;
-import java.util.Map;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.account.FRAccountWithBalanceTestDataFactory.aValidFRAccountWithBalance;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.tpp.TppTestDataFactory.aValidTppBuilder;
-import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.JwtHelper.consentRequestJwt;
-import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.idm.dto.consent.FRDomesticPaymentConsentDataTestDataFactory.aValidDomesticPaymentConsentDataBuilder;
-import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.idm.dto.consent.FRDomesticPaymentConsentTestDataFactory.aValidFRDomesticPaymentConsentBuilder;
-import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.idm.dto.consent.FRFilePaymentConsentDataTestDataFactory.aValidFilePaymentConsentDataBuilder;
-import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.idm.dto.consent.FRFilePaymentConsentTestDataFactory.aValidFRFilePaymentConsentBuilder;
-import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.idm.dto.consent.FRFundsConfirmationConsentDataTestDataFactory.aValidFundsConfirmationConsentDataBuilder;
-import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.idm.dto.consent.FRFundsConfirmationConsentTestDataFactory.aValidFRFundsConfirmationConsentBuilder;
-import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.idm.dto.consent.FRInternationalPaymentConsentDataTestDataFactory.aValidInternationalPaymentConsentDataBuilder;
-import static com.forgerock.securebanking.openbanking.uk.rcs.testsupport.idm.dto.consent.FRInternationalPaymentConsentTestDataFactory.aValidFRInternationalPaymentConsentBuilder;
+import static com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory.aValidAccountConsentDetails;
+import static com.forgerock.securebanking.platform.client.test.support.ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest;
+import static com.forgerock.securebanking.platform.client.test.support.UserTestDataFactory.aValidUser;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static uk.org.openbanking.testsupport.payment.OBAccountTestDataFactory.aValidOBCashAccount3;
-import static uk.org.openbanking.testsupport.payment.OBAccountTestDataFactory.aValidOBWriteDomestic2DataInitiationDebtorAccount;
-import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomestic2DataInitiation;
-import static uk.org.openbanking.testsupport.payment.OBWriteFileConsentTestDataFactory.aValidOBWriteFile2DataInitiation;
-import static uk.org.openbanking.testsupport.payment.OBWriteInternationalConsentTestDataFactory.aValidOBWriteInternational3DataInitiation;
 
 /**
  * Spring Boot Test for {@link ConsentDetailsApiController}.
  */
-@SpringBootTest(webEnvironment = RANDOM_PORT)
-@ContextConfiguration(initializers = TestInitializer.class)
+// TODO: first approach to tests the controller
+@EnableConfigurationProperties
 @ActiveProfiles("test")
-@ExtendWith(WireMockServerExtension.class)
+@SpringBootTest(classes = RcsApplicationTestSupport.class, webEnvironment = RANDOM_PORT)
 public class ConsentDetailsApiControllerTest {
-
-    private static final String BASE_URL = "http://localhost:";
-    private static final String DETAILS_URI = "/api/rcs/consent/details";
-    private static final String CLIENT_ID = "a12f9ebc-4966-4543-afe0-03e597835a01";
-    private static final String USER_ID = "45c6486e-8fc0-3ffc-h6f5-2105164d01j4";
-    private static final FRAccountWithBalance ACCOUNTS_WITH_BALANCE = aValidFRAccountWithBalance();
-    private static final String ACCOUNT_ID = ACCOUNTS_WITH_BALANCE.getId();
-    private static final String OAUTH2_AUTHORIZE_PATH = "/am/oauth2/authorize";
-    private static final Tpp TPP = aValidTppBuilder().clientId(CLIENT_ID).build();
 
     @LocalServerPort
     private int port;
 
+    private static final String BASE_URL = "http://localhost:";
+    private static final String CONTEXT_DETAILS_URI = "/api/rcs/consent/details";
+
+    @MockBean
+    private AccountConsentService accountConsentDetailsCloudService;
+
+    @MockBean
+    private AccountService accountService;
+
+    @MockBean
+    private ApiClientServiceClient apiClientService;
+
+    @MockBean
+    private UserServiceClient userServiceClient;
+
     @Autowired
     private TestRestTemplate restTemplate;
 
-    @Autowired
-    private WireMockStubHelper wireMockStubHelper;
-
-    @BeforeEach
-    public void setup() {
-        wireMockStubHelper.stubGetUserProfile(Map.of("id", USER_ID));
-        wireMockStubHelper.stubGetUserAccounts(List.of(ACCOUNTS_WITH_BALANCE));
-        wireMockStubHelper.stubGetTpp(TPP);
-    }
 
     @Test
-    public void shouldGetDomesticPaymentConsentDetails() {
-        // Given
-        String intentId = "PDC_d79e7380-a3a8-4de3-bc93-e4ff9b620098";
-        FRDomesticPaymentConsent initialConsent = aValidDomesticPaymentConsent(intentId, null);
-        wireMockStubHelper.stubGetPaymentConsent(initialConsent);
-        FRDomesticPaymentConsent authorisedConsent = aValidDomesticPaymentConsent(intentId, USER_ID);
-        wireMockStubHelper.stubUpdatePaymentConsent(authorisedConsent);
-        String consentJwt = consentRequestJwt(OAUTH2_AUTHORIZE_PATH, 9080, CLIENT_ID, intentId, USER_ID);
-        HttpEntity<String> request = new HttpEntity<>(consentJwt, headers());
-        String url = detailsUrl();
+    public void ShouldGetAccountConsentDetails() throws ExceptionClient {
+        // given
+        ConsentRequest consentDetailsRequest = aValidAccountConsentDetailsRequest();
+        AccountConsentDetails accountConsentDetails = aValidAccountConsentDetails(consentDetailsRequest.getIntentId());
+        FRAccountWithBalance frAccountWithBalance = aValidFRAccountWithBalance();
+        User user = aValidUser();
+        consentDetailsRequest.setUser(user);
+        ApiClient apiClient = ApiClientTestDataFactory.aValidApiClient(consentDetailsRequest.getClientId());
+        given(apiClientService.getApiClient(anyString())).willReturn(apiClient);
+        given(accountService.getAccountsWithBalance(anyString())).willReturn(List.of(frAccountWithBalance));
+        given(userServiceClient.getUser(anyString())).willReturn(user);
+        given(accountConsentDetailsCloudService.getConsent(any(ConsentRequest.class))).willReturn(accountConsentDetails);
+        String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
+        String jwtRequest = JwtTestHelper.consentRequestJwt(consentDetailsRequest.getClientId(), consentDetailsRequest.getIntentId(), consentDetailsRequest.getUser().getId());
+        HttpEntity<String> request = new HttpEntity<>(jwtRequest, headers());
 
-        // When
-        ResponseEntity<PaymentConsentDecision> response = restTemplate.postForEntity(url, request, PaymentConsentDecision.class);
+        // when
+        ResponseEntity<AccountsConsentDetails> response = restTemplate.postForEntity(consentDetailURL, request, AccountsConsentDetails.class);
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(OK);
+        assertThat(response.getBody().getAccounts()).isNotEmpty();
+        assertThat(response.getBody().getIntentType()).isEqualTo(IntentType.ACCOUNT_ACCESS_CONSENT);
+        assertThat(response.getBody().getUserId()).isEqualTo(consentDetailsRequest.getUser().getId());
+        assertThat(response.getBody().getUsername()).isEqualTo(consentDetailsRequest.getUser().getUserName());
+        assertThat(response.getBody().getClientId()).isEqualTo(consentDetailsRequest.getClientId());
+        assertThat(response.getBody().getLogo()).isEqualTo(apiClient.getLogoUri());
     }
 
     @Test
-    public void shouldGetInternationalPaymentConsentDetails() {
-        // Given
-        String intentId = "PIC_d79e7380-a3a8-4de3-bc93-e4ff9b620098";
-        FRInternationalPaymentConsent initialConsent = aValidInternationalPaymentConsent(intentId, null);
-        wireMockStubHelper.stubGetPaymentConsent(initialConsent);
-        FRInternationalPaymentConsent authorisedConsent = aValidInternationalPaymentConsent(intentId, USER_ID);
-        wireMockStubHelper.stubUpdatePaymentConsent(authorisedConsent);
-        String consentJwt = consentRequestJwt(OAUTH2_AUTHORIZE_PATH, 9080, CLIENT_ID, intentId, USER_ID);
-        HttpEntity<String> request = new HttpEntity<>(consentJwt, headers());
-        String url = detailsUrl();
+    public void ShouldGetRedirectActionWhenUserNotFound() throws ExceptionClient {
+        // given
+        ConsentRequest consentDetailsRequest = aValidAccountConsentDetailsRequest();
+        AccountConsentDetails accountConsentDetails = aValidAccountConsentDetails(consentDetailsRequest.getIntentId());
+        FRAccountWithBalance frAccountWithBalance = aValidFRAccountWithBalance();
+        User user = aValidUser();
+        consentDetailsRequest.setUser(user);
+        ApiClient apiClient = ApiClientTestDataFactory.aValidApiClient(consentDetailsRequest.getClientId());
+        given(apiClientService.getApiClient(anyString())).willReturn(apiClient);
+        given(accountService.getAccountsWithBalance(anyString())).willReturn(List.of(frAccountWithBalance));
+        String message = String.format("User data with userId '%s' not found.", user.getId());
+        ExceptionClient exceptionClient = new ExceptionClient(
+                ErrorClient.builder()
+                        .errorType(ErrorType.NOT_FOUND)
+                        .userId(user.getId())
+                        .build(),
+                message);
+        given(userServiceClient.getUser(anyString())).willThrow(exceptionClient);
+        given(accountConsentDetailsCloudService.getConsent(any(ConsentRequest.class))).willReturn(accountConsentDetails);
+        String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
+        String jwtRequest = JwtTestHelper.consentRequestJwt(consentDetailsRequest.getClientId(), consentDetailsRequest.getIntentId(), consentDetailsRequest.getUser().getId());
+        HttpEntity<String> request = new HttpEntity<>(jwtRequest, headers());
 
-        // When
-        ResponseEntity<PaymentConsentDecision> response = restTemplate.postForEntity(url, request, PaymentConsentDecision.class);
+        // when
+        ResponseEntity<RedirectionAction> response = restTemplate.postForEntity(consentDetailURL, request, RedirectionAction.class);
 
-        // Then
-        assertThat(response.getStatusCode()).isEqualTo(OK);
+        assertThat(response.getBody().getRedirectUri()).isNotEmpty();
+        assertThat(response.getBody().getConsentJwt()).isNotEmpty();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test
-    public void shouldGetFilePaymentConsentDetails() {
-        // Given
-        String intentId = "PFC_d79e7380-a3a8-4de3-bc93-e4ff9b620098";
-        FRFilePaymentConsent initialConsent = aValidFilePaymentConsent(intentId, null);
-        wireMockStubHelper.stubGetPaymentConsent(initialConsent);
-        FRFilePaymentConsent authorisedConsent = aValidFilePaymentConsent(intentId, USER_ID);
-        wireMockStubHelper.stubUpdatePaymentConsent(authorisedConsent);
-        String consentJwt = consentRequestJwt(OAUTH2_AUTHORIZE_PATH, 9080, CLIENT_ID, intentId, USER_ID);
-        HttpEntity<String> request = new HttpEntity<>(consentJwt, headers());
-        String url = detailsUrl();
+    public void ShouldGetRedirectActionWhenApiClientNotFound() throws ExceptionClient {
+        // given
+        ConsentRequest consentDetailsRequest = aValidAccountConsentDetailsRequest();
+        AccountConsentDetails accountConsentDetails = aValidAccountConsentDetails(consentDetailsRequest.getIntentId());
+        FRAccountWithBalance frAccountWithBalance = aValidFRAccountWithBalance();
+        User user = aValidUser();
+        consentDetailsRequest.setUser(user);
+        String message = String.format("ClientId '%s' not found.", consentDetailsRequest.getClientId());
 
-        // When
-        ResponseEntity<PaymentConsentDecision> response = restTemplate.postForEntity(url, request, PaymentConsentDecision.class);
+        ExceptionClient exceptionClient = new ExceptionClient(
+                ErrorClient.builder()
+                        .errorType(ErrorType.NOT_FOUND)
+                        .clientId(consentDetailsRequest.getClientId())
+                        .build(),
+                message
+        );
+        given(apiClientService.getApiClient(anyString())).willThrow(exceptionClient);
 
-        // Then
-        assertThat(response.getStatusCode()).isEqualTo(OK);
+        given(accountService.getAccountsWithBalance(anyString())).willReturn(List.of(frAccountWithBalance));
+
+        given(userServiceClient.getUser(anyString())).willReturn(user);
+        given(accountConsentDetailsCloudService.getConsent(any(ConsentRequest.class))).willReturn(accountConsentDetails);
+        String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
+        String jwtRequest = JwtTestHelper.consentRequestJwt(consentDetailsRequest.getClientId(), consentDetailsRequest.getIntentId(), consentDetailsRequest.getUser().getId());
+        HttpEntity<String> request = new HttpEntity<>(jwtRequest, headers());
+
+        // when
+        ResponseEntity<RedirectionAction> response = restTemplate.postForEntity(consentDetailURL, request, RedirectionAction.class);
+
+        assertThat(response.getBody().getRedirectUri()).isNotEmpty();
+        assertThat(response.getBody().getConsentJwt()).isNotEmpty();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test
-    public void shouldGetFundsConfirmationConsentDetails() {
-        // Given
-        String intentId = "FCC_d79e7380-a3a8-4de3-bc93-e4ff9b620098";
-        FRFundsConfirmationConsent initialConsent = aValidFundsConfirmationConsent(intentId, null);
-        wireMockStubHelper.stubGetPaymentConsent(initialConsent);
-        FRFundsConfirmationConsent authorisedConsent = aValidFundsConfirmationConsent(intentId, USER_ID);
-        wireMockStubHelper.stubUpdatePaymentConsent(authorisedConsent);
-        String consentJwt = consentRequestJwt(OAUTH2_AUTHORIZE_PATH, 9080, CLIENT_ID, intentId, USER_ID);
-        HttpEntity<String> request = new HttpEntity<>(consentJwt, headers());
-        String url = detailsUrl();
+    public void ShouldGetRedirectActionWhenConsentNotFound() throws ExceptionClient {
+        // given
+        ConsentRequest consentDetailsRequest = aValidAccountConsentDetailsRequest();
+        FRAccountWithBalance frAccountWithBalance = aValidFRAccountWithBalance();
+        User user = aValidUser();
+        consentDetailsRequest.setUser(user);
+        ApiClient apiClient = ApiClientTestDataFactory.aValidApiClient(consentDetailsRequest.getClientId());
+        given(apiClientService.getApiClient(anyString())).willReturn(apiClient);
+        given(accountService.getAccountsWithBalance(anyString())).willReturn(List.of(frAccountWithBalance));
+        given(userServiceClient.getUser(anyString())).willReturn(user);
 
-        // When
-        ResponseEntity<PaymentConsentDecision> response = restTemplate.postForEntity(url, request, PaymentConsentDecision.class);
+        String message = String.format("The AISP '%s' is referencing an account consent detailsRequest '%s' " +
+                "that doesn't exist", consentDetailsRequest.getClientId(), consentDetailsRequest.getIntentId());
+        ExceptionClient exceptionClient = new ExceptionClient(consentDetailsRequest, ErrorType.NOT_FOUND, message);
+        given(accountConsentDetailsCloudService.getConsent(any(ConsentRequest.class))).willThrow(exceptionClient);
 
-        // Then
-        assertThat(response.getStatusCode()).isEqualTo(OK);
+        String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
+        String jwtRequest = JwtTestHelper.consentRequestJwt(consentDetailsRequest.getClientId(), consentDetailsRequest.getIntentId(), consentDetailsRequest.getUser().getId());
+        HttpEntity<String> request = new HttpEntity<>(jwtRequest, headers());
+
+        // when
+        ResponseEntity<RedirectionAction> response = restTemplate.postForEntity(consentDetailURL, request, RedirectionAction.class);
+
+        assertThat(response.getBody().getRedirectUri()).isNotEmpty();
+        assertThat(response.getBody().getConsentJwt()).isNotEmpty();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     private HttpHeaders headers() {
@@ -181,70 +226,4 @@ public class ConsentDetailsApiControllerTest {
         return headers;
     }
 
-    private String detailsUrl() {
-        return BASE_URL + port + DETAILS_URI;
-    }
-
-    private FRDomesticPaymentConsent aValidDomesticPaymentConsent(String intentId, String resourceOwnerUsername) {
-        String debitIdentification = ACCOUNTS_WITH_BALANCE.getAccount().getAccounts().get(0).getIdentification();
-        return aValidFRDomesticPaymentConsentBuilder()
-                .id(intentId)
-                .data(aValidDomesticPaymentConsentDataBuilder(intentId)
-                        .initiation(aValidOBWriteDomestic2DataInitiation()
-                                .debtorAccount(aValidOBWriteDomestic2DataInitiationDebtorAccount()
-                                        .identification(debitIdentification)))
-                        .build())
-                .accountId(ACCOUNT_ID)
-                .oauth2ClientId(TPP.getClientId())
-                .oauth2ClientName(TPP.getName())
-                .resourceOwnerUsername(resourceOwnerUsername)
-                .build();
-    }
-
-    private FRInternationalPaymentConsent aValidInternationalPaymentConsent(String intentId, String resourceOwnerUsername) {
-        String debitIdentification = ACCOUNTS_WITH_BALANCE.getAccount().getAccounts().get(0).getIdentification();
-        return aValidFRInternationalPaymentConsentBuilder()
-                .id(intentId)
-                .data(aValidInternationalPaymentConsentDataBuilder(intentId)
-                        .initiation(aValidOBWriteInternational3DataInitiation()
-                                .debtorAccount(aValidOBWriteDomestic2DataInitiationDebtorAccount()
-                                        .identification(debitIdentification)))
-                        .build())
-                .accountId(ACCOUNT_ID)
-                .oauth2ClientId(TPP.getClientId())
-                .oauth2ClientName(TPP.getName())
-                .resourceOwnerUsername(resourceOwnerUsername)
-                .build();
-    }
-
-    private FRFilePaymentConsent aValidFilePaymentConsent(String intentId, String resourceOwnerUsername) {
-        String debitIdentification = ACCOUNTS_WITH_BALANCE.getAccount().getAccounts().get(0).getIdentification();
-        return aValidFRFilePaymentConsentBuilder()
-                .id(intentId)
-                .data(aValidFilePaymentConsentDataBuilder(intentId)
-                        .initiation(aValidOBWriteFile2DataInitiation()
-                                .debtorAccount(aValidOBWriteDomestic2DataInitiationDebtorAccount()
-                                        .identification(debitIdentification)))
-                        .build())
-                .accountId(ACCOUNT_ID)
-                .oauth2ClientId(TPP.getClientId())
-                .oauth2ClientName(TPP.getName())
-                .resourceOwnerUsername(resourceOwnerUsername)
-                .build();
-    }
-
-    private FRFundsConfirmationConsent aValidFundsConfirmationConsent(String intentId, String resourceOwnerUsername) {
-        String debitIdentification = ACCOUNTS_WITH_BALANCE.getAccount().getAccounts().get(0).getIdentification();
-        return aValidFRFundsConfirmationConsentBuilder()
-                .id(intentId)
-                .data(aValidFundsConfirmationConsentDataBuilder(intentId)
-                        .debtorAccount(aValidOBCashAccount3()
-                                .identification(debitIdentification))
-                        .build())
-                .accountId(ACCOUNT_ID)
-                .oauth2ClientId(TPP.getClientId())
-                .oauth2ClientName(TPP.getName())
-                .resourceOwnerUsername(resourceOwnerUsername)
-                .build();
-    }
 }
