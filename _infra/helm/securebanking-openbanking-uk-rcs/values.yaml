@@ -17,13 +17,16 @@ deployment:
   server:
     port: 8080
 
-  cors:
-    dnsRoot: localhost
+  urls:
+    ig:
+      server: localhost
+    authorization:
+      server: localhost
+    rs:
+      server: localhost
 
-  cdk:
-    namespace: cdk
-    am:
-      hostname: am
+  cors:
+    originEnds: localhost
 
   resources: {}
 

@@ -24,6 +24,6 @@ import org.springframework.context.annotation.Configuration;
 public class RcsConfigurationProperties {
     @Value("${rcs.issuerId}")
     private String issuerId;
-    @Value("${rs.base-url}")
-    private String rsBaseUrl;
+    @Value("${rcs.rs_server}")
+    private String rsServer;
 }

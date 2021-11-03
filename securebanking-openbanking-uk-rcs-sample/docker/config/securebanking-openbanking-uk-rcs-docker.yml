@@ -18,7 +18,7 @@
 
 filters:
   cors: # CorsFilter
-    expected_origin_ends_with: localhost # dev.forgerock.financial # default value localhost
+    expected_origin_ends_with: ${EXPECTED_ORIGIN_ENDS:localhost} # $namespace.forgerock.financial # default value localhost
     allowed_headers: accept-api-version, x-requested-with, authorization, Content-Type, Authorization, credential, X-XSRF-TOKEN, Id-Token
     allowed_methods: GET, PUT, POST, DELETE, OPTIONS, PATCH
     allowed_credentials: true # default value true
@@ -30,9 +30,9 @@ logging:
 
 identity-platform:
   client:
-    base_url: https://obdemo.dev.forgerock.financial
-    iam_base_uri: https://iam.dev.forgerock.financial
-    jwk_uri: ${identity-platform.client.iam_base_uri}/am/oauth2/connect/jwk_uri
+    ig_server: ${IG_SERVER:https://obdemo.dev.forgerock.financial}
+    iam_server: ${IAM_SERVER:https://iam.dev.forgerock.financial}
+    jwk_uri: ${identity-platform.client.iam_server}/am/oauth2/connect/jwk_uri
     contexts_api_client:
       get: /repo/apiclients/@ClientId@
       put: /repo/apiclients/@ClientId@
@@ -63,8 +63,9 @@ rcs:
     request:
       jwt:
         must-be-validated: false
+  rs_server: ${RS_SERVER:localhost}
 
 rs:
   internal-port: 8080
-  base-url: http://rs-simulator:${rs.internal-port}
+  rs: http://rs-simulator:${rs.internal-port}
 

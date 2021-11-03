@@ -1,8 +1,8 @@
 identity-platform:
   client:
-    base_url: https://obdemo.dev.forgerock.financial
-    iam_base_uri: https://iam.dev.forgerock.financial
-    jwk_uri: ${identity-platform.client.iam_base_uri}/am/oauth2/connect/jwk_uri
+    ig_server: ${IG_SERVER:https://obdemo.dev.forgerock.financial}
+    iam_server: ${IAM_SERVER:https://iam.dev.forgerock.financial}
+    jwk_uri: ${identity-platform.client.iam_server}/am/oauth2/connect/jwk_uri
     contexts_api_client:
       get: /repo/apiclients/@ClientId@
       put: /repo/apiclients/@ClientId@

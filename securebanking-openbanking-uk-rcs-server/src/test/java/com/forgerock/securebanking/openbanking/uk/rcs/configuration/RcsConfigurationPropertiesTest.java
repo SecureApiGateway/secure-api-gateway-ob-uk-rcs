@@ -38,7 +38,7 @@ public class RcsConfigurationPropertiesTest {
 
     @Test
     public void shouldHaveAllProperties() {
-        assertThat(configurationProperties.getRsBaseUrl()).isNotNull();
+        assertThat(configurationProperties.getRsServer()).isNotNull();
         assertThat(configurationProperties.getIssuerId()).isNotNull();
     }
 }

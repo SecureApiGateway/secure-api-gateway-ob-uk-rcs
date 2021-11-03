@@ -63,7 +63,7 @@ public class JwkServiceClient {
     }
 
     private String request(String intentId, HttpMethod httpMethod, HttpEntity httpEntity) throws ExceptionClient {
-        String consentURL = configurationProperties.getBaseUrl() + configurationProperties.getJwkmsConsentSigningEndpoint();
+        String consentURL = configurationProperties.getIgServer() + configurationProperties.getJwkmsConsentSigningEndpoint();
         log.debug("request() request to signing the claims '{}' details from platform: {}", intentId, consentURL);
         try {
             ResponseEntity<String> responseEntity = restTemplate.exchange(

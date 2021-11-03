@@ -32,7 +32,7 @@ public class FilterConfigurationProperties {
         max_age: 3600
      */
     // Cors
-    @Value("${filters.cors.expected_origin_ends_with:localhost}")
+    @Value("${filters.cors.expected_origin_ends_with}")
     private String expectedOriginEndsWith;
     @Value("${filters.cors.allowed_headers}")
     private String allowedHeaders;
