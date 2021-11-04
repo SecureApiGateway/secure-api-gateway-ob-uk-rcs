@@ -38,7 +38,7 @@
     <parent>
         <groupId>com.forgerock.securebanking</groupId>
         <artifactId>securebanking-parent</artifactId>
-        <version>1.0.3-SNAPSHOT</version>
+        <version>1.0.4-SNAPSHOT</version>
     </parent>
 
     <dependencyManagement>
@@ -51,29 +51,8 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <!-- Necessary to support http PATCH calls used by the platform module client-->
-            <dependency>
-                <groupId>org.apache.httpcomponents</groupId>
-                <artifactId>httpclient</artifactId>
-                <version>4.5.13</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>3.12.0</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-    </dependencies>
 
     <scm>
         <connection>scm:git:git@github.com:SecureBankingAccessToolkit/securebanking-openbanking-uk-rcs.git
