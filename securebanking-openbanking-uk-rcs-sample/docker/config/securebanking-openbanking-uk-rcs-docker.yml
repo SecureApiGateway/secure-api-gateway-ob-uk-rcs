@@ -65,7 +65,3 @@ rcs:
         must-be-validated: false
   rs_server: ${RS_SERVER:localhost}
 
-rs:
-  internal-port: 8080
-  rs: http://rs-simulator:${rs.internal-port}
-
