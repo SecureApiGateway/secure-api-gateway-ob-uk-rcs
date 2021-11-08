@@ -92,7 +92,7 @@ public class ConsentDecisionApiControllerTest {
         ConsentDecisionRequest consentDecisionRequest = ConsentDecisionRequest.builder()
                 .sharedAccounts(accountConsentDetails.getAccountIds())
                 .consentJwt(jwt)
-                .decision(Constants.ConsentDecision.APPROVED)
+                .decision(Constants.ConsentDecision.AUTHORISED)
                 .build();
         HttpEntity<String> request = new HttpEntity(consentDecisionRequest, headers());
 

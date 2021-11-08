@@ -66,7 +66,7 @@ public class ConsentDecisionTestDataFactory {
                         "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +
                         "SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c")
                 .data(ConsentDecisionData.builder()
-                        .status(Constants.ConsentDecision.APPROVED)
+                        .status(Constants.ConsentDecision.AUTHORISED)
                         .build())
                 .clientId(randomUUID().toString())
                 .accountIds(List.of(aValidFRAccountWithBalance().toString()))
@@ -82,7 +82,7 @@ public class ConsentDecisionTestDataFactory {
                         "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +
                         "SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c")
                 .data(ConsentDecisionData.builder()
-                        .status(Constants.ConsentDecision.APPROVED)
+                        .status(Constants.ConsentDecision.AUTHORISED)
                         .build())
                 .clientId(randomUUID().toString())
                 .accountIds(List.of(aValidFRAccountWithBalance().toString()))
@@ -98,7 +98,7 @@ public class ConsentDecisionTestDataFactory {
                         "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +
                         "SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c")
                 .data(ConsentDecisionData.builder()
-                        .status(Constants.ConsentDecision.APPROVED)
+                        .status(Constants.ConsentDecision.AUTHORISED)
                         .build())
                 .clientId(clientId)
                 .accountIds(List.of(aValidFRAccountWithBalance().toString()))
