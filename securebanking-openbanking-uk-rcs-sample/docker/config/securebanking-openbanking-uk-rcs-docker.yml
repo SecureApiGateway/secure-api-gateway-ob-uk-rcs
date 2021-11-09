@@ -63,5 +63,5 @@ rcs:
     request:
       jwt:
         must-be-validated: false
-  rs_server: ${RS_SERVER:localhost}
+  rs_server: ${RS_SERVER:http://rs-simulator:8080}
 
