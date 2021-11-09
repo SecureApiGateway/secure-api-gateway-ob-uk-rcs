@@ -30,8 +30,9 @@ public class Constants {
     }
 
     public static class ConsentDecision {
-        public static final String APPROVED = "Approved";
-        public static final String DENIED = "Denied";
+        public static final String AUTHORISED = "Authorised";
+        public static final String REJECTED = "Rejected";
+        public static final String REVOKED = "Revoked";
     }
 
     public static class URLParameters {

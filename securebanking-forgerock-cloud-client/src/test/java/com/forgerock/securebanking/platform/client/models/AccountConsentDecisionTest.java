@@ -71,7 +71,7 @@ public class AccountConsentDecisionTest {
         AccountConsentDecision accountConsentDecision = AccountConsentDecision.builder()
                 .data(
                         ConsentDecisionData.builder()
-                                .status(Constants.ConsentDecision.APPROVED)
+                                .status(Constants.ConsentDecision.AUTHORISED)
                                 .build()
                 ).accountIds(List.of("12345", "67890"))
                 .resourceOwnerUsername(USER_ID)
@@ -83,7 +83,7 @@ public class AccountConsentDecisionTest {
 
         // Then
         assertThat(json).containsPattern("\"resourceOwnerUsername\".:.\"" + USER_ID + "\"");
-        assertThat(json).containsPattern("\"Status\".:.\"" + Constants.ConsentDecision.APPROVED + "\"");
+        assertThat(json).containsPattern("\"Status\".:.\"" + Constants.ConsentDecision.AUTHORISED + "\"");
     }
 
     private String getJson() {
@@ -94,7 +94,7 @@ public class AccountConsentDecisionTest {
         return "{" +
                 "\"type\" : \"AccountConsentDecision\"," +
                 "\"data\" : {" +
-                "\"Status\" : \"" + Constants.ConsentDecision.APPROVED + "\"" +
+                "\"Status\" : \"" + Constants.ConsentDecision.AUTHORISED + "\"" +
                 "}," +
                 "\"accountIds\" : [ \"8f10f873-2b32-4306-aeea-d11004f92200\" ]," +
                 "\"resourceOwnerUsername\" : \"" + userId + "\"" +

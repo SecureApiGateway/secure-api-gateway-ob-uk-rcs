@@ -81,7 +81,7 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
 
         try {
 
-            boolean decision = Constants.ConsentDecision.APPROVED.equals(consentDecisionRequest.getDecision());
+            boolean decision = Constants.ConsentDecision.AUTHORISED.equals(consentDecisionRequest.getDecision());
             log.debug("submitConsentDecision(consentDecisionSerialised) The decision is '{}'", decision);
 
             ConsentDecision consentDecision =
