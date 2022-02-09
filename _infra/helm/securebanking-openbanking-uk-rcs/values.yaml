@@ -47,3 +47,6 @@ ingress:
 service:
   apiVersion: v1
   type: ClusterIP
+
+syncTest:
+  xxx: nothing
