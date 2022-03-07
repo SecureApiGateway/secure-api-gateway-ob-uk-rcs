@@ -42,6 +42,12 @@ public class ConsentServiceClient implements ConsentService {
             case ACCOUNT_ACCESS_CONSENT:
                 log.debug("Intent type: '{}' with ID '{}'", IntentType.ACCOUNT_ACCESS_CONSENT.name(), intentId);
                 return accountConsentService.getConsent(consentRequest);
+            case DOMESTIC_VRP_PAYMENT_CONSENT:
+                log.debug("Intent type: '{}' with ID '{}'", IntentType.DOMESTIC_VRP_PAYMENT_CONSENT.name(), intentId);
+                throw new ExceptionClient(
+                        consentRequest,
+                        ErrorType.REQUEST_NOT_SUPPORTED,
+                        String.format("Get consent for type: '%s' not implemented yet", IntentType.DOMESTIC_VRP_PAYMENT_CONSENT.name()));
             default:
                 String message = String.format("Invalid type for intent ID: '%s'", intentId);
                 log.error(message);

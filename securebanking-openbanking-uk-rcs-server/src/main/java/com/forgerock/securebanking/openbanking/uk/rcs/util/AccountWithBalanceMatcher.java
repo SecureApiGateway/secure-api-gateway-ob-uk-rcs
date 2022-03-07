@@ -16,7 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.util;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRAccountIdentifier;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 

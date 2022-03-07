@@ -30,8 +30,8 @@ public enum IntentType {
     PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT("PISC_"),
     PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT("PISOC_"),
     PAYMENT_FILE_CONSENT("PFC_"),
-    FUNDS_CONFIRMATION_CONSENT("FCC_");
-
+    FUNDS_CONFIRMATION_CONSENT("FCC_"),
+    DOMESTIC_VRP_PAYMENT_CONSENT("DVRP_");
     private String intentIdPrefix;
 
     IntentType(String intentIdPrefix) {
@@ -48,8 +48,7 @@ public enum IntentType {
     }
 
     public String generateIntentId() {
-        String var10000 = this.intentIdPrefix;
-        String intentId = var10000 + UUID.randomUUID().toString();
+        String intentId = this.intentIdPrefix + UUID.randomUUID();
         return intentId.substring(0, Math.min(intentId.length(), 40));
     }
 
