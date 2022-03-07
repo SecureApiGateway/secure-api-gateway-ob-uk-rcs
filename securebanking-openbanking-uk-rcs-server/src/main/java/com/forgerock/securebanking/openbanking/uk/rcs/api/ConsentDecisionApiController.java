@@ -51,14 +51,6 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
     private final ObjectMapper objectMapper;
     private final ConsentServiceClient consentServiceClient;
     private final JwkServiceClient jwkServiceClient;
-//    private final RestTemplate restTemplate;
-
-//    public ConsentDecisionApiController(ObjectMapper objectMapper, ConsentServiceClient consentServiceClient, JwkServiceClient jwkServiceClient, RestTemplate restTemplate) {
-//        this.objectMapper = objectMapper;
-//        this.consentServiceClient = consentServiceClient;
-//        this.jwkServiceClient = jwkServiceClient;
-//        this.restTemplate = restTemplate;
-//    }
 
     public ConsentDecisionApiController(ObjectMapper objectMapper, ConsentServiceClient consentServiceClient, JwkServiceClient jwkServiceClient) {
         this.objectMapper = objectMapper;
