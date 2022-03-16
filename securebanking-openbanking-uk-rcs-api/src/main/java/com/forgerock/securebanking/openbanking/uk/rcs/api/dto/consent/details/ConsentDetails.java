@@ -53,7 +53,6 @@ public abstract class ConsentDetails {
     private String userId;
     private String logo;
     private String clientId;
-    private List<FRAccountWithBalance> accounts;
 
     public abstract IntentType getIntentType();
 
