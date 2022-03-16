@@ -93,9 +93,6 @@ public class DomesticPaymentConsentDetailsConverter implements Converter {
                         mapper -> mapper.getData().getCharges()
                         , DomesticPaymentsConsentDetails::setCharges)
                 .addMapping(
-                        mapper -> mapper.getData().getInitiation()
-                        , DomesticPaymentsConsentDetails::setInitiation)
-                .addMapping(
                         mapper -> mapper.getData().getAuthorisation()
                         , DomesticPaymentsConsentDetails::setAuthorisation)
                 .addMapping(DomesticPaymentConsentDetails::getOauth2ClientName, DomesticPaymentsConsentDetails::setPispName)
