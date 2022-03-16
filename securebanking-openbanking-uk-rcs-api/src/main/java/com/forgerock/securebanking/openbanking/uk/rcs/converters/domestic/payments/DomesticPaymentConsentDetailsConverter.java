@@ -97,8 +97,7 @@ public class DomesticPaymentConsentDetailsConverter implements Converter {
                         , DomesticPaymentsConsentDetails::setAuthorisation)
                 .addMapping(DomesticPaymentConsentDetails::getOauth2ClientName, DomesticPaymentsConsentDetails::setPispName)
                 .addMappings(mapper -> mapper.skip(DomesticPaymentsConsentDetails::setUserId))
-                .addMappings(mapper -> mapper.skip(DomesticPaymentsConsentDetails::setUsername))
-                .addMappings(mapper -> mapper.skip(DomesticPaymentsConsentDetails::setInitiation));
+                .addMappings(mapper -> mapper.skip(DomesticPaymentsConsentDetails::setUsername));
     }
 
     public final DomesticPaymentsConsentDetails toDomesticPaymentConsentDetails(DomesticPaymentConsentDetails consentDetails) {
