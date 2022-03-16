@@ -52,7 +52,7 @@ public class DomesticPaymentsConsentDetails extends ConsentDetails {
     public void setInitiation(FRWriteDomesticDataInitiation initiation) {
         this.initiation = initiation;
     }
-    
+
     public void setAuthorisation(FRDataAuthorisation authorisation) {
         this.authorisation = authorisation;
     }
