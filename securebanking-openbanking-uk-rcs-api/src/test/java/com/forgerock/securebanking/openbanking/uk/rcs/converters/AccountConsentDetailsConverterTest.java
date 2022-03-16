@@ -16,7 +16,8 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.converters;
 
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.AccountsConsentDetails;
-import com.forgerock.securebanking.platform.client.models.AccountConsentDetails;
+import com.forgerock.securebanking.openbanking.uk.rcs.converters.accounts.AccountConsentDetailsConverter;
+import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 

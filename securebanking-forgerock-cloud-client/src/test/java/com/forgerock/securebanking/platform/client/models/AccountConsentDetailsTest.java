@@ -23,6 +23,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRExternalPermissionsCode;
 import com.forgerock.securebanking.platform.client.ConsentStatusCode;
+import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentDataDetails;
+import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;

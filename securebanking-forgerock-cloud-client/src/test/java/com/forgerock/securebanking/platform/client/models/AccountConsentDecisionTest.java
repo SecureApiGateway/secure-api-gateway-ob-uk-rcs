@@ -22,6 +22,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.forgerock.securebanking.platform.client.Constants;
+import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentDecision;
+import com.forgerock.securebanking.platform.client.models.general.ConsentDecisionData;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -17,8 +17,8 @@ package com.forgerock.securebanking.platform.client.test.support;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRExternalPermissionsCode;
 import com.forgerock.securebanking.platform.client.ConsentStatusCode;
-import com.forgerock.securebanking.platform.client.models.AccountConsentDataDetails;
-import com.forgerock.securebanking.platform.client.models.AccountConsentDetails;
+import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentDataDetails;
+import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentDetails;
 import org.joda.time.DateTime;
 
 import java.util.List;

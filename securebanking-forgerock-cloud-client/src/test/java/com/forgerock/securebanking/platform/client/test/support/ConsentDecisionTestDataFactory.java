@@ -17,9 +17,9 @@ package com.forgerock.securebanking.platform.client.test.support;
 
 import com.forgerock.securebanking.platform.client.Constants;
 import com.forgerock.securebanking.platform.client.IntentType;
-import com.forgerock.securebanking.platform.client.models.AccountConsentDecision;
-import com.forgerock.securebanking.platform.client.models.ConsentDecision;
-import com.forgerock.securebanking.platform.client.models.ConsentDecisionData;
+import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentDecision;
+import com.forgerock.securebanking.platform.client.models.general.ConsentDecision;
+import com.forgerock.securebanking.platform.client.models.general.ConsentDecisionData;
 import com.nimbusds.jwt.JWTClaimsSet;
 
 import java.util.List;

@@ -1,12 +1,12 @@
 /**
  * Copyright © 2020-2021 ForgeRock AS (obst@forgerock.com)
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,18 +21,20 @@ import com.forgerock.securebanking.openbanking.uk.common.claim.Claims;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.rs.AccountService;
-import com.forgerock.securebanking.openbanking.uk.rcs.converters.ConsentDetailsBuilderFactory;
+import com.forgerock.securebanking.openbanking.uk.rcs.converters.general.ConsentDetailsBuilderFactory;
 import com.forgerock.securebanking.openbanking.uk.rcs.exception.InvalidConsentException;
 import com.forgerock.securebanking.platform.client.Constants;
 import com.forgerock.securebanking.platform.client.configuration.ConfigurationPropertiesClient;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
-import com.forgerock.securebanking.platform.client.models.ApiClient;
-import com.forgerock.securebanking.platform.client.models.Consent;
-import com.forgerock.securebanking.platform.client.models.ConsentRequest;
-import com.forgerock.securebanking.platform.client.models.User;
-import com.forgerock.securebanking.platform.client.services.ApiClientServiceClient;
-import com.forgerock.securebanking.platform.client.services.ConsentServiceClient;
-import com.forgerock.securebanking.platform.client.services.UserServiceClient;
+import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentRequest;
+import com.forgerock.securebanking.platform.client.models.domestic.payments.DomesticPaymentConsentRequest;
+import com.forgerock.securebanking.platform.client.models.general.ApiClient;
+import com.forgerock.securebanking.platform.client.models.general.Consent;
+import com.forgerock.securebanking.platform.client.models.general.ConsentDecision;
+import com.forgerock.securebanking.platform.client.models.general.User;
+import com.forgerock.securebanking.platform.client.services.general.ApiClientServiceClient;
+import com.forgerock.securebanking.platform.client.services.general.ConsentServiceClient;
+import com.forgerock.securebanking.platform.client.services.general.UserServiceClient;
 import com.forgerock.securebanking.platform.client.utils.jwt.JwtUtil;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.extern.slf4j.Slf4j;
@@ -88,20 +90,44 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                         "Missing intent Id", null, null);
             }
 
+            String intentId = JwtUtil.getIdTokenClaim(signedJWT, Constants.Claims.INTENT_ID);
+            log.debug("Intent Id from the requested claims '{}'", intentId);
+            switch (IntentType.identify(intentId)) {
+                case ACCOUNT_ACCESS_CONSENT:
+                    log.debug("Intent type: '{}' with ID '{}'", IntentType.ACCOUNT_ACCESS_CONSENT.name(), intentId);
+                    AccountConsentRequest accountConsentRequest = buildAccountConsentRequest(signedJWT);
+                    log.debug("Retrieve consent details:\n- Type '{}'\n-Id '{}'\n",
+                            IntentType.identify(accountConsentRequest.getIntentId()).name(), accountConsentRequest.getIntentId());
+                    Consent accountConsent = consentServiceClient.getConsent(accountConsentRequest);
 
-            ConsentRequest consentRequest = buildConsentRequest(signedJWT);
+                    log.debug("Retrieve to api client details for client Id '{}'", accountConsentRequest.getClientId());
+                    ApiClient accountApiClient = apiClientService.getApiClient(accountConsentRequest.getClientId());
 
-            log.debug("Retrieve consent details:\n- Type '{}'\n-Id '{}'\n",
-                    IntentType.identify(consentRequest.getIntentId()).name(), consentRequest.getIntentId());
-            Consent consent = consentServiceClient.getConsent(consentRequest);
+                    // build the consent details object for the response
+                    ConsentDetails accountConsentDetails = ConsentDetailsBuilderFactory.build(accountConsent, accountConsentRequest, accountApiClient);
 
-            log.debug("Retrieve to api client details for client Id '{}'", consentRequest.getClientId());
-            ApiClient apiClient = apiClientService.getApiClient(consentRequest.getClientId());
+                    return ResponseEntity.ok(accountConsentDetails);
 
-            // build the consent details object for the response
-            ConsentDetails consentDetails = ConsentDetailsBuilderFactory.build(consent, consentRequest, apiClient);
+                case PAYMENT_DOMESTIC_CONSENT:
+                    log.debug("Intent type: '{}' with ID '{}'", IntentType.PAYMENT_DOMESTIC_CONSENT.name(), intentId);
+                    DomesticPaymentConsentRequest domesticPaymentConsentRequest = buildDomesticPaymentConsentRequest(signedJWT);
+                    log.debug("Retrieve consent details:\n- Type '{}'\n-Id '{}'\n",
+                            IntentType.identify(domesticPaymentConsentRequest.getIntentId()).name(), domesticPaymentConsentRequest.getIntentId());
+                    Consent domesticPaymentConsent = consentServiceClient.getConsent(domesticPaymentConsentRequest);
 
-            return ResponseEntity.ok(consentDetails);
+                    log.debug("Retrieve to api client details for client Id '{}'", domesticPaymentConsentRequest.getClientId());
+                    ApiClient domesticPaymentApiClient = apiClientService.getApiClient(domesticPaymentConsentRequest.getClientId());
+
+                    // build the consent details object for the response
+                    ConsentDetails domesticPaymentConsentDetails = ConsentDetailsBuilderFactory.build(domesticPaymentConsent, domesticPaymentConsentRequest, domesticPaymentApiClient);
+
+                    return ResponseEntity.ok(domesticPaymentConsentDetails);
+
+                default:
+                    String message = String.format("Invalid type for intent ID: '%s'", intentId);
+                    log.error(message);
+                    throw new ExceptionClient((ConsentDecision) null);
+            }
 
         } catch (ExceptionClient e) {
             String errorMessage = String.format("%s", e.getMessage());
@@ -113,7 +139,7 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
         }
     }
 
-    private ConsentRequest buildConsentRequest(SignedJWT signedJWT) throws ExceptionClient {
+    private AccountConsentRequest buildAccountConsentRequest(SignedJWT signedJWT) throws ExceptionClient {
         String intentId = JwtUtil.getIdTokenClaim(signedJWT, Constants.Claims.INTENT_ID);
         log.debug("Intent Id from the requested claims '{}'", intentId);
         String clientId = JwtUtil.getClaimValue(signedJWT, Constants.Claims.CLIENT_ID);
@@ -124,10 +150,28 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
         log.debug("Retrieve the user details for user Id '{}'", userId);
         User user = userServiceClient.getUser(userId);
 
-        return ConsentRequest.builder()
+        return AccountConsentRequest.builder()
                 .intentId(intentId)
                 .consentRequestJwt(signedJWT)
                 .accounts(accounts)
+                .user(user)
+                .clientId(clientId)
+                .build();
+    }
+
+    private DomesticPaymentConsentRequest buildDomesticPaymentConsentRequest(SignedJWT signedJWT) throws ExceptionClient {
+        String intentId = JwtUtil.getIdTokenClaim(signedJWT, Constants.Claims.INTENT_ID);
+        log.debug("Intent Id from the requested claims '{}'", intentId);
+        String clientId = JwtUtil.getClaimValue(signedJWT, Constants.Claims.CLIENT_ID);
+        log.debug("Client Id from the JWT claims '{}'", clientId);
+        String userId = JwtUtil.getClaimValue(signedJWT, Constants.Claims.USER_NAME);
+        log.debug("User Id from the JWT claims '{}'", userId);
+        log.debug("Retrieve the user details for user Id '{}'", userId);
+        User user = userServiceClient.getUser(userId);
+
+        return DomesticPaymentConsentRequest.builder()
+                .intentId(intentId)
+                .consentRequestJwt(signedJWT)
                 .user(user)
                 .clientId(clientId)
                 .build();

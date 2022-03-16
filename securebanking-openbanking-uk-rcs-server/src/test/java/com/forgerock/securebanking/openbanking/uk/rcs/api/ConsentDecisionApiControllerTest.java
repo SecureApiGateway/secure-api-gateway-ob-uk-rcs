@@ -21,10 +21,10 @@ import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision.C
 import com.forgerock.securebanking.openbanking.uk.rcs.testsupport.JwtTestHelper;
 import com.forgerock.securebanking.platform.client.Constants;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
-import com.forgerock.securebanking.platform.client.models.AccountConsentDetails;
-import com.forgerock.securebanking.platform.client.models.ConsentDecision;
-import com.forgerock.securebanking.platform.client.services.ConsentServiceClient;
-import com.forgerock.securebanking.platform.client.services.JwkServiceClient;
+import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentDetails;
+import com.forgerock.securebanking.platform.client.models.general.ConsentDecision;
+import com.forgerock.securebanking.platform.client.services.general.ConsentServiceClient;
+import com.forgerock.securebanking.platform.client.services.general.JwkServiceClient;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
