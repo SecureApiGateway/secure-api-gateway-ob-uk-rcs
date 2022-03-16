@@ -47,13 +47,4 @@ public class DomesticPaymentsConsentDetails extends ConsentDetails {
     public IntentType getIntentType() {
         return IntentType.PAYMENT_DOMESTIC_CONSENT;
     }
-
-
-    public void setInitiation(FRWriteDomesticDataInitiation initiation) {
-        this.initiation = initiation;
-    }
-
-    public void setAuthorisation(FRDataAuthorisation authorisation) {
-        this.authorisation = authorisation;
-    }
 }
