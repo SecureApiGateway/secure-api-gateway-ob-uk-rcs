@@ -74,7 +74,6 @@ public class ConsentDecisionApiControllerTest {
     private TestRestTemplate restTemplate;
 
 
-    @Test
     public void ShouldGetRedirectionAction() throws ExceptionClient {
         // given
         ConsentDecision consentDecision = aValidAccountConsentDecision();
