@@ -35,7 +35,6 @@ import java.util.List;
 public class DomesticPaymentConsentDetails extends Consent {
 
     private DomesticPaymentConsentDataDetails data;
-    private List<String> domesticPaymentIds;
 
     @Override
     public IntentType getIntentType() {
