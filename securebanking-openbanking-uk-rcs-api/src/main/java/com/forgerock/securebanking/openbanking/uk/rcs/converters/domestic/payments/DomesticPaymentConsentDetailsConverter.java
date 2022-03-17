@@ -83,19 +83,6 @@ public class DomesticPaymentConsentDetailsConverter implements Converter {
     public void mapping(ModelMapper modelMapper) {
         modelMapper.createTypeMap(DomesticPaymentConsentDetails.class, DomesticPaymentsConsentDetails.class, getTypeMapName())
                 .addMapping(mapper -> mapper.getData().getInitiation(), DomesticPaymentsConsentDetails::setInitiation)
-                .addMapping(
-                        mapper -> mapper.getData().getCutOffDateTime()
-                        , DomesticPaymentsConsentDetails::setCutOffDateTime)
-                .addMapping(
-                        mapper -> mapper.getData().getExpectedExecutionDateTime()
-                        , DomesticPaymentsConsentDetails::setExpectedExecutionDateTime)
-                .addMapping(mapper -> mapper.getData().getExpectedSettlementDateTime(), DomesticPaymentsConsentDetails::setExpectedSettlementDateTime)
-                .addMapping(
-                        mapper -> mapper.getData().getCharges()
-                        , DomesticPaymentsConsentDetails::setCharges)
-                .addMapping(
-                        mapper -> mapper.getData().getAuthorisation()
-                        , DomesticPaymentsConsentDetails::setAuthorisation)
                 .addMapping(DomesticPaymentConsentDetails::getOauth2ClientName, DomesticPaymentsConsentDetails::setPispName)
                 .addMappings(mapper -> mapper.skip(DomesticPaymentsConsentDetails::setUserId))
                 .addMappings(mapper -> mapper.skip(DomesticPaymentsConsentDetails::setUsername));

@@ -40,9 +40,7 @@ public class DomesticPaymentsConsentDetails extends ConsentDetails {
     private DateTime cutOffDateTime;
     private DateTime expectedExecutionDateTime;
     private DateTime expectedSettlementDateTime;
-    private List<String> charges;
     private FRWriteDomesticDataInitiation initiation;
-    private FRDataAuthorisation authorisation;
     private String pispName;
 
     @Override
