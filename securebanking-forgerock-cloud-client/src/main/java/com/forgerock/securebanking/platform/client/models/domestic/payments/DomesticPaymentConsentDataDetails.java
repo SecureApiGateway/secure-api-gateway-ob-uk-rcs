@@ -18,11 +18,15 @@ package com.forgerock.securebanking.platform.client.models.domestic.payments;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRDataAuthorisation;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomesticDataInitiation;
+import com.forgerock.securebanking.platform.client.services.general.ConsentServiceInterface;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.flogger.Flogger;
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -47,6 +51,13 @@ public class DomesticPaymentConsentDataDetails implements DomesticPaymentConsent
     private DateTime expectedSettlementDateTime;
     @JsonProperty("Charges")
     private List<String> charges;
+
+    public FRWriteDomesticDataInitiation getInitiation() {
+        Logger log = LoggerFactory.getLogger(DomesticPaymentConsentDataDetails.class);
+        log.info("get DomesticPaymentConsentDataDetails " +  initiation);
+        return initiation;
+    }
+
     @JsonProperty("Initiation")
     private FRWriteDomesticDataInitiation initiation;
     @JsonProperty("Authorisation")
