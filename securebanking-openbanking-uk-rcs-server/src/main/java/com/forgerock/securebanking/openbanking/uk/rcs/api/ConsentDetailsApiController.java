@@ -28,6 +28,7 @@ import com.forgerock.securebanking.platform.client.Constants;
 import com.forgerock.securebanking.platform.client.configuration.ConfigurationPropertiesClient;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
 import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentRequest;
+import com.forgerock.securebanking.platform.client.models.domestic.payments.DomesticPaymentConsentDetails;
 import com.forgerock.securebanking.platform.client.models.domestic.payments.DomesticPaymentConsentRequest;
 import com.forgerock.securebanking.platform.client.models.general.ApiClient;
 import com.forgerock.securebanking.platform.client.models.general.Consent;
@@ -117,9 +118,9 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                     DomesticPaymentConsentRequest domesticPaymentConsentRequest = buildDomesticPaymentConsentRequest(signedJWT);
                     log.debug("Retrieve consent details:\n- Type '{}'\n-Id '{}'\n",
                             IntentType.identify(domesticPaymentConsentRequest.getIntentId()).name(), domesticPaymentConsentRequest.getIntentId());
-                    Consent domesticPaymentConsent = consentServiceClient.getConsent(domesticPaymentConsentRequest);
+                    DomesticPaymentConsentDetails domesticPaymentConsent = (DomesticPaymentConsentDetails) consentServiceClient.getConsent(domesticPaymentConsentRequest);
 
-                    log.debug("domesticPaymentConsent ", domesticPaymentConsent);
+                    log.debug("domesticPaymentConsent1 " + domesticPaymentConsent);
 
                     log.debug("Retrieve to api client details for client Id '{}'", domesticPaymentConsentRequest.getClientId());
                     ApiClient domesticPaymentApiClient = apiClientService.getApiClient(domesticPaymentConsentRequest.getClientId());
