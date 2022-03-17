@@ -52,7 +52,9 @@ public class ConsentServiceClient implements ConsentServiceInterface {
                 return accountConsentService.getConsent((AccountConsentRequest) consentRequest);
             case PAYMENT_DOMESTIC_CONSENT:
                 log.debug("Intent type: '{}' with ID '{}'", IntentType.PAYMENT_DOMESTIC_CONSENT.name(), intentId);
-                return domesticPaymentConsentService.getConsent((DomesticPaymentConsentRequest) consentRequest);
+                Consent d = domesticPaymentConsentService.getConsent((DomesticPaymentConsentRequest) consentRequest);
+                log.debug("d " + d);
+                return d;
             default:
                 String message = String.format("Invalid type for intent ID: '%s'", intentId);
                 log.error(message);

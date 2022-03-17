@@ -78,6 +78,8 @@ public class DomesticPaymentConsentService implements DomesticPaymentConsentServ
             throw new ExceptionClient(consentRequest, ErrorType.INVALID_REQUEST, errorMessage);
         }
 
+        log.debug("consentDetails " + consentDetails);
+
         return consentDetails;
     }
 
