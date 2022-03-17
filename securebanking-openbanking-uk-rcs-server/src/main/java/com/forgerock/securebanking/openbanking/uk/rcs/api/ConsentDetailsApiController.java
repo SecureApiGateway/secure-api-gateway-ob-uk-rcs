@@ -119,6 +119,8 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                             IntentType.identify(domesticPaymentConsentRequest.getIntentId()).name(), domesticPaymentConsentRequest.getIntentId());
                     Consent domesticPaymentConsent = consentServiceClient.getConsent(domesticPaymentConsentRequest);
 
+                    log.debug("domesticPaymentConsent ", domesticPaymentConsent);
+
                     log.debug("Retrieve to api client details for client Id '{}'", domesticPaymentConsentRequest.getClientId());
                     ApiClient domesticPaymentApiClient = apiClientService.getApiClient(domesticPaymentConsentRequest.getClientId());
 

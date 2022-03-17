@@ -20,6 +20,7 @@ import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
 import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentDecision;
 import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentRequest;
+import com.forgerock.securebanking.platform.client.models.domestic.payments.DomesticPaymentConsentDetails;
 import com.forgerock.securebanking.platform.client.models.domestic.payments.DomesticPaymentConsentRequest;
 import com.forgerock.securebanking.platform.client.models.general.Consent;
 import com.forgerock.securebanking.platform.client.models.general.ConsentDecision;
