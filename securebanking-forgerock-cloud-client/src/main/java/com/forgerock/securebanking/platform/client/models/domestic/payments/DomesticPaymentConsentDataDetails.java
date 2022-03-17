@@ -43,16 +43,6 @@ public class DomesticPaymentConsentDataDetails implements DomesticPaymentConsent
     private DateTime creationDateTime;
     @JsonProperty("StatusUpdateDateTime")
     private DateTime statusUpdateDateTime;
-    @JsonProperty("CutOffDateTime")
-    private DateTime cutOffDateTime;
-    @JsonProperty("ExpectedExecutionDateTime")
-    private DateTime expectedExecutionDateTime;
-    @JsonProperty("ExpectedSettlementDateTime")
-    private DateTime expectedSettlementDateTime;
-    @JsonProperty("Charges")
-    private List<String> charges;
     @JsonProperty("Initiation")
     private FRWriteDomesticDataInitiation initiation;
-    @JsonProperty("Authorisation")
-    private FRDataAuthorisation authorisation;
 }
