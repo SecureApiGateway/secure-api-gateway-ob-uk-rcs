@@ -106,7 +106,8 @@ public class DomesticPaymentConsentService implements DomesticPaymentConsentServ
                     httpMethod,
                     httpEntity,
                     DomesticPaymentConsentDetails.class);
-            log.debug("DomesticPaymentConsentService " + responseEntity.getBody());
+            log.debug("DomesticPaymentConsentService responseEntity" + responseEntity);
+            log.debug("DomesticPaymentConsentService responseEntity.body" + responseEntity.getBody());
             return responseEntity != null ? responseEntity.getBody() : null;
         } catch (RestClientException e) {
             log.error(ErrorType.SERVER_ERROR.getDescription(), e);
