@@ -51,13 +51,6 @@ public class DomesticPaymentConsentDataDetails implements DomesticPaymentConsent
     private DateTime expectedSettlementDateTime;
     @JsonProperty("Charges")
     private List<String> charges;
-
-    public FRWriteDomesticDataInitiation getInitiation() {
-        Logger log = LoggerFactory.getLogger(DomesticPaymentConsentDataDetails.class);
-        log.info("get DomesticPaymentConsentDataDetails " +  initiation);
-        return initiation;
-    }
-
     @JsonProperty("Initiation")
     private FRWriteDomesticDataInitiation initiation;
     @JsonProperty("Authorisation")

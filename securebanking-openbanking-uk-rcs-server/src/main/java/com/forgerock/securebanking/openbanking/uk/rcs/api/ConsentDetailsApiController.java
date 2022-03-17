@@ -21,6 +21,7 @@ import com.forgerock.securebanking.openbanking.uk.common.claim.Claims;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.rs.AccountService;
+import com.forgerock.securebanking.openbanking.uk.rcs.client.rs.DomesticPaymentService;
 import com.forgerock.securebanking.openbanking.uk.rcs.converters.general.ConsentDetailsBuilderFactory;
 import com.forgerock.securebanking.openbanking.uk.rcs.exception.InvalidConsentException;
 import com.forgerock.securebanking.platform.client.Constants;
@@ -56,6 +57,7 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
     private final ApiClientServiceClient apiClientService;
     private final UserServiceClient userServiceClient;
     private final AccountService accountService;
+    private final DomesticPaymentService domesticPaymentService;
     private final ConfigurationPropertiesClient configurationPropertiesClient;
 
     @Value("${rcs.consent.request.jwt.must-be-validated:false}")
@@ -64,11 +66,13 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
     public ConsentDetailsApiController(ConsentServiceClient consentServiceClient,
                                        ApiClientServiceClient apiClientService,
                                        UserServiceClient userServiceClient,
-                                       AccountService accountService, ConfigurationPropertiesClient configurationPropertiesClient) {
+                                       AccountService accountService, DomesticPaymentService domesticPaymentService,
+                                       ConfigurationPropertiesClient configurationPropertiesClient) {
         this.consentServiceClient = consentServiceClient;
         this.apiClientService = apiClientService;
         this.userServiceClient = userServiceClient;
         this.accountService = accountService;
+        this.domesticPaymentService = domesticPaymentService;
         this.configurationPropertiesClient = configurationPropertiesClient;
     }
 
@@ -166,12 +170,14 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
         log.debug("Client Id from the JWT claims '{}'", clientId);
         String userId = JwtUtil.getClaimValue(signedJWT, Constants.Claims.USER_NAME);
         log.debug("User Id from the JWT claims '{}'", userId);
+        List<FRAccountWithBalance> accounts = accountService.getAccountsWithBalance(userId);
         log.debug("Retrieve the user details for user Id '{}'", userId);
         User user = userServiceClient.getUser(userId);
 
         return DomesticPaymentConsentRequest.builder()
                 .intentId(intentId)
                 .consentRequestJwt(signedJWT)
+                .accounts(accounts)
                 .user(user)
                 .clientId(clientId)
                 .build();

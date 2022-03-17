@@ -15,6 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.converters.domestic.payments;
 
+import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.AccountsConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticPaymentsConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.converters.general.Converter;
 import com.forgerock.securebanking.platform.client.models.domestic.payments.DomesticPaymentConsentDetails;
@@ -81,7 +82,7 @@ public class DomesticPaymentConsentDetailsConverter implements Converter {
     @Override
     public void mapping(ModelMapper modelMapper) {
         modelMapper.createTypeMap(DomesticPaymentConsentDetails.class, DomesticPaymentsConsentDetails.class, getTypeMapName())
-                .addMapping(mapper -> mapper.getData().getInitiation(), DomesticPaymentsConsentDetails::setInitiation)
+                .addMapping(mapper -> mapper.getInitiation(), DomesticPaymentsConsentDetails::setInitiation)
                 .addMapping(
                         mapper -> mapper.getData().getCutOffDateTime()
                         , DomesticPaymentsConsentDetails::setCutOffDateTime)

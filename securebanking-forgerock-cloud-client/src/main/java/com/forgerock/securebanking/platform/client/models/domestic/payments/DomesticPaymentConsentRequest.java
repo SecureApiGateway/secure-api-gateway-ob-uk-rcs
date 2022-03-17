@@ -15,19 +15,28 @@
  */
 package com.forgerock.securebanking.platform.client.models.domestic.payments;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.platform.client.models.general.ConsentRequest;
 import com.forgerock.securebanking.platform.client.models.general.User;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.Builder;
+
+import java.util.List;
 
 /**
  * Represents the required information to provide the details of a consent.
  */
 
 public class DomesticPaymentConsentRequest extends ConsentRequest {
+    List<FRAccountWithBalance> accounts;
 
     @Builder
-    public DomesticPaymentConsentRequest(String intentId, SignedJWT consentRequestJwt, User user, String clientId) {
+    public DomesticPaymentConsentRequest(String intentId, SignedJWT consentRequestJwt, User user, String clientId, List<FRAccountWithBalance> accounts) {
         super(intentId, consentRequestJwt, user, clientId);
+        this.accounts = accounts;
+    }
+
+    public List<FRAccountWithBalance> getAccounts() {
+        return accounts;
     }
 }

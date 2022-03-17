@@ -16,12 +16,15 @@
 
 package com.forgerock.securebanking.platform.client.models.domestic.payments;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomesticDataInitiation;
 import com.forgerock.securebanking.platform.client.IntentType;
 import com.forgerock.securebanking.platform.client.models.general.Consent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -37,5 +40,13 @@ public class DomesticPaymentConsentDetails extends Consent {
     @Override
     public IntentType getIntentType() {
         return IntentType.PAYMENT_DOMESTIC_CONSENT;
+    }
+
+    public FRWriteDomesticDataInitiation getInitiation()
+    {
+        FRWriteDomesticDataInitiation initiation = data.getInitiation();
+        Logger log = LoggerFactory.getLogger(DomesticPaymentConsentDetails.class);
+        log.info("get DomesticPaymentConsentDetails " +  initiation);
+        return initiation;
     }
 }

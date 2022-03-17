@@ -41,14 +41,6 @@ public class DomesticPaymentsConsentDetails extends ConsentDetails {
     private DateTime expectedExecutionDateTime;
     private DateTime expectedSettlementDateTime;
     private List<String> charges;
-
-    public void setInitiation(FRWriteDomesticDataInitiation initiation) {
-        Logger log = LoggerFactory.getLogger(DomesticPaymentsConsentDetails.class);
-
-        log.info("set DomesticPaymentsConsentDetails " + initiation.toString());
-        this.initiation = initiation;
-    }
-
     private FRWriteDomesticDataInitiation initiation;
     private FRDataAuthorisation authorisation;
     private String pispName;
