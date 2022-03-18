@@ -18,6 +18,7 @@ package com.forgerock.securebanking.openbanking.uk.rcs.converters.domestic.payme
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.AccountsConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticPaymentsConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.converters.general.Converter;
+import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentDetails;
 import com.forgerock.securebanking.platform.client.models.domestic.payments.DomesticPaymentConsentDetails;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -82,9 +83,12 @@ public class DomesticPaymentConsentDetailsConverter implements Converter {
     @Override
     public void mapping(ModelMapper modelMapper) {
         modelMapper.createTypeMap(DomesticPaymentConsentDetails.class, DomesticPaymentsConsentDetails.class, getTypeMapName())
-                .addMapping(mapper -> mapper.getData().getInitiation(), DomesticPaymentsConsentDetails::setInitiation)
-                .addMapping(DomesticPaymentConsentDetails::getOauth2ClientName, DomesticPaymentsConsentDetails::setPispName)
+                .addMapping(mapper -> mapper.getData().getInitiation().getInstructedAmount(), DomesticPaymentsConsentDetails::setInstructedAmount)
+                .addMapping(DomesticPaymentConsentDetails::getAccountIds, DomesticPaymentsConsentDetails::setAccounts)
+                .addMapping(DomesticPaymentConsentDetails::getOauth2ClientName, DomesticPaymentsConsentDetails::setMerchantName)
+                .addMapping(mapper -> mapper.getData().getInitiation().getRemittanceInformation().getReference(), DomesticPaymentsConsentDetails::setPaymentReference)
                 .addMappings(mapper -> mapper.skip(DomesticPaymentsConsentDetails::setUserId))
+                .addMappings(mapper -> mapper.skip(DomesticPaymentsConsentDetails::setAccounts))
                 .addMappings(mapper -> mapper.skip(DomesticPaymentsConsentDetails::setUsername));
     }
 

@@ -57,18 +57,18 @@ public class ConsentDetailsBuilderFactory {
     }
 
     private static final AccountsConsentDetails buildAccountConsentDetails(
-            AccountConsentDetails accountConsentDetails,
+            AccountConsentDetails consentDetails,
             AccountConsentRequest consentDetailsRequest,
             ApiClient apiClient
     ) {
-        AccountConsentDetailsConverter accountConsentDetailsConverter = AccountConsentDetailsConverter.getInstance();
-        AccountsConsentDetails accountsConsentDetails = accountConsentDetailsConverter.toAccountConsentDetails(accountConsentDetails);
-        accountsConsentDetails.setUsername(consentDetailsRequest.getUser().getUserName());
-        accountsConsentDetails.setUserId(consentDetailsRequest.getUser().getId());
-        accountsConsentDetails.setAccounts(consentDetailsRequest.getAccounts());
-        accountsConsentDetails.setClientId(consentDetailsRequest.getClientId());
-        accountsConsentDetails.setLogo(apiClient.getLogoUri());
-        return accountsConsentDetails;
+        AccountConsentDetailsConverter consentDetailsConverter = AccountConsentDetailsConverter.getInstance();
+        AccountsConsentDetails details = consentDetailsConverter.toAccountConsentDetails(consentDetails);
+        details.setUsername(consentDetailsRequest.getUser().getUserName());
+        details.setUserId(consentDetailsRequest.getUser().getId());
+        details.setAccounts(consentDetailsRequest.getAccounts());
+        details.setClientId(consentDetailsRequest.getClientId());
+        details.setLogo(apiClient.getLogoUri());
+        return details;
     }
 
     private static final DomesticPaymentsConsentDetails buildDomesticPaymentConsentDetails(
@@ -80,6 +80,7 @@ public class ConsentDetailsBuilderFactory {
         DomesticPaymentsConsentDetails details = consentDetailsConverter.toDomesticPaymentConsentDetails(consentDetails);
         details.setUsername(consentDetailsRequest.getUser().getUserName());
         details.setUserId(consentDetailsRequest.getUser().getId());
+        details.setAccounts(consentDetailsRequest.getAccounts());
         details.setClientId(consentDetailsRequest.getClientId());
         details.setLogo(apiClient.getLogoUri());
         return details;

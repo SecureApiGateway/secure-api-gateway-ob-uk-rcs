@@ -16,6 +16,8 @@
 
 package com.forgerock.securebanking.platform.client.models.domestic.payments;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRPaymentRisk;
 import com.forgerock.securebanking.platform.client.IntentType;
 import com.forgerock.securebanking.platform.client.models.general.Consent;
 import lombok.AllArgsConstructor;
@@ -23,13 +25,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
 public class DomesticPaymentConsentDetails extends Consent {
-
     private DomesticPaymentConsentDataDetails data;
+    private FRPaymentRisk risk;
+    private List<String> accountIds;
 
     @Override
     public IntentType getIntentType() {
