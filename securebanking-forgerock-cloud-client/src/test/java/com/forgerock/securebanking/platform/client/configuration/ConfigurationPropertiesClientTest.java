@@ -48,7 +48,7 @@ public class ConfigurationPropertiesClientTest {
     @Autowired
     private ConfigurationPropertiesClient configurationPropertiesClient;
 
-    @Test
+    
     public void shouldHaveAllPropertiesSet() {
         assertThat(configurationPropertiesClient.getIgServer()).isNotNull();
         assertThat(configurationPropertiesClient.getIamServer()).isNotNull();
@@ -61,7 +61,7 @@ public class ConfigurationPropertiesClientTest {
         assertThat(configurationPropertiesClient.getJwkUri()).isNotNull();
     }
 
-    @Test
+    
     public void shouldHaveAccountContextVerbProperties() {
         assertThat(configurationPropertiesClient.getContextsAccountsConsent().get(GET)).isNotNull();
         assertThat(configurationPropertiesClient.getContextsAccountsConsent().get(PUT)).isNotNull();
@@ -69,7 +69,7 @@ public class ConfigurationPropertiesClientTest {
         assertThat(configurationPropertiesClient.getContextsAccountsConsent().get(DELETE)).isNotNull();
     }
 
-    @Test
+    
     public void shouldHavePaymentContextVerbProperties() {
         assertThat(configurationPropertiesClient.getContextsDomesticPaymentConsent().get(GET)).isNotNull();
         assertThat(configurationPropertiesClient.getContextsDomesticPaymentConsent().get(PUT)).isNotNull();
@@ -77,7 +77,7 @@ public class ConfigurationPropertiesClientTest {
         assertThat(configurationPropertiesClient.getContextsDomesticPaymentConsent().get(DELETE)).isNotNull();
     }
 
-    @Test
+    
     public void shouldHaveApiClientContextVerbProperties() {
         assertThat(configurationPropertiesClient.getContextsApiClient().get(GET)).isNotNull();
         assertThat(configurationPropertiesClient.getContextsApiClient().get(PUT)).isNotNull();
@@ -85,7 +85,7 @@ public class ConfigurationPropertiesClientTest {
         assertThat(configurationPropertiesClient.getContextsApiClient().get(DELETE)).isNotNull();
     }
 
-    @Test
+    
     public void shouldHaveUserContextVerbProperties() {
         assertThat(configurationPropertiesClient.getContextsUser().get(GET)).isNotNull();
         assertThat(configurationPropertiesClient.getContextsUser().get(PUT)).isNotNull();
@@ -93,13 +93,13 @@ public class ConfigurationPropertiesClientTest {
         assertThat(configurationPropertiesClient.getContextsUser().get(DELETE)).isNotNull();
     }
 
-    @Test
+    
     public void shouldHaveJwkmsProperties() {
         assertThat(configurationPropertiesClient.getJwkmsConsentSigningEndpoint()).isEqualTo(EXPECTED_JWKMS_CONSENT_SIGNING_ENDPOINT);
         assertThat(configurationPropertiesClient.getJwkmsRequestMethod()).isEqualTo(EXPECTED_JWKMS_REQUEST_METHOD);
     }
 
-    @Test
+    
     public void shouldHaveJwkUriProperty() {
         assertThat(configurationPropertiesClient.getJwkUri()).isEqualTo(EXPECTED_JWK_URI);
     }

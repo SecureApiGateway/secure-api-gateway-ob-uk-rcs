@@ -57,7 +57,7 @@ public class AccountConsentDetailsTest {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-    @Test
+    
     public void shouldDeserialize() throws JsonProcessingException {
         // Given
         String json = getJson();
@@ -69,7 +69,7 @@ public class AccountConsentDetailsTest {
         assertThat(accountConsentDetails).isNotNull();
     }
 
-    @Test
+    
     public void shouldSerialize() throws JsonProcessingException {
         // Given
         AccountConsentDataDetails accountConsentDataDetails = AccountConsentDataDetails.builder()

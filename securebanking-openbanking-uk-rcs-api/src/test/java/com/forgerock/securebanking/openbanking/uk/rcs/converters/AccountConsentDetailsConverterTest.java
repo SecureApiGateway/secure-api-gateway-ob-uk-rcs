@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 public class AccountConsentDetailsConverterTest {
 
-    @Test
+    
     public void shouldConvertAccountConsentDetailsToAccountsConsentDetails() {
         // Given
         JsonObject consentDetails = aValidAccountConsentDetails("AAC_asdfasdfasdf");

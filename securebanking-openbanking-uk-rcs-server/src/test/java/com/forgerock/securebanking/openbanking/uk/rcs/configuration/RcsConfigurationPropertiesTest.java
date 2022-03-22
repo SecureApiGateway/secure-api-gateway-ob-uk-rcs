@@ -36,7 +36,7 @@ public class RcsConfigurationPropertiesTest {
     @Autowired
     private RcsConfigurationProperties configurationProperties;
 
-    @Test
+    
     public void shouldHaveAllProperties() {
         assertThat(configurationProperties.getRsServer()).isNotNull();
         assertThat(configurationProperties.getIssuerId()).isNotNull();

@@ -40,7 +40,7 @@ public class ConsentServiceTest extends BaseServiceClientTest {
     @InjectMocks
     private ConsentService accountConsentDetailsService;
 
-    @Test
+    
     public void shouldGetConsentDetails() throws ExceptionClient {
         // Given
         ConsentRequest consentRequest = ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest();
@@ -62,7 +62,7 @@ public class ConsentServiceTest extends BaseServiceClientTest {
         assertThat(consentDetails).isEqualTo(details);
     }
 
-    @Test
+    
     public void shouldGetInvalidRequestConsentDetails() {
         // Given
         ConsentRequest ConsentRequest = ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest();
@@ -84,7 +84,7 @@ public class ConsentServiceTest extends BaseServiceClientTest {
         assertThat(exception.getErrorClient().getErrorType().getInternalCode()).isEqualTo(ErrorType.INVALID_REQUEST.getInternalCode());
     }
 
-    @Test
+    
     public void shouldGetNotFoundConsentDetails() {
         // Given
         ConsentRequest ConsentRequest = ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest();

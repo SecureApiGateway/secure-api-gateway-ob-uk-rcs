@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ConsentDetailsBuilderFactoryTest {
 
-    @Test
+    
     public void shouldBuildAccountsConsentDetails() throws ExceptionClient {
         // Given
         JsonObject consentDetails = aValidAccountConsentDetails("AAC_asdfasdfasdf");

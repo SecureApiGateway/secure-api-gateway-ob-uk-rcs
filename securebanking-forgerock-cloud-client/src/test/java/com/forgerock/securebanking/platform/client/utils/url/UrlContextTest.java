@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.catchThrowableOfType;
  */
 public class UrlContextTest {
 
-    @Test
+    
     public void shouldReplaceAccountIntentId() throws ExceptionClient {
         // Given
         String partTestContext = "/repo/context/";
@@ -46,7 +46,7 @@ public class UrlContextTest {
         assertThat(replaced).isEqualTo(partTestContext + intentId);
     }
 
-    @Test
+    
     public void shouldReplacePaymentIntentId() throws ExceptionClient {
         // Given
         String partTestContext = "/repo/context/";
@@ -60,7 +60,7 @@ public class UrlContextTest {
         assertThat(replaced).isEqualTo(partTestContext + intentId);
     }
 
-    @Test
+    
     public void shouldGetUnknownIntentType() {
         // Given
         String partTestContext = "/repo/context/";
@@ -76,7 +76,7 @@ public class UrlContextTest {
         assertThat(exception.getErrorClient().getErrorType().getInternalCode()).isEqualTo(ErrorType.UNKNOWN_INTENT_TYPE.getInternalCode());
     }
 
-    @Test
+    
     public void shouldGetParameterErrorIntentContext() {
         // When
         ExceptionClient exception = catchThrowableOfType(() -> UrlContext.replaceParameterContextIntentId(null, null), ExceptionClient.class);
@@ -86,7 +86,7 @@ public class UrlContextTest {
         assertThat(exception.getErrorClient().getErrorType().getInternalCode()).isEqualTo(ErrorType.PARAMETER_ERROR.getInternalCode());
     }
 
-    @Test
+    
     public void shouldReplaceParameterContextValue() throws ExceptionClient {
         // Given
         String partTestContext = "/repo/context/";
@@ -100,7 +100,7 @@ public class UrlContextTest {
         assertThat(replaced).isEqualTo(partTestContext + clientId);
     }
 
-    @Test
+    
     public void shouldGetParameterErrorContext() {
         // When
         ExceptionClient exception = catchThrowableOfType(() -> UrlContext.replaceParameterContextValue(null, null, null), ExceptionClient.class);

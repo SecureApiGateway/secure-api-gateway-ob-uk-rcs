@@ -38,7 +38,7 @@ public class FilterConfigurationPropertiesTest {
     @Autowired
     private FilterConfigurationProperties configurationProperties;
 
-    @Test
+    
     public void shouldHaveAllProperties() {
         assertThat(configurationProperties.getExpectedOriginEndsWith()).isNotNull();
         assertThat(configurationProperties.getAllowedHeaders()).isNotNull();

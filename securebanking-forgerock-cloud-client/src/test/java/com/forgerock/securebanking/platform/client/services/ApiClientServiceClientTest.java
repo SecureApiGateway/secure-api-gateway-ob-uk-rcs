@@ -38,7 +38,7 @@ public class ApiClientServiceClientTest extends BaseServiceClientTest {
     @InjectMocks
     private ApiClientServiceClient apiClientServiceClient;
 
-    @Test
+    
     public void shouldGetApiClient() throws ExceptionClient {
         // Given
         ApiClient apiClient = ApiClientTestDataFactory.aValidApiClient();
@@ -57,7 +57,7 @@ public class ApiClientServiceClientTest extends BaseServiceClientTest {
         assertThat(apiClientResponse).isNotNull();
     }
 
-    @Test
+    
     public void shouldGetNotFoundApiClient() {
         // Given
         ApiClient apiClient = ApiClientTestDataFactory.aValidApiClient();

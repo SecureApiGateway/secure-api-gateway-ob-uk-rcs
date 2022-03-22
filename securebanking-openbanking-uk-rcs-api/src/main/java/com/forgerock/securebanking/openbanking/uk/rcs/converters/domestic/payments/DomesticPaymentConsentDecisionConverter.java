@@ -17,8 +17,7 @@ package com.forgerock.securebanking.openbanking.uk.rcs.converters.domestic.payme
 
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision.ConsentDecisionRequest;
 import com.forgerock.securebanking.openbanking.uk.rcs.converters.general.Converter;
-import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentDecision;
-import com.forgerock.securebanking.platform.client.models.domestic.payments.DomesticPaymentConsentDecision;
+import com.forgerock.securebanking.platform.client.models.base.ConsentDecision;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -26,7 +25,7 @@ import org.modelmapper.PropertyMap;
 import org.modelmapper.convention.MatchingStrategies;
 
 /**
- * Converter class to map {@link ConsentDecisionRequest} to {@link AccountConsentDecision}
+ * Converter class to map {@link ConsentDecisionRequest} to {@link ConsentDecision}
  */
 @Slf4j
 @NoArgsConstructor
@@ -53,7 +52,7 @@ public class DomesticPaymentConsentDecisionConverter implements Converter {
     public String getTypeMapName() {
         return ConsentDecisionRequest.class.getSimpleName() +
                 "To" +
-                AccountConsentDecision.class.getSimpleName();
+                ConsentDecision.class.getSimpleName();
     }
 
     /*
@@ -82,21 +81,21 @@ public class DomesticPaymentConsentDecisionConverter implements Converter {
 
     @Override
     public void mapping(ModelMapper modelMapper) {
-        PropertyMap<ConsentDecisionRequest, DomesticPaymentConsentDecision> decisionMap = new PropertyMap<>() {
+        PropertyMap<ConsentDecisionRequest, ConsentDecision> decisionMap = new PropertyMap<>() {
             protected void configure() {
                 map().getData().setStatus(source.getDecision());
             }
         };
-        modelMapper.createTypeMap(ConsentDecisionRequest.class, DomesticPaymentConsentDecision.class, getTypeMapName())
-                .addMapping(source -> source.getConsentJwt(), DomesticPaymentConsentDecision::setConsentJwt)
+        modelMapper.createTypeMap(ConsentDecisionRequest.class, ConsentDecision.class, getTypeMapName())
+                .addMapping(source -> source.getConsentJwt(), ConsentDecision::setConsentJwt)
                 .addMappings(decisionMap);
     }
 
-    public final DomesticPaymentConsentDecision toDomesticPaymentConsentDecision(
+    public final ConsentDecision toDomesticPaymentConsentDecision(
             ConsentDecisionRequest consentDecision) {
         return getInstance().getModelMapper().map(
                 consentDecision,
-                DomesticPaymentConsentDecision.class,
+                ConsentDecision.class,
                 getInstance().getTypeMapName()
         );
     }

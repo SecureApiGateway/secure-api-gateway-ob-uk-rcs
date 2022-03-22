@@ -38,7 +38,7 @@ public class UserServiceClientTest extends BaseServiceClientTest {
     @InjectMocks
     private UserServiceClient userServiceClient;
 
-    @Test
+    
     public void shouldGetUser() throws ExceptionClient {
         // Given
         User user = UserTestDataFactory.aValidUser();
@@ -63,7 +63,7 @@ public class UserServiceClientTest extends BaseServiceClientTest {
         assertThat(userResponse.getGivenName()).isEqualTo(user.getGivenName());
     }
 
-    @Test
+    
     public void shouldGetNotFoundApiClient() {
         // Given
         User user = UserTestDataFactory.aValidUser();

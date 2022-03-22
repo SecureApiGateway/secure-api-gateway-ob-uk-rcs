@@ -49,7 +49,7 @@ public class CorsFilterTest {
     @InjectMocks
     private CorsFilter corsFilter;
 
-    @Test
+    
     public void shouldDoFilterGivenCorsRequest() throws IOException, ServletException {
         // Given
         HttpServletRequest request = mock(HttpServletRequest.class);
@@ -76,7 +76,7 @@ public class CorsFilterTest {
         verifyNoInteractions(chain);
     }
 
-    @Test
+    
     public void shouldDoFilterGivenNonCorsRequest() throws IOException, ServletException {
         // Given
         HttpServletRequest request = mock(HttpServletRequest.class);
