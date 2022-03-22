@@ -92,7 +92,7 @@ public class ConsentService implements ConsentServiceInterface {
     }
 
     private JsonObject request(String intentId, HttpMethod httpMethod, HttpEntity httpEntity) throws ExceptionClient {
-        String consentURL = configurationProperties.getIgServer() +
+        String consentURL = configurationProperties.getIgFqdn() +
                 UrlContext.replaceParameterContextIntentId(
                         configurationProperties.getContextsDomesticPaymentConsent().get(GET.name()),
                         intentId
