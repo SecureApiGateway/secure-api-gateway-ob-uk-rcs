@@ -113,11 +113,6 @@
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.forgerock.commons</groupId>
-            <artifactId>forgerock-util</artifactId>
-            <version>24.0.8.4</version>
-        </dependency>
     </dependencies>
 
     <build>
