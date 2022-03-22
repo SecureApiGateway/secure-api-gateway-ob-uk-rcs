@@ -30,9 +30,9 @@ logging:
 
 identity-platform:
   client:
-    ig_server: ${IG_SERVER:https://obdemo.dev.forgerock.financial}
-    iam_server: ${IAM_SERVER:https://iam.dev.forgerock.financial}
-    jwk_uri: ${identity-platform.client.iam_server}/am/oauth2/connect/jwk_uri
+    ig_fqdn: ${IG_FQDN:https://obdemo.dev.forgerock.financial}
+    identity_platform_fqdn: ${IDENTITY_PLATFORM_FQDN:https://iam.dev.forgerock.financial}
+    jwk_uri: ${identity-platform.client.identity_platform_fqdn}/am/oauth2/connect/jwk_uri
     contexts_api_client:
       get: /repo/apiclients/@ClientId@
       put: /repo/apiclients/@ClientId@
@@ -63,5 +63,5 @@ rcs:
     request:
       jwt:
         must-be-validated: false
-  rs_server: ${RS_SERVER:http://rs-simulator:8080}
+  rs_fqdn: ${RS_FQDN:http://rs-simulator:8080}
 

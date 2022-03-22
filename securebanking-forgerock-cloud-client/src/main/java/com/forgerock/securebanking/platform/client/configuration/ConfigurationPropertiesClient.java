@@ -26,8 +26,8 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "identity-platform.client")
 @Data
 public class ConfigurationPropertiesClient {
-    private String igServer;
-    private String iamServer;
+    private String igFqdn;
+    private String identityPlatformFqdn;
     /*
      * Spring maps the properties, the keys from file will be the map keys
      * @see: application-test.yml

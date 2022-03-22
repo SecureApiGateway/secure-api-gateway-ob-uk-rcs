@@ -17,14 +17,6 @@ deployment:
   server:
     port: 8080
 
-  urls:
-    ig:
-      server: localhost
-    authorization:
-      server: localhost
-    rs:
-      server: localhost
-
   cors:
     originEnds: localhost
 
