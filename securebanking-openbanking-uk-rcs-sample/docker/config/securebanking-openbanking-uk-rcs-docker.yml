@@ -63,5 +63,5 @@ rcs:
     request:
       jwt:
         must-be-validated: false
-  rs_server: ${RS_FQDN:http://rs-simulator:8080}
+  rs_fqdn: ${RS_FQDN:http://rs-simulator:8080}
 
