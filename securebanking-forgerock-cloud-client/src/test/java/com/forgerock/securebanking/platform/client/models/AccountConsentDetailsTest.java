@@ -42,9 +42,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @Slf4j
 public class AccountConsentDetailsTest {
 
-    private ObjectMapper mapper;
     private static final String CONSENT_ID = "AAC_886511e2-78f0-4a14-9ab8-221360815aac";
     private static final String CLIENT_ID = "7e47a733-005b-4031-8622-18064ac373b7";
+    private ObjectMapper mapper;
 
     @BeforeEach
     public void setup() {

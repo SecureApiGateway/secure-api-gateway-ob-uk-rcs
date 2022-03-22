@@ -17,7 +17,7 @@
 package com.forgerock.securebanking.platform.client.models.accounts;
 
 import com.forgerock.securebanking.platform.client.IntentType;
-import com.forgerock.securebanking.platform.client.models.general.Consent;
+import com.forgerock.securebanking.platform.client.models.base.Consent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

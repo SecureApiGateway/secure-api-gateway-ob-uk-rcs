@@ -16,10 +16,8 @@
 package com.forgerock.securebanking.platform.client.test.support;
 
 import com.forgerock.securebanking.platform.client.IntentType;
-import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentRequest;
-import com.forgerock.securebanking.platform.client.models.general.ConsentRequest;
-import com.forgerock.securebanking.platform.client.models.domestic.payments.DomesticPaymentConsentRequest;
-import com.forgerock.securebanking.platform.client.models.general.User;
+import com.forgerock.securebanking.platform.client.models.base.ConsentRequest;
+import com.forgerock.securebanking.platform.client.models.base.User;
 import com.nimbusds.jwt.SignedJWT;
 
 import java.text.ParseException;
@@ -34,33 +32,33 @@ import static java.util.UUID.randomUUID;
 public class ConsentDetailsRequestTestDataFactory {
 
     // ACCOUNTS
-    public static AccountConsentRequest aValidAccountConsentDetailsRequest() {
+    public static ConsentRequest aValidAccountConsentDetailsRequest() {
         return aValidAccountConsentDetailsRequestBuilder().build();
     }
 
-    public static AccountConsentRequest aValidAccountConsentDetailsRequest(String intentId) {
+    public static ConsentRequest aValidAccountConsentDetailsRequest(String intentId) {
         return aValidAccountConsentDetailsRequestBuilder(intentId).build();
     }
 
-    public static AccountConsentRequest aValidAccountConsentDetailsRequest(String intentId, User user) {
+    public static ConsentRequest aValidAccountConsentDetailsRequest(String intentId, User user) {
         return aValidAccountConsentDetailsRequestBuilder(intentId, user).build();
     }
 
-    private static AccountConsentRequest.AccountConsentRequestBuilder aValidAccountConsentDetailsRequestBuilder() {
+    private static ConsentRequest.ConsentRequestBuilder aValidAccountConsentDetailsRequestBuilder() {
         return getAccountConsentDetailsRequestBuilder(IntentType.ACCOUNT_ACCESS_CONSENT);
     }
 
-    private static AccountConsentRequest.AccountConsentRequestBuilder aValidAccountConsentDetailsRequestBuilder(String intentId) {
+    private static ConsentRequest.ConsentRequestBuilder aValidAccountConsentDetailsRequestBuilder(String intentId) {
         return getAccountConsentDetailsRequestBuilder(intentId);
     }
 
-    private static AccountConsentRequest.AccountConsentRequestBuilder aValidAccountConsentDetailsRequestBuilder(String intentId, User user) {
+    private static ConsentRequest.ConsentRequestBuilder aValidAccountConsentDetailsRequestBuilder(String intentId, User user) {
         return getAccountConsentDetailsRequestBuilder(intentId, user);
     }
 
-    private static AccountConsentRequest.AccountConsentRequestBuilder getAccountConsentDetailsRequestBuilder(IntentType intentType) {
+    private static ConsentRequest.ConsentRequestBuilder getAccountConsentDetailsRequestBuilder(IntentType intentType) {
         try {
-            return AccountConsentRequest.builder()
+            return ConsentRequest.builder()
                     .intentId(intentType.getIntentIdPrefix() + randomUUID())
                     .consentRequestJwt(SignedJWT.parse("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
                             "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +
@@ -73,9 +71,9 @@ public class ConsentDetailsRequestTestDataFactory {
         }
     }
 
-    private static AccountConsentRequest.AccountConsentRequestBuilder getAccountConsentDetailsRequestBuilder(String intentId) {
+    private static ConsentRequest.ConsentRequestBuilder getAccountConsentDetailsRequestBuilder(String intentId) {
         try {
-            return AccountConsentRequest.builder()
+            return ConsentRequest.builder()
                     .intentId(intentId)
                     .consentRequestJwt(SignedJWT.parse("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
                             "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +
@@ -88,9 +86,9 @@ public class ConsentDetailsRequestTestDataFactory {
         }
     }
 
-    private static AccountConsentRequest.AccountConsentRequestBuilder getAccountConsentDetailsRequestBuilder(String intentId, User user) {
+    private static ConsentRequest.ConsentRequestBuilder getAccountConsentDetailsRequestBuilder(String intentId, User user) {
         try {
-            return AccountConsentRequest.builder()
+            return ConsentRequest.builder()
                     .intentId(intentId)
                     .consentRequestJwt(SignedJWT.parse("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
                             "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +
@@ -104,45 +102,45 @@ public class ConsentDetailsRequestTestDataFactory {
     }
 
     // PAYMENTS
-    public static DomesticPaymentConsentRequest aValidDomesticPaymentConsentDetailsRequest() {
+    public static ConsentRequest aValidDomesticPaymentConsentDetailsRequest() {
         return aValidDomesticPaymentConsentDetailsRequestBuilder().build();
     }
 
-    private static DomesticPaymentConsentRequest.DomesticPaymentConsentRequestBuilder aValidDomesticPaymentConsentDetailsRequestBuilder() {
+    private static ConsentRequest.ConsentRequestBuilder aValidDomesticPaymentConsentDetailsRequestBuilder() {
         return getDomesticPaymentConsentDetailsRequestBuilder(IntentType.PAYMENT_DOMESTIC_CONSENT);
     }
 
-    private static DomesticPaymentConsentRequest.DomesticPaymentConsentRequestBuilder aValidDomesticScheduledPaymentConsentDetailsRequestBuilder() {
+    private static ConsentRequest.ConsentRequestBuilder aValidDomesticScheduledPaymentConsentDetailsRequestBuilder() {
         return getDomesticPaymentConsentDetailsRequestBuilder(IntentType.PAYMENT_DOMESTIC_SCHEDULED_CONSENT);
     }
 
-    private static DomesticPaymentConsentRequest.DomesticPaymentConsentRequestBuilder aValidDomesticStandingOrderConsentDetailsRequestBuilder() {
+    private static ConsentRequest.ConsentRequestBuilder aValidDomesticStandingOrderConsentDetailsRequestBuilder() {
         return getDomesticPaymentConsentDetailsRequestBuilder(IntentType.PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT);
     }
 
-    private static DomesticPaymentConsentRequest.DomesticPaymentConsentRequestBuilder aValidInternationalPaymentConsentDetailsRequestBuilder() {
+    private static ConsentRequest.ConsentRequestBuilder aValidInternationalPaymentConsentDetailsRequestBuilder() {
         return getDomesticPaymentConsentDetailsRequestBuilder(IntentType.PAYMENT_INTERNATIONAL_CONSENT);
     }
 
-    private static DomesticPaymentConsentRequest.DomesticPaymentConsentRequestBuilder aValidInternationalScheduledPaymentConsentDetailsRequestBuilder() {
+    private static ConsentRequest.ConsentRequestBuilder aValidInternationalScheduledPaymentConsentDetailsRequestBuilder() {
         return getDomesticPaymentConsentDetailsRequestBuilder(IntentType.PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT);
     }
 
-    private static DomesticPaymentConsentRequest.DomesticPaymentConsentRequestBuilder aValidInternationalStandingOrderConsentDetailsRequestBuilder() {
+    private static ConsentRequest.ConsentRequestBuilder aValidInternationalStandingOrderConsentDetailsRequestBuilder() {
         return getDomesticPaymentConsentDetailsRequestBuilder(IntentType.PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT);
     }
 
-    private static DomesticPaymentConsentRequest.DomesticPaymentConsentRequestBuilder aValidFilePaymentConsentDetailsRequestBuilder() {
+    private static ConsentRequest.ConsentRequestBuilder aValidFilePaymentConsentDetailsRequestBuilder() {
         return getDomesticPaymentConsentDetailsRequestBuilder(IntentType.PAYMENT_FILE_CONSENT);
     }
 
-    private static DomesticPaymentConsentRequest.DomesticPaymentConsentRequestBuilder aValidFundsConfirmationConsentDetailsRequestBuilder() {
+    private static ConsentRequest.ConsentRequestBuilder aValidFundsConfirmationConsentDetailsRequestBuilder() {
         return getDomesticPaymentConsentDetailsRequestBuilder(IntentType.FUNDS_CONFIRMATION_CONSENT);
     }
 
-    private static DomesticPaymentConsentRequest.DomesticPaymentConsentRequestBuilder getDomesticPaymentConsentDetailsRequestBuilder(IntentType intentType) {
+    private static ConsentRequest.ConsentRequestBuilder getDomesticPaymentConsentDetailsRequestBuilder(IntentType intentType) {
         try {
-            return DomesticPaymentConsentRequest.builder()
+            return ConsentRequest.builder()
                     .intentId(intentType.getIntentIdPrefix() + randomUUID())
                     .consentRequestJwt(SignedJWT.parse("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
                             "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +
@@ -154,9 +152,9 @@ public class ConsentDetailsRequestTestDataFactory {
         }
     }
 
-    private static DomesticPaymentConsentRequest.DomesticPaymentConsentRequestBuilder getDomesticPaymentConsentDetailsRequestBuilder(String intentId) {
+    private static ConsentRequest.ConsentRequestBuilder getDomesticPaymentConsentDetailsRequestBuilder(String intentId) {
         try {
-            return DomesticPaymentConsentRequest.builder()
+            return ConsentRequest.builder()
                     .intentId(intentId)
                     .consentRequestJwt(SignedJWT.parse("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
                             "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +
@@ -168,9 +166,9 @@ public class ConsentDetailsRequestTestDataFactory {
         }
     }
 
-    private static DomesticPaymentConsentRequest.DomesticPaymentConsentRequestBuilder getDomesticPaymentConsentDetailsRequestBuilder(String intentId, User user) {
+    private static ConsentRequest.ConsentRequestBuilder getDomesticPaymentConsentDetailsRequestBuilder(String intentId, User user) {
         try {
-            return DomesticPaymentConsentRequest.builder()
+            return ConsentRequest.builder()
                     .intentId(intentId)
                     .consentRequestJwt(SignedJWT.parse("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
                             "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +

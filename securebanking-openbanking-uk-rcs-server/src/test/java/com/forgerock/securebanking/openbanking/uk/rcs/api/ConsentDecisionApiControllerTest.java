@@ -26,7 +26,6 @@ import com.forgerock.securebanking.platform.client.models.general.ConsentDecisio
 import com.forgerock.securebanking.platform.client.services.general.ConsentServiceClient;
 import com.forgerock.securebanking.platform.client.services.general.JwkServiceClient;
 import com.nimbusds.jwt.JWTClaimsSet;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -58,12 +57,10 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @SpringBootTest(classes = RcsApplicationTestSupport.class, webEnvironment = RANDOM_PORT)
 public class ConsentDecisionApiControllerTest {
 
-    @LocalServerPort
-    private int port;
-
     private static final String BASE_URL = "http://localhost:";
     private static final String CONTEXT_DETAILS_URI = "/api/rcs/consent/decision";
-
+    @LocalServerPort
+    private int port;
     @MockBean
     private ConsentServiceClient consentServiceClient;
 

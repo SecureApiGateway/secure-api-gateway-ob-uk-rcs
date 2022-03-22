@@ -13,30 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.platform.client.models.domestic.payments;
+package com.forgerock.securebanking.platform.client.models.base;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
-import com.forgerock.securebanking.platform.client.models.general.ConsentRequest;
-import com.forgerock.securebanking.platform.client.models.general.User;
 import com.nimbusds.jwt.SignedJWT;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 
 import java.util.List;
 
 /**
  * Represents the required information to provide the details of a consent.
  */
-
-public class DomesticPaymentConsentRequest extends ConsentRequest {
+@Data
+@Builder
+@AllArgsConstructor
+public class ConsentRequest {
+    public String intentId;
+    protected SignedJWT consentRequestJwt;
+    protected User user;
+    protected String clientId;
     List<FRAccountWithBalance> accounts;
-
-    @Builder
-    public DomesticPaymentConsentRequest(String intentId, SignedJWT consentRequestJwt, User user, String clientId, List<FRAccountWithBalance> accounts) {
-        super(intentId, consentRequestJwt, user, clientId);
-        this.accounts = accounts;
-    }
 
     public List<FRAccountWithBalance> getAccounts() {
         return accounts;
+    }
+
+    public String getConsentRequestJwtString() {
+        return consentRequestJwt.getParsedString();
     }
 }

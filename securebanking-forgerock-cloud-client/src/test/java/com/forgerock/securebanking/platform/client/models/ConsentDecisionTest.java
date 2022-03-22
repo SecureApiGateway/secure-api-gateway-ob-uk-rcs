@@ -22,8 +22,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.forgerock.securebanking.platform.client.Constants;
-import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentDecision;
-import com.forgerock.securebanking.platform.client.models.general.ConsentDecisionData;
+import com.forgerock.securebanking.platform.client.models.base.ConsentDecision;
+import com.forgerock.securebanking.platform.client.models.base.ConsentDecisionData;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,13 +35,13 @@ import java.util.UUID;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 /**
- * Unit Test for {@link AccountConsentDecision}
+ * Unit Test for {@link ConsentDecision}
  */
 @Slf4j
-public class AccountConsentDecisionTest {
+public class ConsentDecisionTest {
 
-    private ObjectMapper mapper;
     private static final String USER_ID = "7e47a733-005b-4031-8622-18064ac373b7";
+    private ObjectMapper mapper;
 
     @BeforeEach
     public void setup() {
@@ -60,17 +60,17 @@ public class AccountConsentDecisionTest {
         String json = getJson();
 
         // When
-        AccountConsentDecision accountConsentDecision = mapper.readValue(json, AccountConsentDecision.class);
+        ConsentDecision consentDecision = mapper.readValue(json, ConsentDecision.class);
 
         // Then
-        assertThat(accountConsentDecision).isNotNull();
+        assertThat(consentDecision).isNotNull();
     }
 
     @Test
     public void shouldSerialize() throws JsonProcessingException {
         // Given
 
-        AccountConsentDecision accountConsentDecision = AccountConsentDecision.builder()
+        ConsentDecision consentDecision = ConsentDecision.builder()
                 .data(
                         ConsentDecisionData.builder()
                                 .status(Constants.ConsentDecision.AUTHORISED)
@@ -80,7 +80,7 @@ public class AccountConsentDecisionTest {
                 .build();
 
         // When
-        String json = mapper.writeValueAsString(accountConsentDecision);
+        String json = mapper.writeValueAsString(consentDecision);
         log.info("Json Serialize as String \n{}", json);
 
         // Then
@@ -94,7 +94,7 @@ public class AccountConsentDecisionTest {
 
     private String getJson(String userId) {
         return "{" +
-                "\"type\" : \"AccountConsentDecision\"," +
+                "\"type\" : \"ConsentDecision\"," +
                 "\"data\" : {" +
                 "\"Status\" : \"" + Constants.ConsentDecision.AUTHORISED + "\"" +
                 "}," +

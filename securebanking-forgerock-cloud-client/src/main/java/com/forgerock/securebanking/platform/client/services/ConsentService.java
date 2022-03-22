@@ -13,18 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.platform.client.services.domestic.payments;
+package com.forgerock.securebanking.platform.client.services;
 
 import com.forgerock.securebanking.platform.client.configuration.ConfigurationPropertiesClient;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorClient;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
-import com.forgerock.securebanking.platform.client.models.domestic.payments.DomesticPaymentConsentDetails;
-import com.forgerock.securebanking.platform.client.models.domestic.payments.DomesticPaymentConsentRequest;
-import com.forgerock.securebanking.platform.client.models.general.Consent;
-import com.forgerock.securebanking.platform.client.models.general.ConsentDecision;
+import com.forgerock.securebanking.platform.client.models.base.ConsentDecision;
+import com.forgerock.securebanking.platform.client.models.base.ConsentRequest;
 import com.forgerock.securebanking.platform.client.utils.url.UrlContext;
 import lombok.extern.slf4j.Slf4j;
+import org.forgerock.json.JsonValue;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -44,36 +43,36 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @Service
 @Slf4j
 @ComponentScan(basePackages = {"com.forgerock.securebanking.platform.client.configuration"})
-public class DomesticPaymentConsentService implements DomesticPaymentConsentServiceInterface {
+public class ConsentService implements ConsentServiceInterface {
 
     private final RestTemplate restTemplate;
     private final ConfigurationPropertiesClient configurationProperties;
 
-    public DomesticPaymentConsentService(RestTemplate restTemplate, ConfigurationPropertiesClient configurationProperties) {
+    public ConsentService(RestTemplate restTemplate, ConfigurationPropertiesClient configurationProperties) {
         this.restTemplate = restTemplate;
         this.configurationProperties = configurationProperties;
     }
 
     @Override
-    public DomesticPaymentConsentDetails getConsent(DomesticPaymentConsentRequest consentRequest) throws ExceptionClient {
-        log.debug("Received an domestic payment access consent request with JWT: '{}'", consentRequest.getConsentRequestJwtString());
+    public JsonValue getConsent(ConsentRequest consentRequest) throws ExceptionClient {
+        log.debug("Received a consent request with JWT: '{}'", consentRequest.getConsentRequestJwtString());
         String domesticPaymentIntendId = consentRequest.getIntentId();
-        log.debug("=> The domestic payment consent detailsRequest id: '{}'", domesticPaymentIntendId);
+        log.debug("=> The consent detailsRequest id: '{}'", domesticPaymentIntendId);
         String clientId = consentRequest.getClientId();
         log.debug("=> The client id: '{}'", clientId);
 
-        DomesticPaymentConsentDetails consentDetails = request(consentRequest.getIntentId(), GET, null);
+        JsonValue consentDetails = request(consentRequest.getIntentId(), GET, null);
         String errorMessage;
         if (consentDetails == null) {
-            errorMessage = String.format("The PISP '%s' is referencing an domestic payment consent detailsRequest '%s' that doesn't exist", clientId, domesticPaymentIntendId);
+            errorMessage = String.format("The PISP/AISP '%s' is referencing a consent detailsRequest '%s' that doesn't exist", clientId, domesticPaymentIntendId);
             log.error(errorMessage);
             throw new ExceptionClient(consentRequest, ErrorType.NOT_FOUND, errorMessage);
         }
 
-        // Verify the PISP is the same than the one that created this consent ^
-        if (!clientId.equals(consentDetails.getOauth2ClientId())) {
-            errorMessage = String.format("The PISP '%S' created the domestic payment consent detailsRequest '%S' but it's PISP '%s' that is trying to get" +
-                    " consent for it.", consentDetails.getOauth2ClientId(), domesticPaymentIntendId, clientId);
+        // Verify the PISP/AISP is the same than the one that created this consent ^
+        if (!clientId.equals(consentDetails.get("oauth2ClientId"))) {
+            errorMessage = String.format("The PISP/AISP '%S' created the consent detailsRequest '%S' but it's PISP/AISP '%s' that is trying to get" +
+                    " consent for it.", consentDetails.get("oauth2ClientId"), domesticPaymentIntendId, clientId);
             log.error(errorMessage);
             throw new ExceptionClient(consentRequest, ErrorType.INVALID_REQUEST, errorMessage);
         }
@@ -82,29 +81,29 @@ public class DomesticPaymentConsentService implements DomesticPaymentConsentServ
     }
 
     @Override
-    public Consent updateConsent(ConsentDecision consentDecision) throws ExceptionClient {
+    public JsonValue updateConsent(ConsentDecision consentDecision) throws ExceptionClient {
         String domesticPaymentIntendId = consentDecision.getIntentId();
         log.debug("Received an request to update the consent: '{}'", domesticPaymentIntendId);
         log.debug("=> The owner id: '{}'", consentDecision.getResourceOwnerUsername());
         HttpEntity<ConsentDecision> requestEntity = new HttpEntity<>(consentDecision, getHeaders());
-        DomesticPaymentConsentDetails consentDetails = request(domesticPaymentIntendId, PATCH, requestEntity);
+        JsonValue consentDetails = request(domesticPaymentIntendId, PATCH, requestEntity);
         return consentDetails;
     }
 
-    private DomesticPaymentConsentDetails request(String intentId, HttpMethod httpMethod, HttpEntity httpEntity) throws ExceptionClient {
+    private JsonValue request(String intentId, HttpMethod httpMethod, HttpEntity httpEntity) throws ExceptionClient {
         String consentURL = configurationProperties.getIgServer() +
                 UrlContext.replaceParameterContextIntentId(
                         configurationProperties.getContextsDomesticPaymentConsent().get(GET.name()),
                         intentId
                 );
-        log.debug("(DomesticPaymentConsentService#request) request the consent details from platform: {}", consentURL);
+        log.debug("(ConsentService#request) request the consent details from platform: {}", consentURL);
         try {
-            ResponseEntity<DomesticPaymentConsentDetails> responseEntity = restTemplate.exchange(
+            ResponseEntity<JsonValue> responseEntity = restTemplate.exchange(
                     consentURL,
                     httpMethod,
                     httpEntity,
-                    DomesticPaymentConsentDetails.class);
-            log.debug("(DomesticPaymentConsentService#request) response entity: " + responseEntity);
+                    JsonValue.class);
+            log.debug("(ConsentService#request) response entity: " + responseEntity);
             return responseEntity != null ? responseEntity.getBody() : null;
         } catch (RestClientException e) {
             log.error(ErrorType.SERVER_ERROR.getDescription(), e);

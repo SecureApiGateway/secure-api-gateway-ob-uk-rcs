@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.platform.client.models.general;
+package com.forgerock.securebanking.platform.client.models.base;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,10 +25,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ApiClient {
-    private String id;
-    private String name;
-    private String officialName;
-    private String oauth2ClientId;
-    private String logoUri;
+public class ConsentDecisionData {
+    @JsonProperty("Status")
+    private String status;
 }

@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.platform.client.services.general;
+package com.forgerock.securebanking.platform.client.services;
 
 import com.forgerock.securebanking.platform.client.Constants;
 import com.forgerock.securebanking.platform.client.configuration.ConfigurationPropertiesClient;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorClient;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
-import com.forgerock.securebanking.platform.client.models.general.User;
+import com.forgerock.securebanking.platform.client.models.base.User;
 import com.forgerock.securebanking.platform.client.utils.url.UrlContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

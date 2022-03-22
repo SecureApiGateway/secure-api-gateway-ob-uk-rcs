@@ -15,12 +15,8 @@
  */
 package com.forgerock.securebanking.platform.client;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-@SpringBootApplication
 public class TestApplicationClient {
     public static void main(String[] args) {
-        SpringApplication.run(TestApplicationClient.class, args);
+
     }
 }

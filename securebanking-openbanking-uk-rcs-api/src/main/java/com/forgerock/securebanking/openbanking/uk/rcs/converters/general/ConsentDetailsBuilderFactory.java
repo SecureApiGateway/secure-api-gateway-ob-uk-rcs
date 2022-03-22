@@ -21,13 +21,12 @@ import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.Do
 import com.forgerock.securebanking.openbanking.uk.rcs.converters.accounts.AccountConsentDetailsConverter;
 import com.forgerock.securebanking.openbanking.uk.rcs.converters.domestic.payments.DomesticPaymentConsentDetailsConverter;
 import com.forgerock.securebanking.platform.client.IntentType;
-import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentDetails;
-import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentRequest;
-import com.forgerock.securebanking.platform.client.models.domestic.payments.DomesticPaymentConsentDetails;
-import com.forgerock.securebanking.platform.client.models.domestic.payments.DomesticPaymentConsentRequest;
-import com.forgerock.securebanking.platform.client.models.general.ApiClient;
-import com.forgerock.securebanking.platform.client.models.general.Consent;
-import com.forgerock.securebanking.platform.client.models.general.ConsentRequest;
+import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
+import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
+import com.forgerock.securebanking.platform.client.models.base.ApiClient;
+import com.forgerock.securebanking.platform.client.models.base.Consent;
+import com.forgerock.securebanking.platform.client.models.base.ConsentRequest;
+import org.forgerock.json.JsonValue;
 
 import static java.util.Objects.requireNonNull;
 
@@ -37,28 +36,32 @@ import static java.util.Objects.requireNonNull;
 public class ConsentDetailsBuilderFactory {
 
     public static final ConsentDetails build(
-            Consent consent,
+            JsonValue consent,
             ConsentRequest consentDetailsRequest,
             ApiClient apiClient
-    ) {
+    ) throws ExceptionClient {
         requireNonNull(consent, "(ConsentDetailsConverterFactory#build) parameter 'consent' cannot be null");
         requireNonNull(consentDetailsRequest, "(ConsentDetailsConverterFactory#build) parameter 'consentDetailsRequest' cannot be null");
         requireNonNull(apiClient, "(ConsentDetailsConverterFactory#build) parameter 'apiClient' cannot be null");
-        IntentType intentType = consent.getIntentType();
+        String intentId = consentDetailsRequest.getIntentId();
+        IntentType intentType = IntentType.identify(intentId);
         switch (intentType) {
             case ACCOUNT_ACCESS_CONSENT -> {
-                return buildAccountConsentDetails((AccountConsentDetails) consent, (AccountConsentRequest) consentDetailsRequest, apiClient);
+                return buildAccountConsentDetails(consent, consentDetailsRequest, apiClient);
             }
             case PAYMENT_DOMESTIC_CONSENT -> {
-                return buildDomesticPaymentConsentDetails((DomesticPaymentConsentDetails) consent, (DomesticPaymentConsentRequest) consentDetailsRequest, apiClient);
+                return buildDomesticPaymentConsentDetails(consent, consentDetailsRequest, apiClient);
+            }
+            default -> {
+                String message = String.format("Invalid type for intent ID: '%s'", intentId);
+                throw new ExceptionClient(consentDetailsRequest, ErrorType.UNKNOWN_INTENT_TYPE, message);
             }
         }
-        return null;
     }
 
     private static final AccountsConsentDetails buildAccountConsentDetails(
-            AccountConsentDetails consentDetails,
-            AccountConsentRequest consentDetailsRequest,
+            JsonValue consentDetails,
+            ConsentRequest consentDetailsRequest,
             ApiClient apiClient
     ) {
         AccountConsentDetailsConverter consentDetailsConverter = AccountConsentDetailsConverter.getInstance();
@@ -72,8 +75,8 @@ public class ConsentDetailsBuilderFactory {
     }
 
     private static final DomesticPaymentsConsentDetails buildDomesticPaymentConsentDetails(
-            DomesticPaymentConsentDetails consentDetails,
-            DomesticPaymentConsentRequest consentDetailsRequest,
+            JsonValue consentDetails,
+            ConsentRequest consentDetailsRequest,
             ApiClient apiClient
     ) {
         DomesticPaymentConsentDetailsConverter consentDetailsConverter = DomesticPaymentConsentDetailsConverter.getInstance();

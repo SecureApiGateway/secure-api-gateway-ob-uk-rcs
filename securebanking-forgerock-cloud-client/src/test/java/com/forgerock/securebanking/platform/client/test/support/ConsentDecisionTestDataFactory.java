@@ -17,9 +17,8 @@ package com.forgerock.securebanking.platform.client.test.support;
 
 import com.forgerock.securebanking.platform.client.Constants;
 import com.forgerock.securebanking.platform.client.IntentType;
-import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentDecision;
-import com.forgerock.securebanking.platform.client.models.general.ConsentDecision;
-import com.forgerock.securebanking.platform.client.models.general.ConsentDecisionData;
+import com.forgerock.securebanking.platform.client.models.base.ConsentDecision;
+import com.forgerock.securebanking.platform.client.models.base.ConsentDecisionData;
 import com.nimbusds.jwt.JWTClaimsSet;
 
 import java.util.List;
@@ -60,7 +59,7 @@ public class ConsentDecisionTestDataFactory {
     // TODO: PAYMENTS
 
     private static ConsentDecision.ConsentDecisionBuilder getConsentDecisionBuilder(IntentType intentType) {
-        return AccountConsentDecision.builder()
+        return ConsentDecision.builder()
                 .intentId(intentType.generateIntentId())
                 .consentJwt("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
                         "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +
@@ -76,7 +75,7 @@ public class ConsentDecisionTestDataFactory {
     }
 
     private static ConsentDecision.ConsentDecisionBuilder getConsentDecisionBuilder(String intentId) {
-        return AccountConsentDecision.builder()
+        return ConsentDecision.builder()
                 .intentId(intentId)
                 .consentJwt("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
                         "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +
@@ -92,7 +91,7 @@ public class ConsentDecisionTestDataFactory {
     }
 
     private static ConsentDecision.ConsentDecisionBuilder getConsentDecisionBuilder(String intentId, String clientId) {
-        return AccountConsentDecision.builder()
+        return ConsentDecision.builder()
                 .intentId(intentId)
                 .consentJwt("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
                         "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +

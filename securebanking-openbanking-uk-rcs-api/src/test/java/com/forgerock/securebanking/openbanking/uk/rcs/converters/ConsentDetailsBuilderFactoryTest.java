@@ -19,7 +19,6 @@ import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.Ac
 import com.forgerock.securebanking.openbanking.uk.rcs.converters.general.ConsentDetailsBuilderFactory;
 import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentDetails;
 import com.forgerock.securebanking.platform.client.models.general.ApiClient;
-import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentRequest;
 import com.forgerock.securebanking.platform.client.test.support.ConsentDetailsRequestTestDataFactory;
 import org.junit.jupiter.api.Test;
 
@@ -38,7 +37,7 @@ public class ConsentDetailsBuilderFactoryTest {
         AccountConsentDetails AccountConsentDetails = aValidAccountConsentDetails("AAC_asdfasdfasdf");
         ApiClient apiClient = aValidApiClient();
         // When
-        AccountConsentRequest consentDetailsRequest = ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest();
+        ConsentRequest consentDetailsRequest = ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest();
         AccountsConsentDetails accountsConsentDetails = (AccountsConsentDetails) ConsentDetailsBuilderFactory.build(AccountConsentDetails, consentDetailsRequest, apiClient);
         // Then
         assertThat(accountsConsentDetails.getPermissions()).isEqualTo(AccountConsentDetails.getData().getPermissions());

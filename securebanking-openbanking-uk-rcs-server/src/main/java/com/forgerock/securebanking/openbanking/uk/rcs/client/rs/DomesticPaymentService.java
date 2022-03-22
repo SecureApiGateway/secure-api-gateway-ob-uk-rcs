@@ -15,8 +15,6 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.client.rs;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccount;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomestic;
 import com.forgerock.securebanking.openbanking.uk.rcs.configuration.RcsConfigurationProperties;
 import lombok.extern.slf4j.Slf4j;
@@ -50,7 +48,8 @@ public class DomesticPaymentService {
         String lowercaseUserId = userID.toLowerCase();
         log.debug("Searching for domestic payments with user ID: {}", lowercaseUserId);
 
-        ParameterizedTypeReference<List<FRWriteDomestic>> ptr = new ParameterizedTypeReference<>() { };
+        ParameterizedTypeReference<List<FRWriteDomestic>> ptr = new ParameterizedTypeReference<>() {
+        };
         UriComponentsBuilder builder = fromHttpUrl(configurationProperties.getRsServer() + FIND_USER_BY_ID_URI);
         builder.queryParam("userId", lowercaseUserId);
 

@@ -25,14 +25,14 @@ import com.forgerock.securebanking.platform.client.IntentType;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorClient;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
-import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentDetails;
-import com.forgerock.securebanking.platform.client.models.general.ApiClient;
-import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentRequest;
-import com.forgerock.securebanking.platform.client.models.general.User;
-import com.forgerock.securebanking.platform.client.services.accounts.AccountConsentService;
-import com.forgerock.securebanking.platform.client.services.general.ApiClientServiceClient;
-import com.forgerock.securebanking.platform.client.services.general.UserServiceClient;
+import com.forgerock.securebanking.platform.client.models.base.ApiClient;
+import com.forgerock.securebanking.platform.client.models.base.ConsentRequest;
+import com.forgerock.securebanking.platform.client.models.base.User;
+import com.forgerock.securebanking.platform.client.services.ApiClientServiceClient;
+import com.forgerock.securebanking.platform.client.services.ConsentService;
+import com.forgerock.securebanking.platform.client.services.UserServiceClient;
 import com.forgerock.securebanking.platform.client.test.support.ApiClientTestDataFactory;
+import org.forgerock.json.JsonValue;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -70,14 +70,12 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @SpringBootTest(classes = RcsApplicationTestSupport.class, webEnvironment = RANDOM_PORT)
 public class ConsentDetailsApiControllerTest {
 
-    @LocalServerPort
-    private int port;
-
     private static final String BASE_URL = "http://localhost:";
     private static final String CONTEXT_DETAILS_URI = "/api/rcs/consent/details";
-
+    @LocalServerPort
+    private int port;
     @MockBean
-    private AccountConsentService accountConsentDetailsCloudService;
+    private ConsentService accountConsentDetailsCloudService;
 
     @MockBean
     private AccountService accountService;
@@ -95,8 +93,8 @@ public class ConsentDetailsApiControllerTest {
     @Test
     public void ShouldGetAccountConsentDetails() throws ExceptionClient {
         // given
-        AccountConsentRequest consentDetailsRequest = aValidAccountConsentDetailsRequest();
-        AccountConsentDetails accountConsentDetails = aValidAccountConsentDetails(consentDetailsRequest.getIntentId());
+        ConsentRequest consentDetailsRequest = aValidAccountConsentDetailsRequest();
+        JsonValue consentDetails = aValidAccountConsentDetails(consentDetailsRequest.getIntentId());
         FRAccountWithBalance frAccountWithBalance = aValidFRAccountWithBalance();
         User user = aValidUser();
         consentDetailsRequest.setUser(user);
@@ -104,7 +102,7 @@ public class ConsentDetailsApiControllerTest {
         given(apiClientService.getApiClient(anyString())).willReturn(apiClient);
         given(accountService.getAccountsWithBalance(anyString())).willReturn(List.of(frAccountWithBalance));
         given(userServiceClient.getUser(anyString())).willReturn(user);
-        given(accountConsentDetailsCloudService.getConsent(any(AccountConsentRequest.class))).willReturn(accountConsentDetails);
+        given(accountConsentDetailsCloudService.getConsent(any(ConsentRequest.class))).willReturn(consentDetails);
         String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
         String jwtRequest = JwtTestHelper.consentRequestJwt(consentDetailsRequest.getClientId(), consentDetailsRequest.getIntentId(), consentDetailsRequest.getUser().getId());
         HttpEntity<String> request = new HttpEntity<>(jwtRequest, headers());
@@ -125,8 +123,8 @@ public class ConsentDetailsApiControllerTest {
     @Test
     public void ShouldGetRedirectActionWhenUserNotFound() throws ExceptionClient {
         // given
-        AccountConsentRequest consentDetailsRequest = aValidAccountConsentDetailsRequest();
-        AccountConsentDetails accountConsentDetails = aValidAccountConsentDetails(consentDetailsRequest.getIntentId());
+        ConsentRequest consentDetailsRequest = aValidAccountConsentDetailsRequest();
+        JsonValue consentDetails = aValidAccountConsentDetails(consentDetailsRequest.getIntentId());
         FRAccountWithBalance frAccountWithBalance = aValidFRAccountWithBalance();
         User user = aValidUser();
         consentDetailsRequest.setUser(user);
@@ -141,7 +139,7 @@ public class ConsentDetailsApiControllerTest {
                         .build(),
                 message);
         given(userServiceClient.getUser(anyString())).willThrow(exceptionClient);
-        given(accountConsentDetailsCloudService.getConsent(any(AccountConsentRequest.class))).willReturn(accountConsentDetails);
+        given(accountConsentDetailsCloudService.getConsent(any(ConsentRequest.class))).willReturn(consentDetails);
         String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
         String jwtRequest = JwtTestHelper.consentRequestJwt(consentDetailsRequest.getClientId(), consentDetailsRequest.getIntentId(), consentDetailsRequest.getUser().getId());
         HttpEntity<String> request = new HttpEntity<>(jwtRequest, headers());
@@ -157,8 +155,8 @@ public class ConsentDetailsApiControllerTest {
     @Test
     public void ShouldGetRedirectActionWhenApiClientNotFound() throws ExceptionClient {
         // given
-        AccountConsentRequest consentDetailsRequest = aValidAccountConsentDetailsRequest();
-        AccountConsentDetails accountConsentDetails = aValidAccountConsentDetails(consentDetailsRequest.getIntentId());
+        ConsentRequest consentDetailsRequest = aValidAccountConsentDetailsRequest();
+        JsonValue consentDetails = aValidAccountConsentDetails(consentDetailsRequest.getIntentId());
         FRAccountWithBalance frAccountWithBalance = aValidFRAccountWithBalance();
         User user = aValidUser();
         consentDetailsRequest.setUser(user);
@@ -176,7 +174,7 @@ public class ConsentDetailsApiControllerTest {
         given(accountService.getAccountsWithBalance(anyString())).willReturn(List.of(frAccountWithBalance));
 
         given(userServiceClient.getUser(anyString())).willReturn(user);
-        given(accountConsentDetailsCloudService.getConsent(any(AccountConsentRequest.class))).willReturn(accountConsentDetails);
+        given(accountConsentDetailsCloudService.getConsent(any(ConsentRequest.class))).willReturn(consentDetails);
         String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
         String jwtRequest = JwtTestHelper.consentRequestJwt(consentDetailsRequest.getClientId(), consentDetailsRequest.getIntentId(), consentDetailsRequest.getUser().getId());
         HttpEntity<String> request = new HttpEntity<>(jwtRequest, headers());
@@ -192,7 +190,7 @@ public class ConsentDetailsApiControllerTest {
     @Test
     public void ShouldGetRedirectActionWhenConsentNotFound() throws ExceptionClient {
         // given
-        AccountConsentRequest consentDetailsRequest = aValidAccountConsentDetailsRequest();
+        ConsentRequest consentDetailsRequest = aValidAccountConsentDetailsRequest();
         FRAccountWithBalance frAccountWithBalance = aValidFRAccountWithBalance();
         User user = aValidUser();
         consentDetailsRequest.setUser(user);
@@ -204,7 +202,7 @@ public class ConsentDetailsApiControllerTest {
         String message = String.format("The AISP '%s' is referencing an account consent detailsRequest '%s' " +
                 "that doesn't exist", consentDetailsRequest.getClientId(), consentDetailsRequest.getIntentId());
         ExceptionClient exceptionClient = new ExceptionClient(consentDetailsRequest, ErrorType.NOT_FOUND, message);
-        given(accountConsentDetailsCloudService.getConsent(any(AccountConsentRequest.class))).willThrow(exceptionClient);
+        given(accountConsentDetailsCloudService.getConsent(any(ConsentRequest.class))).willThrow(exceptionClient);
 
         String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
         String jwtRequest = JwtTestHelper.consentRequestJwt(consentDetailsRequest.getClientId(), consentDetailsRequest.getIntentId(), consentDetailsRequest.getUser().getId());

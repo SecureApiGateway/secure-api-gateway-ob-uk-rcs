@@ -25,13 +25,13 @@ import com.forgerock.securebanking.openbanking.uk.rcs.exception.InvalidConsentEx
 import com.forgerock.securebanking.platform.client.Constants;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorClient;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
-import com.forgerock.securebanking.platform.client.models.general.Consent;
-import com.forgerock.securebanking.platform.client.models.general.ConsentDecision;
-import com.forgerock.securebanking.platform.client.services.general.ConsentServiceClient;
-import com.forgerock.securebanking.platform.client.services.general.JwkServiceClient;
+import com.forgerock.securebanking.platform.client.models.base.ConsentDecision;
+import com.forgerock.securebanking.platform.client.services.ConsentServiceClient;
+import com.forgerock.securebanking.platform.client.services.JwkServiceClient;
 import com.forgerock.securebanking.platform.client.utils.jwt.JwtUtil;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
+import org.forgerock.json.JsonValue;
 import org.joda.time.DateTime;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.ResponseEntity;
@@ -79,7 +79,7 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
             ConsentDecision consentDecision =
                     ConsentDecisionBuilderFactory.build(consentDecisionRequest);
 
-            Consent consentUpdated = consentServiceClient.updateConsent(consentDecision);
+            JsonValue consentUpdated = consentServiceClient.updateConsent(consentDecision);
             log.debug("submitConsentDecision(consentDecisionSerialised) Consent updated '{}", consentUpdated);
 
             JWTClaimsSet jwtClaimsSetGenerated = generateConsentResponse(decision, consentDecision);

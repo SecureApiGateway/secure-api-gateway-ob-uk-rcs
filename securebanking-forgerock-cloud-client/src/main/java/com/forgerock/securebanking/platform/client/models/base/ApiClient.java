@@ -13,14 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.platform.client.services.general;
+package com.forgerock.securebanking.platform.client.models.base;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-/**
- * Service interface for retrieving the details of consent requests.
- */
-public interface ConsentService {
-    Logger log = LoggerFactory.getLogger(ConsentService.class);
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class ApiClient {
+    private String id;
+    private String name;
+    private String officialName;
+    private String oauth2ClientId;
+    private String logoUri;
 }

@@ -27,7 +27,7 @@ import org.joda.time.DateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DomesticPaymentConsentRiskDetails{
+public class DomesticPaymentConsentRiskDetails {
     @JsonProperty("ConsentId")
     private String consentId;
     @JsonProperty("Status")

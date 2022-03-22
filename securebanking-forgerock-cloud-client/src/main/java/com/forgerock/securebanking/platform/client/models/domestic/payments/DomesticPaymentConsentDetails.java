@@ -16,10 +16,9 @@
 
 package com.forgerock.securebanking.platform.client.models.domestic.payments;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRPaymentRisk;
 import com.forgerock.securebanking.platform.client.IntentType;
-import com.forgerock.securebanking.platform.client.models.general.Consent;
+import com.forgerock.securebanking.platform.client.models.base.Consent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
