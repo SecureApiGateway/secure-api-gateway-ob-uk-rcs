@@ -25,5 +25,5 @@ public class RcsConfigurationProperties {
     @Value("${rcs.issuerId}")
     private String issuerId;
     @Value("${rcs.rs_fqdn}")
-    private String rsServer;
+    private String rsFqdn;
 }
