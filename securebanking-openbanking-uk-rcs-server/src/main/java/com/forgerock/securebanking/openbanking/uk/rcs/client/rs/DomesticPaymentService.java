@@ -50,7 +50,7 @@ public class DomesticPaymentService {
 
         ParameterizedTypeReference<List<FRWriteDomestic>> ptr = new ParameterizedTypeReference<>() {
         };
-        UriComponentsBuilder builder = fromHttpUrl(configurationProperties.getRsFqdn() + FIND_USER_BY_ID_URI);
+        UriComponentsBuilder builder = fromHttpUrl(configurationProperties.getProtocol() + configurationProperties.getRsFqdn() + FIND_USER_BY_ID_URI);
         builder.queryParam("userId", lowercaseUserId);
 
         URI uri = builder.build().encode().toUri();

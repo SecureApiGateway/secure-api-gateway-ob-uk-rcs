@@ -26,4 +26,6 @@ public class RcsConfigurationProperties {
     private String issuerId;
     @Value("${rcs.rs_fqdn}")
     private String rsFqdn;
+    @Value("${rcs.protocol}")
+    private String protocol;
 }

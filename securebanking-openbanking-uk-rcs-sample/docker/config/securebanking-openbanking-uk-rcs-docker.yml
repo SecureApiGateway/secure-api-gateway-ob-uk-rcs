@@ -68,4 +68,5 @@ rcs:
       jwt:
         must-be-validated: false
   rs_fqdn: ${RS_FQDN:http://rs-simulator:8080}
+  protocol: https://
 
