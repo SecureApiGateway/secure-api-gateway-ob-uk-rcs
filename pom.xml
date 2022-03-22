@@ -101,13 +101,5 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-        <repository>
-            <id>forgerock-staging-repository</id>
-            <name>ForgeRock Release Repository</name>
-            <url>https://maven.forgerock.org:443/repo/private-releases</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
     </repositories>
 </project>
