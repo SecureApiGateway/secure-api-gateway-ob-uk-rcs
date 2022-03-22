@@ -52,8 +52,8 @@ public class ConfigurationPropertiesClientTest {
 
     @Test
     public void shouldHaveAllPropertiesSet() {
-        assertThat(configurationPropertiesClient.getIgServer()).isNotNull();
-        assertThat(configurationPropertiesClient.getIamServer()).isNotNull();
+        assertThat(configurationPropertiesClient.getIgFqdn()).isNotNull();
+        assertThat(configurationPropertiesClient.getIdentityPlatformFqdn()).isNotNull();
         assertThat(configurationPropertiesClient.getContextsAccountsConsent()).isNotNull();
         assertThat(configurationPropertiesClient.getContextsDomesticPaymentConsent()).isNotNull();
         assertThat(configurationPropertiesClient.getContextsApiClient()).isNotNull();
