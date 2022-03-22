@@ -22,8 +22,8 @@ import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
 import com.forgerock.securebanking.platform.client.models.base.ConsentDecision;
 import com.forgerock.securebanking.platform.client.models.base.ConsentRequest;
 import com.forgerock.securebanking.platform.client.utils.url.UrlContext;
+import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
-import org.forgerock.json.JsonValue;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -54,14 +54,14 @@ public class ConsentService implements ConsentServiceInterface {
     }
 
     @Override
-    public JsonValue getConsent(ConsentRequest consentRequest) throws ExceptionClient {
+    public JsonObject getConsent(ConsentRequest consentRequest) throws ExceptionClient {
         log.debug("Received a consent request with JWT: '{}'", consentRequest.getConsentRequestJwtString());
         String domesticPaymentIntendId = consentRequest.getIntentId();
         log.debug("=> The consent detailsRequest id: '{}'", domesticPaymentIntendId);
         String clientId = consentRequest.getClientId();
         log.debug("=> The client id: '{}'", clientId);
 
-        JsonValue consentDetails = request(consentRequest.getIntentId(), GET, null);
+        JsonObject consentDetails = request(consentRequest.getIntentId(), GET, null);
         String errorMessage;
         if (consentDetails == null) {
             errorMessage = String.format("The PISP/AISP '%s' is referencing a consent detailsRequest '%s' that doesn't exist", clientId, domesticPaymentIntendId);
@@ -81,16 +81,16 @@ public class ConsentService implements ConsentServiceInterface {
     }
 
     @Override
-    public JsonValue updateConsent(ConsentDecision consentDecision) throws ExceptionClient {
+    public JsonObject updateConsent(ConsentDecision consentDecision) throws ExceptionClient {
         String domesticPaymentIntendId = consentDecision.getIntentId();
         log.debug("Received an request to update the consent: '{}'", domesticPaymentIntendId);
         log.debug("=> The owner id: '{}'", consentDecision.getResourceOwnerUsername());
         HttpEntity<ConsentDecision> requestEntity = new HttpEntity<>(consentDecision, getHeaders());
-        JsonValue consentDetails = request(domesticPaymentIntendId, PATCH, requestEntity);
+        JsonObject consentDetails = request(domesticPaymentIntendId, PATCH, requestEntity);
         return consentDetails;
     }
 
-    private JsonValue request(String intentId, HttpMethod httpMethod, HttpEntity httpEntity) throws ExceptionClient {
+    private JsonObject request(String intentId, HttpMethod httpMethod, HttpEntity httpEntity) throws ExceptionClient {
         String consentURL = configurationProperties.getIgServer() +
                 UrlContext.replaceParameterContextIntentId(
                         configurationProperties.getContextsDomesticPaymentConsent().get(GET.name()),
@@ -98,11 +98,11 @@ public class ConsentService implements ConsentServiceInterface {
                 );
         log.debug("(ConsentService#request) request the consent details from platform: {}", consentURL);
         try {
-            ResponseEntity<JsonValue> responseEntity = restTemplate.exchange(
+            ResponseEntity<JsonObject> responseEntity = restTemplate.exchange(
                     consentURL,
                     httpMethod,
                     httpEntity,
-                    JsonValue.class);
+                    JsonObject.class);
             log.debug("(ConsentService#request) response entity: " + responseEntity);
             return responseEntity != null ? responseEntity.getBody() : null;
         } catch (RestClientException e) {

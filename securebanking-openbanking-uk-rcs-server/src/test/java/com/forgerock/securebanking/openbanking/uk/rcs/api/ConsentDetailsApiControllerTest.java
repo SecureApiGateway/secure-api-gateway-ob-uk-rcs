@@ -32,7 +32,7 @@ import com.forgerock.securebanking.platform.client.services.ApiClientServiceClie
 import com.forgerock.securebanking.platform.client.services.ConsentService;
 import com.forgerock.securebanking.platform.client.services.UserServiceClient;
 import com.forgerock.securebanking.platform.client.test.support.ApiClientTestDataFactory;
-import org.forgerock.json.JsonValue;
+import com.google.gson.JsonObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -94,7 +94,7 @@ public class ConsentDetailsApiControllerTest {
     public void ShouldGetAccountConsentDetails() throws ExceptionClient {
         // given
         ConsentRequest consentDetailsRequest = aValidAccountConsentDetailsRequest();
-        JsonValue consentDetails = aValidAccountConsentDetails(consentDetailsRequest.getIntentId());
+        JsonObject consentDetails = aValidAccountConsentDetails(consentDetailsRequest.getIntentId());
         FRAccountWithBalance frAccountWithBalance = aValidFRAccountWithBalance();
         User user = aValidUser();
         consentDetailsRequest.setUser(user);
@@ -124,7 +124,7 @@ public class ConsentDetailsApiControllerTest {
     public void ShouldGetRedirectActionWhenUserNotFound() throws ExceptionClient {
         // given
         ConsentRequest consentDetailsRequest = aValidAccountConsentDetailsRequest();
-        JsonValue consentDetails = aValidAccountConsentDetails(consentDetailsRequest.getIntentId());
+        JsonObject consentDetails = aValidAccountConsentDetails(consentDetailsRequest.getIntentId());
         FRAccountWithBalance frAccountWithBalance = aValidFRAccountWithBalance();
         User user = aValidUser();
         consentDetailsRequest.setUser(user);
@@ -156,7 +156,7 @@ public class ConsentDetailsApiControllerTest {
     public void ShouldGetRedirectActionWhenApiClientNotFound() throws ExceptionClient {
         // given
         ConsentRequest consentDetailsRequest = aValidAccountConsentDetailsRequest();
-        JsonValue consentDetails = aValidAccountConsentDetails(consentDetailsRequest.getIntentId());
+        JsonObject consentDetails = aValidAccountConsentDetails(consentDetailsRequest.getIntentId());
         FRAccountWithBalance frAccountWithBalance = aValidFRAccountWithBalance();
         User user = aValidUser();
         consentDetailsRequest.setUser(user);

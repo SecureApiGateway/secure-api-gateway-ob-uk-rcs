@@ -18,9 +18,9 @@ package com.forgerock.securebanking.openbanking.uk.rcs.converters.domestic.payme
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticPaymentsConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.converters.general.Converter;
 import com.forgerock.securebanking.platform.client.models.domestic.payments.DomesticPaymentConsentDetails;
+import com.google.gson.JsonObject;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.forgerock.json.JsonValue;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 
@@ -81,17 +81,17 @@ public class DomesticPaymentConsentDetailsConverter implements Converter {
 
     @Override
     public void mapping(ModelMapper modelMapper) {
-        modelMapper.createTypeMap(JsonValue.class, DomesticPaymentsConsentDetails.class, getTypeMapName())
-                .addMapping(mapper -> mapper.get("Data").get("Initiation").get("InstructedAmount"), DomesticPaymentsConsentDetails::setInstructedAmount)
-                .addMapping(mapper -> mapper.get("accounts"), DomesticPaymentsConsentDetails::setAccounts)
-                .addMapping(mapper -> mapper.get("oauth2ClientName"), DomesticPaymentsConsentDetails::setMerchantName)
-                .addMapping(mapper -> mapper.get("Data").get("Initiation").get("RemittanceInformation").get("Reference"), DomesticPaymentsConsentDetails::setPaymentReference)
+        modelMapper.createTypeMap(JsonObject.class, DomesticPaymentsConsentDetails.class, getTypeMapName())
+                .addMapping(mapper -> mapper.getAsJsonObject("Data").getAsJsonObject("Initiation").getAsJsonObject("InstructedAmount"), DomesticPaymentsConsentDetails::setInstructedAmount)
+                .addMapping(mapper -> mapper.getAsJsonObject("accounts"), DomesticPaymentsConsentDetails::setAccounts)
+                .addMapping(mapper -> mapper.getAsJsonObject("oauth2ClientName"), DomesticPaymentsConsentDetails::setMerchantName)
+                .addMapping(mapper -> mapper.getAsJsonObject("Data").getAsJsonObject("Initiation").getAsJsonObject("RemittanceInformation").getAsJsonObject().get("Reference"), DomesticPaymentsConsentDetails::setPaymentReference)
                 .addMappings(mapper -> mapper.skip(DomesticPaymentsConsentDetails::setUserId))
                 .addMappings(mapper -> mapper.skip(DomesticPaymentsConsentDetails::setAccounts))
                 .addMappings(mapper -> mapper.skip(DomesticPaymentsConsentDetails::setUsername));
     }
 
-    public final DomesticPaymentsConsentDetails toDomesticPaymentConsentDetails(JsonValue consentDetails) {
+    public final DomesticPaymentsConsentDetails toDomesticPaymentConsentDetails(JsonObject consentDetails) {
         return getInstance().getModelMapper().map(consentDetails, DomesticPaymentsConsentDetails.class, getInstance().getTypeMapName());
     }
 }

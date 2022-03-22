@@ -17,9 +17,11 @@ package com.forgerock.securebanking.openbanking.uk.rcs.converters;
 
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.AccountsConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.converters.general.ConsentDetailsBuilderFactory;
-import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentDetails;
-import com.forgerock.securebanking.platform.client.models.general.ApiClient;
+import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
+import com.forgerock.securebanking.platform.client.models.base.ApiClient;
+import com.forgerock.securebanking.platform.client.models.base.ConsentRequest;
 import com.forgerock.securebanking.platform.client.test.support.ConsentDetailsRequestTestDataFactory;
+import com.google.gson.JsonObject;
 import org.junit.jupiter.api.Test;
 
 import static com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory.aValidAccountConsentDetails;
@@ -32,18 +34,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ConsentDetailsBuilderFactoryTest {
 
     @Test
-    public void shouldBuildAccountsConsentDetails() {
+    public void shouldBuildAccountsConsentDetails() throws ExceptionClient {
         // Given
-        AccountConsentDetails AccountConsentDetails = aValidAccountConsentDetails("AAC_asdfasdfasdf");
+        JsonObject consentDetails = aValidAccountConsentDetails("AAC_asdfasdfasdf");
         ApiClient apiClient = aValidApiClient();
         // When
         ConsentRequest consentDetailsRequest = ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest();
-        AccountsConsentDetails accountsConsentDetails = (AccountsConsentDetails) ConsentDetailsBuilderFactory.build(AccountConsentDetails, consentDetailsRequest, apiClient);
+        AccountsConsentDetails accountsConsentDetails = (AccountsConsentDetails) ConsentDetailsBuilderFactory.build(consentDetails, consentDetailsRequest, apiClient);
         // Then
-        assertThat(accountsConsentDetails.getPermissions()).isEqualTo(AccountConsentDetails.getData().getPermissions());
-        assertThat(accountsConsentDetails.getFromTransaction()).isEqualTo(AccountConsentDetails.getData().getTransactionFromDateTime());
-        assertThat(accountsConsentDetails.getToTransaction()).isEqualTo(AccountConsentDetails.getData().getTransactionToDateTime());
-        assertThat(accountsConsentDetails.getAispName()).isEqualTo(AccountConsentDetails.getOauth2ClientName());
-        assertThat(accountsConsentDetails.getExpiredDate()).isEqualTo(AccountConsentDetails.getData().getExpirationDateTime());
+        assertThat(accountsConsentDetails.getPermissions()).isEqualTo(consentDetails.getAsJsonObject("Data").getAsJsonObject("Permissions"));
+        assertThat(accountsConsentDetails.getFromTransaction()).isEqualTo(consentDetails.getAsJsonObject("Data").getAsJsonObject("TransactionFromDateTime"));
+        assertThat(accountsConsentDetails.getToTransaction()).isEqualTo(consentDetails.getAsJsonObject("Data").getAsJsonObject("TransactionToDateTime"));
+        assertThat(accountsConsentDetails.getAispName()).isEqualTo(consentDetails.getAsJsonObject("oauth2ClientName"));
+        assertThat(accountsConsentDetails.getExpiredDate()).isEqualTo(consentDetails.getAsJsonObject("Data").getAsJsonObject("ExpirationDateTime"));
     }
 }

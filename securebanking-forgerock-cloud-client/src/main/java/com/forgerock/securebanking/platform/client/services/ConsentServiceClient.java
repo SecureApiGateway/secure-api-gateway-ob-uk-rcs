@@ -20,8 +20,8 @@ import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
 import com.forgerock.securebanking.platform.client.models.base.ConsentDecision;
 import com.forgerock.securebanking.platform.client.models.base.ConsentRequest;
+import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
-import org.forgerock.json.JsonValue;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -35,7 +35,7 @@ public class ConsentServiceClient implements ConsentServiceInterface {
     }
 
     @Override
-    public JsonValue getConsent(ConsentRequest consentRequest) throws ExceptionClient {
+    public JsonObject getConsent(ConsentRequest consentRequest) throws ExceptionClient {
         String intentId = consentRequest.getIntentId();
         log.debug("Retrieving the intent Id '{}", intentId);
 
@@ -50,7 +50,7 @@ public class ConsentServiceClient implements ConsentServiceInterface {
     }
 
     @Override
-    public JsonValue updateConsent(ConsentDecision consentDecision) throws ExceptionClient {
+    public JsonObject updateConsent(ConsentDecision consentDecision) throws ExceptionClient {
         String intentId = consentDecision.getIntentId();
         log.debug("Updating the intent Id '{}", consentDecision.getIntentId());
 

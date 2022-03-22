@@ -21,10 +21,11 @@ import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision.C
 import com.forgerock.securebanking.openbanking.uk.rcs.testsupport.JwtTestHelper;
 import com.forgerock.securebanking.platform.client.Constants;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
-import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentDetails;
-import com.forgerock.securebanking.platform.client.models.general.ConsentDecision;
-import com.forgerock.securebanking.platform.client.services.general.ConsentServiceClient;
-import com.forgerock.securebanking.platform.client.services.general.JwkServiceClient;
+import com.forgerock.securebanking.platform.client.models.base.ConsentDecision;
+import com.forgerock.securebanking.platform.client.services.ConsentServiceClient;
+import com.forgerock.securebanking.platform.client.services.JwkServiceClient;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -36,6 +37,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.util.ArrayList;
 
 import static com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory.aValidAccountConsentDetails;
 import static com.forgerock.securebanking.platform.client.test.support.ConsentDecisionTestDataFactory.aValidAccountConsentDecision;
@@ -74,7 +77,7 @@ public class ConsentDecisionApiControllerTest {
     public void ShouldGetRedirectionAction() throws ExceptionClient {
         // given
         ConsentDecision consentDecision = aValidAccountConsentDecision();
-        AccountConsentDetails accountConsentDetails = aValidAccountConsentDetails(consentDecision.getIntentId());
+        JsonObject accountConsentDetails = aValidAccountConsentDetails(consentDecision.getIntentId());
         given(consentServiceClient.updateConsent(consentDecision)).willReturn(accountConsentDetails);
         String jwt = JwtTestHelper.consentRequestJwt(
                 consentDecision.getClientId(),
@@ -86,7 +89,7 @@ public class ConsentDecisionApiControllerTest {
         String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
 
         ConsentDecisionRequest consentDecisionRequest = ConsentDecisionRequest.builder()
-                .sharedAccounts(accountConsentDetails.getAccountIds())
+                .sharedAccounts(convert(accountConsentDetails.getAsJsonArray("accountsIds")))
                 .consentJwt(jwt)
                 .decision(Constants.ConsentDecision.AUTHORISED)
                 .build();
@@ -109,4 +112,15 @@ public class ConsentDecisionApiControllerTest {
         return headers;
     }
 
+    public static ArrayList<String> convert(JsonArray jArr) {
+        ArrayList<String> list = new ArrayList<>();
+        try {
+            for (int i = 0, l = jArr.size(); i < l; i++) {
+                list.add(jArr.get(i).getAsString());
+            }
+        } catch (Exception e) {
+        }
+
+        return list;
+    }
 }

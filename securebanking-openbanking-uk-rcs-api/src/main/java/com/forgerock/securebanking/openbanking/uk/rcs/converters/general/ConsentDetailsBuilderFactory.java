@@ -26,7 +26,7 @@ import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
 import com.forgerock.securebanking.platform.client.models.base.ApiClient;
 import com.forgerock.securebanking.platform.client.models.base.Consent;
 import com.forgerock.securebanking.platform.client.models.base.ConsentRequest;
-import org.forgerock.json.JsonValue;
+import com.google.gson.JsonObject;
 
 import static java.util.Objects.requireNonNull;
 
@@ -36,7 +36,7 @@ import static java.util.Objects.requireNonNull;
 public class ConsentDetailsBuilderFactory {
 
     public static final ConsentDetails build(
-            JsonValue consent,
+            JsonObject consent,
             ConsentRequest consentDetailsRequest,
             ApiClient apiClient
     ) throws ExceptionClient {
@@ -60,7 +60,7 @@ public class ConsentDetailsBuilderFactory {
     }
 
     private static final AccountsConsentDetails buildAccountConsentDetails(
-            JsonValue consentDetails,
+            JsonObject consentDetails,
             ConsentRequest consentDetailsRequest,
             ApiClient apiClient
     ) {
@@ -75,7 +75,7 @@ public class ConsentDetailsBuilderFactory {
     }
 
     private static final DomesticPaymentsConsentDetails buildDomesticPaymentConsentDetails(
-            JsonValue consentDetails,
+            JsonObject consentDetails,
             ConsentRequest consentDetailsRequest,
             ApiClient apiClient
     ) {

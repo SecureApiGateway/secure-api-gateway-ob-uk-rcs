@@ -29,9 +29,9 @@ import com.forgerock.securebanking.platform.client.models.base.ConsentDecision;
 import com.forgerock.securebanking.platform.client.services.ConsentServiceClient;
 import com.forgerock.securebanking.platform.client.services.JwkServiceClient;
 import com.forgerock.securebanking.platform.client.utils.jwt.JwtUtil;
+import com.google.gson.JsonObject;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
-import org.forgerock.json.JsonValue;
 import org.joda.time.DateTime;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.ResponseEntity;
@@ -79,7 +79,7 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
             ConsentDecision consentDecision =
                     ConsentDecisionBuilderFactory.build(consentDecisionRequest);
 
-            JsonValue consentUpdated = consentServiceClient.updateConsent(consentDecision);
+            JsonObject consentUpdated = consentServiceClient.updateConsent(consentDecision);
             log.debug("submitConsentDecision(consentDecisionSerialised) Consent updated '{}", consentUpdated);
 
             JWTClaimsSet jwtClaimsSetGenerated = generateConsentResponse(decision, consentDecision);

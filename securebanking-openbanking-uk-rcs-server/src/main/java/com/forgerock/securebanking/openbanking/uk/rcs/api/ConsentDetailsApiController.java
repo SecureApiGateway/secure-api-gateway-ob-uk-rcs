@@ -34,9 +34,9 @@ import com.forgerock.securebanking.platform.client.services.ApiClientServiceClie
 import com.forgerock.securebanking.platform.client.services.ConsentServiceClient;
 import com.forgerock.securebanking.platform.client.services.UserServiceClient;
 import com.forgerock.securebanking.platform.client.utils.jwt.JwtUtil;
+import com.google.gson.JsonObject;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.extern.slf4j.Slf4j;
-import org.forgerock.json.JsonValue;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.ResponseEntity;
@@ -98,7 +98,7 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                 ConsentRequest consentRequest = buildConsentRequest(signedJWT);
                 log.debug("Retrieve consent details:\n- Type '{}'\n-Id '{}'\n",
                         IntentType.identify(consentRequest.getIntentId()).name(), consentRequest.getIntentId());
-                JsonValue consent = consentServiceClient.getConsent(consentRequest);
+                JsonObject consent = consentServiceClient.getConsent(consentRequest);
 
                 log.debug("Retrieve to api client details for client Id '{}'", consentRequest.getClientId());
                 ApiClient apiClient = apiClientService.getApiClient(consentRequest.getClientId());

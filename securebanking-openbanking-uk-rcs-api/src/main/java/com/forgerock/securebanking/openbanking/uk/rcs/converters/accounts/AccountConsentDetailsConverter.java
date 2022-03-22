@@ -18,9 +18,9 @@ package com.forgerock.securebanking.openbanking.uk.rcs.converters.accounts;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.AccountsConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.converters.general.Converter;
 import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentDetails;
+import com.google.gson.JsonObject;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.forgerock.json.JsonValue;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 
@@ -81,18 +81,18 @@ public class AccountConsentDetailsConverter implements Converter {
 
     @Override
     public void mapping(ModelMapper modelMapper) {
-        modelMapper.createTypeMap(JsonValue.class, AccountsConsentDetails.class, getTypeMapName())
-                .addMapping(mapper -> mapper.get("Data").get("Permissions"), AccountsConsentDetails::setPermissions)
+        modelMapper.createTypeMap(JsonObject.class, AccountsConsentDetails.class, getTypeMapName())
+                .addMapping(mapper -> mapper.getAsJsonObject("Data").getAsJsonObject("Permissions"), AccountsConsentDetails::setPermissions)
                 .addMapping(
-                        mapper -> mapper.get("Data").get("TransactionFromDateTime")
+                        mapper -> mapper.getAsJsonObject("Data").getAsJsonObject("TransactionFromDateTime")
                         , AccountsConsentDetails::setFromTransaction)
                 .addMapping(
-                        mapper -> mapper.get("Data").get("TransactionToDateTime")
+                        mapper -> mapper.getAsJsonObject("Data").getAsJsonObject("TransactionToDateTime")
                         , AccountsConsentDetails::setToTransaction)
-                .addMapping(mapper -> mapper.get("accounts"), AccountsConsentDetails::setAccounts)
-                .addMapping(mapper -> mapper.get("oauth2ClientName"), AccountsConsentDetails::setAispName)
+                .addMapping(mapper -> mapper.getAsJsonObject("accounts"), AccountsConsentDetails::setAccounts)
+                .addMapping(mapper -> mapper.getAsJsonObject("oauth2ClientName"), AccountsConsentDetails::setAispName)
                 .addMapping(
-                        mapper -> mapper.get("Data").get("ExpirationDateTime")
+                        mapper -> mapper.getAsJsonObject("Data").getAsJsonObject("ExpirationDateTime")
                         , AccountsConsentDetails::setExpiredDate)
                 .addMappings(mapper -> mapper.skip(AccountsConsentDetails::setUserId))
                 .addMappings(mapper -> mapper.skip(AccountsConsentDetails::setUsername))
@@ -100,7 +100,7 @@ public class AccountConsentDetailsConverter implements Converter {
                 .addMappings(mapper -> mapper.skip(AccountsConsentDetails::setClientId));
     }
 
-    public final AccountsConsentDetails toAccountConsentDetails(JsonValue accountConsentDetails) {
+    public final AccountsConsentDetails toAccountConsentDetails(JsonObject accountConsentDetails) {
         return getInstance().getModelMapper().map(accountConsentDetails, AccountsConsentDetails.class, getInstance().getTypeMapName());
     }
 }

@@ -21,7 +21,7 @@ import com.forgerock.securebanking.platform.client.models.accounts.AccountConsen
 import com.forgerock.securebanking.platform.client.models.base.ConsentRequest;
 import com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory;
 import com.forgerock.securebanking.platform.client.test.support.ConsentDetailsRequestTestDataFactory;
-import org.forgerock.json.JsonValue;
+import com.google.gson.JsonObject;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.springframework.http.ResponseEntity;
@@ -44,18 +44,18 @@ public class ConsentServiceTest extends BaseServiceClientTest {
     public void shouldGetConsentDetails() throws ExceptionClient {
         // Given
         ConsentRequest consentRequest = ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest();
-        JsonValue details = AccountAccessConsentDetailsTestFactory.aValidAccountConsentDetails(consentRequest.getIntentId());
-        details.put("oauth2ClientId", consentRequest.getClientId());
+        JsonObject details = AccountAccessConsentDetailsTestFactory.aValidAccountConsentDetails(consentRequest.getIntentId());
+        details.addProperty("oauth2ClientId", consentRequest.getClientId());
         when(restTemplate.exchange(
                         anyString(),
                         eq(GET),
                         isNull(),
-                        eq(JsonValue.class)
+                        eq(JsonObject.class)
                 )
         ).thenReturn(ResponseEntity.ok(details));
 
         // When
-        JsonValue consentDetails = accountConsentDetailsService.getConsent(consentRequest);
+        JsonObject consentDetails = accountConsentDetailsService.getConsent(consentRequest);
 
         // Then
         assertThat(consentDetails).isNotNull();
@@ -66,12 +66,12 @@ public class ConsentServiceTest extends BaseServiceClientTest {
     public void shouldGetInvalidRequestConsentDetails() {
         // Given
         ConsentRequest ConsentRequest = ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest();
-        JsonValue consentDetails = AccountAccessConsentDetailsTestFactory.aValidAccountConsentDetails(ConsentRequest.getIntentId());
+        JsonObject consentDetails = AccountAccessConsentDetailsTestFactory.aValidAccountConsentDetails(ConsentRequest.getIntentId());
         when(restTemplate.exchange(
                         anyString(),
                         eq(GET),
                         isNull(),
-                        eq(JsonValue.class)
+                        eq(JsonObject.class)
                 )
         ).thenReturn(ResponseEntity.ok(consentDetails));
 

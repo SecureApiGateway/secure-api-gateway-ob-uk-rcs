@@ -19,7 +19,8 @@ import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.acc
 import com.forgerock.securebanking.platform.client.ConsentStatusCode;
 import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentDataDetails;
 import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentDetails;
-import org.forgerock.json.JsonValue;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.joda.time.DateTime;
 
 import java.util.List;
@@ -36,9 +37,9 @@ public class AccountAccessConsentDetailsTestFactory {
         return aValidAccountConsentDetailsBuilder(randomUUID().toString()).build();
     }
 
-    public static JsonValue aValidAccountConsentDetails(String consentId) {
+    public static JsonObject aValidAccountConsentDetails(String consentId) {
         AccountConsentDetails consentDetails = aValidAccountConsentDetailsBuilder(consentId).build();
-        return new JsonValue(consentDetails.toString());
+        return new JsonParser().parse(consentDetails.toString()).getAsJsonObject();
     }
 
     public static AccountConsentDetails.AccountConsentDetailsBuilder aValidAccountConsentDetailsBuilder(String consentId) {

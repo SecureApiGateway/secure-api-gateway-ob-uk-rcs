@@ -19,7 +19,7 @@ import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
 import com.forgerock.securebanking.platform.client.models.base.Consent;
 import com.forgerock.securebanking.platform.client.models.base.ConsentDecision;
 import com.forgerock.securebanking.platform.client.models.base.ConsentRequest;
-import org.forgerock.json.JsonValue;
+import com.google.gson.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +36,7 @@ public interface ConsentServiceInterface {
      * @return The underlying {@link Consent}, depending on the type of the consent.
      * @throws ExceptionClient if an error occurs.
      */
-    JsonValue getConsent(ConsentRequest ConsentRequest) throws ExceptionClient;
+    JsonObject getConsent(ConsentRequest ConsentRequest) throws ExceptionClient;
 
     /**
      * Update the specific {@link ConsentDecision} for the type of the consent on the platform.
@@ -45,5 +45,5 @@ public interface ConsentServiceInterface {
      * @return The underlying {@link Consent}, depending on the type of the consent.
      * @throws ExceptionClient if an error occurs.
      */
-    JsonValue updateConsent(ConsentDecision consentDecision) throws ExceptionClient;
+    JsonObject updateConsent(ConsentDecision consentDecision) throws ExceptionClient;
 }
