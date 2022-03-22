@@ -23,6 +23,7 @@ import com.forgerock.securebanking.platform.client.models.base.ConsentDecision;
 import com.forgerock.securebanking.platform.client.models.base.ConsentRequest;
 import com.forgerock.securebanking.platform.client.utils.url.UrlContext;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpEntity;
@@ -98,13 +99,14 @@ public class ConsentService implements ConsentServiceInterface {
                 );
         log.debug("(ConsentService#request) request the consent details from platform: {}", consentURL);
         try {
-            ResponseEntity<JsonObject> responseEntity = restTemplate.exchange(
+            ResponseEntity<String> responseEntity = restTemplate.exchange(
                     consentURL,
                     httpMethod,
                     httpEntity,
-                    JsonObject.class);
+                    String.class);
             log.debug("(ConsentService#request) response entity: " + responseEntity);
-            return responseEntity != null ? responseEntity.getBody() : null;
+
+            return responseEntity != null && responseEntity.getBody() != null ? new JsonParser().parse(responseEntity.getBody()).getAsJsonObject() : null;
         } catch (RestClientException e) {
             log.error(ErrorType.SERVER_ERROR.getDescription(), e);
             throw new ExceptionClient(
