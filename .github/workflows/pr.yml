@@ -82,7 +82,7 @@ jobs:
           token: ${{ secrets.CODECOV_ACCESS_TOKEN }}
 
       - name: 'Deploy Service'
-        uses: codefresh-io/codefresh-pipeline-runner@v0
+        uses: codefresh-io/codefresh-pipeline-runner@master
         with:
           args: '-v TAG=${{ env.PR_NUMBER }} -v SERVICE_NAME=rcs -v ENVIRONMENT=${{ github.actor }} -v BRANCH=${{ github.head_ref }}'
         env:
