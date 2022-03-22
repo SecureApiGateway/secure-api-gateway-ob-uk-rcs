@@ -62,7 +62,7 @@ public class ApiClientServiceClient {
     }
 
     private ApiClient request(String apiClientId) throws ExceptionClient {
-        String apiClientURL = configurationProperties.getIgServer() +
+        String apiClientURL = configurationProperties.getIgFqdn() +
                 UrlContext.replaceParameterContextValue(
                         configurationProperties.getContextsApiClient().get(GET.name()),
                         Constants.URLParameters.CLIENT_ID,
