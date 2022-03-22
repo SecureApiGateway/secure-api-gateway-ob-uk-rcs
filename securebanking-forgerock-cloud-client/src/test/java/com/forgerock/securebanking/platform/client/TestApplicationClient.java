@@ -22,6 +22,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class TestApplicationClient {
 
     public static void main(String[] args) {
-        SpringApplication.run(TestApplicationClient.class, args);
+        SpringApplication.run(TestApplicationClient.class, args); 
     }
 }
