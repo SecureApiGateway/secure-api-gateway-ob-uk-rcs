@@ -55,17 +55,17 @@ spec:
           - name: IG_FQDN
             valueFrom:
               configMapKeyRef:
-                name: platform-config
+                name: securebanking-platform-config
                 key: IG_FQDN
           - name: IDENTITY_PLATFORM_FQDN
             valueFrom:
                configMapKeyRef:
-                 name: platform-config
+                 name: securebanking-platform-config
                  key: IDENTITY_PLATFORM_FQDN
           - name: RS_FQDN
             valueFrom:
               configMapKeyRef:
-                name: platform-config
+                name: securebanking-platform-config
                 key: RS_FQDN
           - name: SERVER_PORT
             value: {{ .Values.deployment.server.port | quote }}
