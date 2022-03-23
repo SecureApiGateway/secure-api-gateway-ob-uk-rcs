@@ -42,7 +42,6 @@ rcs:
       jwt:
         must-be-validated: false
   rs_fqdn: ${RS_FQDN:localhost}
-  protocol: https://
 
 rs:
   internal-port: 8081
