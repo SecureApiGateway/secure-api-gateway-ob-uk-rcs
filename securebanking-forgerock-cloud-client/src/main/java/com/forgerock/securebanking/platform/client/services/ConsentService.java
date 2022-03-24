@@ -15,6 +15,7 @@
  */
 package com.forgerock.securebanking.platform.client.services;
 
+import com.forgerock.securebanking.platform.client.IntentType;
 import com.forgerock.securebanking.platform.client.configuration.ConfigurationPropertiesClient;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorClient;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
@@ -33,6 +34,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Map;
 
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.PATCH;
@@ -92,11 +95,29 @@ public class ConsentService implements ConsentServiceInterface {
     }
 
     private JsonObject request(String intentId, HttpMethod httpMethod, HttpEntity httpEntity) throws ExceptionClient {
-        String consentURL = configurationProperties.getIgFqdn() +
-                UrlContext.replaceParameterContextIntentId(
-                        configurationProperties.getContextsDomesticPaymentConsent().get(GET.name()),
-                        intentId
-                );
+        String consentURL;
+        switch (IntentType.identify(intentId)) {
+            case ACCOUNT_ACCESS_CONSENT -> {
+                consentURL = configurationProperties.getIgFqdn() +
+                        UrlContext.replaceParameterContextIntentId(
+                                configurationProperties.getContextsAccountsConsent().get(GET.name()),
+                                intentId
+                        );
+            }
+            case PAYMENT_DOMESTIC_CONSENT -> {
+                consentURL = configurationProperties.getIgFqdn() +
+                        UrlContext.replaceParameterContextIntentId(
+                                configurationProperties.getContextsDomesticPaymentConsent().get(GET.name()),
+                                intentId
+                        );
+            }
+            default -> {
+                String message = String.format("Invalid type for intent ID: '%s'", intentId);
+                throw new ExceptionClient(new ConsentDecision(), ErrorType.UNKNOWN_INTENT_TYPE, message);
+            }
+        }
+
+
         log.debug("(ConsentService#request) request the consent details from platform: {}", consentURL);
         try {
             ResponseEntity<String> responseEntity = restTemplate.exchange(
