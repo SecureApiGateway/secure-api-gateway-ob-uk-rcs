@@ -15,8 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.client.rs;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccount;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomestic;
 import com.forgerock.securebanking.openbanking.uk.rcs.configuration.RcsConfigurationProperties;
 import com.forgerock.securebanking.openbanking.uk.rcs.configuration.RsBackofficeConfiguration;
 import lombok.extern.slf4j.Slf4j;
@@ -34,60 +33,40 @@ import static org.springframework.web.util.UriComponentsBuilder.fromHttpUrl;
 
 @Service
 @Slf4j
-public class AccountService {
+public class DomesticPaymentService {
 
     private final RestTemplate restTemplate;
     private final RcsConfigurationProperties configurationProperties;
     private final RsBackofficeConfiguration rsBackofficeConfiguration;
 
-    public AccountService(
+    public DomesticPaymentService(
             RestTemplate restTemplate,
             RcsConfigurationProperties configurationProperties,
             RsBackofficeConfiguration rsBackofficeConfiguration
+
     ) {
         this.restTemplate = restTemplate;
         this.configurationProperties = configurationProperties;
         this.rsBackofficeConfiguration = rsBackofficeConfiguration;
     }
 
-    public List<FRAccount> getAccounts(String userID) {
+    public List<FRWriteDomestic> getDomesticPayments(String userID) {
         // This is necessary as auth server always uses lowercase user id
         String lowercaseUserId = userID.toLowerCase();
-        log.debug("Searching for accounts with user ID: {}", lowercaseUserId);
+        log.debug("Searching for domestic payments with user ID: {}", lowercaseUserId);
 
-        ParameterizedTypeReference<List<FRAccount>> ptr = new ParameterizedTypeReference<>() {
+        ParameterizedTypeReference<List<FRWriteDomestic>> ptr = new ParameterizedTypeReference<>() {
         };
         UriComponentsBuilder builder = fromHttpUrl(
                 configurationProperties.getRsFqdnURIAsString() +
-                        rsBackofficeConfiguration.getAccounts().get(
+                        rsBackofficeConfiguration.getDomesticPayments().get(
                                 RsBackofficeConfiguration.UriContexts.FIND_USER_BY_ID.toString()
                         )
         );
         builder.queryParam("userId", lowercaseUserId);
 
         URI uri = builder.build().encode().toUri();
-        ResponseEntity<List<FRAccount>> entity = restTemplate.exchange(uri, GET, null, ptr);
-        return entity.getBody();
-    }
-
-    public List<FRAccountWithBalance> getAccountsWithBalance(String userID) {
-        // This is necessary as auth server always uses lowercase user id
-        String lowercaseUserId = userID.toLowerCase();
-        log.debug("Searching for accounts with balance for user ID: {}", lowercaseUserId);
-
-        ParameterizedTypeReference<List<FRAccountWithBalance>> ptr = new ParameterizedTypeReference<>() {
-        };
-        UriComponentsBuilder builder = fromHttpUrl(
-                configurationProperties.getRsFqdnURIAsString() +
-                        rsBackofficeConfiguration.getAccounts().get(
-                                RsBackofficeConfiguration.UriContexts.FIND_USER_BY_ID.toString()
-                        )
-        );
-        builder.queryParam("userId", lowercaseUserId);
-        builder.queryParam("withBalance", true);
-
-        URI uri = builder.build().encode().toUri();
-        ResponseEntity<List<FRAccountWithBalance>> entity = restTemplate.exchange(uri, GET, null, ptr);
+        ResponseEntity<List<FRWriteDomestic>> entity = restTemplate.exchange(uri, GET, null, ptr);
         return entity.getBody();
     }
 }
