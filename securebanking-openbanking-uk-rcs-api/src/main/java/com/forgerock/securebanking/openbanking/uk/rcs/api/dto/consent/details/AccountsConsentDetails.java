@@ -27,6 +27,7 @@ import lombok.experimental.SuperBuilder;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -52,7 +53,7 @@ public class AccountsConsentDetails extends ConsentDetails {
     }
 
     public void setPermissions(JsonArray permissions) {
-        List<FRExternalPermissionsCode> permissionsCodeList = Collections.emptyList();
+        ArrayList<FRExternalPermissionsCode> permissionsCodeList = new ArrayList<>();
         for(JsonElement permission: permissions)
         {
             permissionsCodeList.add(FRExternalPermissionsCode.fromValue(permission.getAsString()));
