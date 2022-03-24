@@ -44,4 +44,8 @@ public class ConfigurationPropertiesClient {
     private String jwkmsConsentSigningEndpoint;
     // iam
     private String jwkUri;
+
+    public String getIgFqdn() {
+        return "https:/" + igFqdn;
+    }
 }
