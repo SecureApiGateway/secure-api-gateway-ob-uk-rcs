@@ -69,3 +69,11 @@ rcs:
         must-be-validated: false
   rs_fqdn: ${RS_FQDN:http://rs-simulator:8080}
 
+# used in RCS to call rs backoffice endpoints
+rs:
+  backoffice:
+    uris:
+      accounts:
+        findUserById: /backoffice/accounts/search/findByUserId
+      domestic-payments:
+        findUserById: /backoffice/domestic-payments/search/findByUserId

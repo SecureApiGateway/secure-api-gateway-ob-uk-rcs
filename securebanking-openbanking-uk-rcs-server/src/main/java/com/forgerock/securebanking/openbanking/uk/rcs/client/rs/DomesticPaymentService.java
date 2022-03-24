@@ -17,6 +17,7 @@ package com.forgerock.securebanking.openbanking.uk.rcs.client.rs;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomestic;
 import com.forgerock.securebanking.openbanking.uk.rcs.configuration.RcsConfigurationProperties;
+import com.forgerock.securebanking.openbanking.uk.rcs.configuration.RsBackofficeConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
@@ -33,14 +34,20 @@ import static org.springframework.web.util.UriComponentsBuilder.fromHttpUrl;
 @Service
 @Slf4j
 public class DomesticPaymentService {
-    private static final String FIND_USER_BY_ID_URI = "/backoffice/domestic-payments/search/findByUserId";
 
     private final RestTemplate restTemplate;
     private final RcsConfigurationProperties configurationProperties;
+    private final RsBackofficeConfiguration rsBackofficeConfiguration;
 
-    public DomesticPaymentService(RestTemplate restTemplate, RcsConfigurationProperties configurationProperties) {
+    public DomesticPaymentService(
+            RestTemplate restTemplate,
+            RcsConfigurationProperties configurationProperties,
+            RsBackofficeConfiguration rsBackofficeConfiguration
+
+    ) {
         this.restTemplate = restTemplate;
         this.configurationProperties = configurationProperties;
+        this.rsBackofficeConfiguration = rsBackofficeConfiguration;
     }
 
     public List<FRWriteDomestic> getDomesticPayments(String userID) {
@@ -50,7 +57,12 @@ public class DomesticPaymentService {
 
         ParameterizedTypeReference<List<FRWriteDomestic>> ptr = new ParameterizedTypeReference<>() {
         };
-        UriComponentsBuilder builder = fromHttpUrl(configurationProperties.getRsFqdn() + FIND_USER_BY_ID_URI);
+        UriComponentsBuilder builder = fromHttpUrl(
+                configurationProperties.getRsFqdnURIAsString() +
+                        rsBackofficeConfiguration.getDomesticPayments().get(
+                                RsBackofficeConfiguration.UriContexts.FIND_USER_BY_ID.toString()
+                        )
+        );
         builder.queryParam("userId", lowercaseUserId);
 
         URI uri = builder.build().encode().toUri();

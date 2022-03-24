@@ -42,10 +42,18 @@ rcs:
       jwt:
         must-be-validated: false
   rs_fqdn: ${RS_FQDN:localhost}
+  schema: https
 
 rs:
-  internal-port: 8081
-  base-url: https://rs-simulator:${rs.internal-port}
+  backoffice:
+    uris:
+      accounts:
+        findUserById: /backoffice/accounts/search/findByUserId
+      domestic-payments:
+        findUserById: /backoffice/domestic-payments/search/findByUserId
+#  internal-port: 8081
+#  base-url: https://rs-simulator:${rs.internal-port}
+
 
 filters:
   cors: # CorsFilter
