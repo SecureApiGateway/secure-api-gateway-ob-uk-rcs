@@ -51,7 +51,7 @@ public class AccountService {
 
         ParameterizedTypeReference<List<FRAccount>> ptr = new ParameterizedTypeReference<>() {
         };
-        UriComponentsBuilder builder = fromHttpUrl("http://" + configurationProperties.getRsFqdn() + FIND_USER_BY_ID_URI);
+        UriComponentsBuilder builder = fromHttpUrl(configurationProperties.getRsFqdn() + FIND_USER_BY_ID_URI);
         builder.queryParam("userId", lowercaseUserId);
 
         URI uri = builder.build().encode().toUri();
@@ -66,7 +66,7 @@ public class AccountService {
 
         ParameterizedTypeReference<List<FRAccountWithBalance>> ptr = new ParameterizedTypeReference<>() {
         };
-        UriComponentsBuilder builder = fromHttpUrl("http://" + configurationProperties.getRsFqdn() + FIND_USER_BY_ID_URI);
+        UriComponentsBuilder builder = fromHttpUrl(configurationProperties.getRsFqdn() + FIND_USER_BY_ID_URI);
         builder.queryParam("userId", lowercaseUserId);
         builder.queryParam("withBalance", true);
 

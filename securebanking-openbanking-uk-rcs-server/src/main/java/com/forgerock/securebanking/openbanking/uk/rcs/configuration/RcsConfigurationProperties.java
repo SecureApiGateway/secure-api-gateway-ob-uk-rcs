@@ -26,4 +26,8 @@ public class RcsConfigurationProperties {
     private String issuerId;
     @Value("${rcs.rs_fqdn}")
     private String rsFqdn;
+
+    public String getRsFqdn() {
+        return "https://" + rsFqdn;
+    }
 }

@@ -71,7 +71,7 @@ public class ConsentService implements ConsentServiceInterface {
         }
 
         // Verify the PISP/AISP is the same than the one that created this consent ^
-        if (!clientId.equals(consentDetails.getAsJsonObject("oauth2ClientId").getAsString())) {
+        if (!clientId.equals(consentDetails.get("oauth2ClientId").getAsString())) {
             errorMessage = String.format("The PISP/AISP '%S' created the consent detailsRequest '%S' but it's PISP/AISP '%s' that is trying to get" +
                     " consent for it.", consentDetails.get("oauth2ClientId"), domesticPaymentIntendId, clientId);
             log.error(errorMessage);
