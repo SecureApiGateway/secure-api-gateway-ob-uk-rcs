@@ -16,23 +16,18 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.converters.domestic.payments;
 
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticPaymentsConsentDetails;
-import com.forgerock.securebanking.openbanking.uk.rcs.converters.general.Converter;
-import com.forgerock.securebanking.platform.client.models.domestic.payments.DomesticPaymentConsentDetails;
 import com.google.gson.JsonObject;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
 
 /**
- * Converter class to map {@link DomesticPaymentConsentDetails} to {@link DomesticPaymentConsentDetails}
+ * Converter class to map {@link JsonObject} to {@link DomesticPaymentsConsentDetails}
  */
 @Slf4j
 @NoArgsConstructor
-public class DomesticPaymentConsentDetailsConverter implements Converter {
+public class DomesticPaymentConsentDetailsConverter {
 
     private static volatile DomesticPaymentConsentDetailsConverter instance;
-    private static volatile ModelMapper modelMapperInstance;
 
     /*
      * Double checked locking principle to ensure that only one instance 'DomesticPaymentConsentDetailsConverter' is created
@@ -48,50 +43,15 @@ public class DomesticPaymentConsentDetailsConverter implements Converter {
         return instance;
     }
 
-    @Override
-    public String getTypeMapName() {
-        return DomesticPaymentConsentDetails.class.getSimpleName() +
-                "To" +
-                DomesticPaymentConsentDetails.class.getSimpleName();
-    }
-
-    /*
-     * Double checked locking principle to ensure that only one instance 'ModelMapper' is created
-     */
-    @Override
-    public ModelMapper getModelMapper() {
-        if (modelMapperInstance == null) {
-            synchronized (DomesticPaymentConsentDetailsConverter.class) {
-                if (modelMapperInstance == null) {
-                    modelMapperInstance = new ModelMapper();
-                    configuration(modelMapperInstance);
-                    mapping(modelMapperInstance);
-                }
-            }
-        }
-        return modelMapperInstance;
-    }
-
-    @Override
-    public void configuration(ModelMapper modelMapper) {
-        modelMapper.getConfiguration().setAmbiguityIgnored(true);
-        modelMapper.getConfiguration().setSkipNullEnabled(true);
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-    }
-
-    @Override
-    public void mapping(ModelMapper modelMapper) {
-        modelMapper.createTypeMap(JsonObject.class, DomesticPaymentsConsentDetails.class, getTypeMapName())
-                .addMapping(mapper -> mapper.getAsJsonObject("Data").getAsJsonObject("Initiation").getAsJsonObject("InstructedAmount"), DomesticPaymentsConsentDetails::setInstructedAmount)
-                .addMapping(mapper -> mapper.getAsJsonObject("accounts"), DomesticPaymentsConsentDetails::setAccounts)
-                .addMapping(mapper -> mapper.getAsJsonObject("oauth2ClientName"), DomesticPaymentsConsentDetails::setMerchantName)
-                .addMapping(mapper -> mapper.getAsJsonObject("Data").getAsJsonObject("Initiation").getAsJsonObject("RemittanceInformation").getAsJsonObject().get("Reference"), DomesticPaymentsConsentDetails::setPaymentReference)
-                .addMappings(mapper -> mapper.skip(DomesticPaymentsConsentDetails::setUserId))
-                .addMappings(mapper -> mapper.skip(DomesticPaymentsConsentDetails::setAccounts))
-                .addMappings(mapper -> mapper.skip(DomesticPaymentsConsentDetails::setUsername));
+    public DomesticPaymentsConsentDetails mapping(JsonObject consentDetails) {
+        DomesticPaymentsConsentDetails details = new DomesticPaymentsConsentDetails();
+        details.setInstructedAmount(consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation").getAsJsonObject("InstructedAmount"));
+        details.setMerchantName(consentDetails.get("oauth2ClientName").getAsString());
+        details.setPaymentReference(consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation").getAsJsonObject("RemittanceInformation").get("Reference").getAsString());
+        return details;
     }
 
     public final DomesticPaymentsConsentDetails toDomesticPaymentConsentDetails(JsonObject consentDetails) {
-        return getInstance().getModelMapper().map(consentDetails, DomesticPaymentsConsentDetails.class, getInstance().getTypeMapName());
+        return mapping(consentDetails);
     }
 }

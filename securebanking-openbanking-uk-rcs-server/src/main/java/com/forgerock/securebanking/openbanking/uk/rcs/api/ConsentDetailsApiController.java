@@ -25,6 +25,7 @@ import com.forgerock.securebanking.openbanking.uk.rcs.converters.general.Consent
 import com.forgerock.securebanking.openbanking.uk.rcs.exception.InvalidConsentException;
 import com.forgerock.securebanking.platform.client.Constants;
 import com.forgerock.securebanking.platform.client.configuration.ConfigurationPropertiesClient;
+import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
 import com.forgerock.securebanking.platform.client.models.base.ApiClient;
 import com.forgerock.securebanking.platform.client.models.base.ConsentDecision;
@@ -93,9 +94,10 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
             String intentId = JwtUtil.getIdTokenClaim(signedJWT, Constants.Claims.INTENT_ID);
             log.debug("Intent Id from the requested claims '{}'", intentId);
 
+            ConsentRequest consentRequest = buildConsentRequest(signedJWT);
+
             if (IntentType.identify(intentId) != null) {
                 log.debug("Intent type: '{}' with ID '{}'", IntentType.identify(intentId), intentId);
-                ConsentRequest consentRequest = buildConsentRequest(signedJWT);
                 log.debug("Retrieve consent details:\n- Type '{}'\n-Id '{}'\n",
                         IntentType.identify(consentRequest.getIntentId()).name(), consentRequest.getIntentId());
                 JsonObject consent = consentServiceClient.getConsent(consentRequest);
@@ -111,8 +113,7 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
             } else {
                 String message = String.format("Invalid type for intent ID: '%s'", intentId);
                 log.error(message);
-                //TODO
-                throw new ExceptionClient((ConsentDecision) null);
+                throw new ExceptionClient(consentRequest, ErrorType.UNKNOWN_INTENT_TYPE, message);
             }
 
         } catch (ExceptionClient e) {

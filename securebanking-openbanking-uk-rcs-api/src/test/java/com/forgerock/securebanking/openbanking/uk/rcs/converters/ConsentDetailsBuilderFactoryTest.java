@@ -42,10 +42,10 @@ public class ConsentDetailsBuilderFactoryTest {
         ConsentRequest consentDetailsRequest = ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest();
         AccountsConsentDetails accountsConsentDetails = (AccountsConsentDetails) ConsentDetailsBuilderFactory.build(consentDetails, consentDetailsRequest, apiClient);
         // Then
-        assertThat(accountsConsentDetails.getPermissions()).isEqualTo(consentDetails.getAsJsonObject("Data").getAsJsonObject("Permissions"));
-        assertThat(accountsConsentDetails.getFromTransaction()).isEqualTo(consentDetails.getAsJsonObject("Data").getAsJsonObject("TransactionFromDateTime"));
-        assertThat(accountsConsentDetails.getToTransaction()).isEqualTo(consentDetails.getAsJsonObject("Data").getAsJsonObject("TransactionToDateTime"));
+        assertThat(accountsConsentDetails.getPermissions()).isEqualTo(consentDetails.getAsJsonObject("data").getAsJsonObject("Permissions"));
+        assertThat(accountsConsentDetails.getFromTransaction()).isEqualTo(consentDetails.getAsJsonObject("data").getAsJsonObject("TransactionFromDateTime"));
+        assertThat(accountsConsentDetails.getToTransaction()).isEqualTo(consentDetails.getAsJsonObject("data").getAsJsonObject("TransactionToDateTime"));
         assertThat(accountsConsentDetails.getAispName()).isEqualTo(consentDetails.getAsJsonObject("oauth2ClientName"));
-        assertThat(accountsConsentDetails.getExpiredDate()).isEqualTo(consentDetails.getAsJsonObject("Data").getAsJsonObject("ExpirationDateTime"));
+        assertThat(accountsConsentDetails.getExpiredDate()).isEqualTo(consentDetails.getAsJsonObject("data").getAsJsonObject("ExpirationDateTime"));
     }
 }

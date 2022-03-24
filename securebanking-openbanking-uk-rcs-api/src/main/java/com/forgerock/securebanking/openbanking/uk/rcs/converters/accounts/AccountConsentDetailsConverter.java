@@ -16,23 +16,18 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.converters.accounts;
 
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.AccountsConsentDetails;
-import com.forgerock.securebanking.openbanking.uk.rcs.converters.general.Converter;
-import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentDetails;
 import com.google.gson.JsonObject;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
 
 /**
- * Converter class to map {@link AccountConsentDetails} to {@link AccountsConsentDetails}
+ * Converter class to map {@link JsonObject} to {@link AccountsConsentDetails}
  */
 @Slf4j
 @NoArgsConstructor
-public class AccountConsentDetailsConverter implements Converter {
+public class AccountConsentDetailsConverter {
 
     private static volatile AccountConsentDetailsConverter instance;
-    private static volatile ModelMapper modelMapperInstance;
 
     /*
      * Double checked locking principle to ensure that only one instance 'AccountConsentDetailsConverter' is created
@@ -48,59 +43,17 @@ public class AccountConsentDetailsConverter implements Converter {
         return instance;
     }
 
-    @Override
-    public String getTypeMapName() {
-        return AccountConsentDetails.class.getSimpleName() +
-                "To" +
-                AccountsConsentDetails.class.getSimpleName();
+    public AccountsConsentDetails mapping(JsonObject consentDetails) {
+        AccountsConsentDetails details = new AccountsConsentDetails();
+        details.setAispName(consentDetails.get("oauth2ClientName").getAsString());
+        details.setFromTransaction(consentDetails.get("FromTransaction").getAsString());
+        details.setToTransaction(consentDetails.get("ToTransaction").getAsString());
+        details.setExpiredDate(consentDetails.get("ExpiredDate").getAsString());
+        details.setPermissions(consentDetails.getAsJsonArray("Permissions"));
+        return null;
     }
 
-    /*
-     * Double checked locking principle to ensure that only one instance 'ModelMapper' is created
-     */
-    @Override
-    public ModelMapper getModelMapper() {
-        if (modelMapperInstance == null) {
-            synchronized (AccountConsentDetailsConverter.class) {
-                if (modelMapperInstance == null) {
-                    modelMapperInstance = new ModelMapper();
-                    configuration(modelMapperInstance);
-                    mapping(modelMapperInstance);
-                }
-            }
-        }
-        return modelMapperInstance;
-    }
-
-    @Override
-    public void configuration(ModelMapper modelMapper) {
-        modelMapper.getConfiguration().setAmbiguityIgnored(true);
-        modelMapper.getConfiguration().setSkipNullEnabled(true);
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-    }
-
-    @Override
-    public void mapping(ModelMapper modelMapper) {
-        modelMapper.createTypeMap(JsonObject.class, AccountsConsentDetails.class, getTypeMapName())
-                .addMapping(mapper -> mapper.getAsJsonObject("Data").getAsJsonObject("Permissions"), AccountsConsentDetails::setPermissions)
-                .addMapping(
-                        mapper -> mapper.getAsJsonObject("Data").getAsJsonObject("TransactionFromDateTime")
-                        , AccountsConsentDetails::setFromTransaction)
-                .addMapping(
-                        mapper -> mapper.getAsJsonObject("Data").getAsJsonObject("TransactionToDateTime")
-                        , AccountsConsentDetails::setToTransaction)
-                .addMapping(mapper -> mapper.getAsJsonObject("accounts"), AccountsConsentDetails::setAccounts)
-                .addMapping(mapper -> mapper.getAsJsonObject("oauth2ClientName"), AccountsConsentDetails::setAispName)
-                .addMapping(
-                        mapper -> mapper.getAsJsonObject("Data").getAsJsonObject("ExpirationDateTime")
-                        , AccountsConsentDetails::setExpiredDate)
-                .addMappings(mapper -> mapper.skip(AccountsConsentDetails::setUserId))
-                .addMappings(mapper -> mapper.skip(AccountsConsentDetails::setUsername))
-                .addMappings(mapper -> mapper.skip(AccountsConsentDetails::setAccounts))
-                .addMappings(mapper -> mapper.skip(AccountsConsentDetails::setClientId));
-    }
-
-    public final AccountsConsentDetails toAccountConsentDetails(JsonObject accountConsentDetails) {
-        return getInstance().getModelMapper().map(accountConsentDetails, AccountsConsentDetails.class, getInstance().getTypeMapName());
+    public final AccountsConsentDetails toAccountConsentDetails(JsonObject consentDetails) {
+        return mapping(consentDetails);
     }
 }

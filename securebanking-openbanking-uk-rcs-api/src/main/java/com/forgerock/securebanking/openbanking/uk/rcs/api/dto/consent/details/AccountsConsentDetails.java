@@ -18,12 +18,15 @@ package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRExternalPermissionsCode;
 import com.forgerock.securebanking.platform.client.IntentType;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.joda.time.DateTime;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -47,4 +50,25 @@ public class AccountsConsentDetails extends ConsentDetails {
         return IntentType.ACCOUNT_ACCESS_CONSENT;
     }
 
+    public void setPermissions(JsonArray permissions) {
+        List<FRExternalPermissionsCode> permissionsCodeList = Collections.emptyList();
+        for(JsonElement permission: permissions)
+        {
+            permissionsCodeList.add(FRExternalPermissionsCode.fromValue(permission.getAsString()));
+        }
+
+        this.permissions = permissionsCodeList;
+    }
+
+    public void setFromTransaction(String fromTransaction) {
+        this.fromTransaction = new DateTime(fromTransaction);
+    }
+
+    public void setToTransaction(String toTransaction) {
+        this.toTransaction = new DateTime(toTransaction);
+    }
+
+    public void setExpiredDate(String expiredDate) {
+        this.expiredDate = new DateTime(expiredDate);
+    }
 }
