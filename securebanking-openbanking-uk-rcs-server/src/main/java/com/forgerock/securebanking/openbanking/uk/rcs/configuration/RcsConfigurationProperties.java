@@ -31,7 +31,7 @@ public class RcsConfigurationProperties {
     private String issuerId;
     @Value("${rcs.rs_fqdn}")
     private String rsFqdn;
-    @Value("${rcs.schema}")
+    @Value("${rcs.schema:https}")
     private String schema;
 
     private static final String _delimiter = "://";
