@@ -19,6 +19,7 @@ import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.acc
 import com.forgerock.securebanking.platform.client.ConsentStatusCode;
 import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentDataDetails;
 import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentDetails;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.joda.time.DateTime;
@@ -33,13 +34,16 @@ import static java.util.UUID.randomUUID;
  */
 public class AccountAccessConsentDetailsTestFactory {
 
-    public static AccountConsentDetails aValidAccountConsentDetails() {
-        return aValidAccountConsentDetailsBuilder(randomUUID().toString()).build();
+    public static final Gson gson = new Gson();
+
+    public static JsonObject aValidAccountConsentDetails() {
+        AccountConsentDetails consentDetails = aValidAccountConsentDetailsBuilder(randomUUID().toString()).build();
+        return new JsonParser().parse(gson.toJson(consentDetails)).getAsJsonObject();
     }
 
     public static JsonObject aValidAccountConsentDetails(String consentId) {
         AccountConsentDetails consentDetails = aValidAccountConsentDetailsBuilder(consentId).build();
-        return new JsonParser().parse(consentDetails.toString()).getAsJsonObject();
+        return new JsonParser().parse(gson.toJson(consentDetails)).getAsJsonObject();
     }
 
     public static AccountConsentDetails.AccountConsentDetailsBuilder aValidAccountConsentDetailsBuilder(String consentId) {

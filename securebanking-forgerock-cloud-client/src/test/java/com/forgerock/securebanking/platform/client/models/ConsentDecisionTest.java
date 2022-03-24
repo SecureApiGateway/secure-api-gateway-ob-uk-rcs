@@ -54,7 +54,7 @@ public class ConsentDecisionTest {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-    
+    @Test
     public void shouldDeserialize() throws JsonProcessingException {
         // Given
         String json = getJson();
@@ -66,7 +66,7 @@ public class ConsentDecisionTest {
         assertThat(consentDecision).isNotNull();
     }
 
-    
+    @Test
     public void shouldSerialize() throws JsonProcessingException {
         // Given
 

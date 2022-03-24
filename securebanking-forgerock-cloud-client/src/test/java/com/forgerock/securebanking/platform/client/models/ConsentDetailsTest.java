@@ -40,7 +40,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
  * Unit Test for {@link AccountConsentDetails}
  */
 @Slf4j
-public class AccountConsentDetailsTest {
+public class ConsentDetailsTest {
 
     private static final String CONSENT_ID = "AAC_886511e2-78f0-4a14-9ab8-221360815aac";
     private static final String CLIENT_ID = "7e47a733-005b-4031-8622-18064ac373b7";
@@ -57,7 +57,7 @@ public class AccountConsentDetailsTest {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-    
+    @Test
     public void shouldDeserialize() throws JsonProcessingException {
         // Given
         String json = getJson();
@@ -69,7 +69,7 @@ public class AccountConsentDetailsTest {
         assertThat(accountConsentDetails).isNotNull();
     }
 
-    
+    @Test
     public void shouldSerialize() throws JsonProcessingException {
         // Given
         AccountConsentDataDetails accountConsentDataDetails = AccountConsentDataDetails.builder()

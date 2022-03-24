@@ -15,7 +15,6 @@
  */
 package com.forgerock.securebanking.platform.client.models.base;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.forgerock.securebanking.platform.client.IntentType;

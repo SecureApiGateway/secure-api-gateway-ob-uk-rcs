@@ -16,7 +16,6 @@
 
 package com.forgerock.securebanking.platform.client.models.accounts;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.forgerock.securebanking.platform.client.IntentType;
 import com.forgerock.securebanking.platform.client.models.base.Consent;
 import lombok.AllArgsConstructor;

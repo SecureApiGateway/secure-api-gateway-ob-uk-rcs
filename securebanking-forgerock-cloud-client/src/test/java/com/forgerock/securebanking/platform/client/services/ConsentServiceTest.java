@@ -38,9 +38,9 @@ import static org.springframework.http.HttpMethod.GET;
 public class ConsentServiceTest extends BaseServiceClientTest {
 
     @InjectMocks
-    private ConsentService accountConsentDetailsService;
+    private ConsentService consentService;
 
-    
+    @Test
     public void shouldGetConsentDetails() throws ExceptionClient {
         // Given
         ConsentRequest consentRequest = ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest();
@@ -55,14 +55,14 @@ public class ConsentServiceTest extends BaseServiceClientTest {
         ).thenReturn(ResponseEntity.ok(details));
 
         // When
-        JsonObject consentDetails = accountConsentDetailsService.getConsent(consentRequest);
+        JsonObject consentDetails = consentService.getConsent(consentRequest);
 
         // Then
         assertThat(consentDetails).isNotNull();
         assertThat(consentDetails).isEqualTo(details);
     }
 
-    
+    @Test
     public void shouldGetInvalidRequestConsentDetails() {
         // Given
         ConsentRequest ConsentRequest = ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest();
@@ -76,7 +76,7 @@ public class ConsentServiceTest extends BaseServiceClientTest {
         ).thenReturn(ResponseEntity.ok(consentDetails));
 
         // When
-        ExceptionClient exception = catchThrowableOfType(() -> accountConsentDetailsService.getConsent(ConsentRequest), ExceptionClient.class);
+        ExceptionClient exception = catchThrowableOfType(() -> consentService.getConsent(ConsentRequest), ExceptionClient.class);
 
         // Then
         assertThat(exception.getErrorClient().getErrorType()).isEqualTo(ErrorType.INVALID_REQUEST);
@@ -84,7 +84,7 @@ public class ConsentServiceTest extends BaseServiceClientTest {
         assertThat(exception.getErrorClient().getErrorType().getInternalCode()).isEqualTo(ErrorType.INVALID_REQUEST.getInternalCode());
     }
 
-    
+    @Test
     public void shouldGetNotFoundConsentDetails() {
         // Given
         ConsentRequest ConsentRequest = ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest();
@@ -97,7 +97,7 @@ public class ConsentServiceTest extends BaseServiceClientTest {
         ).thenReturn(null);
 
         // When
-        ExceptionClient exception = catchThrowableOfType(() -> accountConsentDetailsService.getConsent(ConsentRequest), ExceptionClient.class);
+        ExceptionClient exception = catchThrowableOfType(() -> consentService.getConsent(ConsentRequest), ExceptionClient.class);
 
         // Then
         assertThat(exception.getErrorClient().getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
