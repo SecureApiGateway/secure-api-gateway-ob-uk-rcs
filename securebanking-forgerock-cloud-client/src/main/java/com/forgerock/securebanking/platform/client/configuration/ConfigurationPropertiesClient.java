@@ -46,6 +46,6 @@ public class ConfigurationPropertiesClient {
     private String jwkUri;
 
     public String getIgFqdn() {
-        return "https:/" + igFqdn;
+        return "https://" + igFqdn;
     }
 }
