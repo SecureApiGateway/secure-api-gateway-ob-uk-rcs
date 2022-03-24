@@ -25,6 +25,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import java.util.Collections;
 import java.util.List;
@@ -61,14 +62,14 @@ public class AccountsConsentDetails extends ConsentDetails {
     }
 
     public void setFromTransaction(String fromTransaction) {
-        this.fromTransaction = new DateTime(fromTransaction);
+        this.fromTransaction = new DateTime(fromTransaction, DateTimeZone.UTC);
     }
 
     public void setToTransaction(String toTransaction) {
-        this.toTransaction = new DateTime(toTransaction);
+        this.toTransaction = new DateTime(toTransaction, DateTimeZone.UTC);
     }
 
     public void setExpiredDate(String expiredDate) {
-        this.expiredDate = new DateTime(expiredDate);
+        this.expiredDate = new DateTime(expiredDate, DateTimeZone.UTC);
     }
 }
