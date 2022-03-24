@@ -44,10 +44,6 @@ public class DomesticPaymentsConsentDetails extends ConsentDetails {
         return IntentType.PAYMENT_DOMESTIC_CONSENT;
     }
 
-    public void setInstructedAmount(FRAmount instructedAmount) {
-        this.instructedAmount = instructedAmount;
-    }
-
     public void setInstructedAmount(JsonObject instructedAmount) {
         this.instructedAmount = new FRAmount();
         this.instructedAmount.setAmount(instructedAmount.get("Amount").getAsString());
