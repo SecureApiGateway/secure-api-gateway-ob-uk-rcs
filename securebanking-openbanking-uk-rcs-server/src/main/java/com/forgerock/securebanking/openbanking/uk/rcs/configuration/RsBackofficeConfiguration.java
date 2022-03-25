@@ -16,31 +16,38 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.configuration;
 
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 
-import java.net.URI;
 import java.util.Map;
 
 @Configuration
+@ConfigurationProperties(prefix = "rs.backoffice.uris")
 @Data
-public class RcsConfigurationProperties {
-    @Value("${rcs.issuerId}")
-    private String issuerId;
-    @Value("${rcs.rs_fqdn}")
-    private String rsFqdn;
-    @Value("${rcs.schema:https}")
-    private String schema;
+public class RsBackofficeConfiguration {
+    private Map<String, String> accounts = new LinkedCaseInsensitiveMap<>();
+    private Map<String, String> domesticPayments = new LinkedCaseInsensitiveMap<>();
 
-    private static final String _delimiter = "://";
+    public enum UriContexts {
+        FIND_USER_BY_ID("findUserById");
+        private final String uriContext;
 
-    public String getRsFqdnURIAsString() {
-        return String.join(_delimiter, schema, rsFqdn);
-    }
+        UriContexts(String uriContext) {
+            this.uriContext = uriContext;
+        }
 
-    public URI getRsFqdnURI() {
-        return URI.create(String.join(_delimiter, schema, rsFqdn));
+        public static UriContexts fromValue(String value) {
+            for (UriContexts uriContext : UriContexts.values()) {
+                if (uriContext.uriContext.equals(value)) {
+                    return uriContext;
+                }
+            }
+            throw new IllegalArgumentException("No enum constant '" + value + "'");
+        }
+
+        public String toString() {
+            return uriContext;
+        }
     }
 }
