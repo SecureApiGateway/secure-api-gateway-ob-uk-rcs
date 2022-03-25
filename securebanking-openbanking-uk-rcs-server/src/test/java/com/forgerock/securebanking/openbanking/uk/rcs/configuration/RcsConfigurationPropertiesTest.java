@@ -35,10 +35,24 @@ public class RcsConfigurationPropertiesTest {
 
     @Autowired
     private RcsConfigurationProperties configurationProperties;
+    @Autowired
+    private RsBackofficeConfiguration rsBackofficeConfiguration;
 
     @Test
     public void shouldHaveAllProperties() {
         assertThat(configurationProperties.getRsFqdn()).isNotNull();
         assertThat(configurationProperties.getIssuerId()).isNotNull();
+        assertThat(configurationProperties.getSchema()).isNotNull();
+    }
+
+    @Test
+    public void shouldHaveAllRSBackofficeProperties() {
+        assertThat(rsBackofficeConfiguration.getAccounts().get(
+                RsBackofficeConfiguration.UriContexts.FIND_USER_BY_ID.toString())
+        ).isEqualTo("/backoffice/accounts/search/findByUserId");
+
+        assertThat(rsBackofficeConfiguration.getDomesticPayments().get(
+                RsBackofficeConfiguration.UriContexts.FIND_USER_BY_ID.toString())
+        ).isEqualTo("/backoffice/domestic-payments/search/findByUserId");
     }
 }

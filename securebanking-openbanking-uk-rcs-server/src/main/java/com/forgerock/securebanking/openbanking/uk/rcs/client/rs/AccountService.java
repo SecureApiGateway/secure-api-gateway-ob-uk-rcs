@@ -18,6 +18,7 @@ package com.forgerock.securebanking.openbanking.uk.rcs.client.rs;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.openbanking.uk.rcs.configuration.RcsConfigurationProperties;
+import com.forgerock.securebanking.openbanking.uk.rcs.configuration.RsBackofficeConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
@@ -34,14 +35,19 @@ import static org.springframework.web.util.UriComponentsBuilder.fromHttpUrl;
 @Service
 @Slf4j
 public class AccountService {
-    private static final String FIND_USER_BY_ID_URI = "/backoffice/accounts/search/findByUserId";
 
     private final RestTemplate restTemplate;
     private final RcsConfigurationProperties configurationProperties;
+    private final RsBackofficeConfiguration rsBackofficeConfiguration;
 
-    public AccountService(RestTemplate restTemplate, RcsConfigurationProperties configurationProperties) {
+    public AccountService(
+            RestTemplate restTemplate,
+            RcsConfigurationProperties configurationProperties,
+            RsBackofficeConfiguration rsBackofficeConfiguration
+    ) {
         this.restTemplate = restTemplate;
         this.configurationProperties = configurationProperties;
+        this.rsBackofficeConfiguration = rsBackofficeConfiguration;
     }
 
     public List<FRAccount> getAccounts(String userID) {
@@ -51,7 +57,12 @@ public class AccountService {
 
         ParameterizedTypeReference<List<FRAccount>> ptr = new ParameterizedTypeReference<>() {
         };
-        UriComponentsBuilder builder = fromHttpUrl(configurationProperties.getRsFqdn() + FIND_USER_BY_ID_URI);
+        UriComponentsBuilder builder = fromHttpUrl(
+                configurationProperties.getRsFqdnURIAsString() +
+                        rsBackofficeConfiguration.getAccounts().get(
+                                RsBackofficeConfiguration.UriContexts.FIND_USER_BY_ID.toString()
+                        )
+        );
         builder.queryParam("userId", lowercaseUserId);
 
         URI uri = builder.build().encode().toUri();
@@ -66,7 +77,12 @@ public class AccountService {
 
         ParameterizedTypeReference<List<FRAccountWithBalance>> ptr = new ParameterizedTypeReference<>() {
         };
-        UriComponentsBuilder builder = fromHttpUrl(configurationProperties.getRsFqdn() + FIND_USER_BY_ID_URI);
+        UriComponentsBuilder builder = fromHttpUrl(
+                configurationProperties.getRsFqdnURIAsString() +
+                        rsBackofficeConfiguration.getAccounts().get(
+                                RsBackofficeConfiguration.UriContexts.FIND_USER_BY_ID.toString()
+                        )
+        );
         builder.queryParam("userId", lowercaseUserId);
         builder.queryParam("withBalance", true);
 
