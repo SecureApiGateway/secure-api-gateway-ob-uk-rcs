@@ -30,7 +30,7 @@ import java.util.Map;
 public class ConfigurationPropertiesClient {
     private String igFqdn;
     private String identityPlatformFqdn;
-    @Value("schema:https")
+    @Value("${schema:https}")
     private String schema;
     /*
      * Spring maps the properties, the keys from file will be the map keys
