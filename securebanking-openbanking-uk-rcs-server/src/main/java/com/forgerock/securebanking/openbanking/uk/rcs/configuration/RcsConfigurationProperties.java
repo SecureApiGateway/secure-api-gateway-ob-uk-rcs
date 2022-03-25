@@ -36,10 +36,6 @@ public class RcsConfigurationProperties {
 
     private static final String _delimiter = "://";
 
-    public String getRsFqdn() {
-        return String.join(_delimiter, schema, rsFqdn);
-    }
-
     public String getRsFqdnURIAsString() {
         return String.join(_delimiter, schema, rsFqdn);
     }
