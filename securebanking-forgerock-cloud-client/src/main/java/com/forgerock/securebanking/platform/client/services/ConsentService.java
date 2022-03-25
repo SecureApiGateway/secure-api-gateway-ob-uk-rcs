@@ -58,15 +58,15 @@ public class ConsentService implements ConsentServiceInterface {
     @Override
     public JsonObject getConsent(ConsentRequest consentRequest) throws ExceptionClient {
         log.debug("Received a consent request with JWT: '{}'", consentRequest.getConsentRequestJwtString());
-        String domesticPaymentIntendId = consentRequest.getIntentId();
-        log.debug("=> The consent detailsRequest id: '{}'", domesticPaymentIntendId);
+        String intentId = consentRequest.getIntentId();
+        log.debug("=> The consent detailsRequest id: '{}'", intentId);
         String clientId = consentRequest.getClientId();
         log.debug("=> The client id: '{}'", clientId);
 
         JsonObject consentDetails = request(consentRequest.getIntentId(), GET, null);
         String errorMessage;
         if (consentDetails == null) {
-            errorMessage = String.format("The PISP/AISP '%s' is referencing a consent detailsRequest '%s' that doesn't exist", clientId, domesticPaymentIntendId);
+            errorMessage = String.format("The PISP/AISP '%s' is referencing a consent detailsRequest '%s' that doesn't exist", clientId, intentId);
             log.error(errorMessage);
             throw new ExceptionClient(consentRequest, ErrorType.NOT_FOUND, errorMessage);
         }
@@ -74,7 +74,7 @@ public class ConsentService implements ConsentServiceInterface {
         // Verify the PISP/AISP is the same than the one that created this consent ^
         if (!clientId.equals(consentDetails.get("oauth2ClientId").getAsString())) {
             errorMessage = String.format("The PISP/AISP '%S' created the consent detailsRequest '%S' but it's PISP/AISP '%s' that is trying to get" +
-                    " consent for it.", consentDetails.get("oauth2ClientId"), domesticPaymentIntendId, clientId);
+                    " consent for it.", consentDetails.get("oauth2ClientId"), intentId, clientId);
             log.error(errorMessage);
             throw new ExceptionClient(consentRequest, ErrorType.INVALID_REQUEST, errorMessage);
         }

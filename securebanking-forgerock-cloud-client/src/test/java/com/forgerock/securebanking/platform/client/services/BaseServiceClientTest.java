@@ -31,7 +31,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 @ExtendWith(MockitoExtension.class)
 public class BaseServiceClientTest {
     @Mock
-    protected ConfigurationPropertiesClient configurationPropertiesClient;
+    protected ConfigurationPropertiesClient configurationProperties;
 
     @Mock
     protected RestTemplate restTemplate;

@@ -90,7 +90,6 @@ public class ConsentDetailsApiControllerTest {
     private TestRestTemplate restTemplate;
 
 
-    
     public void ShouldGetAccountConsentDetails() throws ExceptionClient {
         // given
         ConsentRequest consentDetailsRequest = aValidAccountConsentDetailsRequest();
@@ -120,7 +119,7 @@ public class ConsentDetailsApiControllerTest {
         assertThat(response.getBody().getLogo()).isEqualTo(apiClient.getLogoUri());
     }
 
-    
+    @Test
     public void ShouldGetRedirectActionWhenUserNotFound() throws ExceptionClient {
         // given
         ConsentRequest consentDetailsRequest = aValidAccountConsentDetailsRequest();
@@ -152,7 +151,7 @@ public class ConsentDetailsApiControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
-    
+    @Test
     public void ShouldGetRedirectActionWhenApiClientNotFound() throws ExceptionClient {
         // given
         ConsentRequest consentDetailsRequest = aValidAccountConsentDetailsRequest();
@@ -187,7 +186,7 @@ public class ConsentDetailsApiControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
-    
+    @Test
     public void ShouldGetRedirectActionWhenConsentNotFound() throws ExceptionClient {
         // given
         ConsentRequest consentDetailsRequest = aValidAccountConsentDetailsRequest();

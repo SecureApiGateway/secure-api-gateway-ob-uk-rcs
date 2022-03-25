@@ -28,7 +28,6 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -53,13 +52,16 @@ public class AccountsConsentDetails extends ConsentDetails {
     }
 
     public void setPermissions(JsonArray permissions) {
-        ArrayList<FRExternalPermissionsCode> permissionsCodeList = new ArrayList<>();
-        for(JsonElement permission: permissions)
-        {
-            permissionsCodeList.add(FRExternalPermissionsCode.fromValue(permission.getAsString()));
-        }
+        if (permissions == null || permissions.size() == 0)
+            this.permissions = null;
+        else {
+            List<FRExternalPermissionsCode> permissionsCodeList = new ArrayList<>();
+            for (JsonElement permission : permissions) {
+                permissionsCodeList.add(FRExternalPermissionsCode.fromValue(permission.getAsString()));
+            }
 
-        this.permissions = permissionsCodeList;
+            this.permissions = permissionsCodeList;
+        }
     }
 
     public void setFromTransaction(String fromTransaction) {

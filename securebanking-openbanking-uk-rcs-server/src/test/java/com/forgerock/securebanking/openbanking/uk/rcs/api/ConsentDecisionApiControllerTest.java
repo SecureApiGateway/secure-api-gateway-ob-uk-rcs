@@ -27,6 +27,7 @@ import com.forgerock.securebanking.platform.client.services.JwkServiceClient;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.nimbusds.jwt.JWTClaimsSet;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -73,7 +74,7 @@ public class ConsentDecisionApiControllerTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
-
+    @Test
     public void ShouldGetRedirectionAction() throws ExceptionClient {
         // given
         ConsentDecision consentDecision = aValidAccountConsentDecision();

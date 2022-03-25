@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class AccountWithBalanceMatcherTest {
 
-    
+    @Test
     public void shouldGetMatchingAccount() {
         // Given
         String identification1 = "40400412345678";
@@ -58,7 +58,7 @@ public class AccountWithBalanceMatcherTest {
         assertThat(matchedAccounts.get(0).getIdentification()).isEqualTo(identification1);
     }
 
-    
+    @Test
     public void shouldNotGetMatchingAccountGivenEmptyAccounts() {
         // Given
         String identification = "40400412345678";
@@ -71,7 +71,7 @@ public class AccountWithBalanceMatcherTest {
         assertThat(matchingAccount.isPresent()).isFalse();
     }
 
-    
+    @Test
     public void shouldNotGetMatchingAccountGivenAccountNotInList() {
         // Given
         String identification = "40400412345678";
@@ -86,6 +86,7 @@ public class AccountWithBalanceMatcherTest {
         assertThat(matchingAccount.isPresent()).isFalse();
     }
 
+    @Test
     private FRAccountWithBalance aValidFRAccountWithBalance(String identification) {
         FRFinancialAccount financialAccount = aValidFRFinancialAccountBuilder()
                 .accounts(List.of(

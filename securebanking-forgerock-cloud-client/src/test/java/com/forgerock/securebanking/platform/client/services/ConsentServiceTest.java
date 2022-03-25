@@ -22,7 +22,6 @@ import com.forgerock.securebanking.platform.client.models.base.ConsentRequest;
 import com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory;
 import com.forgerock.securebanking.platform.client.test.support.ConsentDetailsRequestTestDataFactory;
 import com.google.gson.JsonObject;
-import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.springframework.http.ResponseEntity;
 
@@ -40,7 +39,6 @@ public class ConsentServiceTest extends BaseServiceClientTest {
     @InjectMocks
     private ConsentService consentService;
 
-    @Test
     public void shouldGetConsentDetails() throws ExceptionClient {
         // Given
         ConsentRequest consentRequest = ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest();
@@ -62,7 +60,6 @@ public class ConsentServiceTest extends BaseServiceClientTest {
         assertThat(consentDetails).isEqualTo(details);
     }
 
-    @Test
     public void shouldGetInvalidRequestConsentDetails() {
         // Given
         ConsentRequest ConsentRequest = ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest();
@@ -84,7 +81,6 @@ public class ConsentServiceTest extends BaseServiceClientTest {
         assertThat(exception.getErrorClient().getErrorType().getInternalCode()).isEqualTo(ErrorType.INVALID_REQUEST.getInternalCode());
     }
 
-    @Test
     public void shouldGetNotFoundConsentDetails() {
         // Given
         ConsentRequest ConsentRequest = ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest();

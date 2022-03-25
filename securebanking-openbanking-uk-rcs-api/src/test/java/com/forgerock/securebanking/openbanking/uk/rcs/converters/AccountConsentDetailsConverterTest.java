@@ -15,14 +15,19 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.converters;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRExternalPermissionsCode;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.AccountsConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.converters.accounts.AccountConsentDetailsConverter;
-import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentDetails;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory.aValidAccountConsentDetails;
+import static com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory.gson;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -31,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 public class AccountConsentDetailsConverterTest {
 
-    
+    @Test
     public void shouldConvertAccountConsentDetailsToAccountsConsentDetails() {
         // Given
         JsonObject consentDetails = aValidAccountConsentDetails("AAC_asdfasdfasdf");
@@ -39,10 +44,18 @@ public class AccountConsentDetailsConverterTest {
         AccountsConsentDetails accountsConsentDetails = AccountConsentDetailsConverter.getInstance().toAccountConsentDetails(consentDetails);
         // Then
 
-        assertThat(accountsConsentDetails.getPermissions()).isEqualTo(consentDetails.getAsJsonObject("data").getAsJsonObject("Permissions"));
-        assertThat(accountsConsentDetails.getFromTransaction()).isEqualTo(consentDetails.getAsJsonObject("data").getAsJsonObject("TransactionFromDateTime"));
-        assertThat(accountsConsentDetails.getToTransaction()).isEqualTo(consentDetails.getAsJsonObject("data").getAsJsonObject("TransactionToDateTime"));
-        assertThat(accountsConsentDetails.getAispName()).isEqualTo(consentDetails.getAsJsonObject("oauth2ClientName"));
-        assertThat(accountsConsentDetails.getExpiredDate()).isEqualTo(consentDetails.getAsJsonObject("data").getAsJsonObject("ExpirationDateTime"));
+        assertThat(transformationForPermissionsList(accountsConsentDetails.getPermissions())).isEqualTo(consentDetails.getAsJsonObject("data").getAsJsonArray("Permissions"));
+        assertThat(accountsConsentDetails.getFromTransaction().toString()).isEqualTo(consentDetails.getAsJsonObject("data").get("TransactionFromDateTime").getAsString());
+        assertThat(accountsConsentDetails.getToTransaction().toString()).isEqualTo(consentDetails.getAsJsonObject("data").get("TransactionToDateTime").getAsString());
+        assertThat(accountsConsentDetails.getAispName()).isEqualTo(consentDetails.get("oauth2ClientName").getAsString());
+        assertThat(accountsConsentDetails.getExpiredDate().toString()).isEqualTo(consentDetails.getAsJsonObject("data").get("ExpirationDateTime").getAsString());
+    }
+
+    public JsonElement transformationForPermissionsList(List<FRExternalPermissionsCode> list) {
+        List<String> permissions = new ArrayList<>();
+        for (FRExternalPermissionsCode element : list) {
+            permissions.add(element.getValue());
+        }
+        return gson.toJsonTree(permissions);
     }
 }
