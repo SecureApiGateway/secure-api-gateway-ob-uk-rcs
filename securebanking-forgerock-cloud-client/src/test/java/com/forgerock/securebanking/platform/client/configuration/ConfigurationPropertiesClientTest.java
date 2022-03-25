@@ -61,8 +61,8 @@ public class ConfigurationPropertiesClientTest {
         assertThat(configurationPropertiesClient.getJwkmsConsentSigningEndpoint()).isNotNull();
         assertThat(configurationPropertiesClient.getJwkmsRequestMethod()).isNotNull();
         assertThat(configurationPropertiesClient.getJwkUri()).isNotNull();
-        assertThat(configurationPropertiesClient.getSchema()).isNotNull();
-        assertThat(configurationPropertiesClient.getSchema()).isEqualTo("https");
+        assertThat(configurationPropertiesClient.getScheme()).isNotNull();
+        assertThat(configurationPropertiesClient.getScheme()).isEqualTo("https");
     }
 
     @Test

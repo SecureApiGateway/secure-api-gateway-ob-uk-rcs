@@ -30,8 +30,8 @@ import java.util.Map;
 public class ConfigurationPropertiesClient {
     private String igFqdn;
     private String identityPlatformFqdn;
-    @Value("${schema:https}")
-    private String schema;
+    @Value("${scheme:https}")
+    private String scheme;
     /*
      * Spring maps the properties, the keys from file will be the map keys
      * @see: application-test.yml
@@ -52,10 +52,10 @@ public class ConfigurationPropertiesClient {
     private static final String _delimiter = "://";
 
     public String getIgFqdnURIAsString() {
-        return String.join(_delimiter, schema, igFqdn);
+        return String.join(_delimiter, scheme, igFqdn);
     }
 
     public URI getIgFqdnURI() {
-        return URI.create(String.join(_delimiter, schema, igFqdn));
+        return URI.create(String.join(_delimiter, scheme, igFqdn));
     }
 }
