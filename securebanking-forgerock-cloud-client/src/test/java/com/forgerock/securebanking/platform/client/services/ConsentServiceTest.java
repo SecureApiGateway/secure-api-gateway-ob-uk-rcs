@@ -22,6 +22,7 @@ import com.forgerock.securebanking.platform.client.models.base.ConsentRequest;
 import com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory;
 import com.forgerock.securebanking.platform.client.test.support.ConsentDetailsRequestTestDataFactory;
 import com.google.gson.JsonObject;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.springframework.http.ResponseEntity;
 
@@ -37,7 +38,7 @@ import static org.springframework.http.HttpMethod.GET;
 public class ConsentServiceTest extends BaseServiceClientTest {
 
     @InjectMocks
-    private ConsentService consentService; 
+    private ConsentService consentService;
 
     public void shouldGetConsentDetails() throws ExceptionClient {
         // Given
