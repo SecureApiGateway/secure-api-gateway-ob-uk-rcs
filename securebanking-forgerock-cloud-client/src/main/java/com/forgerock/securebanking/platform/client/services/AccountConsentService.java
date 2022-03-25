@@ -92,7 +92,7 @@ public class AccountConsentService implements ConsentService {
     }
 
     private AccountConsentDetails request(String intentId, HttpMethod httpMethod, HttpEntity httpEntity) throws ExceptionClient {
-        String consentURL = configurationProperties.getIgFqdn() +
+        String consentURL = configurationProperties.getIgFqdnURIAsString() +
                 UrlContext.replaceParameterContextIntentId(
                         configurationProperties.getContextsAccountsConsent().get(GET.name()),
                         intentId

@@ -16,10 +16,12 @@
 package com.forgerock.securebanking.platform.client.configuration;
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 
+import java.net.URI;
 import java.util.Map;
 
 @Configuration
@@ -28,6 +30,8 @@ import java.util.Map;
 public class ConfigurationPropertiesClient {
     private String igFqdn;
     private String identityPlatformFqdn;
+    @Value("schema:https")
+    private String schema;
     /*
      * Spring maps the properties, the keys from file will be the map keys
      * @see: application-test.yml
@@ -44,4 +48,14 @@ public class ConfigurationPropertiesClient {
     private String jwkmsConsentSigningEndpoint;
     // iam
     private String jwkUri;
+
+    private static final String _delimiter = "://";
+
+    public String getIgFqdnURIAsString() {
+        return String.join(_delimiter, schema, igFqdn);
+    }
+
+    public URI getIgFqdnURI() {
+        return URI.create(String.join(_delimiter, schema, igFqdn));
+    }
 }

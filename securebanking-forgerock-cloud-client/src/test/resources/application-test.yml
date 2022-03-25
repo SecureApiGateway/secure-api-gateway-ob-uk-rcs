@@ -26,3 +26,4 @@ identity-platform:
     #jwk signing service
     jwkms_request_method: POST
     jwkms_consent_signing_endpoint: /jwkms/rcs/signresponse
+    schema: https
