@@ -37,7 +37,7 @@ import static org.springframework.http.HttpMethod.GET;
 public class ConsentServiceTest extends BaseServiceClientTest {
 
     @InjectMocks
-    private ConsentService consentService;
+    private ConsentService consentService; 
 
     public void shouldGetConsentDetails() throws ExceptionClient {
         // Given
