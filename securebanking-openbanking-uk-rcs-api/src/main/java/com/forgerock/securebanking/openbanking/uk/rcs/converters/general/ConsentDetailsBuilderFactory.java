@@ -23,15 +23,14 @@ import com.forgerock.securebanking.openbanking.uk.rcs.converters.domestic.paymen
 import com.forgerock.securebanking.platform.client.IntentType;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
-import com.forgerock.securebanking.platform.client.models.base.ApiClient;
-import com.forgerock.securebanking.platform.client.models.base.Consent;
-import com.forgerock.securebanking.platform.client.models.base.ConsentRequest;
+import com.forgerock.securebanking.platform.client.models.ApiClient;
+import com.forgerock.securebanking.platform.client.models.ConsentRequest;
 import com.google.gson.JsonObject;
 
 import static java.util.Objects.requireNonNull;
 
 /**
- * Factory to build the rcs {@link ConsentDetails} object from Platform {@link Consent} object
+ * Factory to build the rcs {@link ConsentDetails} object from Platform Consent
  */
 public class ConsentDetailsBuilderFactory {
 

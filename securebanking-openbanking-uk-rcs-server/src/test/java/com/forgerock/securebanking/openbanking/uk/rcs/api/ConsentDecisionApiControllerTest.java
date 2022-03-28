@@ -21,7 +21,7 @@ import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision.C
 import com.forgerock.securebanking.openbanking.uk.rcs.testsupport.JwtTestHelper;
 import com.forgerock.securebanking.platform.client.Constants;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
-import com.forgerock.securebanking.platform.client.models.base.ConsentDecision;
+import com.forgerock.securebanking.platform.client.models.ConsentDecision;
 import com.forgerock.securebanking.platform.client.services.ConsentServiceClient;
 import com.forgerock.securebanking.platform.client.services.JwkServiceClient;
 import com.google.gson.JsonArray;
@@ -43,6 +43,8 @@ import java.util.ArrayList;
 
 import static com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory.aValidAccountConsentDetails;
 import static com.forgerock.securebanking.platform.client.test.support.ConsentDecisionTestDataFactory.aValidAccountConsentDecision;
+import static com.forgerock.securebanking.platform.client.test.support.ConsentDecisionTestDataFactory.aValidDomesticPaymentConsentDecision;
+import static com.forgerock.securebanking.platform.client.test.support.DomesticPaymentAccessConsentDetailsTestFactory.aValidDomesticPaymentConsentDetails;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -74,11 +76,54 @@ public class ConsentDecisionApiControllerTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
+    public static ArrayList<String> convert(JsonArray jArr) {
+        ArrayList<String> list = new ArrayList<>();
+        try {
+            for (int i = 0, l = jArr.size(); i < l; i++) {
+                list.add(jArr.get(i).getAsString());
+            }
+        } catch (Exception e) {
+        }
+
+        return list;
+    }
+
     @Test
-    public void ShouldGetRedirectionAction() throws ExceptionClient {
+    public void ShouldGetRedirectionActionAccounts() throws ExceptionClient {
         // given
         ConsentDecision consentDecision = aValidAccountConsentDecision();
         JsonObject accountConsentDetails = aValidAccountConsentDetails(consentDecision.getIntentId());
+        given(consentServiceClient.updateConsent(consentDecision)).willReturn(accountConsentDetails);
+        String jwt = JwtTestHelper.consentRequestJwt(
+                consentDecision.getClientId(),
+                consentDecision.getIntentId(),
+                consentDecision.getResourceOwnerUsername()
+        );
+
+        given(jwkServiceClient.signClaims(any(JWTClaimsSet.class), anyString())).willReturn(jwt);
+        String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
+
+        ConsentDecisionRequest consentDecisionRequest = ConsentDecisionRequest.builder()
+                .sharedAccounts(convert(accountConsentDetails.getAsJsonArray("accountsIds")))
+                .consentJwt(jwt)
+                .decision(Constants.ConsentDecision.AUTHORISED)
+                .build();
+        HttpEntity<String> request = new HttpEntity(consentDecisionRequest, headers());
+
+        // when
+        ResponseEntity<RedirectionAction> response = restTemplate.postForEntity(consentDetailURL, request, RedirectionAction.class);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(OK);
+        assertThat(response.getBody().getConsentJwt()).isNotEmpty();
+        assertThat(response.getBody().getRedirectUri()).isNotEmpty();
+    }
+
+    @Test
+    public void ShouldGetRedirectionActionDomesticPayments() throws ExceptionClient {
+        // given
+        ConsentDecision consentDecision = aValidDomesticPaymentConsentDecision();
+        JsonObject accountConsentDetails = aValidDomesticPaymentConsentDetails(consentDecision.getIntentId());
         given(consentServiceClient.updateConsent(consentDecision)).willReturn(accountConsentDetails);
         String jwt = JwtTestHelper.consentRequestJwt(
                 consentDecision.getClientId(),
@@ -111,17 +156,5 @@ public class ConsentDecisionApiControllerTest {
         headers.setContentType(APPLICATION_JSON);
         headers.add("Cookie", "iPlanetDirectoryPro=aSsoToken");
         return headers;
-    }
-
-    public static ArrayList<String> convert(JsonArray jArr) {
-        ArrayList<String> list = new ArrayList<>();
-        try {
-            for (int i = 0, l = jArr.size(); i < l; i++) {
-                list.add(jArr.get(i).getAsString());
-            }
-        } catch (Exception e) {
-        }
-
-        return list;
     }
 }

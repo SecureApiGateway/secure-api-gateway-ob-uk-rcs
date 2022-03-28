@@ -17,7 +17,7 @@ package com.forgerock.securebanking.openbanking.uk.rcs.converters.accounts;
 
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision.ConsentDecisionRequest;
 import com.forgerock.securebanking.openbanking.uk.rcs.converters.general.Converter;
-import com.forgerock.securebanking.platform.client.models.base.ConsentDecision;
+import com.forgerock.securebanking.platform.client.models.ConsentDecision;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;

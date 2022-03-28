@@ -20,7 +20,7 @@ import com.forgerock.securebanking.platform.client.configuration.ConfigurationPr
 import com.forgerock.securebanking.platform.client.exceptions.ErrorClient;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
-import com.forgerock.securebanking.platform.client.models.base.User;
+import com.forgerock.securebanking.platform.client.models.User;
 import com.forgerock.securebanking.platform.client.utils.url.UrlContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

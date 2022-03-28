@@ -16,8 +16,8 @@
 package com.forgerock.securebanking.platform.client.test.support;
 
 import com.forgerock.securebanking.platform.client.IntentType;
-import com.forgerock.securebanking.platform.client.models.base.ConsentRequest;
-import com.forgerock.securebanking.platform.client.models.base.User;
+import com.forgerock.securebanking.platform.client.models.ConsentRequest;
+import com.forgerock.securebanking.platform.client.models.User;
 import com.nimbusds.jwt.SignedJWT;
 
 import java.text.ParseException;

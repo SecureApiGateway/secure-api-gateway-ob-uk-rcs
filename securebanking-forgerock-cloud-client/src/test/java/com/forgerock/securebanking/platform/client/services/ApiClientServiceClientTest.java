@@ -17,7 +17,7 @@ package com.forgerock.securebanking.platform.client.services;
 
 import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
-import com.forgerock.securebanking.platform.client.models.base.ApiClient;
+import com.forgerock.securebanking.platform.client.models.ApiClient;
 import com.forgerock.securebanking.platform.client.test.support.ApiClientTestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

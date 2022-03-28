@@ -13,19 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.platform.client.models.base;
+package com.forgerock.securebanking.platform.client.models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.forgerock.securebanking.platform.client.IntentType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
+/**
+ * Abstract class for each type of consent data.
+ */
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        property = "type"
+)
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class ConsentDecisionData {
-    @JsonProperty("Status")
-    private String status;
+@SuperBuilder
+public abstract class Consent {
+
+    private String id;
+    private String resourceOwnerUsername;
+    private String oauth2ClientId;
+    private String oauth2ClientName;
+
+    public abstract IntentType getIntentType();
+
+    public String getDecisionApiUri() {
+        return "/api/rcs/consent/decision/";
+    }
 }

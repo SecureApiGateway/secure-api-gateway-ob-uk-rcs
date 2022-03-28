@@ -19,7 +19,7 @@ import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision.C
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetails;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorClient;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
-import com.forgerock.securebanking.platform.client.models.base.ConsentDecision;
+import com.forgerock.securebanking.platform.client.models.ConsentDecision;
 import com.forgerock.securebanking.platform.client.utils.jwt.JwtUtil;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +32,7 @@ import static com.forgerock.securebanking.platform.client.exceptions.ErrorType.J
 import static java.util.Objects.requireNonNull;
 
 /**
- * Factory to build the rcs {@link ConsentDetails} object from Platform {@link Consent} object
+ * Factory to build the rcs {@link ConsentDetails} object from the Platform Consent
  */
 @Slf4j
 public class ConsentDecisionBuilderFactory {

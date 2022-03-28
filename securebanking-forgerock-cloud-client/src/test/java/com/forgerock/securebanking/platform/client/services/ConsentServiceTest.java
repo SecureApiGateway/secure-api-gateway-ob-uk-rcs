@@ -17,8 +17,7 @@ package com.forgerock.securebanking.platform.client.services;
 
 import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
-import com.forgerock.securebanking.platform.client.models.accounts.AccountConsentDetails;
-import com.forgerock.securebanking.platform.client.models.base.ConsentRequest;
+import com.forgerock.securebanking.platform.client.models.ConsentRequest;
 import com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory;
 import com.forgerock.securebanking.platform.client.test.support.ConsentDetailsRequestTestDataFactory;
 import com.google.gson.JsonObject;
@@ -40,6 +39,7 @@ public class ConsentServiceTest extends BaseServiceClientTest {
     @InjectMocks
     private ConsentService consentService;
 
+    @Test
     public void shouldGetConsentDetails() throws ExceptionClient {
         // Given
         ConsentRequest consentRequest = ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest();
@@ -49,9 +49,9 @@ public class ConsentServiceTest extends BaseServiceClientTest {
                         anyString(),
                         eq(GET),
                         isNull(),
-                        eq(JsonObject.class)
+                        eq(String.class)
                 )
-        ).thenReturn(ResponseEntity.ok(details));
+        ).thenReturn(ResponseEntity.ok(details.toString()));
 
         // When
         JsonObject consentDetails = consentService.getConsent(consentRequest);
@@ -61,6 +61,7 @@ public class ConsentServiceTest extends BaseServiceClientTest {
         assertThat(consentDetails).isEqualTo(details);
     }
 
+    @Test
     public void shouldGetInvalidRequestConsentDetails() {
         // Given
         ConsentRequest ConsentRequest = ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest();
@@ -69,9 +70,9 @@ public class ConsentServiceTest extends BaseServiceClientTest {
                         anyString(),
                         eq(GET),
                         isNull(),
-                        eq(JsonObject.class)
+                        eq(String.class)
                 )
-        ).thenReturn(ResponseEntity.ok(consentDetails));
+        ).thenReturn(ResponseEntity.ok(consentDetails.toString()));
 
         // When
         ExceptionClient exception = catchThrowableOfType(() -> consentService.getConsent(ConsentRequest), ExceptionClient.class);
@@ -82,6 +83,7 @@ public class ConsentServiceTest extends BaseServiceClientTest {
         assertThat(exception.getErrorClient().getErrorType().getInternalCode()).isEqualTo(ErrorType.INVALID_REQUEST.getInternalCode());
     }
 
+    @Test
     public void shouldGetNotFoundConsentDetails() {
         // Given
         ConsentRequest ConsentRequest = ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest();
@@ -89,7 +91,7 @@ public class ConsentServiceTest extends BaseServiceClientTest {
                         anyString(),
                         eq(GET),
                         isNull(),
-                        eq(AccountConsentDetails.class)
+                        eq(String.class)
                 )
         ).thenReturn(null);
 

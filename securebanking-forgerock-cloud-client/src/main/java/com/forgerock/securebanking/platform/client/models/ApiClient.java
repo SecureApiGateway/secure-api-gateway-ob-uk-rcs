@@ -13,29 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.platform.client.models.domestic.payments;
+package com.forgerock.securebanking.platform.client.models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomesticDataInitiation;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.joda.time.DateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DomesticPaymentConsentRiskDetails {
-    @JsonProperty("ConsentId")
-    private String consentId;
-    @JsonProperty("Status")
-    private String status;
-    @JsonProperty("CreationDateTime")
-    private DateTime creationDateTime;
-    @JsonProperty("StatusUpdateDateTime")
-    private DateTime statusUpdateDateTime;
-    @JsonProperty("Initiation")
-    private FRWriteDomesticDataInitiation initiation;
+public class ApiClient {
+    private String id;
+    private String name;
+    private String officialName;
+    private String oauth2ClientId;
+    private String logoUri;
 }

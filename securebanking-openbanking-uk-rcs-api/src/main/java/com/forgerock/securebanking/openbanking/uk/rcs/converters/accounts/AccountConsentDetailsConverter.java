@@ -45,14 +45,24 @@ public class AccountConsentDetailsConverter {
 
     public AccountsConsentDetails mapping(JsonObject consentDetails) {
         AccountsConsentDetails details = new AccountsConsentDetails();
-        details.setAispName(consentDetails.get("oauth2ClientName") != null ? consentDetails.get("oauth2ClientName").getAsString() : null);
-        details.setFromTransaction(consentDetails.getAsJsonObject("data") != null ||
+        details.setAispName(consentDetails.get("oauth2ClientName") != null ?
+                consentDetails.get("oauth2ClientName").getAsString() :
+                null);
+        details.setFromTransaction(consentDetails.getAsJsonObject("data") != null &&
                 consentDetails.getAsJsonObject("data").get("TransactionFromDateTime") != null ?
                 consentDetails.getAsJsonObject("data").get("TransactionFromDateTime").getAsString() :
                 null);
-        details.setToTransaction(consentDetails.getAsJsonObject("data") != null || consentDetails.getAsJsonObject("data").get("TransactionToDateTime") != null ? consentDetails.getAsJsonObject("data").get("TransactionToDateTime").getAsString() : null);
-        details.setExpiredDate(consentDetails.getAsJsonObject("data") != null || consentDetails.getAsJsonObject("data").get("ExpirationDateTime") != null ? consentDetails.getAsJsonObject("data").get("ExpirationDateTime").getAsString() : null);
-        details.setPermissions(consentDetails.get("oauth2ClientName") != null ? consentDetails.getAsJsonObject("data").getAsJsonArray("Permissions") : null);
+        details.setToTransaction(consentDetails.getAsJsonObject("data") != null &&
+                consentDetails.getAsJsonObject("data").get("TransactionToDateTime") != null ?
+                consentDetails.getAsJsonObject("data").get("TransactionToDateTime").getAsString() :
+                null);
+        details.setExpiredDate(consentDetails.getAsJsonObject("data") != null &&
+                consentDetails.getAsJsonObject("data").get("ExpirationDateTime") != null ?
+                consentDetails.getAsJsonObject("data").get("ExpirationDateTime").getAsString() :
+                null);
+        details.setPermissions(consentDetails.get("data") != null ?
+                consentDetails.getAsJsonObject("data").getAsJsonArray("Permissions") :
+                null);
         return details;
     }
 

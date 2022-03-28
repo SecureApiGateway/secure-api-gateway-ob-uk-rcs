@@ -20,8 +20,8 @@ import com.forgerock.securebanking.platform.client.configuration.ConfigurationPr
 import com.forgerock.securebanking.platform.client.exceptions.ErrorClient;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
-import com.forgerock.securebanking.platform.client.models.base.ConsentDecision;
-import com.forgerock.securebanking.platform.client.models.base.ConsentRequest;
+import com.forgerock.securebanking.platform.client.models.ConsentDecision;
+import com.forgerock.securebanking.platform.client.models.ConsentRequest;
 import com.forgerock.securebanking.platform.client.utils.url.UrlContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;

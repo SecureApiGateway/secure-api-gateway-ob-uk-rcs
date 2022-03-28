@@ -15,7 +15,7 @@
  */
 package com.forgerock.securebanking.platform.client.test.support;
 
-import com.forgerock.securebanking.platform.client.models.base.ApiClient;
+import com.forgerock.securebanking.platform.client.models.ApiClient;
 
 import java.util.UUID;
 

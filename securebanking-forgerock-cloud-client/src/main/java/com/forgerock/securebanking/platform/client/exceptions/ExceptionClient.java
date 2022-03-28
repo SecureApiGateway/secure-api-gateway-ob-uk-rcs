@@ -15,8 +15,8 @@
  */
 package com.forgerock.securebanking.platform.client.exceptions;
 
-import com.forgerock.securebanking.platform.client.models.base.ConsentDecision;
-import com.forgerock.securebanking.platform.client.models.base.ConsentRequest;
+import com.forgerock.securebanking.platform.client.models.ConsentDecision;
+import com.forgerock.securebanking.platform.client.models.ConsentRequest;
 
 /**
  * Generic Client Cloud exception object

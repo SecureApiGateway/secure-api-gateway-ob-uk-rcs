@@ -13,34 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.platform.client.models.base;
+package com.forgerock.securebanking.platform.client.models;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
-import com.nimbusds.jwt.SignedJWT;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.List;
-
-/**
- * Represents the required information to provide the details of a consent.
- */
 @Data
-@Builder
+@NoArgsConstructor
 @AllArgsConstructor
-public class ConsentRequest {
-    public String intentId;
-    protected SignedJWT consentRequestJwt;
-    protected User user;
-    protected String clientId;
-    List<FRAccountWithBalance> accounts;
-
-    public List<FRAccountWithBalance> getAccounts() {
-        return accounts;
-    }
-
-    public String getConsentRequestJwtString() {
-        return consentRequestJwt.getParsedString();
-    }
+@Builder
+public class User {
+    private String id;
+    private String userName;
+    private String givenName;
+    private String surname;
+    private String mail;
+    private String accountStatus;
 }

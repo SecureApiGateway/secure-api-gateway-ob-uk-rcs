@@ -44,14 +44,21 @@ public class AccountConsentDetailsConverterTest {
         AccountsConsentDetails accountsConsentDetails = AccountConsentDetailsConverter.getInstance().toAccountConsentDetails(consentDetails);
         // Then
 
-        assertThat(transformationForPermissionsList(accountsConsentDetails.getPermissions())).isEqualTo(consentDetails.getAsJsonObject("data").getAsJsonArray("Permissions"));
-        assertThat(accountsConsentDetails.getFromTransaction().toString()).isEqualTo(consentDetails.getAsJsonObject("data").get("TransactionFromDateTime").getAsString());
-        assertThat(accountsConsentDetails.getToTransaction().toString()).isEqualTo(consentDetails.getAsJsonObject("data").get("TransactionToDateTime").getAsString());
-        assertThat(accountsConsentDetails.getAispName()).isEqualTo(consentDetails.get("oauth2ClientName").getAsString());
-        assertThat(accountsConsentDetails.getExpiredDate().toString()).isEqualTo(consentDetails.getAsJsonObject("data").get("ExpirationDateTime").getAsString());
+        assertThat(transformationForPermissionsList(accountsConsentDetails.getPermissions())).isEqualTo(consentDetails.get("data") != null ? consentDetails.getAsJsonObject("data").getAsJsonArray("Permissions") : null);
+        assertThat(accountsConsentDetails.getFromTransaction().toString()).isEqualTo(consentDetails.getAsJsonObject("data") != null &&
+                consentDetails.getAsJsonObject("data").get("TransactionFromDateTime") != null ?
+                consentDetails.getAsJsonObject("data").get("TransactionFromDateTime").getAsString() :
+                null);
+        assertThat(accountsConsentDetails.getToTransaction().toString()).isEqualTo(consentDetails.getAsJsonObject("data") != null && consentDetails.getAsJsonObject("data").get("TransactionToDateTime") != null ? consentDetails.getAsJsonObject("data").get("TransactionToDateTime").getAsString() : null);
+        assertThat(accountsConsentDetails.getAispName()).isEqualTo(consentDetails.get("oauth2ClientName") != null ? consentDetails.get("oauth2ClientName").getAsString() : null);
+        assertThat(accountsConsentDetails.getExpiredDate().toString()).isEqualTo(consentDetails.getAsJsonObject("data") != null && consentDetails.getAsJsonObject("data").get("ExpirationDateTime") != null ? consentDetails.getAsJsonObject("data").get("ExpirationDateTime").getAsString() : null);
     }
 
     public JsonElement transformationForPermissionsList(List<FRExternalPermissionsCode> list) {
+        if (list == null || list.isEmpty())
+        {
+            return null;
+        }
         List<String> permissions = new ArrayList<>();
         for (FRExternalPermissionsCode element : list) {
             permissions.add(element.getValue());

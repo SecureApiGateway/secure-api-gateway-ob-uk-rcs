@@ -29,6 +29,7 @@ import org.joda.time.DateTimeZone;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * Models the consent data that is used for an account details request.
@@ -65,14 +66,14 @@ public class AccountsConsentDetails extends ConsentDetails {
     }
 
     public void setFromTransaction(String fromTransaction) {
-        this.fromTransaction = new DateTime(fromTransaction, DateTimeZone.UTC);
+        this.fromTransaction = new DateTime(fromTransaction, DateTimeZone.forTimeZone(TimeZone.getDefault()));
     }
 
     public void setToTransaction(String toTransaction) {
-        this.toTransaction = new DateTime(toTransaction, DateTimeZone.UTC);
+        this.toTransaction = new DateTime(toTransaction, DateTimeZone.forTimeZone(TimeZone.getDefault()));
     }
 
     public void setExpiredDate(String expiredDate) {
-        this.expiredDate = new DateTime(expiredDate, DateTimeZone.UTC);
+        this.expiredDate = new DateTime(expiredDate, DateTimeZone.forTimeZone(TimeZone.getDefault()));
     }
 }

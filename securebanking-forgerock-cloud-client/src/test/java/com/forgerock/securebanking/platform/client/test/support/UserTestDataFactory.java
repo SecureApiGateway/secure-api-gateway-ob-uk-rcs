@@ -15,7 +15,7 @@
  */
 package com.forgerock.securebanking.platform.client.test.support;
 
-import com.forgerock.securebanking.platform.client.models.base.User;
+import com.forgerock.securebanking.platform.client.models.User;
 
 /**
  * Test data factory for {@link User}

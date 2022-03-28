@@ -19,8 +19,8 @@ import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.acc
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.AccountsConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.converters.general.ConsentDetailsBuilderFactory;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
-import com.forgerock.securebanking.platform.client.models.base.ApiClient;
-import com.forgerock.securebanking.platform.client.models.base.ConsentRequest;
+import com.forgerock.securebanking.platform.client.models.ApiClient;
+import com.forgerock.securebanking.platform.client.models.ConsentRequest;
 import com.forgerock.securebanking.platform.client.test.support.ConsentDetailsRequestTestDataFactory;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

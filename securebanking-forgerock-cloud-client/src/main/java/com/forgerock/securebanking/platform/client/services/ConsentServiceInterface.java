@@ -16,9 +16,8 @@
 package com.forgerock.securebanking.platform.client.services;
 
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
-import com.forgerock.securebanking.platform.client.models.base.Consent;
-import com.forgerock.securebanking.platform.client.models.base.ConsentDecision;
-import com.forgerock.securebanking.platform.client.models.base.ConsentRequest;
+import com.forgerock.securebanking.platform.client.models.ConsentDecision;
+import com.forgerock.securebanking.platform.client.models.ConsentRequest;
 import com.google.gson.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,10 +29,10 @@ public interface ConsentServiceInterface {
     Logger log = LoggerFactory.getLogger(ConsentServiceInterface.class);
 
     /**
-     * Retrieves the specific {@link Consent} for the type of the consent from the platform.
+     * Retrieves the specific consent for the type of the consent from the platform.
      *
      * @param ConsentRequest A {@link ConsentRequest} containing the required information to provide the consent details.
-     * @return The underlying {@link Consent}, depending on the type of the consent.
+     * @return The underlying Consent, depending on the type of the consent.
      * @throws ExceptionClient if an error occurs.
      */
     JsonObject getConsent(ConsentRequest ConsentRequest) throws ExceptionClient;
@@ -42,7 +41,7 @@ public interface ConsentServiceInterface {
      * Update the specific {@link ConsentDecision} for the type of the consent on the platform.
      *
      * @param consentDecision A {@link ConsentDecision} containing the required information to provide the consent details.
-     * @return The underlying {@link Consent}, depending on the type of the consent.
+     * @return The underlying Consent, depending on the type of the consent.
      * @throws ExceptionClient if an error occurs.
      */
     JsonObject updateConsent(ConsentDecision consentDecision) throws ExceptionClient;

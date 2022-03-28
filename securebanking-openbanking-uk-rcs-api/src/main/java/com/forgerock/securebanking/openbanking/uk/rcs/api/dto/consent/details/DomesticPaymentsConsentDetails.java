@@ -49,8 +49,8 @@ public class DomesticPaymentsConsentDetails extends ConsentDetails {
             this.instructedAmount = null;
         else {
             this.instructedAmount = new FRAmount();
-            this.instructedAmount.setAmount(instructedAmount.get("Amount").getAsString());
-            this.instructedAmount.setCurrency(instructedAmount.get("Currency").getAsString());
+            this.instructedAmount.setAmount(instructedAmount.get("Amount") != null ? instructedAmount.get("Amount").getAsString() : null);
+            this.instructedAmount.setCurrency(instructedAmount.get("Currency") != null ?instructedAmount.get("Currency").getAsString() : null);
         }
     }
 }

@@ -25,7 +25,7 @@ import com.forgerock.securebanking.openbanking.uk.rcs.exception.InvalidConsentEx
 import com.forgerock.securebanking.platform.client.Constants;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorClient;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
-import com.forgerock.securebanking.platform.client.models.base.ConsentDecision;
+import com.forgerock.securebanking.platform.client.models.ConsentDecision;
 import com.forgerock.securebanking.platform.client.services.ConsentServiceClient;
 import com.forgerock.securebanking.platform.client.services.JwkServiceClient;
 import com.forgerock.securebanking.platform.client.utils.jwt.JwtUtil;
