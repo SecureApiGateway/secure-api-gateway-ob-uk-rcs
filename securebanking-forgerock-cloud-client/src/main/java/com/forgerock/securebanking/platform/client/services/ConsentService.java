@@ -96,14 +96,14 @@ public class ConsentService implements ConsentServiceInterface {
         String consentURL;
         switch (IntentType.identify(intentId)) {
             case ACCOUNT_ACCESS_CONSENT -> {
-                consentURL = configurationProperties.getIgFqdn() +
+                consentURL = configurationProperties.getIgFqdnURIAsString() +
                         UrlContext.replaceParameterContextIntentId(
                                 configurationProperties.getContextsAccountsConsent().get(GET.name()),
                                 intentId
                         );
             }
             case PAYMENT_DOMESTIC_CONSENT -> {
-                consentURL = configurationProperties.getIgFqdn() +
+                consentURL = configurationProperties.getIgFqdnURIAsString() +
                         UrlContext.replaceParameterContextIntentId(
                                 configurationProperties.getContextsDomesticPaymentConsent().get(GET.name()),
                                 intentId
