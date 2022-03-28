@@ -39,7 +39,7 @@ public class RcsConfigurationPropertiesTest {
     private RsBackofficeConfiguration rsBackofficeConfiguration;
 
     @Test
-    public void shouldHaveAllProperties() {
+    public void shouldHaveAllRCSProperties() {
         assertThat(configurationProperties.getRsFqdn()).isNotNull();
         assertThat(configurationProperties.getIssuerId()).isNotNull();
         assertThat(configurationProperties.getSchema()).isNotNull();

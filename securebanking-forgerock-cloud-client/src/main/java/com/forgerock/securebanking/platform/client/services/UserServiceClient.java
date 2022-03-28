@@ -62,7 +62,7 @@ public class UserServiceClient {
     }
 
     private User request(String userId) throws ExceptionClient {
-        String userURL = configurationProperties.getIgFqdn() +
+        String userURL = configurationProperties.getIgFqdnURIAsString() +
                 UrlContext.replaceParameterContextValue(
                         configurationProperties.getContextsUser().get(GET.name()),
                         Constants.URLParameters.USER_ID,
