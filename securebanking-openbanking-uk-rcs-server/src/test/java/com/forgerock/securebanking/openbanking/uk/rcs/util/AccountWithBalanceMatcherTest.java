@@ -86,6 +86,7 @@ public class AccountWithBalanceMatcherTest {
         assertThat(matchingAccount.isPresent()).isFalse();
     }
 
+    @Test
     private FRAccountWithBalance aValidFRAccountWithBalance(String identification) {
         FRFinancialAccount financialAccount = aValidFRFinancialAccountBuilder()
                 .accounts(List.of(

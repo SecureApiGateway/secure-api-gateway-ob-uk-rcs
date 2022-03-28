@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.openbanking.uk.rcs.converters;
+package com.forgerock.securebanking.openbanking.uk.rcs.converters.general;
 
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision.ConsentDecisionRequest;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetails;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorClient;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
-import com.forgerock.securebanking.platform.client.models.AccountConsentDecision;
-import com.forgerock.securebanking.platform.client.models.Consent;
+import com.forgerock.securebanking.platform.client.models.ConsentDecision;
 import com.forgerock.securebanking.platform.client.utils.jwt.JwtUtil;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.extern.slf4j.Slf4j;
@@ -33,38 +32,38 @@ import static com.forgerock.securebanking.platform.client.exceptions.ErrorType.J
 import static java.util.Objects.requireNonNull;
 
 /**
- * Factory to build the rcs {@link ConsentDetails} object from Platform {@link Consent} object
+ * Factory to build the rcs {@link ConsentDetails} object from the Platform Consent
  */
 @Slf4j
 public class ConsentDecisionBuilderFactory {
 
-    public static final AccountConsentDecision build(ConsentDecisionRequest consentDecision) throws ExceptionClient {
+    public static final ConsentDecision build(ConsentDecisionRequest consentDecision) throws ExceptionClient {
         requireNonNull(consentDecision, "build(consentDecision) parameter 'consentDecision' cannot be null");
-        return buildAccountConsentDecision(consentDecision);
+        return buildConsentDecision(consentDecision);
     }
 
-    private static final AccountConsentDecision buildAccountConsentDecision(ConsentDecisionRequest consentDecision) throws ExceptionClient {
+    private static final ConsentDecision buildConsentDecision(ConsentDecisionRequest consentDecision) throws ExceptionClient {
         try {
-            AccountConsentDecisionConverter accountConsentDecisionConverter = AccountConsentDecisionConverter.getInstance();
-            AccountConsentDecision accountConsentDecision = accountConsentDecisionConverter.toAccountConsentDecision(consentDecision);
+            ConsentDecisionConverter consentDecisionConverter = ConsentDecisionConverter.getInstance();
+            ConsentDecision decision = consentDecisionConverter.toConsentDecision(consentDecision);
             SignedJWT signedJWT = JwtUtil.getSignedJWT(consentDecision.getConsentJwt());
-            accountConsentDecision.setScopes(
+            decision.setScopes(
                     JwtUtil.getClaimValueMap(signedJWT, "scopes")
                             .values().stream().map(o -> (String) o).collect(Collectors.toList())
             );
-            accountConsentDecision.setJwtClaimsSet(signedJWT.getJWTClaimsSet());
+            decision.setJwtClaimsSet(signedJWT.getJWTClaimsSet());
             String intentId = JwtUtil.getIdTokenClaim(signedJWT, INTENT_ID);
             log.debug("Intent Id from the requested claims '{}'", intentId);
             String clientId = JwtUtil.getClaimValue(signedJWT, CLIENT_ID);
             log.debug("Client Id from the JWT claims '{}'", clientId);
             String userId = JwtUtil.getClaimValue(signedJWT, USER_NAME);
             log.debug("User Id from the JWT claims '{}'", userId);
-            accountConsentDecision.setResourceOwnerUsername(userId);
-            accountConsentDecision.setIntentId(intentId);
-            accountConsentDecision.setClientId(clientId);
-            return accountConsentDecision;
+            decision.setResourceOwnerUsername(userId);
+            decision.setIntentId(intentId);
+            decision.setClientId(clientId);
+            return decision;
         } catch (ParseException exception) {
-            log.error("buildAccountConsentDecision(consentDecision) Could not parse the consentJwt from consent decision object.", exception);
+            log.error("buildConsentDecision(consentDecision) Could not parse the consentJwt from consent decision object.", exception);
             throw new ExceptionClient(
                     ErrorClient.builder()
                             .errorType(JWT_INVALID)

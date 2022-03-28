@@ -17,6 +17,7 @@ package com.forgerock.securebanking.platform.client.models;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.nimbusds.jwt.SignedJWT;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
@@ -27,12 +28,17 @@ import java.util.List;
  */
 @Data
 @Builder
+@AllArgsConstructor
 public class ConsentRequest {
-    String intentId;
-    SignedJWT consentRequestJwt;
+    public String intentId;
+    protected SignedJWT consentRequestJwt;
+    protected User user;
+    protected String clientId;
     List<FRAccountWithBalance> accounts;
-    User user;
-    String clientId;
+
+    public List<FRAccountWithBalance> getAccounts() {
+        return accounts;
+    }
 
     public String getConsentRequestJwtString() {
         return consentRequestJwt.getParsedString();

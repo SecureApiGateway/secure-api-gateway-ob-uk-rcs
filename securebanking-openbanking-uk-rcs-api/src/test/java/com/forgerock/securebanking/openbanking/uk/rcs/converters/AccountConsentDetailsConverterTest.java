@@ -15,12 +15,19 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.converters;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRExternalPermissionsCode;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.AccountsConsentDetails;
-import com.forgerock.securebanking.platform.client.models.AccountConsentDetails;
+import com.forgerock.securebanking.openbanking.uk.rcs.converters.accounts.AccountConsentDetailsConverter;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory.aValidAccountConsentDetails;
+import static com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory.gson;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -32,14 +39,30 @@ public class AccountConsentDetailsConverterTest {
     @Test
     public void shouldConvertAccountConsentDetailsToAccountsConsentDetails() {
         // Given
-        AccountConsentDetails AccountConsentDetails = aValidAccountConsentDetails("AAC_asdfasdfasdf");
+        JsonObject consentDetails = aValidAccountConsentDetails("AAC_asdfasdfasdf");
         // When
-        AccountsConsentDetails accountsConsentDetails = AccountConsentDetailsConverter.getInstance().toAccountConsentDetails(AccountConsentDetails);
+        AccountsConsentDetails accountsConsentDetails = AccountConsentDetailsConverter.getInstance().toAccountConsentDetails(consentDetails);
         // Then
-        assertThat(accountsConsentDetails.getPermissions()).isEqualTo(AccountConsentDetails.getData().getPermissions());
-        assertThat(accountsConsentDetails.getFromTransaction()).isEqualTo(AccountConsentDetails.getData().getTransactionFromDateTime());
-        assertThat(accountsConsentDetails.getToTransaction()).isEqualTo(AccountConsentDetails.getData().getTransactionToDateTime());
-        assertThat(accountsConsentDetails.getAispName()).isEqualTo(AccountConsentDetails.getOauth2ClientName());
-        assertThat(accountsConsentDetails.getExpiredDate()).isEqualTo(AccountConsentDetails.getData().getExpirationDateTime());
+
+        assertThat(transformationForPermissionsList(accountsConsentDetails.getPermissions())).isEqualTo(consentDetails.get("data") != null ? consentDetails.getAsJsonObject("data").getAsJsonArray("Permissions") : null);
+        assertThat(accountsConsentDetails.getFromTransaction().toString()).isEqualTo(consentDetails.getAsJsonObject("data") != null &&
+                consentDetails.getAsJsonObject("data").get("TransactionFromDateTime") != null ?
+                consentDetails.getAsJsonObject("data").get("TransactionFromDateTime").getAsString() :
+                null);
+        assertThat(accountsConsentDetails.getToTransaction().toString()).isEqualTo(consentDetails.getAsJsonObject("data") != null && consentDetails.getAsJsonObject("data").get("TransactionToDateTime") != null ? consentDetails.getAsJsonObject("data").get("TransactionToDateTime").getAsString() : null);
+        assertThat(accountsConsentDetails.getAispName()).isEqualTo(consentDetails.get("oauth2ClientName") != null ? consentDetails.get("oauth2ClientName").getAsString() : null);
+        assertThat(accountsConsentDetails.getExpiredDate().toString()).isEqualTo(consentDetails.getAsJsonObject("data") != null && consentDetails.getAsJsonObject("data").get("ExpirationDateTime") != null ? consentDetails.getAsJsonObject("data").get("ExpirationDateTime").getAsString() : null);
+    }
+
+    public JsonElement transformationForPermissionsList(List<FRExternalPermissionsCode> list) {
+        if (list == null || list.isEmpty())
+        {
+            return null;
+        }
+        List<String> permissions = new ArrayList<>();
+        for (FRExternalPermissionsCode element : list) {
+            permissions.add(element.getValue());
+        }
+        return gson.toJsonTree(permissions);
     }
 }

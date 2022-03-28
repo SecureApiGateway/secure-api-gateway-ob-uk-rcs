@@ -21,19 +21,20 @@ import com.forgerock.securebanking.openbanking.uk.common.claim.Claims;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.rs.AccountService;
-import com.forgerock.securebanking.openbanking.uk.rcs.converters.ConsentDetailsBuilderFactory;
+import com.forgerock.securebanking.openbanking.uk.rcs.converters.general.ConsentDetailsBuilderFactory;
 import com.forgerock.securebanking.openbanking.uk.rcs.exception.InvalidConsentException;
 import com.forgerock.securebanking.platform.client.Constants;
 import com.forgerock.securebanking.platform.client.configuration.ConfigurationPropertiesClient;
+import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
 import com.forgerock.securebanking.platform.client.models.ApiClient;
-import com.forgerock.securebanking.platform.client.models.Consent;
 import com.forgerock.securebanking.platform.client.models.ConsentRequest;
 import com.forgerock.securebanking.platform.client.models.User;
 import com.forgerock.securebanking.platform.client.services.ApiClientServiceClient;
 import com.forgerock.securebanking.platform.client.services.ConsentServiceClient;
 import com.forgerock.securebanking.platform.client.services.UserServiceClient;
 import com.forgerock.securebanking.platform.client.utils.jwt.JwtUtil;
+import com.google.gson.JsonObject;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -62,7 +63,8 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
     public ConsentDetailsApiController(ConsentServiceClient consentServiceClient,
                                        ApiClientServiceClient apiClientService,
                                        UserServiceClient userServiceClient,
-                                       AccountService accountService, ConfigurationPropertiesClient configurationPropertiesClient) {
+                                       AccountService accountService,
+                                       ConfigurationPropertiesClient configurationPropertiesClient) {
         this.consentServiceClient = consentServiceClient;
         this.apiClientService = apiClientService;
         this.userServiceClient = userServiceClient;
@@ -88,20 +90,30 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                         "Missing intent Id", null, null);
             }
 
+            String intentId = JwtUtil.getIdTokenClaim(signedJWT, Constants.Claims.INTENT_ID);
+            log.debug("Intent Id from the requested claims '{}'", intentId);
 
             ConsentRequest consentRequest = buildConsentRequest(signedJWT);
 
-            log.debug("Retrieve consent details:\n- Type '{}'\n-Id '{}'\n",
-                    IntentType.identify(consentRequest.getIntentId()).name(), consentRequest.getIntentId());
-            Consent consent = consentServiceClient.getConsent(consentRequest);
+            if (IntentType.identify(intentId) != null) {
+                log.debug("Intent type: '{}' with ID '{}'", IntentType.identify(intentId), intentId);
+                log.debug("Retrieve consent details:\n- Type '{}'\n-Id '{}'\n",
+                        IntentType.identify(consentRequest.getIntentId()).name(), consentRequest.getIntentId());
+                JsonObject consent = consentServiceClient.getConsent(consentRequest);
 
-            log.debug("Retrieve to api client details for client Id '{}'", consentRequest.getClientId());
-            ApiClient apiClient = apiClientService.getApiClient(consentRequest.getClientId());
+                log.debug("Retrieve to api client details for client Id '{}'", consentRequest.getClientId());
+                ApiClient apiClient = apiClientService.getApiClient(consentRequest.getClientId());
 
-            // build the consent details object for the response
-            ConsentDetails consentDetails = ConsentDetailsBuilderFactory.build(consent, consentRequest, apiClient);
+                // build the consent details object for the response
+                ConsentDetails consentDetails = ConsentDetailsBuilderFactory.build(consent, consentRequest, apiClient);
 
-            return ResponseEntity.ok(consentDetails);
+                return ResponseEntity.ok(consentDetails);
+
+            } else {
+                String message = String.format("Invalid type for intent ID: '%s'", intentId);
+                log.error(message);
+                throw new ExceptionClient(consentRequest, ErrorType.UNKNOWN_INTENT_TYPE, message);
+            }
 
         } catch (ExceptionClient e) {
             String errorMessage = String.format("%s", e.getMessage());

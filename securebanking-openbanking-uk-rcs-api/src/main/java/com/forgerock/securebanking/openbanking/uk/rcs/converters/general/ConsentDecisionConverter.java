@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.openbanking.uk.rcs.converters;
+package com.forgerock.securebanking.openbanking.uk.rcs.converters.general;
 
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision.ConsentDecisionRequest;
-import com.forgerock.securebanking.platform.client.models.AccountConsentDecision;
+import com.forgerock.securebanking.platform.client.models.ConsentDecision;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -24,23 +24,23 @@ import org.modelmapper.PropertyMap;
 import org.modelmapper.convention.MatchingStrategies;
 
 /**
- * Converter class to map {@link ConsentDecisionRequest} to {@link AccountConsentDecision}
+ * Converter class to map {@link ConsentDecisionRequest} to {@link ConsentDecision}
  */
 @Slf4j
 @NoArgsConstructor
-public class AccountConsentDecisionConverter implements Converter {
+public class ConsentDecisionConverter implements Converter {
 
-    private static volatile AccountConsentDecisionConverter instance;
+    private static volatile ConsentDecisionConverter instance;
     private static volatile ModelMapper modelMapperInstance;
 
     /*
-     * Double checked locking principle to ensure that only one instance 'AccountConsentDecisionConverter' is created
+     * Double checked locking principle to ensure that only one instance 'ConsentDecisionConverter' is created
      */
-    public static AccountConsentDecisionConverter getInstance() {
+    public static ConsentDecisionConverter getInstance() {
         if (instance == null) {
-            synchronized (AccountConsentDecisionConverter.class) {
+            synchronized (ConsentDecisionConverter.class) {
                 if (instance == null) {
-                    instance = new AccountConsentDecisionConverter();
+                    instance = new ConsentDecisionConverter();
                 }
             }
         }
@@ -51,7 +51,7 @@ public class AccountConsentDecisionConverter implements Converter {
     public String getTypeMapName() {
         return ConsentDecisionRequest.class.getSimpleName() +
                 "To" +
-                AccountConsentDecision.class.getSimpleName();
+                ConsentDecision.class.getSimpleName();
     }
 
     /*
@@ -60,7 +60,7 @@ public class AccountConsentDecisionConverter implements Converter {
     @Override
     public ModelMapper getModelMapper() {
         if (modelMapperInstance == null) {
-            synchronized (AccountConsentDecisionConverter.class) {
+            synchronized (ConsentDecisionConverter.class) {
                 if (modelMapperInstance == null) {
                     modelMapperInstance = new ModelMapper();
                     configuration(modelMapperInstance);
@@ -80,23 +80,22 @@ public class AccountConsentDecisionConverter implements Converter {
 
     @Override
     public void mapping(ModelMapper modelMapper) {
-        PropertyMap<ConsentDecisionRequest, AccountConsentDecision> decisionMap = new PropertyMap<>() {
+        PropertyMap<ConsentDecisionRequest, ConsentDecision> decisionMap = new PropertyMap<>() {
             protected void configure() {
                 map().getData().setStatus(source.getDecision());
             }
         };
-        modelMapper.createTypeMap(ConsentDecisionRequest.class, AccountConsentDecision.class, getTypeMapName())
-                .addMapping(source -> source.getConsentJwt(), AccountConsentDecision::setConsentJwt)
-                .addMappings(decisionMap)
-                .addMapping(source -> source.getSharedAccounts(), AccountConsentDecision::setAccountIds);
+        modelMapper.createTypeMap(ConsentDecisionRequest.class, ConsentDecision.class, getTypeMapName())
+                .addMapping(source -> source.getConsentJwt(), ConsentDecision::setConsentJwt)
+                .addMappings(decisionMap);
 
     }
 
-    public final AccountConsentDecision toAccountConsentDecision(
+    public final ConsentDecision toConsentDecision(
             ConsentDecisionRequest consentDecision) {
         return getInstance().getModelMapper().map(
                 consentDecision,
-                AccountConsentDecision.class,
+                ConsentDecision.class,
                 getInstance().getTypeMapName()
         );
     }

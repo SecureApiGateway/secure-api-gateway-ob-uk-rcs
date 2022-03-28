@@ -20,16 +20,16 @@ import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.RedirectionAction;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision.ConsentDecisionRequest;
-import com.forgerock.securebanking.openbanking.uk.rcs.converters.ConsentDecisionBuilderFactory;
+import com.forgerock.securebanking.openbanking.uk.rcs.converters.general.ConsentDecisionBuilderFactory;
 import com.forgerock.securebanking.openbanking.uk.rcs.exception.InvalidConsentException;
 import com.forgerock.securebanking.platform.client.Constants;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorClient;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
-import com.forgerock.securebanking.platform.client.models.Consent;
 import com.forgerock.securebanking.platform.client.models.ConsentDecision;
 import com.forgerock.securebanking.platform.client.services.ConsentServiceClient;
 import com.forgerock.securebanking.platform.client.services.JwkServiceClient;
 import com.forgerock.securebanking.platform.client.utils.jwt.JwtUtil;
+import com.google.gson.JsonObject;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -72,14 +72,13 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
                 ConsentDecisionRequest.class);
 
         try {
-
             boolean decision = Constants.ConsentDecision.AUTHORISED.equals(consentDecisionRequest.getDecision());
             log.debug("submitConsentDecision(consentDecisionSerialised) The decision is '{}'", decision);
 
             ConsentDecision consentDecision =
                     ConsentDecisionBuilderFactory.build(consentDecisionRequest);
 
-            Consent consentUpdated = consentServiceClient.updateConsent(consentDecision);
+            JsonObject consentUpdated = consentServiceClient.updateConsent(consentDecision);
             log.debug("submitConsentDecision(consentDecisionSerialised) Consent updated '{}", consentUpdated);
 
             JWTClaimsSet jwtClaimsSetGenerated = generateConsentResponse(decision, consentDecision);

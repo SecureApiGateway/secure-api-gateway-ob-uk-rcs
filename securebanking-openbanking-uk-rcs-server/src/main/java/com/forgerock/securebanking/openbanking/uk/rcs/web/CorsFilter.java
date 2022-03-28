@@ -45,6 +45,10 @@ public class CorsFilter implements Filter {
         this.filterConfigurationProperties = filterConfigurationProperties;
     }
 
+    private static boolean isCorsRequest(HttpServletRequest request) {
+        return !StringUtils.isEmpty(request.getHeader(ORIGIN_HEADER));
+    }
+
     /**
      * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
      */
@@ -83,9 +87,5 @@ public class CorsFilter implements Filter {
 
         // pass the request along the filter chain
         chain.doFilter(request, servletResponse);
-    }
-
-    private static boolean isCorsRequest(HttpServletRequest request) {
-        return !StringUtils.isEmpty(request.getHeader(ORIGIN_HEADER));
     }
 }

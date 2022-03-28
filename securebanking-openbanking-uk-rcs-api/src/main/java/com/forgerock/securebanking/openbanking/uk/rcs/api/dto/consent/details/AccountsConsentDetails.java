@@ -15,15 +15,21 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRExternalPermissionsCode;
 import com.forgerock.securebanking.platform.client.IntentType;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * Models the consent data that is used for an account details request.
@@ -35,6 +41,7 @@ import java.util.List;
 public class AccountsConsentDetails extends ConsentDetails {
 
     private List<FRExternalPermissionsCode> permissions;
+    private List<FRAccountWithBalance> accounts;
     private DateTime fromTransaction;
     private DateTime toTransaction;
     private String aispName;
@@ -45,4 +52,28 @@ public class AccountsConsentDetails extends ConsentDetails {
         return IntentType.ACCOUNT_ACCESS_CONSENT;
     }
 
+    public void setPermissions(JsonArray permissions) {
+        if (permissions == null || permissions.size() == 0)
+            this.permissions = null;
+        else {
+            List<FRExternalPermissionsCode> permissionsCodeList = new ArrayList<>();
+            for (JsonElement permission : permissions) {
+                permissionsCodeList.add(FRExternalPermissionsCode.fromValue(permission.getAsString()));
+            }
+
+            this.permissions = permissionsCodeList;
+        }
+    }
+
+    public void setFromTransaction(String fromTransaction) {
+        this.fromTransaction = new DateTime(fromTransaction, DateTimeZone.forTimeZone(TimeZone.getDefault()));
+    }
+
+    public void setToTransaction(String toTransaction) {
+        this.toTransaction = new DateTime(toTransaction, DateTimeZone.forTimeZone(TimeZone.getDefault()));
+    }
+
+    public void setExpiredDate(String expiredDate) {
+        this.expiredDate = new DateTime(expiredDate, DateTimeZone.forTimeZone(TimeZone.getDefault()));
+    }
 }

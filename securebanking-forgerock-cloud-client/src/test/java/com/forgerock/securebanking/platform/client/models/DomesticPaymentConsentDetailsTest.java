@@ -23,17 +23,17 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-import static com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory.aValidAccountConsentDetails;
-import static com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory.gson;
+import static com.forgerock.securebanking.platform.client.test.support.DomesticPaymentAccessConsentDetailsTestFactory.aValidDomesticPaymentConsentDetails;
+import static com.forgerock.securebanking.platform.client.test.support.DomesticPaymentAccessConsentDetailsTestFactory.gson;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 /**
- * Unit Test for Account Consent Details
+ * Unit Test for Domestic Payment Consent Details
  */
 @Slf4j
-public class AccountConsentDetailsTest {
+public class DomesticPaymentConsentDetailsTest {
 
-    private static final String CONSENT_ID = "AAC_886511e2-78f0-4a14-9ab8-221360815aac";
+    private static final String CONSENT_ID = "PDC_886511e2-78f0-4a14-9ab8-221360815aac";
     private static final String CLIENT_ID = "7e47a733-005b-4031-8622-18064ac373b7";
 
     @Test
@@ -51,7 +51,7 @@ public class AccountConsentDetailsTest {
     @Test
     public void shouldSerialize() throws JsonProcessingException {
         // Given
-        JsonObject consentDetails = aValidAccountConsentDetails(CONSENT_ID, CLIENT_ID);
+        JsonObject consentDetails = aValidDomesticPaymentConsentDetails(CONSENT_ID, CLIENT_ID);
 
         // When
         String json = gson.toJson(consentDetails);
@@ -68,20 +68,30 @@ public class AccountConsentDetailsTest {
 
     private String getJson(String consentId, String clientId) {
         return "{" +
-                "\"type\" : \"AccountConsentDetails\"," +
+                "\"type\" : \"DomesticPaymentConsentDetails\"," +
                 "\"id\" : \"" + consentId + "\"," +
                 "\"data\" : {" +
-                "\"Permissions\" : [ \"ReadAccountsDetail\", \"ReadBalances\", \"ReadTransactionsDetail\" ]," +
-                "\"ExpirationDateTime\" : \"2021-10-02T14:31:14.923+01:00\"," +
-                "\"TransactionFromDateTime\" : \"2021-09-30T14:31:14.935+01:00\"," +
-                "\"TransactionToDateTime\" : \"2021-10-01T14:31:14.935+01:00\"," +
+                "\"Initiation\" : {" +
+                "\"InstructionIdentification\" : \"ACME412\"," +
+                "\"EndToEndIdentification\" : \"FRESCO.21302.GFX.20\"," +
+                "\"InstructedAmount\" : {" +
+                "\"Amount\" : \"165.88\"," +
+                "\"Currency\" : \"GBP\"}," +
+                "\"CreditorAccount\" : {" +
+                "\"SchemeName\" : \"UK.OBIE.SortCodeAccountNumber\"," +
+                "\"Identification\" : \"08080021325698\"," +
+                "\"Name\" : \"ACME Inc\"," +
+                "\"SecondaryIdentification\" : \"0002\"}," +
+                "\"CreditorAccountRemittanceInformation\" : {" +
+                "\"Reference\" : \"FRESCO-101\"," +
+                "\"Unstructured\" : \"Internal ops code 5120101\"}}," +
                 "\"ConsentId\" : \"" + consentId + "\"," +
                 "\"Status\" : \"AwaitingAuthorisation\"," +
                 "\"CreationDateTime\" : \"2021-10-01T14:31:14.935+01:00\"," +
                 "\"StatusUpdateDateTime\" : \"2021-10-01T14:31:14.935+01:00\"}," +
                 "\"accountIds\" : [ \"8f10f873-2b32-4306-aeea-d11004f92200\" ]," +
                 "\"oauth2ClientId\" : \"" + clientId + "\"," +
-                "\"oauth2ClientName\" : \"AISP Name\"" +
+                "\"oauth2ClientName\" : \"PISP Name\"" +
                 "}";
     }
 

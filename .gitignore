@@ -6,3 +6,5 @@
 .java-version
 target/
 .factorypath
+.idea
+*.iml

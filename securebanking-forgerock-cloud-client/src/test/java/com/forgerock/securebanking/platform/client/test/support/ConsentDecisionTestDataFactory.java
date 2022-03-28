@@ -17,7 +17,6 @@ package com.forgerock.securebanking.platform.client.test.support;
 
 import com.forgerock.securebanking.platform.client.Constants;
 import com.forgerock.securebanking.platform.client.IntentType;
-import com.forgerock.securebanking.platform.client.models.AccountConsentDecision;
 import com.forgerock.securebanking.platform.client.models.ConsentDecision;
 import com.forgerock.securebanking.platform.client.models.ConsentDecisionData;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -46,21 +45,19 @@ public class ConsentDecisionTestDataFactory {
     }
 
     private static ConsentDecision.ConsentDecisionBuilder aValidAccountConsentDecisionBuilder() {
-        return getConsentDecisionBuilder(IntentType.ACCOUNT_ACCESS_CONSENT);
+        return getAccountConsentDecisionBuilder(IntentType.ACCOUNT_ACCESS_CONSENT);
     }
 
     private static ConsentDecision.ConsentDecisionBuilder aValidAccountConsentDecisionBuilder(String intentId) {
-        return getConsentDecisionBuilder(intentId);
+        return getAccountConsentDecisionBuilder(intentId);
     }
 
     private static ConsentDecision.ConsentDecisionBuilder aValidAccountConsentDecisionBuilder(String intentId, String clientId) {
-        return getConsentDecisionBuilder(intentId, clientId);
+        return getAccountConsentDecisionBuilder(intentId, clientId);
     }
 
-    // TODO: PAYMENTS
-
-    private static ConsentDecision.ConsentDecisionBuilder getConsentDecisionBuilder(IntentType intentType) {
-        return AccountConsentDecision.builder()
+    private static ConsentDecision.ConsentDecisionBuilder getAccountConsentDecisionBuilder(IntentType intentType) {
+        return ConsentDecision.builder()
                 .intentId(intentType.generateIntentId())
                 .consentJwt("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
                         "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +
@@ -75,8 +72,8 @@ public class ConsentDecisionTestDataFactory {
                 .scopes(List.of("openid", "accounts"));
     }
 
-    private static ConsentDecision.ConsentDecisionBuilder getConsentDecisionBuilder(String intentId) {
-        return AccountConsentDecision.builder()
+    private static ConsentDecision.ConsentDecisionBuilder getAccountConsentDecisionBuilder(String intentId) {
+        return ConsentDecision.builder()
                 .intentId(intentId)
                 .consentJwt("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
                         "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +
@@ -91,8 +88,8 @@ public class ConsentDecisionTestDataFactory {
                 .scopes(List.of("openid", "accounts"));
     }
 
-    private static ConsentDecision.ConsentDecisionBuilder getConsentDecisionBuilder(String intentId, String clientId) {
-        return AccountConsentDecision.builder()
+    private static ConsentDecision.ConsentDecisionBuilder getAccountConsentDecisionBuilder(String intentId, String clientId) {
+        return ConsentDecision.builder()
                 .intentId(intentId)
                 .consentJwt("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
                         "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +
@@ -105,5 +102,78 @@ public class ConsentDecisionTestDataFactory {
                 .jwtClaimsSet(new JWTClaimsSet.Builder().build())
                 .resourceOwnerUsername(randomUUID().toString())
                 .scopes(List.of("openid", "accounts"));
+    }
+
+    // DOMESTIC PAYMENTS
+    public static ConsentDecision aValidDomesticPaymentConsentDecision() {
+        return aValidAccountConsentDecisionBuilder().build();
+    }
+
+    public static ConsentDecision aValidDomesticPaymentConsentDecision(String intentId) {
+        return aValidAccountConsentDecisionBuilder(intentId).build();
+    }
+
+    public static ConsentDecision aValidDomesticPaymentConsentDecision(String intentId, String clientId) {
+        return aValidAccountConsentDecisionBuilder(intentId, clientId).build();
+    }
+
+    private static ConsentDecision.ConsentDecisionBuilder aValidDomesticPaymentConsentDecisionBuilder() {
+        return getAccountConsentDecisionBuilder(IntentType.PAYMENT_DOMESTIC_CONSENT);
+    }
+
+    private static ConsentDecision.ConsentDecisionBuilder aValidDomesticPaymentConsentDecisionBuilder(String intentId) {
+        return getAccountConsentDecisionBuilder(intentId);
+    }
+
+    private static ConsentDecision.ConsentDecisionBuilder aValidDomesticPaymentConsentDecisionBuilder(String intentId, String clientId) {
+        return getAccountConsentDecisionBuilder(intentId, clientId);
+    }
+
+    private static ConsentDecision.ConsentDecisionBuilder getDomesticPaymentConsentDecisionBuilder(IntentType intentType) {
+        return ConsentDecision.builder()
+                .intentId(intentType.generateIntentId())
+                .consentJwt("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
+                        "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +
+                        "SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c")
+                .data(ConsentDecisionData.builder()
+                        .status(Constants.ConsentDecision.AUTHORISED)
+                        .build())
+                .clientId(randomUUID().toString())
+                .accountIds(List.of(aValidFRAccountWithBalance().toString()))
+                .jwtClaimsSet(new JWTClaimsSet.Builder().build())
+                .resourceOwnerUsername(randomUUID().toString())
+                .scopes(List.of("openid", "payments"));
+    }
+
+    private static ConsentDecision.ConsentDecisionBuilder getDomesticPaymentConsentDecisionBuilder(String intentId) {
+        return ConsentDecision.builder()
+                .intentId(intentId)
+                .consentJwt("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
+                        "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +
+                        "SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c")
+                .data(ConsentDecisionData.builder()
+                        .status(Constants.ConsentDecision.AUTHORISED)
+                        .build())
+                .clientId(randomUUID().toString())
+                .accountIds(List.of(aValidFRAccountWithBalance().toString()))
+                .jwtClaimsSet(new JWTClaimsSet.Builder().build())
+                .resourceOwnerUsername(randomUUID().toString())
+                .scopes(List.of("openid", "payments"));
+    }
+
+    private static ConsentDecision.ConsentDecisionBuilder getDomesticPaymentConsentDecisionBuilder(String intentId, String clientId) {
+        return ConsentDecision.builder()
+                .intentId(intentId)
+                .consentJwt("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
+                        "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +
+                        "SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c")
+                .data(ConsentDecisionData.builder()
+                        .status(Constants.ConsentDecision.AUTHORISED)
+                        .build())
+                .clientId(clientId)
+                .accountIds(List.of(aValidFRAccountWithBalance().toString()))
+                .jwtClaimsSet(new JWTClaimsSet.Builder().build())
+                .resourceOwnerUsername(randomUUID().toString())
+                .scopes(List.of("openid", "payments"));
     }
 }

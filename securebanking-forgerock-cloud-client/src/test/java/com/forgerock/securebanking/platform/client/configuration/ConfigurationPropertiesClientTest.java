@@ -35,12 +35,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(classes = TestApplicationClient.class, webEnvironment = MOCK)
 public class ConfigurationPropertiesClientTest {
 
-    @MockBean // mandatory to satisfied dependency for beans definitions
-    private RestTemplate restTemplate;
-
-    @Autowired
-    private ConfigurationPropertiesClient configurationPropertiesClient;
-
     // values to get the proper context from the http verb that match with key mapping in the context, case-insensitive.
     private static final String GET = "GeT";
     private static final String PUT = "pUT";
@@ -49,10 +43,14 @@ public class ConfigurationPropertiesClientTest {
     private static final String EXPECTED_JWKMS_CONSENT_SIGNING_ENDPOINT = "/jwkms/rcs/signresponse";
     private static final String EXPECTED_JWKMS_REQUEST_METHOD = "POST";
     private static final String EXPECTED_JWK_URI = "https://iam.dev.forgerock.financial/am/oauth2/connect/jwk_uri";
+    @MockBean // mandatory to satisfied dependency for beans definitions
+    private RestTemplate restTemplate;
+    @Autowired
+    private ConfigurationPropertiesClient configurationPropertiesClient;
 
     @Test
     public void shouldHaveAllPropertiesSet() {
-        assertThat(configurationPropertiesClient.getIgFqdn()).isNotNull();
+        assertThat(configurationPropertiesClient.getIgFqdnURIAsString()).isNotNull();
         assertThat(configurationPropertiesClient.getIdentityPlatformFqdn()).isNotNull();
         assertThat(configurationPropertiesClient.getContextsAccountsConsent()).isNotNull();
         assertThat(configurationPropertiesClient.getContextsDomesticPaymentConsent()).isNotNull();

@@ -38,18 +38,16 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class CorsFilterTest {
 
-    @Mock
-    private FilterConfigurationProperties filterConfigurationProperties;
-
-    @InjectMocks
-    private CorsFilter corsFilter;
-
     private static final String ALLOWED_HEADERS = "accept-api-version, x-requested-with, " +
             "authorization, Content-Type, Authorization, credential, X-XSRF-TOKEN, Id-Token";
     private static final String ALLOWED_METHODS = "GET, PUT, POST, DELETE, OPTIONS, PATCH";
     private static final String MAX_AGE = "3600";
     private static final String EXPECTED_ORIGIN_ENDS_WITH = "localhost";
     private static final String ORIGIN = "https://" + EXPECTED_ORIGIN_ENDS_WITH;
+    @Mock
+    private FilterConfigurationProperties filterConfigurationProperties;
+    @InjectMocks
+    private CorsFilter corsFilter;
 
     @Test
     public void shouldDoFilterGivenCorsRequest() throws IOException, ServletException {

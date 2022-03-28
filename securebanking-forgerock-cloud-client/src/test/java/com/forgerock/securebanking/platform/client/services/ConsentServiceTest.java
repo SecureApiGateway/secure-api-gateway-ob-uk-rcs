@@ -17,10 +17,10 @@ package com.forgerock.securebanking.platform.client.services;
 
 import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
-import com.forgerock.securebanking.platform.client.models.AccountConsentDetails;
 import com.forgerock.securebanking.platform.client.models.ConsentRequest;
 import com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory;
 import com.forgerock.securebanking.platform.client.test.support.ConsentDetailsRequestTestDataFactory;
+import com.google.gson.JsonObject;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.springframework.http.ResponseEntity;
@@ -32,50 +32,50 @@ import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpMethod.GET;
 
 /**
- * Unit test for {@link AccountConsentService }
+ * Unit test for {@link ConsentService }
  */
-public class AccountConsentServiceTest extends BaseServiceClientTest {
+public class ConsentServiceTest extends BaseServiceClientTest {
 
     @InjectMocks
-    private AccountConsentService accountConsentDetailsService;
+    private ConsentService consentService;
 
     @Test
     public void shouldGetConsentDetails() throws ExceptionClient {
         // Given
         ConsentRequest consentRequest = ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest();
-        AccountConsentDetails accountConsentDetails = AccountAccessConsentDetailsTestFactory.aValidAccountConsentDetails(consentRequest.getIntentId());
-        accountConsentDetails.setOauth2ClientId(consentRequest.getClientId());
+        JsonObject details = AccountAccessConsentDetailsTestFactory.aValidAccountConsentDetails(consentRequest.getIntentId());
+        details.addProperty("oauth2ClientId", consentRequest.getClientId());
         when(restTemplate.exchange(
                         anyString(),
                         eq(GET),
                         isNull(),
-                        eq(AccountConsentDetails.class)
+                        eq(String.class)
                 )
-        ).thenReturn(ResponseEntity.ok(accountConsentDetails));
+        ).thenReturn(ResponseEntity.ok(details.toString()));
 
         // When
-        AccountConsentDetails consentDetails = accountConsentDetailsService.getConsent(consentRequest);
+        JsonObject consentDetails = consentService.getConsent(consentRequest);
 
         // Then
         assertThat(consentDetails).isNotNull();
-        assertThat(consentDetails).isEqualTo(accountConsentDetails);
+        assertThat(consentDetails).isEqualTo(details);
     }
 
     @Test
     public void shouldGetInvalidRequestConsentDetails() {
         // Given
-        ConsentRequest consentRequest = ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest();
-        AccountConsentDetails accountConsentDetails = AccountAccessConsentDetailsTestFactory.aValidAccountConsentDetails(consentRequest.getIntentId());
+        ConsentRequest ConsentRequest = ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest();
+        JsonObject consentDetails = AccountAccessConsentDetailsTestFactory.aValidAccountConsentDetails(ConsentRequest.getIntentId());
         when(restTemplate.exchange(
                         anyString(),
                         eq(GET),
                         isNull(),
-                        eq(AccountConsentDetails.class)
+                        eq(String.class)
                 )
-        ).thenReturn(ResponseEntity.ok(accountConsentDetails));
+        ).thenReturn(ResponseEntity.ok(consentDetails.toString()));
 
         // When
-        ExceptionClient exception = catchThrowableOfType(() -> accountConsentDetailsService.getConsent(consentRequest), ExceptionClient.class);
+        ExceptionClient exception = catchThrowableOfType(() -> consentService.getConsent(ConsentRequest), ExceptionClient.class);
 
         // Then
         assertThat(exception.getErrorClient().getErrorType()).isEqualTo(ErrorType.INVALID_REQUEST);
@@ -86,17 +86,17 @@ public class AccountConsentServiceTest extends BaseServiceClientTest {
     @Test
     public void shouldGetNotFoundConsentDetails() {
         // Given
-        ConsentRequest consentRequest = ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest();
+        ConsentRequest ConsentRequest = ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest();
         when(restTemplate.exchange(
                         anyString(),
                         eq(GET),
                         isNull(),
-                        eq(AccountConsentDetails.class)
+                        eq(String.class)
                 )
         ).thenReturn(null);
 
         // When
-        ExceptionClient exception = catchThrowableOfType(() -> accountConsentDetailsService.getConsent(consentRequest), ExceptionClient.class);
+        ExceptionClient exception = catchThrowableOfType(() -> consentService.getConsent(ConsentRequest), ExceptionClient.class);
 
         // Then
         assertThat(exception.getErrorClient().getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
