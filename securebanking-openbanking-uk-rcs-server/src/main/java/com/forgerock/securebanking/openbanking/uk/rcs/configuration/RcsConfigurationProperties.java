@@ -30,8 +30,6 @@ import java.net.URI;
 @Data
 public class RcsConfigurationProperties {
     private static final String _delimiter = "://";
-    @Value("${rcs.issuerId}")
-    private String issuerId;
     @Value("${rcs.rs_fqdn}")
     private String rsFqdn;
     @Value("${rcs.schema:https}")

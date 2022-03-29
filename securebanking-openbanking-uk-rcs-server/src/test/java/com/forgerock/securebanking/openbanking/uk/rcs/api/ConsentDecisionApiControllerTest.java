@@ -104,7 +104,7 @@ public class ConsentDecisionApiControllerTest {
         String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
 
         ConsentDecisionRequest consentDecisionRequest = ConsentDecisionRequest.builder()
-                .sharedAccounts(convert(accountConsentDetails.getAsJsonArray("accountsIds")))
+                .accountIds(convert(accountConsentDetails.getAsJsonArray("accountsIds")))
                 .consentJwt(jwt)
                 .decision(Constants.ConsentDecision.AUTHORISED)
                 .build();
@@ -135,7 +135,7 @@ public class ConsentDecisionApiControllerTest {
         String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
 
         ConsentDecisionRequest consentDecisionRequest = ConsentDecisionRequest.builder()
-                .sharedAccounts(convert(accountConsentDetails.getAsJsonArray("accountsIds")))
+                .accountIds(convert(accountConsentDetails.getAsJsonArray("accountsIds")))
                 .consentJwt(jwt)
                 .decision(Constants.ConsentDecision.AUTHORISED)
                 .build();

@@ -103,7 +103,8 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
 
                 log.debug("Retrieve to api client details for client Id '{}'", consentRequest.getClientId());
                 ApiClient apiClient = apiClientService.getApiClient(consentRequest.getClientId());
-
+                log.debug("ApiClient controller: " + apiClient);
+                log.debug("consent json controller: " + consent);
                 // build the consent details object for the response
                 ConsentDetails consentDetails = ConsentDetailsBuilderFactory.build(consent, consentRequest, apiClient);
 

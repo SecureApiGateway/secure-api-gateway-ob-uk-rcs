@@ -37,8 +37,7 @@ public class Constants {
 
     public static class URLParameters {
         public static final String CONSENT_RESPONSE = "consent_response";
-        public static final String ACCOUNT_INTENT_ID = "@AccountIntentId@";
-        public static final String PAYMENT_INTENT_ID = "@PaymentIntentId@";
+        public static final String INTENT_ID = "@IntentId@";
         public static final String CLIENT_ID = "@ClientId@";
         public static final String USER_ID = "@UserId@";
     }

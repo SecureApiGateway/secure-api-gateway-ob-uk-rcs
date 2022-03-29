@@ -42,11 +42,11 @@ public class ConsentDecisionBuilderFactory {
         return buildConsentDecision(consentDecision);
     }
 
-    private static final ConsentDecision buildConsentDecision(ConsentDecisionRequest consentDecision) throws ExceptionClient {
+    private static final ConsentDecision buildConsentDecision(ConsentDecisionRequest consentDecisionRequest) throws ExceptionClient {
         try {
             ConsentDecisionConverter consentDecisionConverter = ConsentDecisionConverter.getInstance();
-            ConsentDecision decision = consentDecisionConverter.toConsentDecision(consentDecision);
-            SignedJWT signedJWT = JwtUtil.getSignedJWT(consentDecision.getConsentJwt());
+            ConsentDecision decision = consentDecisionConverter.toConsentDecision(consentDecisionRequest);
+            SignedJWT signedJWT = JwtUtil.getSignedJWT(consentDecisionRequest.getConsentJwt());
             decision.setScopes(
                     JwtUtil.getClaimValueMap(signedJWT, "scopes")
                             .values().stream().map(o -> (String) o).collect(Collectors.toList())

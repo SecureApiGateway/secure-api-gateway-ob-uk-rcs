@@ -71,6 +71,19 @@ public class AccountAccessConsentDetailsTestFactory {
         return consent;
     }
 
+    public static JsonObject aValidAccountConsentDataDetailsBuilderOnlyMandatoryFields(String consentId) {
+        JsonObject data = new JsonObject();
+        data.addProperty("ConsentId", consentId);
+        data.add("Permissions", gson.toJsonTree(List.of(
+                FRExternalPermissionsCode.READACCOUNTSDETAIL.getValue(),
+                FRExternalPermissionsCode.READBALANCES.getValue(),
+                FRExternalPermissionsCode.READTRANSACTIONSDETAIL.getValue()
+        )));
+        data.addProperty("CreationDateTime", DateTime.now(DateTimeZone.forTimeZone(TimeZone.getDefault())).toString());
+        data.addProperty("Status", ConsentStatusCode.AWAITINGAUTHORISATION.toString());
+        return data;
+    }
+
     public static JsonObject aValidAccountConsentDataDetailsBuilder(String consentId) {
         JsonObject data = new JsonObject();
         data.addProperty("ConsentId", consentId);

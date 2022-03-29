@@ -84,39 +84,36 @@ public class ConsentService implements ConsentServiceInterface {
 
     @Override
     public JsonObject updateConsent(ConsentDecision consentDecision) throws ExceptionClient {
-        String domesticPaymentIntendId = consentDecision.getIntentId();
-        log.debug("Received an request to update the consent: '{}'", domesticPaymentIntendId);
+        String intendId = consentDecision.getIntentId();
+        log.debug("Received an request to update the consent: '{}'", consentDecision);
         log.debug("=> The owner id: '{}'", consentDecision.getResourceOwnerUsername());
         HttpEntity<ConsentDecision> requestEntity = new HttpEntity<>(consentDecision, getHeaders());
-        JsonObject consentDetails = request(domesticPaymentIntendId, PATCH, requestEntity);
+        JsonObject consentDetails = request(intendId, PATCH, requestEntity);
         return consentDetails;
     }
 
     private JsonObject request(String intentId, HttpMethod httpMethod, HttpEntity httpEntity) throws ExceptionClient {
         String consentURL;
-        switch (IntentType.identify(intentId)) {
-            case ACCOUNT_ACCESS_CONSENT -> {
-                consentURL = configurationProperties.getIgFqdnURIAsString() +
-                        UrlContext.replaceParameterContextIntentId(
-                                configurationProperties.getContextsAccountsConsent().get(GET.name()),
-                                intentId
-                        );
-            }
-            case PAYMENT_DOMESTIC_CONSENT -> {
-                consentURL = configurationProperties.getIgFqdnURIAsString() +
-                        UrlContext.replaceParameterContextIntentId(
-                                configurationProperties.getContextsDomesticPaymentConsent().get(GET.name()),
-                                intentId
-                        );
-            }
-            default -> {
-                String message = String.format("Invalid type for intent ID: '%s'", intentId);
-                throw new ExceptionClient(new ConsentDecision(), ErrorType.UNKNOWN_INTENT_TYPE, message);
-            }
+        IntentType intentType = IntentType.identify(intentId);
+        if (intentType == null) {
+            String errorMessage = String.format("It has not been possible identify the intent type '%s'.", intentId);
+            log.error("(ConsentService#request) {}", errorMessage);
+            throw new ExceptionClient(
+                    ErrorClient.builder()
+                            .errorType(ErrorType.UNKNOWN_INTENT_TYPE)
+                            .intentId(intentId)
+                            .build(),
+                    errorMessage
+            );
         }
+        consentURL = configurationProperties.getIgFqdnURIAsString() +
+                UrlContext.replaceParameterContextIntentId(
+                        configurationProperties.getContextsRepoConsent().get(httpMethod.name()),
+                        intentId
+                );
 
-
-        log.debug("(ConsentService#request) request the consent details from platform: {}", consentURL);
+        log.debug("(ConsentService#request) {} the consent details from platform: {}", httpMethod.name(), consentURL);
+        log.debug("Entity To {}: {}", httpMethod.name(), httpEntity!=null? httpEntity.getBody().toString() : "null");
         try {
             ResponseEntity<String> responseEntity = restTemplate.exchange(
                     consentURL,

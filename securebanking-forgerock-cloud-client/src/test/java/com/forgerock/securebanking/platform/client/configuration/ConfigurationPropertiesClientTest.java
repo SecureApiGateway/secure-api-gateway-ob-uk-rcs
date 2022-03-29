@@ -52,8 +52,9 @@ public class ConfigurationPropertiesClientTest {
     public void shouldHaveAllPropertiesSet() {
         assertThat(configurationPropertiesClient.getIgFqdnURIAsString()).isNotNull();
         assertThat(configurationPropertiesClient.getIdentityPlatformFqdn()).isNotNull();
-        assertThat(configurationPropertiesClient.getContextsAccountsConsent()).isNotNull();
-        assertThat(configurationPropertiesClient.getContextsDomesticPaymentConsent()).isNotNull();
+        assertThat(configurationPropertiesClient.getContextsRepoConsent()).isNotNull();
+//        assertThat(configurationPropertiesClient.getContextsAccountsConsent()).isNotNull();
+//        assertThat(configurationPropertiesClient.getContextsDomesticPaymentConsent()).isNotNull();
         assertThat(configurationPropertiesClient.getContextsApiClient()).isNotNull();
         assertThat(configurationPropertiesClient.getContextsUser()).isNotNull();
         assertThat(configurationPropertiesClient.getJwkmsConsentSigningEndpoint()).isNotNull();
@@ -64,20 +65,28 @@ public class ConfigurationPropertiesClientTest {
     }
 
     @Test
-    public void shouldHaveAccountContextVerbProperties() {
-        assertThat(configurationPropertiesClient.getContextsAccountsConsent().get(GET)).isNotNull();
-        assertThat(configurationPropertiesClient.getContextsAccountsConsent().get(PUT)).isNotNull();
-        assertThat(configurationPropertiesClient.getContextsAccountsConsent().get(PATCH)).isNotNull();
-        assertThat(configurationPropertiesClient.getContextsAccountsConsent().get(DELETE)).isNotNull();
+    public void shouldHaveConsentContextVerbProperties() {
+        assertThat(configurationPropertiesClient.getContextsRepoConsent().get(GET)).isNotNull();
+        assertThat(configurationPropertiesClient.getContextsRepoConsent().get(PUT)).isNotNull();
+        assertThat(configurationPropertiesClient.getContextsRepoConsent().get(PATCH)).isNotNull();
+        assertThat(configurationPropertiesClient.getContextsRepoConsent().get(DELETE)).isNotNull();
     }
 
-    @Test
-    public void shouldHavePaymentContextVerbProperties() {
-        assertThat(configurationPropertiesClient.getContextsDomesticPaymentConsent().get(GET)).isNotNull();
-        assertThat(configurationPropertiesClient.getContextsDomesticPaymentConsent().get(PUT)).isNotNull();
-        assertThat(configurationPropertiesClient.getContextsDomesticPaymentConsent().get(PATCH)).isNotNull();
-        assertThat(configurationPropertiesClient.getContextsDomesticPaymentConsent().get(DELETE)).isNotNull();
-    }
+//    @Test
+//    public void shouldHaveAccountContextVerbProperties() {
+//        assertThat(configurationPropertiesClient.getContextsAccountsConsent().get(GET)).isNotNull();
+//        assertThat(configurationPropertiesClient.getContextsAccountsConsent().get(PUT)).isNotNull();
+//        assertThat(configurationPropertiesClient.getContextsAccountsConsent().get(PATCH)).isNotNull();
+//        assertThat(configurationPropertiesClient.getContextsAccountsConsent().get(DELETE)).isNotNull();
+//    }
+//
+//    @Test
+//    public void shouldHavePaymentContextVerbProperties() {
+//        assertThat(configurationPropertiesClient.getContextsDomesticPaymentConsent().get(GET)).isNotNull();
+//        assertThat(configurationPropertiesClient.getContextsDomesticPaymentConsent().get(PUT)).isNotNull();
+//        assertThat(configurationPropertiesClient.getContextsDomesticPaymentConsent().get(PATCH)).isNotNull();
+//        assertThat(configurationPropertiesClient.getContextsDomesticPaymentConsent().get(DELETE)).isNotNull();
+//    }
 
     @Test
     public void shouldHaveApiClientContextVerbProperties() {

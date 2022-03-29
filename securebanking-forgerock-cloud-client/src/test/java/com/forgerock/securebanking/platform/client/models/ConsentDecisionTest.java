@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
 import com.forgerock.securebanking.platform.client.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,6 +40,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 public class ConsentDecisionTest {
 
     private static final String USER_ID = "7e47a733-005b-4031-8622-18064ac373b7";
+    private static final String ACCOUNT_ID = "8f10f873-2b32-4306-aeea-d11004f92200";
+    private static final String DEB_ACC_IDENTIFIER = "79126738233670";
     private ObjectMapper mapper;
 
     @BeforeEach
@@ -53,19 +56,37 @@ public class ConsentDecisionTest {
     }
 
     @Test
-    public void shouldDeserialize() throws JsonProcessingException {
+    public void shouldDeserializeAccountsConsentDecision() throws JsonProcessingException {
         // Given
-        String json = getJson();
+        String json = getJsonAccounts();
 
         // When
         ConsentDecision consentDecision = mapper.readValue(json, ConsentDecision.class);
 
         // Then
         assertThat(consentDecision).isNotNull();
+        assertThat(consentDecision.getAccountIds().isEmpty()).isEqualTo(false);
+        assertThat(consentDecision.getAccountIds().get(0)).contains(ACCOUNT_ID);
     }
 
     @Test
-    public void shouldSerialize() throws JsonProcessingException {
+    public void shouldDeserializePaymentsConsentDecision() throws JsonProcessingException {
+        // Given
+        String json = getJsonPayments();
+
+        // When
+        ConsentDecision consentDecision = mapper.readValue(json, ConsentDecision.class);
+
+        // Then
+        assertThat(consentDecision).isNotNull();
+        assertThat(consentDecision.getAccountIds()).isNull();
+        assertThat(consentDecision.getData().getDebtorAccount()).isNotNull();
+        assertThat(consentDecision.getData().getDebtorAccount().getIdentification()).isEqualTo(DEB_ACC_IDENTIFIER);
+
+    }
+
+    @Test
+    public void shouldSerializeAccounts() throws JsonProcessingException {
         // Given
 
         ConsentDecision consentDecision = ConsentDecision.builder()
@@ -86,17 +107,66 @@ public class ConsentDecisionTest {
         assertThat(json).containsPattern("\"Status\".:.\"" + Constants.ConsentDecision.AUTHORISED + "\"");
     }
 
-    private String getJson() {
-        return getJson(UUID.randomUUID().toString());
+    @Test
+    public void shouldSerializePayments() throws JsonProcessingException {
+        // Given
+
+        ConsentDecision consentDecision = ConsentDecision.builder()
+                .data(
+                        ConsentDecisionData.builder()
+                                .status(Constants.ConsentDecision.AUTHORISED)
+                                .debtorAccount(FRAccountIdentifier.builder()
+                                        .identification(DEB_ACC_IDENTIFIER)
+                                        .name("name")
+                                        .schemeName("schemeName")
+                                        .secondaryIdentification("secId")
+                                        .build()
+                                )
+                                .build()
+                )
+                .resourceOwnerUsername(USER_ID)
+                .build();
+
+        // When
+        String json = mapper.writeValueAsString(consentDecision);
+        log.info("Json Serialize as String \n{}", json);
+
+        // Then
+        assertThat(json).containsPattern("\"resourceOwnerUsername\".:.\"" + USER_ID + "\"");
+        assertThat(json).containsPattern("\"Status\".:.\"" + Constants.ConsentDecision.AUTHORISED + "\"");
+        assertThat(json).containsPattern("\"identification\".:.\"" + DEB_ACC_IDENTIFIER + "\"");
     }
 
-    private String getJson(String userId) {
+    private String getJsonAccounts() {
+        return getJsonAccounts(UUID.randomUUID().toString());
+    }
+
+    private String getJsonPayments() {
+        return getJsonPayments(UUID.randomUUID().toString());
+    }
+
+    private String getJsonAccounts(String userId) {
         return "{" +
                 "\"type\" : \"ConsentDecision\"," +
                 "\"data\" : {" +
                 "\"Status\" : \"" + Constants.ConsentDecision.AUTHORISED + "\"" +
                 "}," +
-                "\"accountIds\" : [ \"8f10f873-2b32-4306-aeea-d11004f92200\" ]," +
+                "\"accountIds\" : [ \"" + ACCOUNT_ID + "\" ]," +
+                "\"resourceOwnerUsername\" : \"" + userId + "\"" +
+                "}";
+    }
+
+    private String getJsonPayments(String userId) {
+        return "{" +
+                "\"type\" : \"ConsentDecision\"," +
+                "\"data\" : {" +
+                "\"Status\" : \"" + Constants.ConsentDecision.AUTHORISED + "\"," +
+                "\"debtorAccount\": {" +
+                "\"schemeName\": \"UK.OBIE.SortCodeAccountNumber\"," +
+                "\"identification\": \"" + DEB_ACC_IDENTIFIER + "\"," +
+                "\"name\": \"7b78b560-6057-41c5-bf1f-1ed590b1c30b\"," +
+                "\"secondaryIdentification\": \"49704112\" }" +
+                "}," +
                 "\"resourceOwnerUsername\" : \"" + userId + "\"" +
                 "}";
     }

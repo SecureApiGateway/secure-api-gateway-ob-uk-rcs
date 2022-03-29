@@ -20,6 +20,8 @@ import com.google.gson.JsonObject;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter.isNotNull;
+
 /**
  * Converter class to map {@link JsonObject} to {@link DomesticPaymentsConsentDetails}
  */
@@ -45,19 +47,24 @@ public class DomesticPaymentConsentDetailsConverter {
 
     public DomesticPaymentsConsentDetails mapping(JsonObject consentDetails) {
         DomesticPaymentsConsentDetails details = new DomesticPaymentsConsentDetails();
-        details.setInstructedAmount(consentDetails.getAsJsonObject("data") != null &&
-                consentDetails.getAsJsonObject("data").get("Initiation") != null ?
-                consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation").getAsJsonObject("InstructedAmount") :
-                null);
+
         details.setMerchantName(consentDetails.get("oauth2ClientName") != null ?
                 consentDetails.get("oauth2ClientName").getAsString() :
                 null);
-        details.setPaymentReference(consentDetails.getAsJsonObject("data") != null &&
-                consentDetails.getAsJsonObject("data").get("Initiation") != null &&
-                consentDetails.getAsJsonObject("data").get("RemittanceInformation") != null &&
-                consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation").getAsJsonObject("RemittanceInformation").get("Reference") != null ?
-                consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation").getAsJsonObject("RemittanceInformation").get("Reference").getAsString() :
-                null);
+
+        if(!isNotNull(consentDetails.getAsJsonObject("data"))) {
+            details.setInstructedAmount(null);
+            details.setPaymentReference(null);
+        } else if(isNotNull(consentDetails.getAsJsonObject("data").get("Initiation"))){
+            JsonObject initiation = consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation");
+
+            details.setInstructedAmount(initiation.getAsJsonObject("InstructedAmount"));
+
+            details.setPaymentReference(isNotNull(initiation.get("RemittanceInformation")) &&
+                    isNotNull(initiation.getAsJsonObject("RemittanceInformation").get("Reference")) ?
+                    initiation.getAsJsonObject("RemittanceInformation").get("Reference").getAsString() :
+                    null);
+        }
         return details;
     }
 

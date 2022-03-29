@@ -21,12 +21,12 @@ import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.forgerock.securebanking.platform.client.Constants.URLParameters.ACCOUNT_INTENT_ID;
-import static com.forgerock.securebanking.platform.client.Constants.URLParameters.PAYMENT_INTENT_ID;
+import static com.forgerock.securebanking.platform.client.Constants.URLParameters.INTENT_ID;
 import static java.util.Objects.requireNonNull;
 
 @Slf4j
 public class UrlContext {
+
     public static String replaceParameterContextIntentId(String context, String intentId) throws ExceptionClient {
 
         try {
@@ -42,7 +42,6 @@ public class UrlContext {
                     exception
             );
         }
-
         IntentType intentType = IntentType.identify(intentId);
         if (intentType == null) {
             String errorMessage = String.format("It has not been possible identify the intent type '%s' to replace the context.", intentId);
@@ -55,19 +54,7 @@ public class UrlContext {
                     errorMessage
             );
         }
-        switch (intentType) {
-            case ACCOUNT_REQUEST:
-                // TODO: unknown context for now
-                return context;
-            case ACCOUNT_ACCESS_CONSENT:
-                return context.replace(ACCOUNT_INTENT_ID, intentId);
-            case PAYMENT_DOMESTIC_CONSENT:
-                return context.replace(PAYMENT_INTENT_ID, intentId);
-            default:
-                // never happens
-                return context;
-        }
-
+        return context.replace(INTENT_ID, intentId);
     }
 
     public static String replaceParameterContextValue(String context, String parameter, String value) throws ExceptionClient {

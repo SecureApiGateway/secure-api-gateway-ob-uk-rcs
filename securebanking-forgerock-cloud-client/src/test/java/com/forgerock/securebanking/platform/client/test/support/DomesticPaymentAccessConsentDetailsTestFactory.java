@@ -15,9 +15,6 @@
  */
 package com.forgerock.securebanking.platform.client.test.support;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAmount;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRRemittanceInformation;
 import com.forgerock.securebanking.platform.client.ConsentStatusCode;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;

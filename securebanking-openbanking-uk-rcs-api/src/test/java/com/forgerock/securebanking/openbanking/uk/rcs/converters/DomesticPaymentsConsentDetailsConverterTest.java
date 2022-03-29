@@ -21,6 +21,7 @@ import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
+import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.INTENT_ID;
 import static com.forgerock.securebanking.platform.client.test.support.DomesticPaymentAccessConsentDetailsTestFactory.aValidDomesticPaymentConsentDetails;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,34 +32,25 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DomesticPaymentsConsentDetailsConverterTest {
 
     @Test
-    public void shouldConvertDomesticPaymentConsentDetailsToDomesticPaymentsConsentDetails() {
+    public void shouldConvertConsentDetailsToDomesticPaymentsConsentDetails() {
         // Given
-        JsonObject consentDetails = aValidDomesticPaymentConsentDetails("PDC_asdfasdfasdf");
+        JsonObject consentDetails = aValidDomesticPaymentConsentDetails(INTENT_ID);
+
         // When
         DomesticPaymentsConsentDetails domesticPaymentsConsentDetails = DomesticPaymentConsentDetailsConverter.getInstance().toDomesticPaymentConsentDetails(consentDetails);
-        // Then
 
-        assertThat(domesticPaymentsConsentDetails.getInstructedAmount().getAmount()).isEqualTo(
-                consentDetails.getAsJsonObject("data") != null &&
-                        consentDetails.getAsJsonObject("data").get("Initiation") != null &&
-                        consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation").getAsJsonObject("InstructedAmount") != null ?
-                        consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation").getAsJsonObject("InstructedAmount").get("Amount").getAsString() :
-                        null);
-        assertThat(domesticPaymentsConsentDetails.getInstructedAmount().getCurrency()).isEqualTo(consentDetails.getAsJsonObject("data") != null &&
-                consentDetails.getAsJsonObject("data").get("Initiation") != null &&
-                consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation").getAsJsonObject("InstructedAmount") != null ?
-                consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation").getAsJsonObject("InstructedAmount").get("Currency").getAsString() :
-                null);
-        assertThat(domesticPaymentsConsentDetails.getMerchantName()).isEqualTo(
-                consentDetails.get("oauth2ClientName") != null ?
-                        consentDetails.get("oauth2ClientName").getAsString() :
-                        null);
-        assertThat(domesticPaymentsConsentDetails.getPaymentReference()).isEqualTo(
-                consentDetails.getAsJsonObject("data") != null &&
-                        consentDetails.getAsJsonObject("data").get("Initiation") != null &&
-                        consentDetails.getAsJsonObject("data").get("RemittanceInformation") != null &&
-                        consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation").getAsJsonObject("RemittanceInformation").get("Reference") != null ?
-                        consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation").getAsJsonObject("RemittanceInformation").get("Reference").getAsString() :
-                        null);
+        // Then
+        JsonObject initiation = consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation");
+
+        assertThat(domesticPaymentsConsentDetails.getInstructedAmount().getAmount())
+                .isEqualTo(initiation.getAsJsonObject("InstructedAmount").get("Amount").getAsString());
+
+        assertThat(domesticPaymentsConsentDetails.getInstructedAmount().getCurrency())
+                .isEqualTo(initiation.getAsJsonObject("InstructedAmount").get("Currency").getAsString());
+
+        assertThat(domesticPaymentsConsentDetails.getMerchantName()).isEqualTo( consentDetails.get("oauth2ClientName").getAsString());
+
+        assertThat(domesticPaymentsConsentDetails.getPaymentReference())
+                .isEqualTo(initiation.getAsJsonObject("RemittanceInformation").get("Reference").getAsString());
     }
 }

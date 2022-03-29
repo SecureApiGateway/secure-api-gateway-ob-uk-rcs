@@ -151,8 +151,6 @@ public class JwtUtil {
 
     public static final boolean validateJWT(SignedJWT signedJWT, String jwkUri) throws ExceptionClient {
         log.debug("(JwtRcsUtil#validateJWT(signedJWT)) Validating the jwt [{}]", signedJWT.getParsedString());
-        // TODO: create a config parameter in config server, for the moment is hardcoded for tests purposes
-//        String jwkUri = "https://iam.dev.forgerock.financial/am/oauth2/connect/jwk_uri";
         try {
             if (signedJWT.getHeader().getAlgorithm() != null && jwkUri != null) {
                 JWSAlgorithm expectedJWSAlg = JWSAlgorithm.parse(signedJWT.getHeader().getAlgorithm().getName());

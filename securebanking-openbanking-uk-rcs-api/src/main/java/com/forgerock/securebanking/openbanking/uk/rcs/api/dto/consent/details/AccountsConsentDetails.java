@@ -64,16 +64,4 @@ public class AccountsConsentDetails extends ConsentDetails {
             this.permissions = permissionsCodeList;
         }
     }
-
-    public void setFromTransaction(String fromTransaction) {
-        this.fromTransaction = new DateTime(fromTransaction, DateTimeZone.forTimeZone(TimeZone.getDefault()));
-    }
-
-    public void setToTransaction(String toTransaction) {
-        this.toTransaction = new DateTime(toTransaction, DateTimeZone.forTimeZone(TimeZone.getDefault()));
-    }
-
-    public void setExpiredDate(String expiredDate) {
-        this.expiredDate = new DateTime(expiredDate, DateTimeZone.forTimeZone(TimeZone.getDefault()));
-    }
 }

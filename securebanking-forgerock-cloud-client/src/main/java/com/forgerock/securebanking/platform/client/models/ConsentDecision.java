@@ -17,6 +17,7 @@ package com.forgerock.securebanking.platform.client.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccount;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

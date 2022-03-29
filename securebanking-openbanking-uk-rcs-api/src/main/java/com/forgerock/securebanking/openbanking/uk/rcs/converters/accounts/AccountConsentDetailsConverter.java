@@ -19,6 +19,9 @@ import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.Ac
 import com.google.gson.JsonObject;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
+
+import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter.isNotNull;
 
 /**
  * Converter class to map {@link JsonObject} to {@link AccountsConsentDetails}
@@ -48,21 +51,29 @@ public class AccountConsentDetailsConverter {
         details.setAispName(consentDetails.get("oauth2ClientName") != null ?
                 consentDetails.get("oauth2ClientName").getAsString() :
                 null);
-        details.setFromTransaction(consentDetails.getAsJsonObject("data") != null &&
-                consentDetails.getAsJsonObject("data").get("TransactionFromDateTime") != null ?
-                consentDetails.getAsJsonObject("data").get("TransactionFromDateTime").getAsString() :
-                null);
-        details.setToTransaction(consentDetails.getAsJsonObject("data") != null &&
-                consentDetails.getAsJsonObject("data").get("TransactionToDateTime") != null ?
-                consentDetails.getAsJsonObject("data").get("TransactionToDateTime").getAsString() :
-                null);
-        details.setExpiredDate(consentDetails.getAsJsonObject("data") != null &&
-                consentDetails.getAsJsonObject("data").get("ExpirationDateTime") != null ?
-                consentDetails.getAsJsonObject("data").get("ExpirationDateTime").getAsString() :
-                null);
-        details.setPermissions(consentDetails.get("data") != null ?
-                consentDetails.getAsJsonObject("data").getAsJsonArray("Permissions") :
-                null);
+        if(!isNotNull(consentDetails.getAsJsonObject("data"))){
+            details.setFromTransaction(null);
+            details.setToTransaction(null);
+            details.setExpiredDate(null);
+            details.setPermissions(null);
+        } else {
+            JsonObject data = consentDetails.getAsJsonObject("data");
+
+            details.setFromTransaction(isNotNull(data.get("TransactionFromDateTime")) ?
+                    DateTime.parse(data.get("TransactionFromDateTime").getAsString()) :
+                    null);
+
+            details.setToTransaction(isNotNull(data.get("TransactionToDateTime")) ?
+                    DateTime.parse(data.get("TransactionToDateTime").getAsString()) :
+                    null);
+
+            details.setExpiredDate(isNotNull(data.get("ExpirationDateTime")) ?
+                    DateTime.parse(data.get("ExpirationDateTime").getAsString()) :
+                    null);
+
+            details.setPermissions(data.getAsJsonArray("Permissions"));
+        }
+
         return details;
     }
 

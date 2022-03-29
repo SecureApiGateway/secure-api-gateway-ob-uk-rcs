@@ -89,7 +89,7 @@ public class AccountConsentDecisionConverter implements Converter {
         modelMapper.createTypeMap(ConsentDecisionRequest.class, ConsentDecision.class, getTypeMapName())
                 .addMapping(source -> source.getConsentJwt(), ConsentDecision::setConsentJwt)
                 .addMappings(decisionMap)
-                .addMapping(source -> source.getSharedAccounts(), ConsentDecision::setAccountIds);
+                .addMapping(source -> source.getAccountIds(), ConsentDecision::setAccountIds);
 
     }
 
