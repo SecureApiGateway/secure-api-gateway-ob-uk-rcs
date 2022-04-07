@@ -21,10 +21,11 @@ import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision.C
 import com.forgerock.securebanking.openbanking.uk.rcs.testsupport.JwtTestHelper;
 import com.forgerock.securebanking.platform.client.Constants;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
-import com.forgerock.securebanking.platform.client.models.AccountConsentDetails;
 import com.forgerock.securebanking.platform.client.models.ConsentDecision;
 import com.forgerock.securebanking.platform.client.services.ConsentServiceClient;
 import com.forgerock.securebanking.platform.client.services.JwkServiceClient;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +39,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.ArrayList;
+
 import static com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory.aValidAccountConsentDetails;
 import static com.forgerock.securebanking.platform.client.test.support.ConsentDecisionTestDataFactory.aValidAccountConsentDecision;
+import static com.forgerock.securebanking.platform.client.test.support.ConsentDecisionTestDataFactory.aValidDomesticPaymentConsentDecision;
+import static com.forgerock.securebanking.platform.client.test.support.DomesticPaymentAccessConsentDetailsTestFactory.aValidDomesticPaymentConsentDetails;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -58,12 +63,10 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @SpringBootTest(classes = RcsApplicationTestSupport.class, webEnvironment = RANDOM_PORT)
 public class ConsentDecisionApiControllerTest {
 
-    @LocalServerPort
-    private int port;
-
     private static final String BASE_URL = "http://localhost:";
     private static final String CONTEXT_DETAILS_URI = "/api/rcs/consent/decision";
-
+    @LocalServerPort
+    private int port;
     @MockBean
     private ConsentServiceClient consentServiceClient;
 
@@ -73,12 +76,23 @@ public class ConsentDecisionApiControllerTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
+    public static ArrayList<String> convert(JsonArray jArr) {
+        ArrayList<String> list = new ArrayList<>();
+        try {
+            for (int i = 0, l = jArr.size(); i < l; i++) {
+                list.add(jArr.get(i).getAsString());
+            }
+        } catch (Exception e) {
+        }
+
+        return list;
+    }
 
     @Test
-    public void ShouldGetRedirectionAction() throws ExceptionClient {
+    public void ShouldGetRedirectionActionAccounts() throws ExceptionClient {
         // given
         ConsentDecision consentDecision = aValidAccountConsentDecision();
-        AccountConsentDetails accountConsentDetails = aValidAccountConsentDetails(consentDecision.getIntentId());
+        JsonObject accountConsentDetails = aValidAccountConsentDetails(consentDecision.getIntentId());
         given(consentServiceClient.updateConsent(consentDecision)).willReturn(accountConsentDetails);
         String jwt = JwtTestHelper.consentRequestJwt(
                 consentDecision.getClientId(),
@@ -90,7 +104,38 @@ public class ConsentDecisionApiControllerTest {
         String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
 
         ConsentDecisionRequest consentDecisionRequest = ConsentDecisionRequest.builder()
-                .sharedAccounts(accountConsentDetails.getAccountIds())
+                .accountIds(convert(accountConsentDetails.getAsJsonArray("accountsIds")))
+                .consentJwt(jwt)
+                .decision(Constants.ConsentDecision.AUTHORISED)
+                .build();
+        HttpEntity<String> request = new HttpEntity(consentDecisionRequest, headers());
+
+        // when
+        ResponseEntity<RedirectionAction> response = restTemplate.postForEntity(consentDetailURL, request, RedirectionAction.class);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(OK);
+        assertThat(response.getBody().getConsentJwt()).isNotEmpty();
+        assertThat(response.getBody().getRedirectUri()).isNotEmpty();
+    }
+
+    @Test
+    public void ShouldGetRedirectionActionDomesticPayments() throws ExceptionClient {
+        // given
+        ConsentDecision consentDecision = aValidDomesticPaymentConsentDecision();
+        JsonObject accountConsentDetails = aValidDomesticPaymentConsentDetails(consentDecision.getIntentId());
+        given(consentServiceClient.updateConsent(consentDecision)).willReturn(accountConsentDetails);
+        String jwt = JwtTestHelper.consentRequestJwt(
+                consentDecision.getClientId(),
+                consentDecision.getIntentId(),
+                consentDecision.getResourceOwnerUsername()
+        );
+
+        given(jwkServiceClient.signClaims(any(JWTClaimsSet.class), anyString())).willReturn(jwt);
+        String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
+
+        ConsentDecisionRequest consentDecisionRequest = ConsentDecisionRequest.builder()
+                .accountIds(convert(accountConsentDetails.getAsJsonArray("accountsIds")))
                 .consentJwt(jwt)
                 .decision(Constants.ConsentDecision.AUTHORISED)
                 .build();
@@ -112,5 +157,4 @@ public class ConsentDecisionApiControllerTest {
         headers.add("Cookie", "iPlanetDirectoryPro=aSsoToken");
         return headers;
     }
-
 }

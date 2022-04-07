@@ -45,55 +45,18 @@ public class ConsentDetailsRequestTestDataFactory {
     }
 
     private static ConsentRequest.ConsentRequestBuilder aValidAccountConsentDetailsRequestBuilder() {
-        return getConsentDetailsRequestBuilder(IntentType.ACCOUNT_ACCESS_CONSENT);
+        return getAccountConsentDetailsRequestBuilder(IntentType.ACCOUNT_ACCESS_CONSENT);
     }
 
     private static ConsentRequest.ConsentRequestBuilder aValidAccountConsentDetailsRequestBuilder(String intentId) {
-        return getConsentDetailsRequestBuilder(intentId);
+        return getAccountConsentDetailsRequestBuilder(intentId);
     }
 
     private static ConsentRequest.ConsentRequestBuilder aValidAccountConsentDetailsRequestBuilder(String intentId, User user) {
-        return getConsentDetailsRequestBuilder(intentId, user);
+        return getAccountConsentDetailsRequestBuilder(intentId, user);
     }
 
-    // PAYMENTS
-    public static ConsentRequest aValidDomesticPaymentConsentDetailsRequest() {
-        return aValidDomesticPaymentConsentDetailsRequestBuilder().build();
-    }
-
-    private static ConsentRequest.ConsentRequestBuilder aValidDomesticPaymentConsentDetailsRequestBuilder() {
-        return getConsentDetailsRequestBuilder(IntentType.PAYMENT_DOMESTIC_CONSENT);
-    }
-
-    private static ConsentRequest.ConsentRequestBuilder aValidDomesticScheduledPaymentConsentDetailsRequestBuilder() {
-        return getConsentDetailsRequestBuilder(IntentType.PAYMENT_DOMESTIC_SCHEDULED_CONSENT);
-    }
-
-    private static ConsentRequest.ConsentRequestBuilder aValidDomesticStandingOrderConsentDetailsRequestBuilder() {
-        return getConsentDetailsRequestBuilder(IntentType.PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT);
-    }
-
-    private static ConsentRequest.ConsentRequestBuilder aValidInternationalPaymentConsentDetailsRequestBuilder() {
-        return getConsentDetailsRequestBuilder(IntentType.PAYMENT_INTERNATIONAL_CONSENT);
-    }
-
-    private static ConsentRequest.ConsentRequestBuilder aValidInternationalScheduledPaymentConsentDetailsRequestBuilder() {
-        return getConsentDetailsRequestBuilder(IntentType.PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT);
-    }
-
-    private static ConsentRequest.ConsentRequestBuilder aValidInternationalStandingOrderConsentDetailsRequestBuilder() {
-        return getConsentDetailsRequestBuilder(IntentType.PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT);
-    }
-
-    private static ConsentRequest.ConsentRequestBuilder aValidFilePaymentConsentDetailsRequestBuilder() {
-        return getConsentDetailsRequestBuilder(IntentType.PAYMENT_FILE_CONSENT);
-    }
-
-    private static ConsentRequest.ConsentRequestBuilder aValidFundsConfirmationConsentDetailsRequestBuilder() {
-        return getConsentDetailsRequestBuilder(IntentType.FUNDS_CONFIRMATION_CONSENT);
-    }
-
-    private static ConsentRequest.ConsentRequestBuilder getConsentDetailsRequestBuilder(IntentType intentType) {
+    private static ConsentRequest.ConsentRequestBuilder getAccountConsentDetailsRequestBuilder(IntentType intentType) {
         try {
             return ConsentRequest.builder()
                     .intentId(intentType.getIntentIdPrefix() + randomUUID())
@@ -108,7 +71,7 @@ public class ConsentDetailsRequestTestDataFactory {
         }
     }
 
-    private static ConsentRequest.ConsentRequestBuilder getConsentDetailsRequestBuilder(String intentId) {
+    private static ConsentRequest.ConsentRequestBuilder getAccountConsentDetailsRequestBuilder(String intentId) {
         try {
             return ConsentRequest.builder()
                     .intentId(intentId)
@@ -123,7 +86,7 @@ public class ConsentDetailsRequestTestDataFactory {
         }
     }
 
-    private static ConsentRequest.ConsentRequestBuilder getConsentDetailsRequestBuilder(String intentId, User user) {
+    private static ConsentRequest.ConsentRequestBuilder getAccountConsentDetailsRequestBuilder(String intentId, User user) {
         try {
             return ConsentRequest.builder()
                     .intentId(intentId)
@@ -131,6 +94,85 @@ public class ConsentDetailsRequestTestDataFactory {
                             "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +
                             "SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"))
                     .accounts(List.of(aValidFRAccountWithBalance()))
+                    .user(user)
+                    .clientId(randomUUID().toString());
+        } catch (ParseException e) {
+            throw new IllegalStateException("Invalid Signed JWT value");
+        }
+    }
+
+    // PAYMENTS
+    public static ConsentRequest aValidDomesticPaymentConsentDetailsRequest() {
+        return aValidDomesticPaymentConsentDetailsRequestBuilder().build();
+    }
+
+    private static ConsentRequest.ConsentRequestBuilder aValidDomesticPaymentConsentDetailsRequestBuilder() {
+        return getDomesticPaymentConsentDetailsRequestBuilder(IntentType.PAYMENT_DOMESTIC_CONSENT);
+    }
+
+    private static ConsentRequest.ConsentRequestBuilder aValidDomesticScheduledPaymentConsentDetailsRequestBuilder() {
+        return getDomesticPaymentConsentDetailsRequestBuilder(IntentType.PAYMENT_DOMESTIC_SCHEDULED_CONSENT);
+    }
+
+    private static ConsentRequest.ConsentRequestBuilder aValidDomesticStandingOrderConsentDetailsRequestBuilder() {
+        return getDomesticPaymentConsentDetailsRequestBuilder(IntentType.PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT);
+    }
+
+    private static ConsentRequest.ConsentRequestBuilder aValidInternationalPaymentConsentDetailsRequestBuilder() {
+        return getDomesticPaymentConsentDetailsRequestBuilder(IntentType.PAYMENT_INTERNATIONAL_CONSENT);
+    }
+
+    private static ConsentRequest.ConsentRequestBuilder aValidInternationalScheduledPaymentConsentDetailsRequestBuilder() {
+        return getDomesticPaymentConsentDetailsRequestBuilder(IntentType.PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT);
+    }
+
+    private static ConsentRequest.ConsentRequestBuilder aValidInternationalStandingOrderConsentDetailsRequestBuilder() {
+        return getDomesticPaymentConsentDetailsRequestBuilder(IntentType.PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT);
+    }
+
+    private static ConsentRequest.ConsentRequestBuilder aValidFilePaymentConsentDetailsRequestBuilder() {
+        return getDomesticPaymentConsentDetailsRequestBuilder(IntentType.PAYMENT_FILE_CONSENT);
+    }
+
+    private static ConsentRequest.ConsentRequestBuilder aValidFundsConfirmationConsentDetailsRequestBuilder() {
+        return getDomesticPaymentConsentDetailsRequestBuilder(IntentType.FUNDS_CONFIRMATION_CONSENT);
+    }
+
+    private static ConsentRequest.ConsentRequestBuilder getDomesticPaymentConsentDetailsRequestBuilder(IntentType intentType) {
+        try {
+            return ConsentRequest.builder()
+                    .intentId(intentType.getIntentIdPrefix() + randomUUID())
+                    .consentRequestJwt(SignedJWT.parse("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
+                            "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +
+                            "SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"))
+                    .user(UserTestDataFactory.aValidUser(randomUUID().toString(), "testUserName"))
+                    .clientId(randomUUID().toString());
+        } catch (ParseException e) {
+            throw new IllegalStateException("Invalid Signed JWT value");
+        }
+    }
+
+    private static ConsentRequest.ConsentRequestBuilder getDomesticPaymentConsentDetailsRequestBuilder(String intentId) {
+        try {
+            return ConsentRequest.builder()
+                    .intentId(intentId)
+                    .consentRequestJwt(SignedJWT.parse("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
+                            "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +
+                            "SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"))
+                    .user(UserTestDataFactory.aValidUser(randomUUID().toString(), "testUserName"))
+                    .clientId(randomUUID().toString());
+        } catch (ParseException e) {
+            throw new IllegalStateException("Invalid Signed JWT value");
+        }
+    }
+
+    private static ConsentRequest.ConsentRequestBuilder getDomesticPaymentConsentDetailsRequestBuilder(String intentId, User user) {
+        try {
+            return ConsentRequest.builder()
+                    .intentId(intentId)
+                    .consentRequestJwt(SignedJWT.parse("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
+                            "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +
+                            "SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"))
                     .user(user)
                     .clientId(randomUUID().toString());
         } catch (ParseException e) {

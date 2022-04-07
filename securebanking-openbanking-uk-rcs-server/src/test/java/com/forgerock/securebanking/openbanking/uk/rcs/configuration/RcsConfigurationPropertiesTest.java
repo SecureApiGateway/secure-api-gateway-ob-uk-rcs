@@ -41,7 +41,6 @@ public class RcsConfigurationPropertiesTest {
     @Test
     public void shouldHaveAllRCSProperties() {
         assertThat(configurationProperties.getRsFqdn()).isNotNull();
-        assertThat(configurationProperties.getIssuerId()).isNotNull();
         assertThat(configurationProperties.getSchema()).isNotNull();
     }
 

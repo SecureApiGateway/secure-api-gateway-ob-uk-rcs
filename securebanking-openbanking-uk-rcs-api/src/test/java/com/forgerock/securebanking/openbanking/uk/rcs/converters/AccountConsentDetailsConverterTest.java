@@ -15,12 +15,20 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.converters;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRExternalPermissionsCode;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.AccountsConsentDetails;
-import com.forgerock.securebanking.platform.client.models.AccountConsentDetails;
+import com.forgerock.securebanking.openbanking.uk.rcs.converters.accounts.AccountConsentDetailsConverter;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
-import static com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory.aValidAccountConsentDetails;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.INTENT_ID;
+import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.transformationForPermissionsList;
+import static com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -29,17 +37,50 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 public class AccountConsentDetailsConverterTest {
 
+
+
     @Test
-    public void shouldConvertAccountConsentDetailsToAccountsConsentDetails() {
+    public void shouldConvertConsentDetailsAllFieldsToAccountsConsentDetails() {
         // Given
-        AccountConsentDetails AccountConsentDetails = aValidAccountConsentDetails("AAC_asdfasdfasdf");
+        JsonObject consentDetails = aValidAccountConsentDetails(INTENT_ID);
+
         // When
-        AccountsConsentDetails accountsConsentDetails = AccountConsentDetailsConverter.getInstance().toAccountConsentDetails(AccountConsentDetails);
+        AccountsConsentDetails accountsConsentDetails = AccountConsentDetailsConverter.getInstance().toAccountConsentDetails(consentDetails);
+
         // Then
-        assertThat(accountsConsentDetails.getPermissions()).isEqualTo(AccountConsentDetails.getData().getPermissions());
-        assertThat(accountsConsentDetails.getFromTransaction()).isEqualTo(AccountConsentDetails.getData().getTransactionFromDateTime());
-        assertThat(accountsConsentDetails.getToTransaction()).isEqualTo(AccountConsentDetails.getData().getTransactionToDateTime());
-        assertThat(accountsConsentDetails.getAispName()).isEqualTo(AccountConsentDetails.getOauth2ClientName());
-        assertThat(accountsConsentDetails.getExpiredDate()).isEqualTo(AccountConsentDetails.getData().getExpirationDateTime());
+        assertThat(transformationForPermissionsList(accountsConsentDetails.getPermissions()))
+                .isEqualTo(consentDetails.getAsJsonObject("data").getAsJsonArray("Permissions"));
+
+        assertThat(accountsConsentDetails.getFromTransaction().toString())
+                .isEqualTo(consentDetails.getAsJsonObject("data").get("TransactionFromDateTime").getAsString());
+
+        assertThat(accountsConsentDetails.getToTransaction().toString())
+                .isEqualTo(consentDetails.getAsJsonObject("data").get("TransactionToDateTime").getAsString());
+
+        assertThat(accountsConsentDetails.getAispName()).isEqualTo(consentDetails.get("oauth2ClientName").getAsString());
+
+        assertThat(accountsConsentDetails.getExpiredDate().toString())
+                .isEqualTo(consentDetails.getAsJsonObject("data").get("ExpirationDateTime").getAsString());
     }
+
+    @Test
+    public void shouldConvertConsentDetailsOnlyMandatoryFieldsToAccountsConsentDetails() {
+        // Given
+        JsonObject consentDetails = aValidAccountConsentDetails(INTENT_ID);
+        consentDetails.add("data", aValidAccountConsentDataDetailsBuilderOnlyMandatoryFields(INTENT_ID));
+
+        // When
+        AccountsConsentDetails accountsConsentDetails = AccountConsentDetailsConverter.getInstance().toAccountConsentDetails(consentDetails);
+
+        // Then
+        assertThat(transformationForPermissionsList(accountsConsentDetails.getPermissions()))
+                .isEqualTo(consentDetails.getAsJsonObject("data").getAsJsonArray("Permissions"));
+
+        assertThat(accountsConsentDetails.getFromTransaction()).isNull();
+        assertThat(accountsConsentDetails.getToTransaction()).isNull();
+        assertThat(accountsConsentDetails.getAispName()).isEqualTo(consentDetails.get("oauth2ClientName").getAsString());
+        assertThat(accountsConsentDetails.getExpiredDate()).isNull();
+    }
+
+
 }

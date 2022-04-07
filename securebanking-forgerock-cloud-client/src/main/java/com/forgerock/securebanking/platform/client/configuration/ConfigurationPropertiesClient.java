@@ -39,8 +39,7 @@ public class ConfigurationPropertiesClient {
      * @Use pattern: contextMap.get(http-verb-any-case)
      * @Use: contextAccountsConsent.get("GeT")
      */
-    private Map<String, String> contextsAccountsConsent = new LinkedCaseInsensitiveMap<>();
-    private Map<String, String> contextsDomesticPaymentConsent = new LinkedCaseInsensitiveMap<>();
+    private Map<String, String> contextsRepoConsent = new LinkedCaseInsensitiveMap<>();
     private Map<String, String> contextsApiClient = new LinkedCaseInsensitiveMap<>();
     private Map<String, String> contextsUser = new LinkedCaseInsensitiveMap<>();
     // jwk service

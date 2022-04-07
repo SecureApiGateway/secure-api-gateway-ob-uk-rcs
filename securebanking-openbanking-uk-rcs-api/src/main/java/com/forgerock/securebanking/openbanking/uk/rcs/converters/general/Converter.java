@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision;
+package com.forgerock.securebanking.openbanking.uk.rcs.converters.general;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.modelmapper.ModelMapper;
 
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class PaymentConsentDecision {
-    private String consentJwt;
-    private String decision;
-    private String accountId;
+public interface Converter {
+
+    String getTypeMapName();
+
+    ModelMapper getModelMapper();
+
+    void configuration(ModelMapper modelMapper);
+
+    void mapping(ModelMapper modelMapper);
+
 }

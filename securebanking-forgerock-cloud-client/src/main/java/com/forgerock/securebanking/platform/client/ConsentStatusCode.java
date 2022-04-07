@@ -31,11 +31,6 @@ public enum ConsentStatusCode {
         this.value = value;
     }
 
-    @JsonValue
-    public String toString() {
-        return value;
-    }
-
     @JsonCreator
     public static ConsentStatusCode fromValue(String value) {
         for (ConsentStatusCode consentStatusCode : ConsentStatusCode.values()) {
@@ -44,5 +39,10 @@ public enum ConsentStatusCode {
             }
         }
         throw new IllegalArgumentException("No enum constant '" + value + "'");
+    }
+
+    @JsonValue
+    public String toString() {
+        return value;
     }
 }

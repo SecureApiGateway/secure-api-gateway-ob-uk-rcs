@@ -43,22 +43,16 @@ identity-platform:
       put: /repo/users/@UserId@
       patch: /repo/users/@UserId@
       delete: /repo/users/@UserId@
-    contexts_accounts_consent:
-      get: /repo/consents/account-access/@AccountIntentId@
-      put: /repo/consents/account-access/@AccountIntentId@
-      patch: /repo/consents/account-access/@AccountIntentId@
-      delete: /repo/consents/account-access/@AccountIntentId@
-    contexts_domestic_payment_consent:
-      get: /repo/consents/domestic-payment/@PaymentIntentId@
-      put: /repo/consents/domestic-payment/@PaymentIntentId@
-      patch: /repo/consents/domestic-payment/@PaymentIntentId@
-      delete: /repo/consents/domestic-payment/@PaymentIntentId@
+    contexts_repo_consent:
+      get: /repo/consents/@IntentId@
+      put: /repo/consents/@IntentId@
+      patch: /repo/consents/@IntentId@
+      delete: /repo/consents/@IntentId@
     #jwk signing service
     jwkms_request_method: POST
     jwkms_consent_signing_endpoint: /jwkms/rcs/signresponse
 
 rcs:
-  issuerId: forgerock-rcs
   consent:
     request:
       jwt:

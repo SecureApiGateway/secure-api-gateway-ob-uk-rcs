@@ -19,7 +19,7 @@ import com.forgerock.securebanking.platform.client.configuration.ConfigurationPr
 import com.forgerock.securebanking.platform.client.exceptions.ErrorClient;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
-import com.forgerock.securebanking.platform.client.models.Consent;
+import com.google.gson.JsonObject;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.ComponentScan;
@@ -47,17 +47,17 @@ public class JwkServiceClient {
         this.restTemplate = restTemplate;
     }
 
-    public String signClaims(Consent consent) throws ExceptionClient {
-        String intentId = consent.getId();
+    public String signClaims(JsonObject consent) throws ExceptionClient {
+        String intentId = consent.getAsJsonObject("id").getAsString();
         log.debug("signConsent() Received an request to signing the consent: '{}'", intentId);
-        HttpEntity<Consent> requestEntity = new HttpEntity<>(consent, getHeaders());
+        HttpEntity<JsonObject> requestEntity = new HttpEntity<>(consent, getHeaders());
         HttpMethod httpMethod = HttpMethod.resolve(configurationProperties.getJwkmsRequestMethod());
         return request(intentId, httpMethod, requestEntity);
     }
 
     public String signClaims(JWTClaimsSet jwtClaimsSet, String intentId) throws ExceptionClient {
         log.debug("signConsent() Received an request to signing the consent: '{}'", intentId);
-        HttpEntity<Consent> requestEntity = new HttpEntity(jwtClaimsSet.toString(), getHeaders());
+        HttpEntity<JsonObject> requestEntity = new HttpEntity(jwtClaimsSet.toString(), getHeaders());
         HttpMethod httpMethod = HttpMethod.resolve(configurationProperties.getJwkmsRequestMethod());
         return request(intentId, httpMethod, requestEntity);
     }

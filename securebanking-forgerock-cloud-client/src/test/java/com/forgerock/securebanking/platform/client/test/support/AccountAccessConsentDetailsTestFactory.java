@@ -17,52 +17,87 @@ package com.forgerock.securebanking.platform.client.test.support;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRExternalPermissionsCode;
 import com.forgerock.securebanking.platform.client.ConsentStatusCode;
-import com.forgerock.securebanking.platform.client.models.AccountConsentDataDetails;
-import com.forgerock.securebanking.platform.client.models.AccountConsentDetails;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import java.util.List;
+import java.util.TimeZone;
 import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 
 /**
- * Test data factory for {@link AccountConsentDetails}
+ * Test data factory for Account Consent Details
  */
 public class AccountAccessConsentDetailsTestFactory {
 
-    public static AccountConsentDetails aValidAccountConsentDetails() {
-        return aValidAccountConsentDetailsBuilder(randomUUID().toString()).build();
+    public static final Gson gson = new Gson();
+
+    public static JsonObject aValidAccountConsentDetails() {
+        return aValidAccountConsentDetailsBuilder(randomUUID().toString());
     }
 
-    public static AccountConsentDetails aValidAccountConsentDetails(String consentId) {
-        return aValidAccountConsentDetailsBuilder(consentId).build();
+    public static JsonObject aValidAccountConsentDetails(String consentId) {
+        return aValidAccountConsentDetailsBuilder(consentId);
     }
 
-    public static AccountConsentDetails.AccountConsentDetailsBuilder aValidAccountConsentDetailsBuilder(String consentId) {
-        return AccountConsentDetails.builder()
-                .id(UUID.randomUUID().toString())
-                .data(aValidAccountConsentDataDetailsBuilder(consentId).build())
-                .resourceOwnerUsername(null)
-                .oauth2ClientId(randomUUID().toString())
-                .oauth2ClientName("AISP Name")
-                .accountIds(List.of(UUID.randomUUID().toString()));
+    public static JsonObject aValidAccountConsentDetails(String consentId, String clientId) {
+        return aValidAccountConsentDetailsBuilder(consentId, clientId);
     }
 
-    public static AccountConsentDataDetails.AccountConsentDataDetailsBuilder aValidAccountConsentDataDetailsBuilder(String consentId) {
-        return AccountConsentDataDetails.builder()
-                .consentId(consentId)
-                .permissions(List.of(
-                                FRExternalPermissionsCode.READACCOUNTSDETAIL,
-                                FRExternalPermissionsCode.READBALANCES,
-                                FRExternalPermissionsCode.READTRANSACTIONSDETAIL
-                        )
-                )
-                .expirationDateTime(DateTime.now().plusDays(1))
-                .creationDateTime(DateTime.now())
-                .statusUpdateDateTime(DateTime.now())
-                .transactionFromDateTime(DateTime.now().minusDays(1))
-                .transactionToDateTime(DateTime.now())
-                .status(ConsentStatusCode.AWAITINGAUTHORISATION.toString());
+    public static JsonObject aValidAccountConsentDetailsBuilder(String consentId) {
+        JsonObject consent = new JsonObject();
+        consent.addProperty("id", UUID.randomUUID().toString());
+        consent.add("data", aValidAccountConsentDataDetailsBuilder(consentId));
+        consent.add("resourceOwnerUsername", null);
+        consent.addProperty("oauth2ClientId", randomUUID().toString());
+        consent.addProperty("oauth2ClientName", "AISP Name");
+        consent.addProperty("accountIds", gson.toJson(List.of(UUID.randomUUID().toString())));
+
+        return consent;
+    }
+
+    public static JsonObject aValidAccountConsentDetailsBuilder(String consentId, String clientId) {
+        JsonObject consent = new JsonObject();
+        consent.addProperty("id", UUID.randomUUID().toString());
+        consent.add("data", aValidAccountConsentDataDetailsBuilder(consentId));
+        consent.add("resourceOwnerUsername", null);
+        consent.addProperty("oauth2ClientId", clientId);
+        consent.addProperty("oauth2ClientName", "AISP Name");
+        consent.addProperty("accountIds", gson.toJson(List.of(UUID.randomUUID().toString())));
+
+        return consent;
+    }
+
+    public static JsonObject aValidAccountConsentDataDetailsBuilderOnlyMandatoryFields(String consentId) {
+        JsonObject data = new JsonObject();
+        data.addProperty("ConsentId", consentId);
+        data.add("Permissions", gson.toJsonTree(List.of(
+                FRExternalPermissionsCode.READACCOUNTSDETAIL.getValue(),
+                FRExternalPermissionsCode.READBALANCES.getValue(),
+                FRExternalPermissionsCode.READTRANSACTIONSDETAIL.getValue()
+        )));
+        data.addProperty("CreationDateTime", DateTime.now(DateTimeZone.forTimeZone(TimeZone.getDefault())).toString());
+        data.addProperty("Status", ConsentStatusCode.AWAITINGAUTHORISATION.toString());
+        return data;
+    }
+
+    public static JsonObject aValidAccountConsentDataDetailsBuilder(String consentId) {
+        JsonObject data = new JsonObject();
+        data.addProperty("ConsentId", consentId);
+        data.add("Permissions", gson.toJsonTree(List.of(
+                FRExternalPermissionsCode.READACCOUNTSDETAIL.getValue(),
+                FRExternalPermissionsCode.READBALANCES.getValue(),
+                FRExternalPermissionsCode.READTRANSACTIONSDETAIL.getValue()
+        )));
+        data.addProperty("ExpirationDateTime", DateTime.now(DateTimeZone.forTimeZone(TimeZone.getDefault())).plusDays(1).toString());
+        data.addProperty("CreationDateTime", DateTime.now(DateTimeZone.forTimeZone(TimeZone.getDefault())).toString());
+        data.addProperty("StatusUpdateDateTime", DateTime.now(DateTimeZone.forTimeZone(TimeZone.getDefault())).toString());
+        data.addProperty("TransactionFromDateTime", DateTime.now(DateTimeZone.forTimeZone(TimeZone.getDefault())).minusDays(1).toString());
+        data.addProperty("TransactionToDateTime", DateTime.now(DateTimeZone.forTimeZone(TimeZone.getDefault())).toString());
+        data.addProperty("Status", ConsentStatusCode.AWAITINGAUTHORISATION.toString());
+        return data;
     }
 }

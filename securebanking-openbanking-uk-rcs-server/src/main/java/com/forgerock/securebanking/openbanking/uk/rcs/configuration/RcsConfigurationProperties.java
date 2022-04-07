@@ -24,17 +24,16 @@ import org.springframework.util.LinkedCaseInsensitiveMap;
 import java.net.URI;
 import java.util.Map;
 
+import java.net.URI;
+
 @Configuration
 @Data
 public class RcsConfigurationProperties {
-    @Value("${rcs.issuerId}")
-    private String issuerId;
+    private static final String _delimiter = "://";
     @Value("${rcs.rs_fqdn}")
     private String rsFqdn;
     @Value("${rcs.schema:https}")
     private String schema;
-
-    private static final String _delimiter = "://";
 
     public String getRsFqdnURIAsString() {
         return String.join(_delimiter, schema, rsFqdn);

@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.platform.client.models;
+package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
-
-import java.util.List;
 
 @Data
-@NoArgsConstructor
+@Builder
 @AllArgsConstructor
-@SuperBuilder
-public class AccountConsentDecision extends ConsentDecision {
-    private List<String> accountIds;
+@NoArgsConstructor
+public class DomesticPaymentConsentDecision {
+    private String consentJwt;
+    private String decision;
+    private String accountId;
 }

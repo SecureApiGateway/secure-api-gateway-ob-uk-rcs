@@ -16,12 +16,13 @@
 package com.forgerock.securebanking.platform.client.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccount;
 import com.nimbusds.jwt.JWTClaimsSet;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
@@ -32,14 +33,11 @@ import java.util.List;
         use = JsonTypeInfo.Id.NAME,
         property = "type"
 )
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = AccountConsentDecision.class, name = "AccountConsentDecision"),
-        @JsonSubTypes.Type(value = DomesticPaymentDecision.class, name = "DomesticPaymentDecision")
-})
 @Data
 @NoArgsConstructor
-@SuperBuilder
-public abstract class ConsentDecision {
+@Builder
+@AllArgsConstructor
+public class ConsentDecision {
     @JsonIgnore
     private String consentJwt;
     @JsonIgnore
@@ -51,6 +49,7 @@ public abstract class ConsentDecision {
     @JsonIgnore
     private JWTClaimsSet jwtClaimsSet;
 
+    private List<String> accountIds;
     private ConsentDecisionData data;
     private String resourceOwnerUsername;
 }

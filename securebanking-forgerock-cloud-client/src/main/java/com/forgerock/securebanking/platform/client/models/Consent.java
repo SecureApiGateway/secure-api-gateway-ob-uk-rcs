@@ -15,7 +15,6 @@
  */
 package com.forgerock.securebanking.platform.client.models;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.forgerock.securebanking.platform.client.IntentType;
 import lombok.Data;
@@ -29,9 +28,6 @@ import lombok.experimental.SuperBuilder;
         use = JsonTypeInfo.Id.NAME,
         property = "type"
 )
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = AccountConsentDetails.class, name = "AccountConsentDetails")
-})
 @Data
 @NoArgsConstructor
 @SuperBuilder

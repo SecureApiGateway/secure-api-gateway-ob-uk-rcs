@@ -33,24 +33,10 @@ import static org.assertj.core.api.Assertions.catchThrowableOfType;
 public class UrlContextTest {
 
     @Test
-    public void shouldReplaceAccountIntentId() throws ExceptionClient {
+    public void shouldReplaceIntentId() throws ExceptionClient {
         // Given
         String partTestContext = "/repo/context/";
-        String testContext = partTestContext + ACCOUNT_INTENT_ID;
-        String intentId = ACCOUNT_ACCESS_CONSENT.getIntentIdPrefix() + UUID.randomUUID();
-
-        // When
-        String replaced = UrlContext.replaceParameterContextIntentId(testContext, intentId);
-
-        //Then
-        assertThat(replaced).isEqualTo(partTestContext + intentId);
-    }
-
-    @Test
-    public void shouldReplacePaymentIntentId() throws ExceptionClient {
-        // Given
-        String partTestContext = "/repo/context/";
-        String testContext = partTestContext + PAYMENT_INTENT_ID;
+        String testContext = partTestContext + INTENT_ID;
         String intentId = PAYMENT_DOMESTIC_CONSENT.getIntentIdPrefix() + UUID.randomUUID();
 
         // When
@@ -64,7 +50,7 @@ public class UrlContextTest {
     public void shouldGetUnknownIntentType() {
         // Given
         String partTestContext = "/repo/context/";
-        String testContext = partTestContext + ACCOUNT_INTENT_ID;
+        String testContext = partTestContext + INTENT_ID;
         // No intentTypeClient prefix
         String intentId = UUID.randomUUID().toString();
 

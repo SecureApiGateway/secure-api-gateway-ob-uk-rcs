@@ -15,16 +15,27 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.converters;
 
-import org.modelmapper.ModelMapper;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
-public interface Converter {
+public class UtilConverter {
 
-    String getTypeMapName();
+    public static final boolean isNotNull(JsonObject jsonObject){
+        if(jsonObject == null) {
+            return false;
+        } else if(jsonObject.isJsonNull()){
+            return false;
+        }
+        return true;
+    }
 
-    ModelMapper getModelMapper();
-
-    void configuration(ModelMapper modelMapper);
-
-    void mapping(ModelMapper modelMapper);
+    public static final boolean isNotNull(JsonElement jsonElement){
+        if(jsonElement == null) {
+            return false;
+        } else if(jsonElement.isJsonNull()){
+            return false;
+        }
+        return true;
+    }
 
 }
