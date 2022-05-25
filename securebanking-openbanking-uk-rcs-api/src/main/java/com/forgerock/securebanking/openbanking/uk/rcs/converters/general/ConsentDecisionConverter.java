@@ -85,15 +85,10 @@ public class ConsentDecisionConverter implements Converter {
                 map().getData().setStatus(source.getDecision());
             }
         };
-        PropertyMap<ConsentDecisionRequest, ConsentDecision> debtorAccountMap = new PropertyMap<>() {
-            protected void configure() {
-                map().getData().setDebtorAccount(source.getDebtorAccount());
-            }
-        };
         modelMapper.createTypeMap(ConsentDecisionRequest.class, ConsentDecision.class, getTypeMapName())
+                .addMapping(source -> source.getDebtorAccount().getFirstAccount(), ConsentDecision::setDataDebtorAccount)
                 .addMapping(source -> source.getConsentJwt(), ConsentDecision::setConsentJwt)
-                .addMappings(decisionMap)
-                .addMappings(debtorAccountMap);
+                .addMappings(decisionMap);
     }
 
     public final ConsentDecision toConsentDecision(

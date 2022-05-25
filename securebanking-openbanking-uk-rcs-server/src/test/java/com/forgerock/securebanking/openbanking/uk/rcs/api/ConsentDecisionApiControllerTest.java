@@ -15,6 +15,8 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.api;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRFinancialAccount;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
 import com.forgerock.securebanking.openbanking.uk.rcs.RcsApplicationTestSupport;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.RedirectionAction;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision.ConsentDecisionRequest;
@@ -40,6 +42,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory.aValidAccountConsentDetails;
 import static com.forgerock.securebanking.platform.client.test.support.ConsentDecisionTestDataFactory.aValidAccountConsentDecision;
@@ -123,8 +126,8 @@ public class ConsentDecisionApiControllerTest {
     public void ShouldGetRedirectionActionDomesticPayments() throws ExceptionClient {
         // given
         ConsentDecision consentDecision = aValidDomesticPaymentConsentDecision();
-        JsonObject accountConsentDetails = aValidDomesticPaymentConsentDetails(consentDecision.getIntentId());
-        given(consentServiceClient.updateConsent(consentDecision)).willReturn(accountConsentDetails);
+        JsonObject domesticPaymentConsentDetails = aValidDomesticPaymentConsentDetails(consentDecision.getIntentId());
+        given(consentServiceClient.updateConsent(consentDecision)).willReturn(domesticPaymentConsentDetails);
         String jwt = JwtTestHelper.consentRequestJwt(
                 consentDecision.getClientId(),
                 consentDecision.getIntentId(),
@@ -134,10 +137,19 @@ public class ConsentDecisionApiControllerTest {
         given(jwkServiceClient.signClaims(any(JWTClaimsSet.class), anyString())).willReturn(jwt);
         String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
 
+        FRAccountIdentifier accountIdentifier = new FRAccountIdentifier();
+        accountIdentifier.setIdentification("76064512389965");
+        accountIdentifier.setName("John");
+        accountIdentifier.setSchemeName("UK.OBIE.SortCodeAccountNumber");
+        FRFinancialAccount financialAccount = new FRFinancialAccount();
+        financialAccount.setAccounts(List.of(accountIdentifier));
+        financialAccount.setAccountId("30ff5da7-7d0f-43fe-974c-7b34717cbeec");
+
         ConsentDecisionRequest consentDecisionRequest = ConsentDecisionRequest.builder()
-                .accountIds(convert(accountConsentDetails.getAsJsonArray("accountsIds")))
+                .accountIds(convert(domesticPaymentConsentDetails.getAsJsonArray("accountsIds")))
                 .consentJwt(jwt)
                 .decision(Constants.ConsentDecision.AUTHORISED)
+                .debtorAccount(financialAccount)
                 .build();
         HttpEntity<String> request = new HttpEntity(consentDecisionRequest, headers());
 
