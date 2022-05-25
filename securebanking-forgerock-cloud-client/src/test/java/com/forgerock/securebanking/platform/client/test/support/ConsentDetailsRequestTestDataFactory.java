@@ -106,6 +106,10 @@ public class ConsentDetailsRequestTestDataFactory {
         return aValidDomesticPaymentConsentDetailsRequestBuilder().build();
     }
 
+    public static ConsentRequest aValidDomesticScheduledPaymentConsentDetailsRequest() {
+        return aValidDomesticScheduledPaymentConsentDetailsRequestBuilder().build();
+    }
+
     private static ConsentRequest.ConsentRequestBuilder aValidDomesticPaymentConsentDetailsRequestBuilder() {
         return getDomesticPaymentConsentDetailsRequestBuilder(IntentType.PAYMENT_DOMESTIC_CONSENT);
     }
