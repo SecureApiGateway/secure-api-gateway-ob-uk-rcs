@@ -16,7 +16,6 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.converters;
 
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticPaymentsConsentDetails;
-import com.forgerock.securebanking.openbanking.uk.rcs.converters.domestic.payments.DomesticPaymentConsentDetailsConverter;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;

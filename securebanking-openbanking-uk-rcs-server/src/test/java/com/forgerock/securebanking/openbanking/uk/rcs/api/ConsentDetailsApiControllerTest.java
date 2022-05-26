@@ -20,6 +20,7 @@ import com.forgerock.securebanking.openbanking.uk.rcs.RcsApplicationTestSupport;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.RedirectionAction;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.AccountsConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticPaymentsConsentDetails;
+import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticScheduledPaymentsConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.rs.AccountService;
 import com.forgerock.securebanking.openbanking.uk.rcs.testsupport.JwtTestHelper;
 import com.forgerock.securebanking.platform.client.IntentType;
@@ -52,10 +53,11 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.account.FRAccountWithBalanceTestDataFactory.aValidFRAccountWithBalance;
+import static com.forgerock.securebanking.openbanking.uk.rcs.converters.DomesticScheduledPaymentConsentDetailsConverter.DATE_TIME_FORMATTER;
 import static com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory.aValidAccountConsentDetails;
-import static com.forgerock.securebanking.platform.client.test.support.ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest;
-import static com.forgerock.securebanking.platform.client.test.support.ConsentDetailsRequestTestDataFactory.aValidDomesticPaymentConsentDetailsRequest;
+import static com.forgerock.securebanking.platform.client.test.support.ConsentDetailsRequestTestDataFactory.*;
 import static com.forgerock.securebanking.platform.client.test.support.DomesticPaymentAccessConsentDetailsTestFactory.aValidDomesticPaymentConsentDetails;
+import static com.forgerock.securebanking.platform.client.test.support.DomesticScheduledPaymentAccessConsentDetailsTestFactory.aValidDomesticScheduledPaymentConsentDetails;
 import static com.forgerock.securebanking.platform.client.test.support.UserTestDataFactory.aValidUser;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -355,6 +357,138 @@ public class ConsentDetailsApiControllerTest {
         assertThat(response.getBody().getConsentJwt()).isNotEmpty();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
+
+    // DOMESTIC SCHEDULED PAYMENT
+    @Test
+    public void ShouldGetDomesticScheduledPaymentConsentDetails() throws ExceptionClient {
+        // given
+        ConsentRequest consentDetailsRequest = aValidDomesticScheduledPaymentConsentDetailsRequest();
+        JsonObject consentDetails = aValidDomesticScheduledPaymentConsentDetails(consentDetailsRequest.getIntentId());
+        FRAccountWithBalance frAccountWithBalance = aValidFRAccountWithBalance();
+        User user = aValidUser();
+        consentDetailsRequest.setUser(user);
+        ApiClient apiClient = ApiClientTestDataFactory.aValidApiClient(consentDetailsRequest.getClientId());
+        given(apiClientService.getApiClient(anyString())).willReturn(apiClient);
+        given(accountService.getAccountsWithBalance(anyString())).willReturn(List.of(frAccountWithBalance));
+        given(userServiceClient.getUser(anyString())).willReturn(user);
+        given(consentService.getConsent(any(ConsentRequest.class))).willReturn(consentDetails);
+        String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
+        String jwtRequest = JwtTestHelper.consentRequestJwt(consentDetailsRequest.getClientId(), consentDetailsRequest.getIntentId(), consentDetailsRequest.getUser().getId());
+        HttpEntity<String> request = new HttpEntity<>(jwtRequest, headers());
+
+        // when
+        ResponseEntity<String> response = restTemplate.postForEntity(consentDetailURL, request, String.class);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(OK);
+
+        DomesticScheduledPaymentsConsentDetails responseBody = gson.fromJson(response.getBody(), DomesticScheduledPaymentsConsentDetails.class);
+        assertThat(responseBody.getAccounts()).isNotEmpty();
+        assertThat(responseBody.getIntentType()).isEqualTo(IntentType.PAYMENT_DOMESTIC_SCHEDULED_CONSENT);
+        assertThat(responseBody.getUserId()).isEqualTo(consentDetailsRequest.getUser().getId());
+        assertThat(responseBody.getUsername()).isEqualTo(consentDetailsRequest.getUser().getUserName());
+        assertThat(responseBody.getClientId()).isEqualTo(consentDetailsRequest.getClientId());
+        assertThat(responseBody.getLogo()).isEqualTo(apiClient.getLogoUri());
+        assertThat(responseBody.getPaymentDate().isEqual(DATE_TIME_FORMATTER.parseDateTime(consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation").get("RequestedExecutionDateTime").getAsString())));
+    }
+
+    @Test
+    public void ShouldGetRedirectActionWhenConsentNotFoundDomesticScheduledPayments() throws ExceptionClient {
+        // given
+        ConsentRequest consentDetailsRequest = aValidDomesticScheduledPaymentConsentDetailsRequest();
+        FRAccountWithBalance frAccountWithBalance = aValidFRAccountWithBalance();
+        User user = aValidUser();
+        consentDetailsRequest.setUser(user);
+        ApiClient apiClient = ApiClientTestDataFactory.aValidApiClient(consentDetailsRequest.getClientId());
+        given(apiClientService.getApiClient(anyString())).willReturn(apiClient);
+        given(accountService.getAccountsWithBalance(anyString())).willReturn(List.of(frAccountWithBalance));
+        given(userServiceClient.getUser(anyString())).willReturn(user);
+
+        String message = String.format("The AISP '%s' is referencing an account consent detailsRequest '%s' " +
+                "that doesn't exist", consentDetailsRequest.getClientId(), consentDetailsRequest.getIntentId());
+        ExceptionClient exceptionClient = new ExceptionClient(consentDetailsRequest, ErrorType.NOT_FOUND, message);
+        given(consentService.getConsent(any(ConsentRequest.class))).willThrow(exceptionClient);
+
+        String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
+        String jwtRequest = JwtTestHelper.consentRequestJwt(consentDetailsRequest.getClientId(), consentDetailsRequest.getIntentId(), consentDetailsRequest.getUser().getId());
+        HttpEntity<String> request = new HttpEntity<>(jwtRequest, headers());
+
+        // when
+        ResponseEntity<RedirectionAction> response = restTemplate.postForEntity(consentDetailURL, request, RedirectionAction.class);
+
+        assertThat(response.getBody().getRedirectUri()).isNotEmpty();
+        assertThat(response.getBody().getConsentJwt()).isNotEmpty();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    public void ShouldGetRedirectActionWhenUserNotFoundDomesticScheduledPayments() throws ExceptionClient {
+        // given
+        ConsentRequest consentDetailsRequest = aValidDomesticScheduledPaymentConsentDetailsRequest();
+        JsonObject consentDetails = aValidDomesticScheduledPaymentConsentDetails(consentDetailsRequest.getIntentId());
+        FRAccountWithBalance frAccountWithBalance = aValidFRAccountWithBalance();
+        User user = aValidUser();
+        consentDetailsRequest.setUser(user);
+        ApiClient apiClient = ApiClientTestDataFactory.aValidApiClient(consentDetailsRequest.getClientId());
+        given(apiClientService.getApiClient(anyString())).willReturn(apiClient);
+        given(accountService.getAccountsWithBalance(anyString())).willReturn(List.of(frAccountWithBalance));
+        String message = String.format("User data with userId '%s' not found.", user.getId());
+        ExceptionClient exceptionClient = new ExceptionClient(
+                ErrorClient.builder()
+                        .errorType(ErrorType.NOT_FOUND)
+                        .userId(user.getId())
+                        .build(),
+                message);
+        given(userServiceClient.getUser(anyString())).willThrow(exceptionClient);
+        given(consentService.getConsent(any(ConsentRequest.class))).willReturn(consentDetails);
+        String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
+        String jwtRequest = JwtTestHelper.consentRequestJwt(consentDetailsRequest.getClientId(), consentDetailsRequest.getIntentId(), consentDetailsRequest.getUser().getId());
+        HttpEntity<String> request = new HttpEntity<>(jwtRequest, headers());
+
+        // when
+        ResponseEntity<RedirectionAction> response = restTemplate.postForEntity(consentDetailURL, request, RedirectionAction.class);
+
+        assertThat(response.getBody().getRedirectUri()).isNotEmpty();
+        assertThat(response.getBody().getConsentJwt()).isNotEmpty();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+
+    @Test
+    public void ShouldGetRedirectActionWhenApiClientNotFoundDomesticScheduledPayments() throws ExceptionClient {
+        // given
+        ConsentRequest consentDetailsRequest = aValidDomesticScheduledPaymentConsentDetailsRequest();
+        JsonObject consentDetails = aValidDomesticScheduledPaymentConsentDetails(consentDetailsRequest.getIntentId());
+        FRAccountWithBalance frAccountWithBalance = aValidFRAccountWithBalance();
+        User user = aValidUser();
+        consentDetailsRequest.setUser(user);
+        String message = String.format("ClientId '%s' not found.", consentDetailsRequest.getClientId());
+
+        ExceptionClient exceptionClient = new ExceptionClient(
+                ErrorClient.builder()
+                        .errorType(ErrorType.NOT_FOUND)
+                        .clientId(consentDetailsRequest.getClientId())
+                        .build(),
+                message
+        );
+        given(apiClientService.getApiClient(anyString())).willThrow(exceptionClient);
+
+        given(accountService.getAccountsWithBalance(anyString())).willReturn(List.of(frAccountWithBalance));
+
+        given(userServiceClient.getUser(anyString())).willReturn(user);
+        given(consentService.getConsent(any(ConsentRequest.class))).willReturn(consentDetails);
+        String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
+        String jwtRequest = JwtTestHelper.consentRequestJwt(consentDetailsRequest.getClientId(), consentDetailsRequest.getIntentId(), consentDetailsRequest.getUser().getId());
+        HttpEntity<String> request = new HttpEntity<>(jwtRequest, headers());
+
+        // when
+        ResponseEntity<RedirectionAction> response = restTemplate.postForEntity(consentDetailURL, request, RedirectionAction.class);
+
+        assertThat(response.getBody().getRedirectUri()).isNotEmpty();
+        assertThat(response.getBody().getConsentJwt()).isNotEmpty();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
 
     private HttpHeaders headers() {
         HttpHeaders headers = new HttpHeaders();
