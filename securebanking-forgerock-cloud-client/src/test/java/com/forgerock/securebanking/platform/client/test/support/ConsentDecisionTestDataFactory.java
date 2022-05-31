@@ -106,7 +106,7 @@ public class ConsentDecisionTestDataFactory {
 
     // DOMESTIC PAYMENTS
     public static ConsentDecision aValidDomesticPaymentConsentDecision() {
-        return aValidAccountConsentDecisionBuilder().build();
+        return aValidDomesticPaymentConsentDecisionBuilder().build();
     }
 
     public static ConsentDecision aValidDomesticPaymentConsentDecision(String intentId) {
@@ -118,7 +118,7 @@ public class ConsentDecisionTestDataFactory {
     }
 
     private static ConsentDecision.ConsentDecisionBuilder aValidDomesticPaymentConsentDecisionBuilder() {
-        return getAccountConsentDecisionBuilder(IntentType.PAYMENT_DOMESTIC_CONSENT);
+        return getDomesticPaymentConsentDecisionBuilder(IntentType.PAYMENT_DOMESTIC_CONSENT);
     }
 
     private static ConsentDecision.ConsentDecisionBuilder aValidDomesticPaymentConsentDecisionBuilder(String intentId) {

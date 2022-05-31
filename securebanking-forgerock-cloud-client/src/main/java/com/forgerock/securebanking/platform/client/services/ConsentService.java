@@ -113,7 +113,7 @@ public class ConsentService implements ConsentServiceInterface {
                 );
 
         log.debug("(ConsentService#request) {} the consent details from platform: {}", httpMethod.name(), consentURL);
-        log.debug("Entity To {}: {}", httpMethod.name(), httpEntity!=null? httpEntity.getBody().toString() : "null");
+        log.debug("Entity To {}: {}", httpMethod.name(), httpEntity != null ? httpEntity.getBody().toString() : "null");
         try {
             ResponseEntity<String> responseEntity = restTemplate.exchange(
                     consentURL,

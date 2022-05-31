@@ -46,6 +46,16 @@ public class ConsentDecisionBuilderFactory {
         try {
             ConsentDecisionConverter consentDecisionConverter = ConsentDecisionConverter.getInstance();
             ConsentDecision decision = consentDecisionConverter.toConsentDecision(consentDecisionRequest);
+            log.debug("ConsentDecision: '{}'", decision);
+            log.debug("ConsentDecisionRequest: '{}'", consentDecisionRequest);
+            try {
+                String accountId = consentDecisionRequest.getDebtorAccount().getAccountId();
+                log.debug("The account Id of the debtor account id: '{}'", accountId);
+                decision.getData().getDebtorAccount().setAccountId(accountId);
+                log.debug("The the debtor account with the id: '{}'", decision.getData().getDebtorAccount());
+            } catch (Exception e) {
+                log.debug("The account Id of the debtor account couldn't be saved: '{}'", e);
+            }
             SignedJWT signedJWT = JwtUtil.getSignedJWT(consentDecisionRequest.getConsentJwt());
             decision.setScopes(
                     JwtUtil.getClaimValueMap(signedJWT, "scopes")

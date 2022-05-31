@@ -18,6 +18,7 @@ package com.forgerock.securebanking.platform.client.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccount;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -50,6 +51,11 @@ public class ConsentDecision {
     private JWTClaimsSet jwtClaimsSet;
 
     private List<String> accountIds;
+
+    public void setDataDebtorAccount(FRAccountIdentifier accountIdentifier) {
+        this.data.setDebtorAccount(accountIdentifier);
+    }
+
     private ConsentDecisionData data;
     private String resourceOwnerUsername;
 }
