@@ -33,7 +33,7 @@ import lombok.experimental.SuperBuilder;
 @JsonSubTypes({
         // Required to deserialise the RCS ConsentDetails response into the correct types in RS-API
         @Type(value = DomesticPaymentsConsentDetails.class, name = "DomesticPaymentsConsentDetails"),
-        @Type(value = DomesticScheduledPaymentConsentDetails.class, name = "DomesticScheduledPaymentConsentDetails"),
+        @Type(value = DomesticScheduledPaymentsConsentDetails.class, name = "DomesticScheduledPaymentConsentDetails"),
         @Type(value = DomesticStandingOrderConsentDetails.class, name = "DomesticStandingOrderConsentDetails"),
         @Type(value = InternationalPaymentConsentDetails.class, name = "InternationalPaymentConsentDetails"),
         @Type(value = InternationalScheduledPaymentConsentDetails.class, name = "InternationalScheduledPaymentConsentDetails"),

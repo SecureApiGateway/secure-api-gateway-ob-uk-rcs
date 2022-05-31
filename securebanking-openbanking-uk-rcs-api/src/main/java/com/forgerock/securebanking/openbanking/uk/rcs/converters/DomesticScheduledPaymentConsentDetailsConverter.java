@@ -13,40 +13,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.openbanking.uk.rcs.converters.domestic.payments;
+package com.forgerock.securebanking.openbanking.uk.rcs.converters;
 
-import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticPaymentsConsentDetails;
+import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticScheduledPaymentsConsentDetails;
 import com.google.gson.JsonObject;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter.isNotNull;
 
 /**
- * Converter class to map {@link JsonObject} to {@link DomesticPaymentsConsentDetails}
+ * Converter class to map {@link JsonObject} to {@link DomesticScheduledPaymentsConsentDetails}
  */
 @Slf4j
 @NoArgsConstructor
-public class DomesticPaymentConsentDetailsConverter {
+public class DomesticScheduledPaymentConsentDetailsConverter {
 
-    private static volatile DomesticPaymentConsentDetailsConverter instance;
+    private static volatile DomesticScheduledPaymentConsentDetailsConverter instance;
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
 
     /*
      * Double checked locking principle to ensure that only one instance 'DomesticPaymentConsentDetailsConverter' is created
      */
-    public static DomesticPaymentConsentDetailsConverter getInstance() {
+    public static DomesticScheduledPaymentConsentDetailsConverter getInstance() {
         if (instance == null) {
-            synchronized (DomesticPaymentConsentDetailsConverter.class) {
+            synchronized (DomesticScheduledPaymentConsentDetailsConverter.class) {
                 if (instance == null) {
-                    instance = new DomesticPaymentConsentDetailsConverter();
+                    instance = new DomesticScheduledPaymentConsentDetailsConverter();
                 }
             }
         }
         return instance;
     }
 
-    public DomesticPaymentsConsentDetails mapping(JsonObject consentDetails) {
-        DomesticPaymentsConsentDetails details = new DomesticPaymentsConsentDetails();
+    public DomesticScheduledPaymentsConsentDetails mapping(JsonObject consentDetails) {
+        DomesticScheduledPaymentsConsentDetails details = new DomesticScheduledPaymentsConsentDetails();
 
         details.setMerchantName(consentDetails.get("oauth2ClientName") != null ?
                 consentDetails.get("oauth2ClientName").getAsString() :
@@ -64,11 +67,14 @@ public class DomesticPaymentConsentDetailsConverter {
                     isNotNull(initiation.getAsJsonObject("RemittanceInformation").get("Reference")) ?
                     initiation.getAsJsonObject("RemittanceInformation").get("Reference").getAsString() :
                     null);
+
+            details.setPaymentDate(DATE_TIME_FORMATTER.parseDateTime(initiation.get("RequestedExecutionDateTime").getAsString()));
+
         }
         return details;
     }
 
-    public final DomesticPaymentsConsentDetails toDomesticPaymentConsentDetails(JsonObject consentDetails) {
+    public final DomesticScheduledPaymentsConsentDetails toDomesticScheduledPaymentConsentDetails(JsonObject consentDetails) {
         return mapping(consentDetails);
     }
 }
