@@ -44,7 +44,7 @@ spec:
             httpGet:
               path: /actuator/health
               port: {{ .Values.deployment.server.port }}
-            initialDelaySeconds: 5
+            initialDelaySeconds: 120
             periodSeconds: 5
             failureThreshold: 5
             successThreshold: 1
@@ -73,5 +73,7 @@ spec:
             value: "http://securebanking-spring-config-server:8080"
           - name: SPRING_PROFILES_ACTIVE
             value: "docker"
+          - name: JAVA_OPTS
+            value: {{ .Values.deployment.java.opts }}
           resources:
             {{- toYaml .Values.deployment.resources | nindent 12 }}
