@@ -20,7 +20,16 @@ deployment:
   cors:
     originEnds: localhost
 
-  resources: {}
+  java:
+    opts: -XX:+UseG1GC -XX:+UseContainerSupport -XX:MaxRAMPercentage=50 -agentlib:jdwp=transport=dt_socket,address=*:9091,server=y,suspend=n
+
+  resources:
+    requests:
+      cpu: 0.5
+      memory: 512Mi
+    limits:
+      cpu: 0.5
+      memory: 512Mi
 
 ingress:
   apiVersion: extensions/v1beta1
@@ -39,3 +48,4 @@ ingress:
 service:
   apiVersion: v1
   type: ClusterIP
+
