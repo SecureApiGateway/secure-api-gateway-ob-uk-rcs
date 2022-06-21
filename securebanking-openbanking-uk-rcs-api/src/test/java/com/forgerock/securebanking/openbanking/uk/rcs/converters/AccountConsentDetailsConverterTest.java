@@ -20,7 +20,7 @@ import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
-import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.INTENT_ID;
+import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.ACCOUNT_INTENT_ID;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.transformationForPermissionsList;
 import static com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,12 +31,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 public class AccountConsentDetailsConverterTest {
 
-
-
     @Test
     public void shouldConvertConsentDetailsAllFieldsToAccountsConsentDetails() {
         // Given
-        JsonObject consentDetails = aValidAccountConsentDetails(INTENT_ID);
+        JsonObject consentDetails = aValidAccountConsentDetails(ACCOUNT_INTENT_ID);
 
         // When
         AccountsConsentDetails accountsConsentDetails = AccountConsentDetailsConverter.getInstance().toAccountConsentDetails(consentDetails);
@@ -60,8 +58,8 @@ public class AccountConsentDetailsConverterTest {
     @Test
     public void shouldConvertConsentDetailsOnlyMandatoryFieldsToAccountsConsentDetails() {
         // Given
-        JsonObject consentDetails = aValidAccountConsentDetails(INTENT_ID);
-        consentDetails.add("data", aValidAccountConsentDataDetailsBuilderOnlyMandatoryFields(INTENT_ID));
+        JsonObject consentDetails = aValidAccountConsentDetails(ACCOUNT_INTENT_ID);
+        consentDetails.add("data", aValidAccountConsentDataDetailsBuilderOnlyMandatoryFields(ACCOUNT_INTENT_ID));
 
         // When
         AccountsConsentDetails accountsConsentDetails = AccountConsentDetailsConverter.getInstance().toAccountConsentDetails(consentDetails);
