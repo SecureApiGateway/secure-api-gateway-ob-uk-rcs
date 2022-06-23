@@ -18,6 +18,7 @@ package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAmount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomesticStandingOrderDataInitiation;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.forgerock.FRFrequency;
 import com.forgerock.securebanking.platform.client.IntentType;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -82,7 +83,10 @@ public class DomesticStandingOrderPaymentsConsentDetails extends ConsentDetails 
         }
 
         if (isNotNull(frequency)) {
-            standingOrderData.setFrequency(frequency.getAsString());
+            String frequencyType = frequency.getAsString();
+            FRFrequency frFrequency = new FRFrequency(frequencyType);
+            String sentence = frFrequency.getSentence();
+            standingOrderData.setFrequency(sentence);
         }
 
         this.standingOrder = standingOrderData;

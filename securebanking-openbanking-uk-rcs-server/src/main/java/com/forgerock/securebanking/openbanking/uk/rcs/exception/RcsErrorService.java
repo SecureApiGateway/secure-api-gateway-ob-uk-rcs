@@ -34,8 +34,8 @@ import java.net.URLDecoder;
 import java.text.ParseException;
 import java.util.Map;
 
-import static com.forgerock.securebanking.openbanking.uk.common.api.meta.OBConstants.OIDCClaim.CONSENT_APPROVAL_REDIRECT_URI;
-import static com.forgerock.securebanking.openbanking.uk.common.api.meta.OBConstants.OIDCClaim.STATE;
+import static com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBConstants.OIDCClaim.CONSENT_APPROVAL_REDIRECT_URI;
+import static com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBConstants.OIDCClaim.STATE;
 import static com.forgerock.securebanking.platform.client.exceptions.ErrorType.INVALID_REQUEST;
 import static com.forgerock.securebanking.platform.client.exceptions.ErrorType.SERVER_ERROR;
 

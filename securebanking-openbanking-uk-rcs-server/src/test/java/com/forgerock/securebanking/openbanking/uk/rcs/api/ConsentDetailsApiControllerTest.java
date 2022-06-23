@@ -16,6 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.api;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.forgerock.FRFrequency;
 import com.forgerock.securebanking.openbanking.uk.rcs.RcsApplicationTestSupport;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.RedirectionAction;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.AccountsConsentDetails;
@@ -527,7 +528,7 @@ public class ConsentDetailsApiControllerTest {
         assertThat(responseBody.getStandingOrder().getFirstPaymentDateTime().isEqual(DATE_TIME_FORMATTER.parseDateTime(consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation").get("FirstPaymentDateTime").getAsString())));
         assertThat(responseBody.getStandingOrder().getRecurringPaymentDateTime().isEqual(DATE_TIME_FORMATTER.parseDateTime(consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation").get("RecurringPaymentDateTime").getAsString())));
 
-        assertThat(responseBody.getStandingOrder().getFrequency()).isEqualTo(consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation").get("Frequency").getAsString());
+        assertThat(responseBody.getStandingOrder().getFrequency()).isEqualTo((new FRFrequency(consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation").get("Frequency").getAsString())).getSentence());
 
         assertThat(responseBody.getStandingOrder().getFinalPaymentAmount().getAmount()).isEqualTo(consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation").getAsJsonObject("FinalPaymentAmount").get("Amount").getAsString());
         assertThat(responseBody.getStandingOrder().getFinalPaymentAmount().getCurrency()).isEqualTo(consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation").getAsJsonObject("FinalPaymentAmount").get("Currency").getAsString());
