@@ -13,31 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.openbanking.uk.rcs.converters;
+package com.forgerock.securebanking.openbanking.uk.rcs.util;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRExternalPermissionsCode;
-import com.google.gson.JsonElement;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory.gson;
-
-public class UtilConverter4Test {
+public class Constants {
     public static final String ACCOUNT_INTENT_ID = "AAC_1c214525-d0c8-4d13-xxx-b812c6fafabe";
     public static final String DOMESTIC_PAYMENT_INTENT_ID = "PDC_1c214525-d0c8-4d13-xxx-b812c6fafabe";
     public static final String DOMESTIC_SCHEDULED_PAYMENT_INTENT_ID = "PDSC_1c214525-d0c8-4d13-xxx-b812c6fafabe";
     public static final String DOMESTIC_STANDING_ORDER_INTENT_ID = "PDSOC_1c214525-d0c8-4d13-xxx-b812c6fafabe";
-
-    public static final JsonElement transformationForPermissionsList(List<FRExternalPermissionsCode> list) {
-        if (list == null || list.isEmpty())
-        {
-            return null;
-        }
-        List<String> permissions = new ArrayList<>();
-        for (FRExternalPermissionsCode element : list) {
-            permissions.add(element.getValue());
-        }
-        return gson.toJsonTree(permissions);
-    }
 }
