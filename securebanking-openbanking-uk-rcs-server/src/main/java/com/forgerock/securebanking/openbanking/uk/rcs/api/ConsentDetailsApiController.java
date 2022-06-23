@@ -16,7 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.api;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
-import com.forgerock.securebanking.openbanking.uk.common.api.meta.IntentType;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.share.IntentType;
 import com.forgerock.securebanking.openbanking.uk.common.claim.Claims;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetails;

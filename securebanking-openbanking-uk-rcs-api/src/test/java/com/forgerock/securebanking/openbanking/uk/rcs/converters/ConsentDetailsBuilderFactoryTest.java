@@ -15,24 +15,17 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.converters;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRExternalPermissionsCode;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.AccountsConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.converters.general.ConsentDetailsBuilderFactory;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
 import com.forgerock.securebanking.platform.client.models.ApiClient;
 import com.forgerock.securebanking.platform.client.models.ConsentRequest;
 import com.forgerock.securebanking.platform.client.test.support.ConsentDetailsRequestTestDataFactory;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.INTENT_ID;
+import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.ACCOUNT_INTENT_ID;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.transformationForPermissionsList;
 import static com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory.aValidAccountConsentDetails;
-import static com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory.gson;
 import static com.forgerock.securebanking.platform.client.test.support.ApiClientTestDataFactory.aValidApiClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,7 +37,7 @@ public class ConsentDetailsBuilderFactoryTest {
     @Test
     public void shouldBuildAccountsConsentDetails() throws ExceptionClient {
         // Given
-        JsonObject consentDetails = aValidAccountConsentDetails(INTENT_ID);
+        JsonObject consentDetails = aValidAccountConsentDetails(ACCOUNT_INTENT_ID);
         ApiClient apiClient = aValidApiClient();
         // When
         ConsentRequest consentDetailsRequest = ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest();

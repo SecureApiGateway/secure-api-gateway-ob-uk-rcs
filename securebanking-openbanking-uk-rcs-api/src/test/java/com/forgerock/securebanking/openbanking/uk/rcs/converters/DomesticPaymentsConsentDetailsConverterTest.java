@@ -20,7 +20,7 @@ import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
-import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.INTENT_ID;
+import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.ACCOUNT_INTENT_ID;
 import static com.forgerock.securebanking.platform.client.test.support.DomesticPaymentAccessConsentDetailsTestFactory.aValidDomesticPaymentConsentDetails;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,7 +33,7 @@ public class DomesticPaymentsConsentDetailsConverterTest {
     @Test
     public void shouldConvertConsentDetailsToDomesticPaymentsConsentDetails() {
         // Given
-        JsonObject consentDetails = aValidDomesticPaymentConsentDetails(INTENT_ID);
+        JsonObject consentDetails = aValidDomesticPaymentConsentDetails(ACCOUNT_INTENT_ID);
 
         // When
         DomesticPaymentsConsentDetails domesticPaymentsConsentDetails = DomesticPaymentConsentDetailsConverter.getInstance().toDomesticPaymentConsentDetails(consentDetails);
