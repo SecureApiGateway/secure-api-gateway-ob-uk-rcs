@@ -22,7 +22,7 @@ import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.RedirectionAction;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.AccountsConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticPaymentsConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticScheduledPaymentsConsentDetails;
-import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticStandingOrderPaymentsConsentDetails;
+import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticStandingOrderConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.rs.AccountService;
 import com.forgerock.securebanking.openbanking.uk.rcs.testsupport.JwtTestHelper;
 import com.forgerock.securebanking.platform.client.IntentType;
@@ -60,7 +60,7 @@ import static com.forgerock.securebanking.platform.client.test.support.AccountAc
 import static com.forgerock.securebanking.platform.client.test.support.ConsentDetailsRequestTestDataFactory.*;
 import static com.forgerock.securebanking.platform.client.test.support.DomesticPaymentAccessConsentDetailsTestFactory.aValidDomesticPaymentConsentDetails;
 import static com.forgerock.securebanking.platform.client.test.support.DomesticScheduledPaymentAccessConsentDetailsTestFactory.aValidDomesticScheduledPaymentConsentDetails;
-import static com.forgerock.securebanking.platform.client.test.support.DomesticStandingOrderPaymentAccessConsentDetailsTestFactory.aValidDomesticStandingOrderPaymentConsentDetails;
+import static com.forgerock.securebanking.platform.client.test.support.DomesticStandingOrderAccessConsentDetailsTestFactory.aValidDomesticStandingOrderConsentDetails;
 import static com.forgerock.securebanking.platform.client.test.support.UserTestDataFactory.aValidUser;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -494,10 +494,10 @@ public class ConsentDetailsApiControllerTest {
 
     // DOMESTIC STANDING ORDER PAYMENT
     @Test
-    public void ShouldGetDomesticStandingOrderPaymentConsentDetails() throws ExceptionClient {
+    public void ShouldGetDomesticStandingOrderConsentDetails() throws ExceptionClient {
         // given
-        ConsentRequest consentDetailsRequest = aValidDomesticStandingOrderPaymentConsentDetailsRequest();
-        JsonObject consentDetails = aValidDomesticStandingOrderPaymentConsentDetails(consentDetailsRequest.getIntentId());
+        ConsentRequest consentDetailsRequest = aValidDomesticStandingOrderConsentDetailsRequest();
+        JsonObject consentDetails = aValidDomesticStandingOrderConsentDetails(consentDetailsRequest.getIntentId());
         FRAccountWithBalance frAccountWithBalance = aValidFRAccountWithBalance();
         User user = aValidUser();
         consentDetailsRequest.setUser(user);
@@ -516,7 +516,7 @@ public class ConsentDetailsApiControllerTest {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(OK);
 
-        DomesticStandingOrderPaymentsConsentDetails responseBody = gson.fromJson(response.getBody(), DomesticStandingOrderPaymentsConsentDetails.class);
+        DomesticStandingOrderConsentDetails responseBody = gson.fromJson(response.getBody(), DomesticStandingOrderConsentDetails.class);
         assertThat(responseBody.getAccounts()).isNotEmpty();
         assertThat(responseBody.getIntentType()).isEqualTo(IntentType.PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT);
         assertThat(responseBody.getUserId()).isEqualTo(consentDetailsRequest.getUser().getId());
@@ -541,9 +541,9 @@ public class ConsentDetailsApiControllerTest {
     }
 
     @Test
-    public void ShouldGetRedirectActionWhenConsentNotFoundDomesticStandingOrderPayments() throws ExceptionClient {
+    public void ShouldGetRedirectActionWhenConsentNotFoundDomesticStandingOrder() throws ExceptionClient {
         // given
-        ConsentRequest consentDetailsRequest = aValidDomesticStandingOrderPaymentConsentDetailsRequest();
+        ConsentRequest consentDetailsRequest = aValidDomesticStandingOrderConsentDetailsRequest();
         FRAccountWithBalance frAccountWithBalance = aValidFRAccountWithBalance();
         User user = aValidUser();
         consentDetailsRequest.setUser(user);
@@ -570,10 +570,10 @@ public class ConsentDetailsApiControllerTest {
     }
 
     @Test
-    public void ShouldGetRedirectActionWhenUserNotFoundDomesticStandingOrderPayments() throws ExceptionClient {
+    public void ShouldGetRedirectActionWhenUserNotFoundDomesticStandingOrder() throws ExceptionClient {
         // given
-        ConsentRequest consentDetailsRequest = aValidDomesticStandingOrderPaymentConsentDetailsRequest();
-        JsonObject consentDetails = aValidDomesticStandingOrderPaymentConsentDetails(consentDetailsRequest.getIntentId());
+        ConsentRequest consentDetailsRequest = aValidDomesticStandingOrderConsentDetailsRequest();
+        JsonObject consentDetails = aValidDomesticStandingOrderConsentDetails(consentDetailsRequest.getIntentId());
         FRAccountWithBalance frAccountWithBalance = aValidFRAccountWithBalance();
         User user = aValidUser();
         consentDetailsRequest.setUser(user);
@@ -603,10 +603,10 @@ public class ConsentDetailsApiControllerTest {
 
 
     @Test
-    public void ShouldGetRedirectActionWhenApiClientNotFoundDomesticStandingOrderPayments() throws ExceptionClient {
+    public void ShouldGetRedirectActionWhenApiClientNotFoundDomesticStandingOrder() throws ExceptionClient {
         // given
-        ConsentRequest consentDetailsRequest = aValidDomesticStandingOrderPaymentConsentDetailsRequest();
-        JsonObject consentDetails = aValidDomesticStandingOrderPaymentConsentDetails(consentDetailsRequest.getIntentId());
+        ConsentRequest consentDetailsRequest = aValidDomesticStandingOrderConsentDetailsRequest();
+        JsonObject consentDetails = aValidDomesticStandingOrderConsentDetails(consentDetailsRequest.getIntentId());
         FRAccountWithBalance frAccountWithBalance = aValidFRAccountWithBalance();
         User user = aValidUser();
         consentDetailsRequest.setUser(user);

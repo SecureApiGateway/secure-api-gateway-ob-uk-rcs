@@ -19,7 +19,7 @@ import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.*;
 import com.forgerock.securebanking.openbanking.uk.rcs.converters.AccountConsentDetailsConverter;
 import com.forgerock.securebanking.openbanking.uk.rcs.converters.DomesticPaymentConsentDetailsConverter;
 import com.forgerock.securebanking.openbanking.uk.rcs.converters.DomesticScheduledPaymentConsentDetailsConverter;
-import com.forgerock.securebanking.openbanking.uk.rcs.converters.DomesticStandingOrderPaymentConsentDetailsConverter;
+import com.forgerock.securebanking.openbanking.uk.rcs.converters.DomesticStandingOrderConsentDetailsConverter;
 import com.forgerock.securebanking.platform.client.IntentType;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
@@ -55,7 +55,7 @@ public class ConsentDetailsBuilderFactory {
                 return buildDomesticScheduledPaymentConsentDetails(consent, consentDetailsRequest, apiClient);
             }
             case PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT -> {
-                return buildDomesticStandingOrderPaymentConsentDetails(consent, consentDetailsRequest, apiClient);
+                return buildDomesticStandingOrderConsentDetails(consent, consentDetailsRequest, apiClient);
             }
             default -> {
                 String message = String.format("Invalid type for intent ID: '%s'", intentId);
@@ -109,13 +109,13 @@ public class ConsentDetailsBuilderFactory {
         return details;
     }
 
-    private static final DomesticStandingOrderPaymentsConsentDetails buildDomesticStandingOrderPaymentConsentDetails(
+    private static final DomesticStandingOrderConsentDetails buildDomesticStandingOrderConsentDetails(
             JsonObject consentDetails,
             ConsentRequest consentDetailsRequest,
             ApiClient apiClient
     ) {
-        DomesticStandingOrderPaymentConsentDetailsConverter consentDetailsConverter = DomesticStandingOrderPaymentConsentDetailsConverter.getInstance();
-        DomesticStandingOrderPaymentsConsentDetails details = consentDetailsConverter.toDomesticStandingOrderPaymentConsentDetails(consentDetails);
+        DomesticStandingOrderConsentDetailsConverter consentDetailsConverter = DomesticStandingOrderConsentDetailsConverter.getInstance();
+        DomesticStandingOrderConsentDetails details = consentDetailsConverter.toDomesticStandingOrderConsentDetails(consentDetails);
         details.setUsername(consentDetailsRequest.getUser().getUserName());
         details.setUserId(consentDetailsRequest.getUser().getId());
         details.setAccounts(consentDetailsRequest.getAccounts());

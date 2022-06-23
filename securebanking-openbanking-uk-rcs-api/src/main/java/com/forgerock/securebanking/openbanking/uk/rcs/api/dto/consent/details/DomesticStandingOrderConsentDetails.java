@@ -29,7 +29,7 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
-import static com.forgerock.securebanking.openbanking.uk.rcs.converters.DomesticStandingOrderPaymentConsentDetailsConverter.DATE_TIME_FORMATTER;
+import static com.forgerock.securebanking.openbanking.uk.rcs.converters.DomesticStandingOrderConsentDetailsConverter.DATE_TIME_FORMATTER;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter.isNotNull;
 
 /**
@@ -39,7 +39,7 @@ import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConv
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DomesticStandingOrderPaymentsConsentDetails extends ConsentDetails {
+public class DomesticStandingOrderConsentDetails extends ConsentDetails {
     private FRWriteDomesticStandingOrderDataInitiation standingOrder;
     private List<FRAccountWithBalance> accounts;
     private String merchantName;

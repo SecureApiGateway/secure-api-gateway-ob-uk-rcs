@@ -110,8 +110,8 @@ public class ConsentDetailsRequestTestDataFactory {
         return aValidDomesticScheduledPaymentConsentDetailsRequestBuilder().build();
     }
 
-    public static ConsentRequest aValidDomesticStandingOrderPaymentConsentDetailsRequest() {
-        return aValidDomesticStandingOrderPaymentConsentDetailsRequestBuilder().build();
+    public static ConsentRequest aValidDomesticStandingOrderConsentDetailsRequest() {
+        return aValidDomesticStandingOrderConsentDetailsRequestBuilder().build();
     }
 
     private static ConsentRequest.ConsentRequestBuilder aValidDomesticPaymentConsentDetailsRequestBuilder() {
@@ -120,10 +120,6 @@ public class ConsentDetailsRequestTestDataFactory {
 
     private static ConsentRequest.ConsentRequestBuilder aValidDomesticScheduledPaymentConsentDetailsRequestBuilder() {
         return getDomesticPaymentConsentDetailsRequestBuilder(IntentType.PAYMENT_DOMESTIC_SCHEDULED_CONSENT);
-    }
-
-    private static ConsentRequest.ConsentRequestBuilder aValidDomesticStandingOrderPaymentConsentDetailsRequestBuilder() {
-        return getDomesticPaymentConsentDetailsRequestBuilder(IntentType.PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT);
     }
 
     private static ConsentRequest.ConsentRequestBuilder aValidDomesticStandingOrderConsentDetailsRequestBuilder() {

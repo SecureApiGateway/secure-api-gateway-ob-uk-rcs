@@ -16,7 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.converters;
 
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticScheduledPaymentsConsentDetails;
-import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticStandingOrderPaymentsConsentDetails;
+import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticStandingOrderConsentDetails;
 import com.google.gson.JsonObject;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,27 +30,27 @@ import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConv
  */
 @Slf4j
 @NoArgsConstructor
-public class DomesticStandingOrderPaymentConsentDetailsConverter {
+public class DomesticStandingOrderConsentDetailsConverter {
 
-    private static volatile DomesticStandingOrderPaymentConsentDetailsConverter instance;
+    private static volatile DomesticStandingOrderConsentDetailsConverter instance;
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
 
     /*
      * Double checked locking principle to ensure that only one instance 'DomesticPaymentConsentDetailsConverter' is created
      */
-    public static DomesticStandingOrderPaymentConsentDetailsConverter getInstance() {
+    public static DomesticStandingOrderConsentDetailsConverter getInstance() {
         if (instance == null) {
-            synchronized (DomesticStandingOrderPaymentConsentDetailsConverter.class) {
+            synchronized (DomesticStandingOrderConsentDetailsConverter.class) {
                 if (instance == null) {
-                    instance = new DomesticStandingOrderPaymentConsentDetailsConverter();
+                    instance = new DomesticStandingOrderConsentDetailsConverter();
                 }
             }
         }
         return instance;
     }
 
-    public DomesticStandingOrderPaymentsConsentDetails mapping(JsonObject consentDetails) {
-        DomesticStandingOrderPaymentsConsentDetails details = new DomesticStandingOrderPaymentsConsentDetails();
+    public DomesticStandingOrderConsentDetails mapping(JsonObject consentDetails) {
+        DomesticStandingOrderConsentDetails details = new DomesticStandingOrderConsentDetails();
 
         details.setMerchantName(consentDetails.get("oauth2ClientName") != null ?
                 consentDetails.get("oauth2ClientName").getAsString() :
@@ -78,7 +78,7 @@ public class DomesticStandingOrderPaymentConsentDetailsConverter {
         return details;
     }
 
-    public final DomesticStandingOrderPaymentsConsentDetails toDomesticStandingOrderPaymentConsentDetails(JsonObject consentDetails) {
+    public final DomesticStandingOrderConsentDetails toDomesticStandingOrderConsentDetails(JsonObject consentDetails) {
         return mapping(consentDetails);
     }
 }

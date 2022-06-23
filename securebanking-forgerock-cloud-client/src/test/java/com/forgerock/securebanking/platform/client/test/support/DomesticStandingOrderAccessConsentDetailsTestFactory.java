@@ -32,28 +32,28 @@ import static java.util.UUID.randomUUID;
 /**
  * Test data factory for Domestic Payment Consent Details
  */
-public class DomesticStandingOrderPaymentAccessConsentDetailsTestFactory {
+public class DomesticStandingOrderAccessConsentDetailsTestFactory {
 
     public static final Gson gson = new Gson();
     public static final Random random = new Random();
     public static final JsonParser parser = new JsonParser();
 
-    public static JsonObject aValidDomesticStandingOrderPaymentConsentDetails() {
-        return aValidDomesticStandingOrderPaymentConsentDetailsBuilder(randomUUID().toString());
+    public static JsonObject aValidDomesticStandingOrderConsentDetails() {
+        return aValidDomesticStandingOrderConsentDetailsBuilder(randomUUID().toString());
     }
 
-    public static JsonObject aValidDomesticStandingOrderPaymentConsentDetails(String consentId) {
-        return aValidDomesticStandingOrderPaymentConsentDetailsBuilder(consentId);
+    public static JsonObject aValidDomesticStandingOrderConsentDetails(String consentId) {
+        return aValidDomesticStandingOrderConsentDetailsBuilder(consentId);
     }
 
-    public static JsonObject aValidDomesticStandingOrderPaymentConsentDetails(String consentId, String clientId) {
-        return aValidDomesticStandingOrderPaymentConsentDetailsBuilder(consentId, clientId);
+    public static JsonObject aValidDomesticStandingOrderConsentDetails(String consentId, String clientId) {
+        return aValidDomesticStandingOrderConsentDetailsBuilder(consentId, clientId);
     }
 
-    public static JsonObject aValidDomesticStandingOrderPaymentConsentDetailsBuilder(String consentId) {
+    public static JsonObject aValidDomesticStandingOrderConsentDetailsBuilder(String consentId) {
         JsonObject consent = new JsonObject();
         consent.addProperty("id", UUID.randomUUID().toString());
-        consent.add("data", aValidDomesticStandingOrderPaymentConsentDataDetailsBuilder(consentId));
+        consent.add("data", aValidDomesticStandingOrderConsentDataDetailsBuilder(consentId));
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", randomUUID().toString());
         consent.addProperty("oauth2ClientName", "PISP Name");
@@ -62,10 +62,10 @@ public class DomesticStandingOrderPaymentAccessConsentDetailsTestFactory {
         return consent;
     }
 
-    public static JsonObject aValidDomesticStandingOrderPaymentConsentDetailsBuilder(String consentId, String clientId) {
+    public static JsonObject aValidDomesticStandingOrderConsentDetailsBuilder(String consentId, String clientId) {
         JsonObject consent = new JsonObject();
         consent.addProperty("id", UUID.randomUUID().toString());
-        consent.add("data", aValidDomesticStandingOrderPaymentConsentDataDetailsBuilder(consentId));
+        consent.add("data", aValidDomesticStandingOrderConsentDataDetailsBuilder(consentId));
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", clientId);
         consent.addProperty("oauth2ClientName", "PISP Name");
@@ -74,7 +74,7 @@ public class DomesticStandingOrderPaymentAccessConsentDetailsTestFactory {
         return consent;
     }
 
-    public static JsonObject aValidDomesticStandingOrderPaymentConsentDataDetailsBuilder(String consentId) {
+    public static JsonObject aValidDomesticStandingOrderConsentDataDetailsBuilder(String consentId) {
         JsonObject data = new JsonObject();
         data.addProperty("ConsentId", consentId);
         data.addProperty("CreationDateTime", DateTime.now(DateTimeZone.forTimeZone(TimeZone.getDefault())).toString());
