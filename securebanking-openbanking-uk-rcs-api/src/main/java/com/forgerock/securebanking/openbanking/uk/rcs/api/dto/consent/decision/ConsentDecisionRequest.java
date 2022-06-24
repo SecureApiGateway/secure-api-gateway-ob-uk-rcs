@@ -15,7 +15,6 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRFinancialAccount;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,8 +33,6 @@ import java.util.List;
 public class ConsentDecisionRequest {
     private String consentJwt;
     private String decision;
-    // the RCS-ui returns sharedAccounts array, but the object needs the accountIds to patch the consent
-    @JsonProperty("sharedAccounts")
     private List<String> accountIds;
     private FRFinancialAccount debtorAccount;
 }
