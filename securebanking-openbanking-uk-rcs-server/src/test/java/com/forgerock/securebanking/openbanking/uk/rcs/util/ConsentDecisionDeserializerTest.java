@@ -42,7 +42,7 @@ public class ConsentDecisionDeserializerTest {
     private String aValidConsentDecisionSerialised() {
         return "{\"consentJwt\":\"afibelaDFDFCaoehfldXXX\"," +
                 "\"decision\":\"Authorised\"," +
-                "\"sharedAccounts\":[\"ddb08e74-e22a-4012-99f3-154ba52eb0eb\"," +
+                "\"accountIds\":[\"ddb08e74-e22a-4012-99f3-154ba52eb0eb\"," +
                 "\"1dfa82b8-7f95-4d6a-a29f-de3244b2bafd\",\"73b579ec-6eca-4212-a972-602d30d62b5c\"]}";
     }
 }
