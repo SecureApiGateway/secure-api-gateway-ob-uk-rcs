@@ -51,24 +51,28 @@ public class DomesticScheduledPaymentConsentDetailsConverter {
     public DomesticScheduledPaymentsConsentDetails mapping(JsonObject consentDetails) {
         DomesticScheduledPaymentsConsentDetails details = new DomesticScheduledPaymentsConsentDetails();
 
-        details.setMerchantName(consentDetails.get("oauth2ClientName") != null ?
+        details.setMerchantName(isNotNull(consentDetails.get("oauth2ClientName")) ?
                 consentDetails.get("oauth2ClientName").getAsString() :
                 null);
 
-        if(!isNotNull(consentDetails.getAsJsonObject("data"))) {
+        if(!isNotNull(consentDetails.get("data"))) {
             details.setInstructedAmount(null);
             details.setPaymentReference(null);
         } else if(isNotNull(consentDetails.getAsJsonObject("data").get("Initiation"))){
             JsonObject initiation = consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation");
 
-            details.setInstructedAmount(initiation.getAsJsonObject("InstructedAmount"));
+            details.setInstructedAmount(isNotNull(initiation.get("InstructedAmount")) ?
+                    initiation.getAsJsonObject("InstructedAmount") :
+                    null);
 
             details.setPaymentReference(isNotNull(initiation.get("RemittanceInformation")) &&
                     isNotNull(initiation.getAsJsonObject("RemittanceInformation").get("Reference")) ?
                     initiation.getAsJsonObject("RemittanceInformation").get("Reference").getAsString() :
                     null);
 
-            details.setPaymentDate(DATE_TIME_FORMATTER.parseDateTime(initiation.get("RequestedExecutionDateTime").getAsString()));
+            details.setPaymentDate(isNotNull(initiation.get("RequestedExecutionDateTime"))?
+                    DATE_TIME_FORMATTER.parseDateTime(initiation.get("RequestedExecutionDateTime").getAsString()) :
+                    null);
 
         }
         return details;

@@ -48,10 +48,10 @@ public class AccountConsentDetailsConverter {
 
     public AccountsConsentDetails mapping(JsonObject consentDetails) {
         AccountsConsentDetails details = new AccountsConsentDetails();
-        details.setAispName(consentDetails.get("oauth2ClientName") != null ?
+        details.setAispName(isNotNull(consentDetails.get("oauth2ClientName")) ?
                 consentDetails.get("oauth2ClientName").getAsString() :
                 null);
-        if(!isNotNull(consentDetails.getAsJsonObject("data"))){
+        if (!isNotNull(consentDetails.get("data"))) {
             details.setFromTransaction(null);
             details.setToTransaction(null);
             details.setExpiredDate(null);
@@ -71,7 +71,9 @@ public class AccountConsentDetailsConverter {
                     DateTime.parse(data.get("ExpirationDateTime").getAsString()) :
                     null);
 
-            details.setPermissions(data.getAsJsonArray("Permissions"));
+            details.setPermissions(isNotNull(data.get("Permissions")) ?
+                    data.getAsJsonArray("Permissions") :
+                    null);
         }
 
         return details;

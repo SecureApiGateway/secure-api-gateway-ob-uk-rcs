@@ -52,11 +52,11 @@ public class DomesticStandingOrderConsentDetailsConverter {
     public DomesticStandingOrderConsentDetails mapping(JsonObject consentDetails) {
         DomesticStandingOrderConsentDetails details = new DomesticStandingOrderConsentDetails();
 
-        details.setMerchantName(consentDetails.get("oauth2ClientName") != null ?
+        details.setMerchantName(isNotNull(consentDetails.get("oauth2ClientName")) ?
                 consentDetails.get("oauth2ClientName").getAsString() :
                 null);
 
-        if (!isNotNull(consentDetails.getAsJsonObject("data"))) {
+        if (!isNotNull(consentDetails.get("data"))) {
             details.setPaymentReference(null);
         } else if (isNotNull(consentDetails.getAsJsonObject("data").get("Initiation"))) {
             JsonObject initiation = consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation");
@@ -65,15 +65,14 @@ public class DomesticStandingOrderConsentDetailsConverter {
                     initiation.get("Reference").getAsString() : null);
 
             details.setStandingOrder(
-                    initiation.get("FinalPaymentDateTime"),
-                    initiation.getAsJsonObject("FinalPaymentAmount"),
-                    initiation.get("FirstPaymentDateTime"),
-                    initiation.getAsJsonObject("FirstPaymentAmount"),
-                    initiation.get("RecurringPaymentDateTime"),
-                    initiation.getAsJsonObject("RecurringPaymentAmount"),
+                    isNotNull(initiation.get("FinalPaymentDateTime")) ? initiation.get("FinalPaymentDateTime") : null,
+                    isNotNull(initiation.get("FinalPaymentAmount")) ? initiation.getAsJsonObject("FinalPaymentAmount") : null,
+                    isNotNull(initiation.get("FirstPaymentDateTime")) ? initiation.get("FirstPaymentDateTime") : null,
+                    isNotNull(initiation.get("FirstPaymentAmount")) ? initiation.getAsJsonObject("FirstPaymentAmount") : null,
+                    isNotNull(initiation.get("RecurringPaymentDateTime")) ? initiation.get("RecurringPaymentDateTime") : null,
+                    isNotNull(initiation.get("RecurringPaymentAmount")) ? initiation.getAsJsonObject("RecurringPaymentAmount") : null,
                     initiation.get("Frequency")
             );
-
         }
         return details;
     }
