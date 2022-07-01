@@ -29,5 +29,5 @@ public class ApiClient {
     private String name;
     private String officialName;
     private String oauth2ClientId;
-    private String logoUri;
+    private String logoUri; 
 }
