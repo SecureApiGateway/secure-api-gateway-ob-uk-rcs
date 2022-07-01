@@ -48,17 +48,19 @@ public class DomesticPaymentConsentDetailsConverter {
     public DomesticPaymentsConsentDetails mapping(JsonObject consentDetails) {
         DomesticPaymentsConsentDetails details = new DomesticPaymentsConsentDetails();
 
-        details.setMerchantName(consentDetails.get("oauth2ClientName") != null ?
+        details.setMerchantName(isNotNull(consentDetails.get("oauth2ClientName")) ?
                 consentDetails.get("oauth2ClientName").getAsString() :
                 null);
 
-        if(!isNotNull(consentDetails.getAsJsonObject("data"))) {
+        if (!isNotNull(consentDetails.get("data"))) {
             details.setInstructedAmount(null);
             details.setPaymentReference(null);
-        } else if(isNotNull(consentDetails.getAsJsonObject("data").get("Initiation"))){
+        } else if (isNotNull(consentDetails.getAsJsonObject("data").get("Initiation"))) {
             JsonObject initiation = consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation");
 
-            details.setInstructedAmount(initiation.getAsJsonObject("InstructedAmount"));
+            details.setInstructedAmount(isNotNull(initiation.get("InstructedAmount")) ?
+                    initiation.getAsJsonObject("InstructedAmount") :
+                    null);
 
             details.setPaymentReference(isNotNull(initiation.get("RemittanceInformation")) &&
                     isNotNull(initiation.getAsJsonObject("RemittanceInformation").get("Reference")) ?
