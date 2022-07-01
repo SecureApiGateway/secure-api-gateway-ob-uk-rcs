@@ -43,7 +43,7 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- ForgeRock BOM -->
+            <!-- ForgeRock BOM (Bill of Material)-->
             <dependency>
                 <groupId>com.forgerock.securebanking.uk</groupId>
                 <artifactId>securebanking-openbanking-uk-bom</artifactId>
