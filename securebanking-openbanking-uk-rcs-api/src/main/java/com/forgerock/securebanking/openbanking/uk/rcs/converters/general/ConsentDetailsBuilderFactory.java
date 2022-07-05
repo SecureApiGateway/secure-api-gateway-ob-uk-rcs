@@ -16,10 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.converters.general;
 
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.*;
-import com.forgerock.securebanking.openbanking.uk.rcs.converters.AccountConsentDetailsConverter;
-import com.forgerock.securebanking.openbanking.uk.rcs.converters.DomesticPaymentConsentDetailsConverter;
-import com.forgerock.securebanking.openbanking.uk.rcs.converters.DomesticScheduledPaymentConsentDetailsConverter;
-import com.forgerock.securebanking.openbanking.uk.rcs.converters.DomesticStandingOrderConsentDetailsConverter;
+import com.forgerock.securebanking.openbanking.uk.rcs.converters.*;
 import com.forgerock.securebanking.platform.client.IntentType;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
@@ -57,6 +54,9 @@ public class ConsentDetailsBuilderFactory {
             case PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT -> {
                 return buildDomesticStandingOrderConsentDetails(consent, consentDetailsRequest, apiClient);
             }
+            case PAYMENT_INTERNATIONAL_CONSENT -> {
+                return buildInternationalPaymentConsentDetails(consent, consentDetailsRequest, apiClient);
+            }
             default -> {
                 String message = String.format("Invalid type for intent ID: '%s'", intentId);
                 throw new ExceptionClient(consentDetailsRequest, ErrorType.UNKNOWN_INTENT_TYPE, message);
@@ -79,13 +79,13 @@ public class ConsentDetailsBuilderFactory {
         return details;
     }
 
-    private static final DomesticPaymentsConsentDetails buildDomesticPaymentConsentDetails(
+    private static final DomesticPaymentConsentDetails buildDomesticPaymentConsentDetails(
             JsonObject consentDetails,
             ConsentRequest consentDetailsRequest,
             ApiClient apiClient
     ) {
         DomesticPaymentConsentDetailsConverter consentDetailsConverter = DomesticPaymentConsentDetailsConverter.getInstance();
-        DomesticPaymentsConsentDetails details = consentDetailsConverter.toDomesticPaymentConsentDetails(consentDetails);
+        DomesticPaymentConsentDetails details = consentDetailsConverter.toDomesticPaymentConsentDetails(consentDetails);
         details.setUsername(consentDetailsRequest.getUser().getUserName());
         details.setUserId(consentDetailsRequest.getUser().getId());
         details.setAccounts(consentDetailsRequest.getAccounts());
@@ -94,13 +94,13 @@ public class ConsentDetailsBuilderFactory {
         return details;
     }
 
-    private static final DomesticScheduledPaymentsConsentDetails buildDomesticScheduledPaymentConsentDetails(
+    private static final DomesticScheduledPaymentConsentDetails buildDomesticScheduledPaymentConsentDetails(
             JsonObject consentDetails,
             ConsentRequest consentDetailsRequest,
             ApiClient apiClient
     ) {
         DomesticScheduledPaymentConsentDetailsConverter consentDetailsConverter = DomesticScheduledPaymentConsentDetailsConverter.getInstance();
-        DomesticScheduledPaymentsConsentDetails details = consentDetailsConverter.toDomesticScheduledPaymentConsentDetails(consentDetails);
+        DomesticScheduledPaymentConsentDetails details = consentDetailsConverter.toDomesticScheduledPaymentConsentDetails(consentDetails);
         details.setUsername(consentDetailsRequest.getUser().getUserName());
         details.setUserId(consentDetailsRequest.getUser().getId());
         details.setAccounts(consentDetailsRequest.getAccounts());
@@ -116,6 +116,21 @@ public class ConsentDetailsBuilderFactory {
     ) {
         DomesticStandingOrderConsentDetailsConverter consentDetailsConverter = DomesticStandingOrderConsentDetailsConverter.getInstance();
         DomesticStandingOrderConsentDetails details = consentDetailsConverter.toDomesticStandingOrderConsentDetails(consentDetails);
+        details.setUsername(consentDetailsRequest.getUser().getUserName());
+        details.setUserId(consentDetailsRequest.getUser().getId());
+        details.setAccounts(consentDetailsRequest.getAccounts());
+        details.setClientId(consentDetailsRequest.getClientId());
+        details.setLogo(apiClient.getLogoUri());
+        return details;
+    }
+
+    private static final InternationalPaymentConsentDetails buildInternationalPaymentConsentDetails(
+            JsonObject consentDetails,
+            ConsentRequest consentDetailsRequest,
+            ApiClient apiClient
+    ) {
+        InternationalPaymentConsentDetailsConverter consentDetailsConverter = InternationalPaymentConsentDetailsConverter.getInstance();
+        InternationalPaymentConsentDetails details = consentDetailsConverter.toInternationalPaymentConsentDetails(consentDetails);
         details.setUsername(consentDetailsRequest.getUser().getUserName());
         details.setUserId(consentDetailsRequest.getUser().getId());
         details.setAccounts(consentDetailsRequest.getAccounts());

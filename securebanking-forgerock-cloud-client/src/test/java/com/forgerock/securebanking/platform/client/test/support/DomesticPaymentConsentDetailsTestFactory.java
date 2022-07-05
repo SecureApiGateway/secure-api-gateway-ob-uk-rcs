@@ -23,7 +23,6 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import java.util.List;
-import java.util.Random;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -32,11 +31,9 @@ import static java.util.UUID.randomUUID;
 /**
  * Test data factory for Domestic Payment Consent Details
  */
-public class DomesticPaymentAccessConsentDetailsTestFactory {
+public class DomesticPaymentConsentDetailsTestFactory {
 
     public static final Gson gson = new Gson();
-    public static final Random random = new Random();
-    public static final JsonParser parser = new JsonParser();
 
     public static JsonObject aValidDomesticPaymentConsentDetails() {
         return aValidDomesticPaymentConsentDetailsBuilder(randomUUID().toString());
@@ -89,16 +86,16 @@ public class DomesticPaymentAccessConsentDetailsTestFactory {
         data.addProperty("InstructionIdentification", "ACME412");
         data.addProperty("EndToEndIdentification", "FRESCO.21302.GFX.20");
         data.addProperty("LocalInstrument", UUID.randomUUID().toString());
-        data.add("InstructedAmount", parser.parse("{ \"Amount\": '819.91', \"Currency\": 'GBP' }"));
+        data.add("InstructedAmount", JsonParser.parseString("{ \"Amount\": '819.91', \"Currency\": 'GBP' }"));
         data.add("DebtorAccount", null);
-        data.add("CreditorAccount", parser.parse("{\n" +
+        data.add("CreditorAccount", JsonParser.parseString("{\n" +
                 "        \"SchemeName\": \"UK.OBIE.SortCodeAccountNumber\",\n" +
                 "        \"Identification\": \"08080021325698\",\n" +
                 "        \"Name\": \"ACME Inc\",\n" +
                 "        \"SecondaryIdentification\": \"0002\"\n" +
                 "      }"));
         data.add("CreditorPostalAddress", null);
-        data.add("RemittanceInformation", parser.parse("{\n" +
+        data.add("RemittanceInformation", JsonParser.parseString("{\n" +
                 "        \"Reference\": \"FRESCO-101\",\n" +
                 "        \"Unstructured\": \"Internal ops code 5120101\"\n" +
                 "      }"));

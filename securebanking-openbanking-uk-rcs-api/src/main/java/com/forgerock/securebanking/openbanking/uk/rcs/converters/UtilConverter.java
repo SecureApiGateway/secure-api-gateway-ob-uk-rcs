@@ -20,19 +20,26 @@ import com.google.gson.JsonObject;
 
 public class UtilConverter {
 
-    public static final boolean isNotNull(JsonObject jsonObject){
-        if(jsonObject == null) {
+    public static final boolean isNotNull(JsonObject jsonObject) {
+        if (jsonObject == null) {
             return false;
-        } else if(jsonObject.isJsonNull()){
+        } else if (jsonObject.isJsonNull()) {
             return false;
         }
         return true;
     }
 
-    public static final boolean isNotNull(JsonElement jsonElement){
-        if(jsonElement == null) {
+    public static final boolean isNotNull(JsonElement jsonElement) {
+        if (jsonElement == null) {
             return false;
-        } else if(jsonElement.isJsonNull()){
+        } else if (jsonElement.isJsonNull()) {
+            return false;
+        }
+        return true;
+    }
+
+    public static final boolean isNotNull(String string) {
+        if (string == null) {
             return false;
         }
         return true;
