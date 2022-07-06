@@ -23,25 +23,29 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.joda.time.DateTime;
 
 import java.util.List;
 
 /**
- * Models the consent data for a domestic payment.
+ * Models the consent data for a domestic scheduled payment.
  */
 @Data
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DomesticPaymentsConsentDetails extends ConsentDetails {
+public class DomesticScheduledPaymentConsentDetails extends ConsentDetails {
+
     private FRAmount instructedAmount;
     private String merchantName;
     private List<FRAccountWithBalance> accounts;
+    private DateTime paymentDate;
     private String paymentReference;
 
     @Override
     public IntentType getIntentType() {
-        return IntentType.PAYMENT_DOMESTIC_CONSENT;
+
+        return IntentType.PAYMENT_DOMESTIC_SCHEDULED_CONSENT;
     }
 
     public void setInstructedAmount(JsonObject instructedAmount) {

@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.DomesticStandingOrderConsentDetailsConverter.DATE_TIME_FORMATTER;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.DOMESTIC_STANDING_ORDER_INTENT_ID;
-import static com.forgerock.securebanking.platform.client.test.support.DomesticStandingOrderAccessConsentDetailsTestFactory.aValidDomesticStandingOrderConsentDetails;
+import static com.forgerock.securebanking.platform.client.test.support.DomesticStandingOrderConsentDetailsTestFactory.aValidDomesticStandingOrderConsentDetails;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

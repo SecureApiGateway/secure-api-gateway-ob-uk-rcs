@@ -23,8 +23,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-import static com.forgerock.securebanking.platform.client.test.support.DomesticPaymentAccessConsentDetailsTestFactory.aValidDomesticPaymentConsentDetails;
-import static com.forgerock.securebanking.platform.client.test.support.DomesticPaymentAccessConsentDetailsTestFactory.gson;
+import static com.forgerock.securebanking.platform.client.test.support.DomesticPaymentConsentDetailsTestFactory.aValidDomesticPaymentConsentDetails;
+import static com.forgerock.securebanking.platform.client.test.support.DomesticPaymentConsentDetailsTestFactory.gson;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 /**

@@ -23,7 +23,6 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import java.util.List;
-import java.util.Random;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -32,11 +31,9 @@ import static java.util.UUID.randomUUID;
 /**
  * Test data factory for Domestic Payment Consent Details
  */
-public class DomesticStandingOrderAccessConsentDetailsTestFactory {
+public class DomesticStandingOrderConsentDetailsTestFactory {
 
     public static final Gson gson = new Gson();
-    public static final Random random = new Random();
-    public static final JsonParser parser = new JsonParser();
 
     public static JsonObject aValidDomesticStandingOrderConsentDetails() {
         return aValidDomesticStandingOrderConsentDetailsBuilder(randomUUID().toString());
@@ -87,7 +84,7 @@ public class DomesticStandingOrderAccessConsentDetailsTestFactory {
     public static JsonObject aValidFRWriteDomesticDataInitiationBuilder() {
         JsonObject data = new JsonObject();
         data.add("DebtorAccount", null);
-        data.add("CreditorAccount", parser.parse("{\n" +
+        data.add("CreditorAccount", JsonParser.parseString("{\n" +
                 "        \"SchemeName\": \"UK.OBIE.SortCodeAccountNumber\",\n" +
                 "        \"Identification\": \"08080021325698\",\n" +
                 "        \"Name\": \"ACME Inc\",\n" +
@@ -95,9 +92,9 @@ public class DomesticStandingOrderAccessConsentDetailsTestFactory {
                 "      }"));
         data.addProperty("Reference", "FRESCO-101");
         data.add("SupplementaryData", null);
-        data.add("FinalPaymentAmount", parser.parse("{ \"Amount\": '319.91', \"Currency\": 'GBP' }"));
-        data.add("FirstPaymentAmount", parser.parse("{ \"Amount\": '119.91', \"Currency\": 'GBP' }"));
-        data.add("RecurringPaymentAmount", parser.parse("{ \"Amount\": '813.91', \"Currency\": 'GBP' }"));
+        data.add("FinalPaymentAmount", JsonParser.parseString("{ \"Amount\": '319.91', \"Currency\": 'GBP' }"));
+        data.add("FirstPaymentAmount", JsonParser.parseString("{ \"Amount\": '119.91', \"Currency\": 'GBP' }"));
+        data.add("RecurringPaymentAmount", JsonParser.parseString("{ \"Amount\": '813.91', \"Currency\": 'GBP' }"));
         data.addProperty("FinalPaymentDateTime", "2022-09-30T15:15:13+00:00");
         data.addProperty("FirstPaymentDateTime", "2022-05-30T15:15:13+00:00");
         data.addProperty("RecurringPaymentDateTime", "2022-06-30T15:15:13+00:00");

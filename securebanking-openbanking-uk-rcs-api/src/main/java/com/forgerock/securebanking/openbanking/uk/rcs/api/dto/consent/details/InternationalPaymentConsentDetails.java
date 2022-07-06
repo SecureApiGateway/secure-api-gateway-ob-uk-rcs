@@ -15,14 +15,22 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAmount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRExchangeRateInformation;
 import com.forgerock.securebanking.platform.client.IntentType;
+import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.joda.time.DateTime;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import static com.forgerock.securebanking.openbanking.uk.rcs.converters.InternationalPaymentConsentDetailsConverter.DATE_TIME_FORMATTER;
+import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter.isNotNull;
+import static com.forgerock.securebanking.platform.client.services.ConsentServiceInterface.log;
 
 /**
  * Models the consent data for an international payment.
@@ -34,15 +42,45 @@ import org.joda.time.DateTime;
 public class InternationalPaymentConsentDetails extends ConsentDetails {
 
     private FRAmount instructedAmount;
-    private FRExchangeRateInformation rate;
+    private FRExchangeRateInformation exchangeRateInformation;
     private String merchantName;
-    private DateTime expiredDate;
     private String currencyOfTransfer;
     private String paymentReference;
+    private List<FRAccountWithBalance> accounts;
 
     @Override
     public IntentType getIntentType() {
         return IntentType.PAYMENT_INTERNATIONAL_CONSENT;
     }
 
+    public void setInstructedAmount(JsonObject instructedAmount) {
+        if (instructedAmount == null)
+            this.instructedAmount = null;
+        else {
+            this.instructedAmount = new FRAmount();
+            this.instructedAmount.setAmount(instructedAmount.get("Amount") != null ? instructedAmount.get("Amount").getAsString() : null);
+            this.instructedAmount.setCurrency(instructedAmount.get("Currency") != null ? instructedAmount.get("Currency").getAsString() : null);
+        }
+    }
+
+    public void setExchangeRateInformation(JsonObject exchangeRateInformation) {
+        if (exchangeRateInformation == null)
+            this.exchangeRateInformation = null;
+        else {
+            this.exchangeRateInformation = new FRExchangeRateInformation();
+            this.exchangeRateInformation.setUnitCurrency(exchangeRateInformation.get("UnitCurrency") != null ? exchangeRateInformation.get("UnitCurrency").getAsString() : null);
+            String exchangeRate = isNotNull(exchangeRateInformation.get("ExchangeRate")) ? exchangeRateInformation.get("ExchangeRate").getAsString() : null;
+            if (isNotNull(exchangeRate)) {
+                try {
+                    BigDecimal exchangeRateBigDecimal = new BigDecimal(exchangeRate);
+                    this.exchangeRateInformation.setExchangeRate(exchangeRateBigDecimal);
+                } catch (NumberFormatException e) {
+                    log.error("(InternationalPaymentConsentDetails) the exchange rate couldn't be set");
+                }
+            }
+            this.exchangeRateInformation.setRateType(exchangeRateInformation.get("RateType") != null ? FRExchangeRateInformation.FRRateType.fromValue(exchangeRateInformation.get("RateType").getAsString()) : null);
+            this.exchangeRateInformation.setContractIdentification(exchangeRateInformation.get("ContractIdentification") != null ? exchangeRateInformation.get("ContractIdentification").getAsString() : null);
+            this.exchangeRateInformation.setExpirationDateTime(exchangeRateInformation.get("ExpirationDateTime") != null ? DATE_TIME_FORMATTER.parseDateTime(exchangeRateInformation.get("ExpirationDateTime").getAsString()) : null);
+        }
+    }
 }

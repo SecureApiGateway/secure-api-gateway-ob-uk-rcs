@@ -15,7 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.converters;
 
-import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticScheduledPaymentsConsentDetails;
+import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticScheduledPaymentConsentDetails;
 import com.google.gson.JsonObject;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ import org.joda.time.format.DateTimeFormatter;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter.isNotNull;
 
 /**
- * Converter class to map {@link JsonObject} to {@link DomesticScheduledPaymentsConsentDetails}
+ * Converter class to map {@link JsonObject} to {@link DomesticScheduledPaymentConsentDetails}
  */
 @Slf4j
 @NoArgsConstructor
@@ -48,8 +48,8 @@ public class DomesticScheduledPaymentConsentDetailsConverter {
         return instance;
     }
 
-    public DomesticScheduledPaymentsConsentDetails mapping(JsonObject consentDetails) {
-        DomesticScheduledPaymentsConsentDetails details = new DomesticScheduledPaymentsConsentDetails();
+    public DomesticScheduledPaymentConsentDetails mapping(JsonObject consentDetails) {
+        DomesticScheduledPaymentConsentDetails details = new DomesticScheduledPaymentConsentDetails();
 
         details.setMerchantName(isNotNull(consentDetails.get("oauth2ClientName")) ?
                 consentDetails.get("oauth2ClientName").getAsString() :
@@ -58,6 +58,7 @@ public class DomesticScheduledPaymentConsentDetailsConverter {
         if(!isNotNull(consentDetails.get("data"))) {
             details.setInstructedAmount(null);
             details.setPaymentReference(null);
+            details.setPaymentDate(null);
         } else if(isNotNull(consentDetails.getAsJsonObject("data").get("Initiation"))){
             JsonObject initiation = consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation");
 
@@ -78,7 +79,7 @@ public class DomesticScheduledPaymentConsentDetailsConverter {
         return details;
     }
 
-    public final DomesticScheduledPaymentsConsentDetails toDomesticScheduledPaymentConsentDetails(JsonObject consentDetails) {
+    public final DomesticScheduledPaymentConsentDetails toDomesticScheduledPaymentConsentDetails(JsonObject consentDetails) {
         return mapping(consentDetails);
     }
 }

@@ -15,44 +15,44 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.converters;
 
-import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticScheduledPaymentsConsentDetails;
+import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticScheduledPaymentConsentDetails;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.DOMESTIC_SCHEDULED_PAYMENT_INTENT_ID;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.DomesticScheduledPaymentConsentDetailsConverter.DATE_TIME_FORMATTER;
-import static com.forgerock.securebanking.platform.client.test.support.DomesticScheduledPaymentAccessConsentDetailsTestFactory.aValidDomesticScheduledPaymentConsentDetails;
+import static com.forgerock.securebanking.platform.client.test.support.DomesticScheduledPaymentConsentDetailsTestFactory.aValidDomesticScheduledPaymentConsentDetails;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Unit test for {@link DomesticScheduledPaymentConsentDetailsConverter}
  */
 @Slf4j
-public class DomesticScheduledPaymentsConsentDetailsConverterTest {
+public class DomesticScheduledPaymentConsentDetailsConverterTest {
     @Test
     public void shouldConvertConsentDetailsToDomesticScheduledPaymentsConsentDetails() {
         // Given
         JsonObject consentDetails = aValidDomesticScheduledPaymentConsentDetails(DOMESTIC_SCHEDULED_PAYMENT_INTENT_ID);
 
         // When
-        DomesticScheduledPaymentsConsentDetails domesticScheduledPaymentsConsentDetails = DomesticScheduledPaymentConsentDetailsConverter.getInstance().toDomesticScheduledPaymentConsentDetails(consentDetails);
+        DomesticScheduledPaymentConsentDetails domesticScheduledPaymentConsentDetails = DomesticScheduledPaymentConsentDetailsConverter.getInstance().toDomesticScheduledPaymentConsentDetails(consentDetails);
 
         // Then
         JsonObject initiation = consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation");
 
-        assertThat(domesticScheduledPaymentsConsentDetails.getInstructedAmount().getAmount())
+        assertThat(domesticScheduledPaymentConsentDetails.getInstructedAmount().getAmount())
                 .isEqualTo(initiation.getAsJsonObject("InstructedAmount").get("Amount").getAsString());
 
-        assertThat(domesticScheduledPaymentsConsentDetails.getInstructedAmount().getCurrency())
+        assertThat(domesticScheduledPaymentConsentDetails.getInstructedAmount().getCurrency())
                 .isEqualTo(initiation.getAsJsonObject("InstructedAmount").get("Currency").getAsString());
 
-        assertThat(domesticScheduledPaymentsConsentDetails.getMerchantName()).isEqualTo( consentDetails.get("oauth2ClientName").getAsString());
+        assertThat(domesticScheduledPaymentConsentDetails.getMerchantName()).isEqualTo( consentDetails.get("oauth2ClientName").getAsString());
 
-        assertThat(domesticScheduledPaymentsConsentDetails.getPaymentReference())
+        assertThat(domesticScheduledPaymentConsentDetails.getPaymentReference())
                 .isEqualTo(initiation.getAsJsonObject("RemittanceInformation").get("Reference").getAsString());
 
-        assertThat(domesticScheduledPaymentsConsentDetails.getPaymentDate())
+        assertThat(domesticScheduledPaymentConsentDetails.getPaymentDate())
                 .isEqualTo(DATE_TIME_FORMATTER.parseDateTime(initiation.get("RequestedExecutionDateTime").getAsString()));
     }
 }

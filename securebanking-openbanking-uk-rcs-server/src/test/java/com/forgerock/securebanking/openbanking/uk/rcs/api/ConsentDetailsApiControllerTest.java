@@ -20,8 +20,8 @@ import com.forgerock.securebanking.openbanking.uk.common.api.meta.forgerock.FRFr
 import com.forgerock.securebanking.openbanking.uk.rcs.RcsApplicationTestSupport;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.RedirectionAction;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.AccountsConsentDetails;
-import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticPaymentsConsentDetails;
-import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticScheduledPaymentsConsentDetails;
+import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticPaymentConsentDetails;
+import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticScheduledPaymentConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticStandingOrderConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.rs.AccountService;
 import com.forgerock.securebanking.openbanking.uk.rcs.testsupport.JwtTestHelper;
@@ -58,9 +58,9 @@ import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamo
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.DomesticScheduledPaymentConsentDetailsConverter.DATE_TIME_FORMATTER;
 import static com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory.aValidAccountConsentDetails;
 import static com.forgerock.securebanking.platform.client.test.support.ConsentDetailsRequestTestDataFactory.*;
-import static com.forgerock.securebanking.platform.client.test.support.DomesticPaymentAccessConsentDetailsTestFactory.aValidDomesticPaymentConsentDetails;
-import static com.forgerock.securebanking.platform.client.test.support.DomesticScheduledPaymentAccessConsentDetailsTestFactory.aValidDomesticScheduledPaymentConsentDetails;
-import static com.forgerock.securebanking.platform.client.test.support.DomesticStandingOrderAccessConsentDetailsTestFactory.aValidDomesticStandingOrderConsentDetails;
+import static com.forgerock.securebanking.platform.client.test.support.DomesticPaymentConsentDetailsTestFactory.aValidDomesticPaymentConsentDetails;
+import static com.forgerock.securebanking.platform.client.test.support.DomesticScheduledPaymentConsentDetailsTestFactory.aValidDomesticScheduledPaymentConsentDetails;
+import static com.forgerock.securebanking.platform.client.test.support.DomesticStandingOrderConsentDetailsTestFactory.aValidDomesticStandingOrderConsentDetails;
 import static com.forgerock.securebanking.platform.client.test.support.UserTestDataFactory.aValidUser;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -255,7 +255,7 @@ public class ConsentDetailsApiControllerTest {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(OK);
 
-        DomesticPaymentsConsentDetails responseBody = gson.fromJson(response.getBody(), DomesticPaymentsConsentDetails.class);
+        DomesticPaymentConsentDetails responseBody = gson.fromJson(response.getBody(), DomesticPaymentConsentDetails.class);
         assertThat(responseBody.getAccounts()).isNotEmpty();
         assertThat(responseBody.getIntentType()).isEqualTo(IntentType.PAYMENT_DOMESTIC_CONSENT);
         assertThat(responseBody.getUserId()).isEqualTo(consentDetailsRequest.getUser().getId());
@@ -385,7 +385,7 @@ public class ConsentDetailsApiControllerTest {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(OK);
 
-        DomesticScheduledPaymentsConsentDetails responseBody = gson.fromJson(response.getBody(), DomesticScheduledPaymentsConsentDetails.class);
+        DomesticScheduledPaymentConsentDetails responseBody = gson.fromJson(response.getBody(), DomesticScheduledPaymentConsentDetails.class);
         assertThat(responseBody.getAccounts()).isNotEmpty();
         assertThat(responseBody.getIntentType()).isEqualTo(IntentType.PAYMENT_DOMESTIC_SCHEDULED_CONSENT);
         assertThat(responseBody.getUserId()).isEqualTo(consentDetailsRequest.getUser().getId());

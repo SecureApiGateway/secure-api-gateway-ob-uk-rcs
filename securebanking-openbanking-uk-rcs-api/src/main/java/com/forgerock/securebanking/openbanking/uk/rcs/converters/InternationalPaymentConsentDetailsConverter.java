@@ -15,62 +15,73 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.converters;
 
-import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticPaymentConsentDetails;
+import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.InternationalPaymentConsentDetails;
 import com.google.gson.JsonObject;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter.isNotNull;
 
 /**
- * Converter class to map {@link JsonObject} to {@link DomesticPaymentConsentDetails}
+ * Converter class to map {@link JsonObject} to {@link InternationalPaymentConsentDetails}
  */
 @Slf4j
 @NoArgsConstructor
-public class DomesticPaymentConsentDetailsConverter {
+public class InternationalPaymentConsentDetailsConverter {
 
-    private static volatile DomesticPaymentConsentDetailsConverter instance;
+    private static volatile InternationalPaymentConsentDetailsConverter instance;
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
 
     /*
      * Double checked locking principle to ensure that only one instance 'DomesticPaymentConsentDetailsConverter' is created
      */
-    public static DomesticPaymentConsentDetailsConverter getInstance() {
+    public static InternationalPaymentConsentDetailsConverter getInstance() {
         if (instance == null) {
-            synchronized (DomesticPaymentConsentDetailsConverter.class) {
+            synchronized (InternationalPaymentConsentDetailsConverter.class) {
                 if (instance == null) {
-                    instance = new DomesticPaymentConsentDetailsConverter();
+                    instance = new InternationalPaymentConsentDetailsConverter();
                 }
             }
         }
         return instance;
     }
 
-    public DomesticPaymentConsentDetails mapping(JsonObject consentDetails) {
-        DomesticPaymentConsentDetails details = new DomesticPaymentConsentDetails();
+    public InternationalPaymentConsentDetails mapping(JsonObject consentDetails) {
+        InternationalPaymentConsentDetails details = new InternationalPaymentConsentDetails();
 
         details.setMerchantName(isNotNull(consentDetails.get("oauth2ClientName")) ?
                 consentDetails.get("oauth2ClientName").getAsString() :
                 null);
 
         if (!isNotNull(consentDetails.get("data"))) {
-            details.setInstructedAmount(null);
             details.setPaymentReference(null);
+            details.setCurrencyOfTransfer(null);
+            details.setExchangeRateInformation(null);
+            details.setInstructedAmount(null);
         } else if (isNotNull(consentDetails.getAsJsonObject("data").get("Initiation"))) {
             JsonObject initiation = consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation");
+
+            details.setPaymentReference(isNotNull(initiation.get("RemittanceInformation")) && isNotNull(initiation.getAsJsonObject("RemittanceInformation").get("Reference")) ?
+                    initiation.getAsJsonObject("RemittanceInformation").get("Reference").getAsString() : null);
+
+            details.setCurrencyOfTransfer(isNotNull(initiation.get("CurrencyOfTransfer")) ?
+                    initiation.get("CurrencyOfTransfer").getAsString() : null);
 
             details.setInstructedAmount(isNotNull(initiation.get("InstructedAmount")) ?
                     initiation.getAsJsonObject("InstructedAmount") :
                     null);
 
-            details.setPaymentReference(isNotNull(initiation.get("RemittanceInformation")) &&
-                    isNotNull(initiation.getAsJsonObject("RemittanceInformation").get("Reference")) ?
-                    initiation.getAsJsonObject("RemittanceInformation").get("Reference").getAsString() :
+            details.setExchangeRateInformation(isNotNull(initiation.get("ExchangeRateInformation")) ?
+                    initiation.getAsJsonObject("ExchangeRateInformation") :
                     null);
+
         }
         return details;
     }
 
-    public final DomesticPaymentConsentDetails toDomesticPaymentConsentDetails(JsonObject consentDetails) {
+    public final InternationalPaymentConsentDetails toInternationalPaymentConsentDetails(JsonObject consentDetails) {
         return mapping(consentDetails);
     }
 }

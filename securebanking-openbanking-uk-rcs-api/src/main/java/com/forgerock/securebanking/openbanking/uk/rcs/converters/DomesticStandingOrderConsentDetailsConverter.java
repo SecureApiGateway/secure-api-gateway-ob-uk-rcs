@@ -15,7 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.converters;
 
-import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticScheduledPaymentsConsentDetails;
+import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticScheduledPaymentConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticStandingOrderConsentDetails;
 import com.google.gson.JsonObject;
 import lombok.NoArgsConstructor;
@@ -26,7 +26,7 @@ import org.joda.time.format.DateTimeFormatter;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter.isNotNull;
 
 /**
- * Converter class to map {@link JsonObject} to {@link DomesticScheduledPaymentsConsentDetails}
+ * Converter class to map {@link JsonObject} to {@link DomesticScheduledPaymentConsentDetails}
  */
 @Slf4j
 @NoArgsConstructor
@@ -58,6 +58,7 @@ public class DomesticStandingOrderConsentDetailsConverter {
 
         if (!isNotNull(consentDetails.get("data"))) {
             details.setPaymentReference(null);
+            details.setStandingOrder(null);
         } else if (isNotNull(consentDetails.getAsJsonObject("data").get("Initiation"))) {
             JsonObject initiation = consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation");
 
