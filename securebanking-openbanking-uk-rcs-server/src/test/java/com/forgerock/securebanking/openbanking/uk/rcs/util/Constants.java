@@ -20,4 +20,5 @@ public class Constants {
     public static final String DOMESTIC_PAYMENT_INTENT_ID = "PDC_1c214525-d0c8-4d13-xxx-b812c6fafabe";
     public static final String DOMESTIC_SCHEDULED_PAYMENT_INTENT_ID = "PDSC_1c214525-d0c8-4d13-xxx-b812c6fafabe";
     public static final String DOMESTIC_STANDING_ORDER_INTENT_ID = "PDSOC_1c214525-d0c8-4d13-xxx-b812c6fafabe";
+    public static final String INTERNATIONAL_PAYMENT_INTENT_ID = "PIC_1c214525-d0c8-4d13-xxx-b812c6fafabe";
 }

@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.DomesticScheduledPaymentConsentDetailsConverter.DATE_TIME_FORMATTER;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.DOMESTIC_SCHEDULED_PAYMENT_INTENT_ID;
+import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.INTERNATIONAL_PAYMENT_INTENT_ID;
 import static com.forgerock.securebanking.platform.client.test.support.InternationalPaymentConsentDetailsTestFactory.aValidInternationalPaymentConsentDetails;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,7 +37,7 @@ public class InternationalPaymentConsentDetailsConverterTest {
     @Test
     public void shouldConvertConsentDetailsToInternationalPaymentConsentDetails() {
         // Given
-        JsonObject consentDetails = aValidInternationalPaymentConsentDetails(DOMESTIC_SCHEDULED_PAYMENT_INTENT_ID);
+        JsonObject consentDetails = aValidInternationalPaymentConsentDetails(INTERNATIONAL_PAYMENT_INTENT_ID);
 
         // When
         InternationalPaymentConsentDetails InternationalPaymentConsentDetails = InternationalPaymentConsentDetailsConverter.getInstance().toInternationalPaymentConsentDetails(consentDetails);
