@@ -15,22 +15,24 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.configuration;
 
-import com.forgerock.securebanking.openbanking.uk.rcs.RcsApplicationTestSupport;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 
 /**
  * Unit test for {@link RcsConfigurationProperties}
  */
-@ContextConfiguration(classes = {RcsConfigurationProperties.class})
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {RcsConfigurationProperties.class, RsBackofficeConfiguration.class}, initializers = ConfigFileApplicationContextInitializer.class)
+@EnableConfigurationProperties(value = RsBackofficeConfiguration.class)
 @ActiveProfiles("test")
-@SpringBootTest(classes = {RcsApplicationTestSupport.class}, webEnvironment = MOCK)
 public class RcsConfigurationPropertiesTest {
 
     @Autowired
