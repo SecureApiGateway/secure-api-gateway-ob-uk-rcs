@@ -17,7 +17,14 @@ package com.forgerock.securebanking.openbanking.uk.rcs;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
+@ComponentScan(basePackages =
+        {
+                "com.forgerock.securebanking.common.cors",
+                "com.forgerock.securebanking.openbanking.uk.rcs"
+        }
+)
 @SpringBootApplication
 public class RcsApplication {
 
