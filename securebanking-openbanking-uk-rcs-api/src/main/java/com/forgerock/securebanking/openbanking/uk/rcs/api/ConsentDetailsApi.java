@@ -16,13 +16,14 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.api;
 
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetails;
+import com.forgerock.securebanking.openbanking.uk.rcs.swagger.SwaggerApiTags;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-@Api(tags = "RCS Consent Details API", description = "The RCS Consent Request Details API")
+@Api(tags = {SwaggerApiTags.CONSENT_DETAILS_TAG})
 public interface ConsentDetailsApi {
 
     @ApiOperation(value = "Get consent details", notes = "Get the consent details behind a consent request JWT." +

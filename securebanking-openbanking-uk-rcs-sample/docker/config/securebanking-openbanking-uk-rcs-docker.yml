@@ -19,9 +19,10 @@
 # Configuration properties entries for common libraries
 common: # root key for all common 'securebanking-common-${library-name}' libraries
   cors: # library name
-    allowed_origins: # CORS list allowed domains, to check if the origin header domain ends with any allowed origin.
-      - localhost
-      - forgerock.financial # valid for *.forgerock.financial
+#    allowed_origins: # CORS list allowed domains, to check if the origin header domain ends with any allowed origin.
+#      - "*" # Allow all origins
+#      - localhost
+#      - forgerock.financial # valid for *.forgerock.financial
     allowed_headers: accept-api-version, x-requested-with, authorization, Content-Type, Authorization, credential, X-XSRF-TOKEN, Id-Token # CORS allowed headers
     allowed_methods: GET, PUT, POST, DELETE, OPTIONS, PATCH # Allowed methods for preflight request
     allowed_credentials: false #true # Credentials accepted, default value true
@@ -70,3 +71,15 @@ rs:
         findUserById: /backoffice/accounts/search/findByUserId
       domestic-payments:
         findUserById: /backoffice/domestic-payments/search/findByUserId
+
+# Swagger Documentation Specification properties
+swagger:
+  title: Secure Banking Access Toolkit
+  description: Swagger for consent details and consent decisions (RCS User interfaces)
+  license: open-licence
+  license-url: https://www.openbanking.org.uk/open-licence
+  terms-of-service-url: https://backstage.forgerock.com/knowledge/openbanking/article/a45894685
+  contact-name: ForgeRock RS User interfaces
+  contact-url: https://www.forgerock.com/
+  docket-apis-basePackage: com.forgerock.securebanking.openbanking.uk.rcs.api
+  docket-paths-selector-regex: /.*
