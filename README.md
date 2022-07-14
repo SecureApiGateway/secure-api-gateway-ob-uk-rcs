@@ -3,7 +3,7 @@
 A multi-module maven project providing a UK Open Banking Remote Consent Service for the Secure Banking Accelerator
 Toolkit.
 
-### Setting up Maven
+### Setting up Maven (developers)
 
 Download and install Maven settings.xml file by running the command below and substituting in your backstage username
 and password.
@@ -26,18 +26,17 @@ This will run any JUnit/Spring integration tests and build the required JAR file
 
 ### How to run
 
-Either run the docker image created in the previous step, or run the project's SpringBoot application class:
-
-```com.forgerock.securebanking.openbanking.uk.rcs.RcsApplication```
-
-Note that the application has a dependency on MongoDB and will not start up without it. If running locally, this can be
-achieved by simply starting up Mongo on its default port (27017) - for example by running a MongoDB docker image.
+**Run docker compose**
+> Config server profile properties location from local volume (`securebanking-openbanking-uk-rcs-sample/docker/config`)
+```shell
+./securebanking-openbanking-uk-rcs-sample/docker/run-docker-compose-local.sh
+```
 
 ### Supported APIs
 
 Upon starting the application, a list of supported APIs can be obtained dynamically from the Swagger Specification
 Endpoint:
 
-```http://<host>:<port>/api-docs```
-
+- Swagger Json descriptor: `http://<host>:<port>/api-docs`
+- Swagger UI documentation: `http://<host>:<port>/swagger-ui/`
 > Substitute `<host>` and `<port` as necessary
