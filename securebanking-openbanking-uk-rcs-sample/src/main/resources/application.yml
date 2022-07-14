@@ -31,9 +31,10 @@ springfox:
 # Configuration properties entries for common libraries
 common: # root key for all common 'securebanking-common-*' libraries
   cors: # library name
-    allowed_origins:
-      - localhost
-      - forgerock.financial # valid for *.forgerock.financial
+#    allowed_origins:
+#      - "*"
+#      - localhost
+#      - forgerock.financial # valid for *.forgerock.financial
     allowed_headers: accept-api-version, x-requested-with, authorization, Content-Type, Authorization, credential, X-XSRF-TOKEN, Id-Token
     allowed_methods: GET, PUT, POST, DELETE, OPTIONS, PATCH
     allowed_credentials: true # default value true
