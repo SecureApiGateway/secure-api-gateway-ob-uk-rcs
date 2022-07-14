@@ -17,5 +17,5 @@ package com.forgerock.securebanking.openbanking.uk.rcs.swagger;
 
 public class SwaggerApiTags {
     public static final String CONSENT_DECISION_TAG = "Consent decision";
-    public static final String CONSENT_DETAILS_TAG = "Consent detail";
+    public static final String CONSENT_DETAILS_TAG = "Consent details";
 }
