@@ -17,6 +17,7 @@ package com.forgerock.securebanking.openbanking.uk.rcs.api;
 
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.RedirectionAction;
+import com.forgerock.securebanking.openbanking.uk.rcs.swagger.SwaggerApiTags;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 /**
  * Interface for dealing with the PSU's consent decision,
  */
-@Api(tags = "RCS Consent Decision API", description = "The RCS Consent Decision API")
+@Api(tags = {SwaggerApiTags.CONSENT_DECISION_TAG})
 public interface ConsentDecisionApi {
 
     @ApiOperation(
