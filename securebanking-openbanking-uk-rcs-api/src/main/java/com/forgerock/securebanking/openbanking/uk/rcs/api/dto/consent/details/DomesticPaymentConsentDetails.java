@@ -26,6 +26,8 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
+import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter.isNotNull;
+
 /**
  * Models the consent data for a domestic payment.
  */
@@ -49,8 +51,8 @@ public class DomesticPaymentConsentDetails extends ConsentDetails {
             this.instructedAmount = null;
         else {
             this.instructedAmount = new FRAmount();
-            this.instructedAmount.setAmount(instructedAmount.get("Amount") != null ? instructedAmount.get("Amount").getAsString() : null);
-            this.instructedAmount.setCurrency(instructedAmount.get("Currency") != null ?instructedAmount.get("Currency").getAsString() : null);
+            this.instructedAmount.setAmount(isNotNull(instructedAmount.get("Amount")) ? instructedAmount.get("Amount").getAsString() : null);
+            this.instructedAmount.setCurrency(isNotNull(instructedAmount.get("Currency")) ? instructedAmount.get("Currency").getAsString() : null);
         }
     }
 }

@@ -54,21 +54,21 @@ public class InternationalPaymentConsentDetails extends ConsentDetails {
     }
 
     public void setInstructedAmount(JsonObject instructedAmount) {
-        if (instructedAmount == null)
+        if (!isNotNull(instructedAmount))
             this.instructedAmount = null;
         else {
             this.instructedAmount = new FRAmount();
-            this.instructedAmount.setAmount(instructedAmount.get("Amount") != null ? instructedAmount.get("Amount").getAsString() : null);
-            this.instructedAmount.setCurrency(instructedAmount.get("Currency") != null ? instructedAmount.get("Currency").getAsString() : null);
+            this.instructedAmount.setAmount(isNotNull(instructedAmount.get("Amount")) ? instructedAmount.get("Amount").getAsString() : null);
+            this.instructedAmount.setCurrency(isNotNull(instructedAmount.get("Currency")) ? instructedAmount.get("Currency").getAsString() : null);
         }
     }
 
     public void setExchangeRateInformation(JsonObject exchangeRateInformation) {
-        if (exchangeRateInformation == null)
+        if (!isNotNull(exchangeRateInformation))
             this.exchangeRateInformation = null;
         else {
             this.exchangeRateInformation = new FRExchangeRateInformation();
-            this.exchangeRateInformation.setUnitCurrency(exchangeRateInformation.get("UnitCurrency") != null ? exchangeRateInformation.get("UnitCurrency").getAsString() : null);
+            this.exchangeRateInformation.setUnitCurrency(isNotNull(exchangeRateInformation.get("UnitCurrency")) ? exchangeRateInformation.get("UnitCurrency").getAsString() : null);
             String exchangeRate = isNotNull(exchangeRateInformation.get("ExchangeRate")) ? exchangeRateInformation.get("ExchangeRate").getAsString() : null;
             if (isNotNull(exchangeRate)) {
                 try {
@@ -78,9 +78,9 @@ public class InternationalPaymentConsentDetails extends ConsentDetails {
                     log.error("(InternationalPaymentConsentDetails) the exchange rate couldn't be set");
                 }
             }
-            this.exchangeRateInformation.setRateType(exchangeRateInformation.get("RateType") != null ? FRExchangeRateInformation.FRRateType.fromValue(exchangeRateInformation.get("RateType").getAsString()) : null);
-            this.exchangeRateInformation.setContractIdentification(exchangeRateInformation.get("ContractIdentification") != null ? exchangeRateInformation.get("ContractIdentification").getAsString() : null);
-            this.exchangeRateInformation.setExpirationDateTime(exchangeRateInformation.get("ExpirationDateTime") != null ? DATE_TIME_FORMATTER.parseDateTime(exchangeRateInformation.get("ExpirationDateTime").getAsString()) : null);
+            this.exchangeRateInformation.setRateType(isNotNull(exchangeRateInformation.get("RateType")) ? FRExchangeRateInformation.FRRateType.fromValue(exchangeRateInformation.get("RateType").getAsString()) : null);
+            this.exchangeRateInformation.setContractIdentification(isNotNull(exchangeRateInformation.get("ContractIdentification")) ? exchangeRateInformation.get("ContractIdentification").getAsString() : null);
+            this.exchangeRateInformation.setExpirationDateTime(isNotNull(exchangeRateInformation.get("ExpirationDateTime")) ? DATE_TIME_FORMATTER.parseDateTime(exchangeRateInformation.get("ExpirationDateTime").getAsString()) : null);
         }
     }
 }
