@@ -52,6 +52,7 @@ import static com.forgerock.securebanking.platform.client.test.support.DomesticP
 import static com.forgerock.securebanking.platform.client.test.support.DomesticScheduledPaymentConsentDetailsTestFactory.aValidDomesticScheduledPaymentConsentDetails;
 import static com.forgerock.securebanking.platform.client.test.support.DomesticStandingOrderConsentDetailsTestFactory.aValidDomesticStandingOrderConsentDetails;
 import static com.forgerock.securebanking.platform.client.test.support.InternationalPaymentConsentDetailsTestFactory.aValidInternationalPaymentConsentDetails;
+import static com.forgerock.securebanking.platform.client.test.support.InternationalScheduledPaymentConsentDetailsTestFactory.aValidInternationalScheduledPaymentConsentDetails;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -252,8 +253,8 @@ public class ConsentDecisionApiControllerTest {
     public void ShouldGetRedirectionActionInternationalPayment() throws ExceptionClient {
         // given
         ConsentDecision consentDecision = aValidDomesticPaymentConsentDecision(INTERNATIONAL_PAYMENT_INTENT_ID);
-        JsonObject domesticStrandingOrderConsentDetails = aValidInternationalPaymentConsentDetails(consentDecision.getIntentId());
-        given(consentServiceClient.updateConsent(consentDecision)).willReturn(domesticStrandingOrderConsentDetails);
+        JsonObject internationalPaymentConsentDetails = aValidInternationalPaymentConsentDetails(consentDecision.getIntentId());
+        given(consentServiceClient.updateConsent(consentDecision)).willReturn(internationalPaymentConsentDetails);
         String jwt = JwtTestHelper.consentRequestJwt(
                 consentDecision.getClientId(),
                 consentDecision.getIntentId(),
@@ -271,7 +272,47 @@ public class ConsentDecisionApiControllerTest {
         financialAccount.setAccounts(List.of(accountIdentifier));
 
         ConsentDecisionRequest consentDecisionRequest = ConsentDecisionRequest.builder()
-                .accountIds(convert(domesticStrandingOrderConsentDetails.getAsJsonArray("accountsIds")))
+                .accountIds(convert(internationalPaymentConsentDetails.getAsJsonArray("accountsIds")))
+                .consentJwt(jwt)
+                .decision(Constants.ConsentDecision.AUTHORISED)
+                .debtorAccount(financialAccount)
+                .build();
+        HttpEntity<String> request = new HttpEntity(consentDecisionRequest, headers());
+
+        // when
+        ResponseEntity<RedirectionAction> response = restTemplate.postForEntity(consentDetailURL, request, RedirectionAction.class);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getConsentJwt()).isNotEmpty();
+        assertThat(response.getBody().getRedirectUri()).isNotEmpty();
+    }
+
+    @Test
+    public void ShouldGetRedirectionActionInternationalScheduledPayment() throws ExceptionClient {
+        // given
+        ConsentDecision consentDecision = aValidDomesticPaymentConsentDecision(INTERNATIONAL_SCHEDULED_PAYMENT_INTENT_ID);
+        JsonObject internationalScheduledPaymentConsentDetails = aValidInternationalScheduledPaymentConsentDetails(consentDecision.getIntentId());
+        given(consentServiceClient.updateConsent(consentDecision)).willReturn(internationalScheduledPaymentConsentDetails);
+        String jwt = JwtTestHelper.consentRequestJwt(
+                consentDecision.getClientId(),
+                consentDecision.getIntentId(),
+                consentDecision.getResourceOwnerUsername()
+        );
+
+        given(jwkServiceClient.signClaims(any(JWTClaimsSet.class), anyString())).willReturn(jwt);
+        String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
+
+        FRAccountIdentifier accountIdentifier = new FRAccountIdentifier();
+        accountIdentifier.setIdentification("76064512389965");
+        accountIdentifier.setName("John");
+        accountIdentifier.setSchemeName("UK.OBIE.SortCodeAccountNumber");
+        FRFinancialAccount financialAccount = new FRFinancialAccount();
+        financialAccount.setAccounts(List.of(accountIdentifier));
+
+        ConsentDecisionRequest consentDecisionRequest = ConsentDecisionRequest.builder()
+                .accountIds(convert(internationalScheduledPaymentConsentDetails.getAsJsonArray("accountsIds")))
                 .consentJwt(jwt)
                 .decision(Constants.ConsentDecision.AUTHORISED)
                 .debtorAccount(financialAccount)
