@@ -57,6 +57,9 @@ public class ConsentDetailsBuilderFactory {
             case PAYMENT_INTERNATIONAL_CONSENT -> {
                 return buildInternationalPaymentConsentDetails(consent, consentDetailsRequest, apiClient);
             }
+            case PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT -> {
+                return buildInternationalScheduledPaymentConsentDetails(consent, consentDetailsRequest, apiClient);
+            }
             default -> {
                 String message = String.format("Invalid type for intent ID: '%s'", intentId);
                 throw new ExceptionClient(consentDetailsRequest, ErrorType.UNKNOWN_INTENT_TYPE, message);
@@ -131,6 +134,21 @@ public class ConsentDetailsBuilderFactory {
     ) {
         InternationalPaymentConsentDetailsConverter consentDetailsConverter = InternationalPaymentConsentDetailsConverter.getInstance();
         InternationalPaymentConsentDetails details = consentDetailsConverter.toInternationalPaymentConsentDetails(consentDetails);
+        details.setUsername(consentDetailsRequest.getUser().getUserName());
+        details.setUserId(consentDetailsRequest.getUser().getId());
+        details.setAccounts(consentDetailsRequest.getAccounts());
+        details.setClientId(consentDetailsRequest.getClientId());
+        details.setLogo(apiClient.getLogoUri());
+        return details;
+    }
+
+    private static final InternationalScheduledPaymentConsentDetails buildInternationalScheduledPaymentConsentDetails(
+            JsonObject consentDetails,
+            ConsentRequest consentDetailsRequest,
+            ApiClient apiClient
+    ) {
+        InternationalScheduledPaymentConsentDetailsConverter consentDetailsConverter = InternationalScheduledPaymentConsentDetailsConverter.getInstance();
+        InternationalScheduledPaymentConsentDetails details = consentDetailsConverter.toInternationalScheduledPaymentConsentDetails(consentDetails);
         details.setUsername(consentDetailsRequest.getUser().getUserName());
         details.setUserId(consentDetailsRequest.getUser().getId());
         details.setAccounts(consentDetailsRequest.getAccounts());

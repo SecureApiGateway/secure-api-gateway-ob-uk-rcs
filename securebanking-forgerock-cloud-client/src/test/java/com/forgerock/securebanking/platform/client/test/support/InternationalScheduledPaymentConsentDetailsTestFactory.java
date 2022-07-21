@@ -31,26 +31,26 @@ import static java.util.UUID.randomUUID;
 /**
  * Test data factory for Domestic Payment Consent Details
  */
-public class DomesticScheduledPaymentConsentDetailsTestFactory {
+public class InternationalScheduledPaymentConsentDetailsTestFactory {
 
     public static final Gson gson = new Gson();
 
-    public static JsonObject aValidDomesticScheduledPaymentConsentDetails() {
-        return aValidDomesticScheduledPaymentConsentDetailsBuilder(randomUUID().toString());
+    public static JsonObject aValidInternationalScheduledPaymentConsentDetails() {
+        return aValidInternationalScheduledPaymentConsentDetailsBuilder(randomUUID().toString());
     }
 
-    public static JsonObject aValidDomesticScheduledPaymentConsentDetails(String consentId) {
-        return aValidDomesticScheduledPaymentConsentDetailsBuilder(consentId);
+    public static JsonObject aValidInternationalScheduledPaymentConsentDetails(String consentId) {
+        return aValidInternationalScheduledPaymentConsentDetailsBuilder(consentId);
     }
 
-    public static JsonObject aValidDomesticScheduledPaymentConsentDetails(String consentId, String clientId) {
-        return aValidDomesticScheduledPaymentConsentDetailsBuilder(consentId, clientId);
+    public static JsonObject aValidInternationalScheduledPaymentConsentDetails(String consentId, String clientId) {
+        return aValidInternationalScheduledPaymentConsentDetailsBuilder(consentId, clientId);
     }
 
-    public static JsonObject aValidDomesticScheduledPaymentConsentDetailsBuilder(String consentId) {
+    public static JsonObject aValidInternationalScheduledPaymentConsentDetailsBuilder(String consentId) {
         JsonObject consent = new JsonObject();
         consent.addProperty("id", UUID.randomUUID().toString());
-        consent.add("data", aValidDomesticScheduledPaymentConsentDataDetailsBuilder(consentId));
+        consent.add("data", aValidInternationalScheduledPaymentConsentDataDetailsBuilder(consentId));
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", randomUUID().toString());
         consent.addProperty("oauth2ClientName", "PISP Name");
@@ -59,10 +59,10 @@ public class DomesticScheduledPaymentConsentDetailsTestFactory {
         return consent;
     }
 
-    public static JsonObject aValidDomesticScheduledPaymentConsentDetailsBuilder(String consentId, String clientId) {
+    public static JsonObject aValidInternationalScheduledPaymentConsentDetailsBuilder(String consentId, String clientId) {
         JsonObject consent = new JsonObject();
         consent.addProperty("id", UUID.randomUUID().toString());
-        consent.add("data", aValidDomesticScheduledPaymentConsentDataDetailsBuilder(consentId));
+        consent.add("data", aValidInternationalScheduledPaymentConsentDataDetailsBuilder(consentId));
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", clientId);
         consent.addProperty("oauth2ClientName", "PISP Name");
@@ -71,7 +71,7 @@ public class DomesticScheduledPaymentConsentDetailsTestFactory {
         return consent;
     }
 
-    public static JsonObject aValidDomesticScheduledPaymentConsentDataDetailsBuilder(String consentId) {
+    public static JsonObject aValidInternationalScheduledPaymentConsentDataDetailsBuilder(String consentId) {
         JsonObject data = new JsonObject();
         data.addProperty("ConsentId", consentId);
         data.addProperty("Permission", "Create");
@@ -86,8 +86,14 @@ public class DomesticScheduledPaymentConsentDetailsTestFactory {
         JsonObject data = new JsonObject();
         data.addProperty("InstructionIdentification", "ACME412");
         data.addProperty("EndToEndIdentification", "FRESCO.21302.GFX.20");
-        data.addProperty("LocalInstrument", UUID.randomUUID().toString());
-        data.add("InstructedAmount", JsonParser.parseString("{ \"Amount\": '819.91', \"Currency\": 'GBP' }"));
+        data.addProperty("LocalInstrument", "UK.OBIE.BACS");
+        data.addProperty("InstructionPriority", "Normal");
+        data.addProperty("Purpose", "CDCD");
+        data.addProperty("ExtendedPurpose", "Extended Purpose");
+        data.addProperty("CurrencyOfTransfer", "USD");
+        data.addProperty("DestinationCountryCode", "GB");
+        data.addProperty("RequestedExecutionDateTime", "2022-05-30T15:15:13+00:00");
+        data.add("InstructedAmount", JsonParser.parseString("{ \"Amount\": '89.91', \"Currency\": 'GBP' }"));
         data.add("DebtorAccount", null);
         data.add("CreditorAccount", JsonParser.parseString("{\n" +
                 "        \"SchemeName\": \"UK.OBIE.SortCodeAccountNumber\",\n" +
@@ -95,13 +101,18 @@ public class DomesticScheduledPaymentConsentDetailsTestFactory {
                 "        \"Name\": \"ACME Inc\",\n" +
                 "        \"SecondaryIdentification\": \"0002\"\n" +
                 "      }"));
-        data.add("CreditorPostalAddress", null);
+        data.add("ExchangeRateInformation", JsonParser.parseString("{\n" +
+                "        \"UnitCurrency\": \"EUR\",\n" +
+                "        \"ExchangeRate\": \"10\",\n" +
+                "        \"RateType\": \"Agreed\",\n" +
+                "        \"ExpirationDateTime\": \"2022-05-30T15:15:13+00:00\",\n" +
+                "        \"ContractIdentification\": \"T102993\"\n" +
+                "      }"));
         data.add("RemittanceInformation", JsonParser.parseString("{\n" +
                 "        \"Reference\": \"FRESCO-101\",\n" +
                 "        \"Unstructured\": \"Internal ops code 5120101\"\n" +
                 "      }"));
         data.add("SupplementaryData", null);
-        data.addProperty("RequestedExecutionDateTime", "2022-05-30T15:15:13+00:00");
         return data;
     }
 
