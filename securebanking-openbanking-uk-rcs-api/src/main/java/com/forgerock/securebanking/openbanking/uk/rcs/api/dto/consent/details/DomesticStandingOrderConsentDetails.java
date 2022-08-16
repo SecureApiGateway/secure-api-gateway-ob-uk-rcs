@@ -20,6 +20,7 @@ import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.com
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomesticStandingOrderDataInitiation;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.forgerock.FRFrequency;
 import com.forgerock.securebanking.platform.client.IntentType;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
@@ -44,9 +45,27 @@ public class DomesticStandingOrderConsentDetails extends ConsentDetails {
     private List<FRAccountWithBalance> accounts;
     private String merchantName;
     private String paymentReference;
+    private FRAmount charges;
 
     public void setStandingOrder(FRWriteDomesticStandingOrderDataInitiation standingOrder) {
         this.standingOrder = standingOrder;
+    }
+
+    public void setCharges(JsonArray charges) {
+        if (!isNotNull(charges)) {
+            this.charges = null;
+        } else {
+            this.charges = new FRAmount();
+            Double amount = 0.0;
+
+            for (JsonElement charge : charges) {
+                JsonObject chargeAmount = charge.getAsJsonObject().getAsJsonObject("Amount");
+                amount += chargeAmount.get("Amount").getAsDouble();
+            }
+
+            this.charges.setCurrency(standingOrder.getFirstPaymentAmount().getCurrency());
+            this.charges.setAmount(amount.toString());
+        }
     }
 
     public void setStandingOrder(JsonElement finalPaymentDateTime, JsonObject finalPaymentAmount, JsonElement firstPaymentDateTime, JsonObject firstPaymentAmount, JsonElement recurringPaymentDateTime, JsonObject recurringPaymentAmount, JsonElement frequency) {

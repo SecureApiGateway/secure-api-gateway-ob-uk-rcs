@@ -17,6 +17,7 @@ package com.forgerock.securebanking.platform.client.test.support;
 
 import com.forgerock.securebanking.platform.client.ConsentStatusCode;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.joda.time.DateTime;
@@ -78,7 +79,15 @@ public class InternationalScheduledPaymentConsentDetailsTestFactory {
         data.addProperty("CreationDateTime", DateTime.now(DateTimeZone.forTimeZone(TimeZone.getDefault())).toString());
         data.addProperty("StatusUpdateDateTime", DateTime.now(DateTimeZone.forTimeZone(TimeZone.getDefault())).toString());
         data.addProperty("Status", ConsentStatusCode.AWAITINGAUTHORISATION.toString());
+        data.add("ExchangeRateInformation", JsonParser.parseString("{\n" +
+                "        \"UnitCurrency\": \"EUR\",\n" +
+                "        \"ExchangeRate\": \"1.23\",\n" +
+                "        \"RateType\": \"Agreed\",\n" +
+                "        \"ExpirationDateTime\": \"2022-05-30T15:15:13+00:00\",\n" +
+                "        \"ContractIdentification\": \"T102993\"\n" +
+                "      }"));
         data.add("Initiation", aValidFRWriteDomesticDataInitiationBuilder());
+        data.add("Charges", aValidChargesBuilder());
         return data;
     }
 
@@ -103,9 +112,8 @@ public class InternationalScheduledPaymentConsentDetailsTestFactory {
                 "      }"));
         data.add("ExchangeRateInformation", JsonParser.parseString("{\n" +
                 "        \"UnitCurrency\": \"EUR\",\n" +
-                "        \"ExchangeRate\": \"10\",\n" +
+                "        \"ExchangeRate\": \"1.23\",\n" +
                 "        \"RateType\": \"Agreed\",\n" +
-                "        \"ExpirationDateTime\": \"2022-05-30T15:15:13+00:00\",\n" +
                 "        \"ContractIdentification\": \"T102993\"\n" +
                 "      }"));
         data.add("RemittanceInformation", JsonParser.parseString("{\n" +
@@ -116,4 +124,18 @@ public class InternationalScheduledPaymentConsentDetailsTestFactory {
         return data;
     }
 
+    public static JsonArray aValidChargesBuilder() {
+        JsonArray charges = new JsonArray();
+        charges.add(JsonParser.parseString("{\n" +
+                "        \"ChargeBearer\": \"BorneByDebtor\",\n" +
+                "        \"Type\": \"UK.OBIE.CHAPSOut\",\n" +
+                "        \"Amount\": { \"Amount\": '12.91', \"Currency\": 'GBP' }" +
+                "      }"));
+        charges.add(JsonParser.parseString("{\n" +
+                "        \"ChargeBearer\": \"BorneByDebtor\",\n" +
+                "        \"Type\": \"UK.OBIE.CHAPSOut\",\n" +
+                "        \"Amount\": { \"Amount\": '8.2', \"Currency\": 'USD' }" +
+                "      }"));
+        return charges;
+    }
 }

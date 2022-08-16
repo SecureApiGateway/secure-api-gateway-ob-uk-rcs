@@ -60,23 +60,30 @@ public class InternationalPaymentConsentDetailsConverter {
             details.setCurrencyOfTransfer(null);
             details.setExchangeRateInformation(null);
             details.setInstructedAmount(null);
-        } else if (isNotNull(consentDetails.getAsJsonObject("data").get("Initiation"))) {
-            JsonObject initiation = consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation");
+        } else {
+            JsonObject data = consentDetails.getAsJsonObject("data");
 
-            details.setPaymentReference(isNotNull(initiation.get("RemittanceInformation")) && isNotNull(initiation.getAsJsonObject("RemittanceInformation").get("Reference")) ?
-                    initiation.getAsJsonObject("RemittanceInformation").get("Reference").getAsString() : null);
-
-            details.setCurrencyOfTransfer(isNotNull(initiation.get("CurrencyOfTransfer")) ?
-                    initiation.get("CurrencyOfTransfer").getAsString() : null);
-
-            details.setInstructedAmount(isNotNull(initiation.get("InstructedAmount")) ?
-                    initiation.getAsJsonObject("InstructedAmount") :
+            details.setExchangeRateInformation(isNotNull(data.get("ExchangeRateInformation")) ?
+                    data.getAsJsonObject("ExchangeRateInformation") :
                     null);
 
-            details.setExchangeRateInformation(isNotNull(initiation.get("ExchangeRateInformation")) ?
-                    initiation.getAsJsonObject("ExchangeRateInformation") :
-                    null);
+            if (isNotNull(data.get("Initiation"))) {
+                JsonObject initiation = data.getAsJsonObject("Initiation");
 
+                details.setPaymentReference(isNotNull(initiation.get("RemittanceInformation")) && isNotNull(initiation.getAsJsonObject("RemittanceInformation").get("Reference")) ?
+                        initiation.getAsJsonObject("RemittanceInformation").get("Reference").getAsString() : null);
+
+                details.setCurrencyOfTransfer(isNotNull(initiation.get("CurrencyOfTransfer")) ?
+                        initiation.get("CurrencyOfTransfer").getAsString() : null);
+
+                details.setInstructedAmount(isNotNull(initiation.get("InstructedAmount")) ?
+                        initiation.getAsJsonObject("InstructedAmount") :
+                        null);
+
+                details.setCharges(isNotNull(data.get("Charges")) ?
+                        data.getAsJsonArray("Charges") :
+                        null);
+            }
         }
         return details;
     }

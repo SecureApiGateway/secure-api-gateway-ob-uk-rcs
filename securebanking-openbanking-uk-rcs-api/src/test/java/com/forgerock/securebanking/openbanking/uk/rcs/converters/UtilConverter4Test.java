@@ -33,8 +33,7 @@ public class UtilConverter4Test {
 
 
     public static final JsonElement transformationForPermissionsList(List<FRExternalPermissionsCode> list) {
-        if (list == null || list.isEmpty())
-        {
+        if (list == null || list.isEmpty()) {
             return null;
         }
         List<String> permissions = new ArrayList<>();

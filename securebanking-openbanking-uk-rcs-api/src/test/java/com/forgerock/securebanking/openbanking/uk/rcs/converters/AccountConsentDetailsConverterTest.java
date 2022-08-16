@@ -22,7 +22,8 @@ import org.junit.jupiter.api.Test;
 
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.ACCOUNT_INTENT_ID;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.transformationForPermissionsList;
-import static com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory.*;
+import static com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory.aValidAccountConsentDataDetailsBuilderOnlyMandatoryFields;
+import static com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory.aValidAccountConsentDetails;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

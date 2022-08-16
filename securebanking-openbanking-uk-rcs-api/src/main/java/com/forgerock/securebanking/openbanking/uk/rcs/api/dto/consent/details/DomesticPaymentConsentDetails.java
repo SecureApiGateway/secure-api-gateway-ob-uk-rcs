@@ -18,6 +18,8 @@ package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAmount;
 import com.forgerock.securebanking.platform.client.IntentType;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -40,10 +42,28 @@ public class DomesticPaymentConsentDetails extends ConsentDetails {
     private String merchantName;
     private List<FRAccountWithBalance> accounts;
     private String paymentReference;
+    private FRAmount charges;
 
     @Override
     public IntentType getIntentType() {
         return IntentType.PAYMENT_DOMESTIC_CONSENT;
+    }
+
+    public void setCharges(JsonArray charges) {
+        if (!isNotNull(charges)) {
+            this.charges = null;
+        } else {
+            this.charges = new FRAmount();
+            Double amount = 0.0;
+
+            for (JsonElement charge : charges) {
+                JsonObject chargeAmount = charge.getAsJsonObject().getAsJsonObject("Amount");
+                amount += chargeAmount.get("Amount").getAsDouble();
+            }
+
+            this.charges.setCurrency(instructedAmount.getCurrency());
+            this.charges.setAmount(amount.toString());
+        }
     }
 
     public void setInstructedAmount(JsonObject instructedAmount) {

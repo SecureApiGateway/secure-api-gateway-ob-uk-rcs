@@ -59,26 +59,35 @@ public class DomesticStandingOrderConsentDetailsConverter {
         if (!isNotNull(consentDetails.get("data"))) {
             details.setPaymentReference(null);
             details.setStandingOrder(null);
-        } else if (isNotNull(consentDetails.getAsJsonObject("data").get("Initiation"))) {
-            JsonObject initiation = consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation");
+        } else {
+            JsonObject data = consentDetails.getAsJsonObject("data");
 
-            details.setPaymentReference(isNotNull(initiation.get("Reference")) ?
-                    initiation.get("Reference").getAsString() : null);
+            if (isNotNull(data.get("Initiation"))) {
+                JsonObject initiation = data.getAsJsonObject("Initiation");
 
-            details.setStandingOrder(
-                    isNotNull(initiation.get("FinalPaymentDateTime")) ? initiation.get("FinalPaymentDateTime") : null,
-                    isNotNull(initiation.get("FinalPaymentAmount")) ? initiation.getAsJsonObject("FinalPaymentAmount") : null,
-                    isNotNull(initiation.get("FirstPaymentDateTime")) ? initiation.get("FirstPaymentDateTime") : null,
-                    isNotNull(initiation.get("FirstPaymentAmount")) ? initiation.getAsJsonObject("FirstPaymentAmount") : null,
-                    isNotNull(initiation.get("RecurringPaymentDateTime")) ? initiation.get("RecurringPaymentDateTime") : null,
-                    isNotNull(initiation.get("RecurringPaymentAmount")) ? initiation.getAsJsonObject("RecurringPaymentAmount") : null,
-                    initiation.get("Frequency")
-            );
+                details.setPaymentReference(isNotNull(initiation.get("Reference")) ?
+                        initiation.get("Reference").getAsString() : null);
+
+                details.setStandingOrder(
+                        isNotNull(initiation.get("FinalPaymentDateTime")) ? initiation.get("FinalPaymentDateTime") : null,
+                        isNotNull(initiation.get("FinalPaymentAmount")) ? initiation.getAsJsonObject("FinalPaymentAmount") : null,
+                        isNotNull(initiation.get("FirstPaymentDateTime")) ? initiation.get("FirstPaymentDateTime") : null,
+                        isNotNull(initiation.get("FirstPaymentAmount")) ? initiation.getAsJsonObject("FirstPaymentAmount") : null,
+                        isNotNull(initiation.get("RecurringPaymentDateTime")) ? initiation.get("RecurringPaymentDateTime") : null,
+                        isNotNull(initiation.get("RecurringPaymentAmount")) ? initiation.getAsJsonObject("RecurringPaymentAmount") : null,
+                        initiation.get("Frequency")
+                );
+
+                details.setCharges(isNotNull(data.get("Charges")) ?
+                        data.getAsJsonArray("Charges") :
+                        null);
+            }
         }
         return details;
     }
 
-    public final DomesticStandingOrderConsentDetails toDomesticStandingOrderConsentDetails(JsonObject consentDetails) {
+    public final DomesticStandingOrderConsentDetails toDomesticStandingOrderConsentDetails(JsonObject
+                                                                                                   consentDetails) {
         return mapping(consentDetails);
     }
 }

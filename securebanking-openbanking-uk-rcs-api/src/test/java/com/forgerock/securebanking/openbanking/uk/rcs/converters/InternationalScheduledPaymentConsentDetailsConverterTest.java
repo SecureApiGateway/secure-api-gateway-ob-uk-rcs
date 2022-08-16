@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.DomesticScheduledPaymentConsentDetailsConverter.DATE_TIME_FORMATTER;
-import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.INTERNATIONAL_PAYMENT_INTENT_ID;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.INTERNATIONAL_SCHEDULED_PAYMENT_INTENT_ID;
 import static com.forgerock.securebanking.platform.client.test.support.InternationalScheduledPaymentConsentDetailsTestFactory.aValidInternationalScheduledPaymentConsentDetails;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,7 +42,8 @@ public class InternationalScheduledPaymentConsentDetailsConverterTest {
         InternationalScheduledPaymentConsentDetails internationalScheduledPaymentConsentDetails = InternationalScheduledPaymentConsentDetailsConverter.getInstance().toInternationalScheduledPaymentConsentDetails(consentDetails);
 
         // Then
-        JsonObject initiation = consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation");
+        JsonObject data = consentDetails.getAsJsonObject("data");
+        JsonObject initiation = data.getAsJsonObject("Initiation");
 
         assertThat(internationalScheduledPaymentConsentDetails.getInstructedAmount().getAmount())
                 .isEqualTo(initiation.getAsJsonObject("InstructedAmount").get("Amount").getAsString());
@@ -52,15 +52,15 @@ public class InternationalScheduledPaymentConsentDetailsConverterTest {
                 .isEqualTo(initiation.getAsJsonObject("InstructedAmount").get("Currency").getAsString());
 
         assertThat(internationalScheduledPaymentConsentDetails.getExchangeRateInformation().getExchangeRate())
-                .isEqualTo(new BigDecimal(initiation.getAsJsonObject("ExchangeRateInformation").get("ExchangeRate").getAsString()));
+                .isEqualTo(new BigDecimal(data.getAsJsonObject("ExchangeRateInformation").get("ExchangeRate").getAsString()));
         assertThat(internationalScheduledPaymentConsentDetails.getExchangeRateInformation().getUnitCurrency())
-                .isEqualTo(initiation.getAsJsonObject("ExchangeRateInformation").get("UnitCurrency").getAsString());
+                .isEqualTo(data.getAsJsonObject("ExchangeRateInformation").get("UnitCurrency").getAsString());
         assertThat(internationalScheduledPaymentConsentDetails.getExchangeRateInformation().getRateType())
-                .isEqualTo(FRExchangeRateInformation.FRRateType.fromValue(initiation.getAsJsonObject("ExchangeRateInformation").get("RateType").getAsString()));
+                .isEqualTo(FRExchangeRateInformation.FRRateType.fromValue(data.getAsJsonObject("ExchangeRateInformation").get("RateType").getAsString()));
         assertThat(internationalScheduledPaymentConsentDetails.getExchangeRateInformation().getContractIdentification())
-                .isEqualTo(initiation.getAsJsonObject("ExchangeRateInformation").get("ContractIdentification").getAsString());
+                .isEqualTo(data.getAsJsonObject("ExchangeRateInformation").get("ContractIdentification").getAsString());
         assertThat(internationalScheduledPaymentConsentDetails.getExchangeRateInformation().getExpirationDateTime())
-                .isEqualTo(DATE_TIME_FORMATTER.parseDateTime(initiation.getAsJsonObject("ExchangeRateInformation").get("ExpirationDateTime").getAsString()));
+                .isEqualTo(DATE_TIME_FORMATTER.parseDateTime(data.getAsJsonObject("ExchangeRateInformation").get("ExpirationDateTime").getAsString()));
 
         assertThat(internationalScheduledPaymentConsentDetails.getMerchantName()).isEqualTo(consentDetails.get("oauth2ClientName").getAsString());
 
@@ -73,5 +73,7 @@ public class InternationalScheduledPaymentConsentDetailsConverterTest {
         assertThat(internationalScheduledPaymentConsentDetails.getPaymentDate())
                 .isEqualTo(DATE_TIME_FORMATTER.parseDateTime(initiation.get("RequestedExecutionDateTime").getAsString()));
 
+        assertThat(internationalScheduledPaymentConsentDetails.getCharges())
+                .isNotNull();
     }
 }

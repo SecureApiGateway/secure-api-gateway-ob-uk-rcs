@@ -20,8 +20,8 @@ import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
-import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.DOMESTIC_SCHEDULED_PAYMENT_INTENT_ID;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.DomesticScheduledPaymentConsentDetailsConverter.DATE_TIME_FORMATTER;
+import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.DOMESTIC_SCHEDULED_PAYMENT_INTENT_ID;
 import static com.forgerock.securebanking.platform.client.test.support.DomesticScheduledPaymentConsentDetailsTestFactory.aValidDomesticScheduledPaymentConsentDetails;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,12 +47,15 @@ public class DomesticScheduledPaymentConsentDetailsConverterTest {
         assertThat(domesticScheduledPaymentConsentDetails.getInstructedAmount().getCurrency())
                 .isEqualTo(initiation.getAsJsonObject("InstructedAmount").get("Currency").getAsString());
 
-        assertThat(domesticScheduledPaymentConsentDetails.getMerchantName()).isEqualTo( consentDetails.get("oauth2ClientName").getAsString());
+        assertThat(domesticScheduledPaymentConsentDetails.getMerchantName()).isEqualTo(consentDetails.get("oauth2ClientName").getAsString());
 
         assertThat(domesticScheduledPaymentConsentDetails.getPaymentReference())
                 .isEqualTo(initiation.getAsJsonObject("RemittanceInformation").get("Reference").getAsString());
 
         assertThat(domesticScheduledPaymentConsentDetails.getPaymentDate())
                 .isEqualTo(DATE_TIME_FORMATTER.parseDateTime(initiation.get("RequestedExecutionDateTime").getAsString()));
+
+        assertThat(domesticScheduledPaymentConsentDetails.getCharges())
+                .isNotNull();
     }
 }
