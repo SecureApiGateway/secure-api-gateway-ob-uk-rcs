@@ -78,6 +78,13 @@ public class InternationalScheduledPaymentConsentDetailsTestFactory {
         data.addProperty("CreationDateTime", DateTime.now(DateTimeZone.forTimeZone(TimeZone.getDefault())).toString());
         data.addProperty("StatusUpdateDateTime", DateTime.now(DateTimeZone.forTimeZone(TimeZone.getDefault())).toString());
         data.addProperty("Status", ConsentStatusCode.AWAITINGAUTHORISATION.toString());
+        data.add("ExchangeRateInformation", JsonParser.parseString("{\n" +
+                "        \"UnitCurrency\": \"EUR\",\n" +
+                "        \"ExchangeRate\": \"10\",\n" +
+                "        \"RateType\": \"Agreed\",\n" +
+                "        \"ExpirationDateTime\": \"2022-05-30T15:15:13+00:00\",\n" +
+                "        \"ContractIdentification\": \"T102993\"\n" +
+                "      }"));
         data.add("Initiation", aValidFRWriteDomesticDataInitiationBuilder());
         return data;
     }
@@ -105,7 +112,6 @@ public class InternationalScheduledPaymentConsentDetailsTestFactory {
                 "        \"UnitCurrency\": \"EUR\",\n" +
                 "        \"ExchangeRate\": \"10\",\n" +
                 "        \"RateType\": \"Agreed\",\n" +
-                "        \"ExpirationDateTime\": \"2022-05-30T15:15:13+00:00\",\n" +
                 "        \"ContractIdentification\": \"T102993\"\n" +
                 "      }"));
         data.add("RemittanceInformation", JsonParser.parseString("{\n" +
