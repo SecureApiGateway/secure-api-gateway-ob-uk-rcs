@@ -63,6 +63,7 @@ public class InternationalScheduledPaymentConsentDetailsConverter {
             details.setInstructedAmount(null);
         } else {
             JsonObject data = consentDetails.getAsJsonObject("data");
+
             details.setExchangeRateInformation(isNotNull(data.get("ExchangeRateInformation")) ?
                     data.getAsJsonObject("ExchangeRateInformation") :
                     null);
@@ -84,6 +85,9 @@ public class InternationalScheduledPaymentConsentDetailsConverter {
                         initiation.getAsJsonObject("InstructedAmount") :
                         null);
 
+                details.setCharges(isNotNull(data.get("Charges")) ?
+                        data.getAsJsonArray("Charges") :
+                        null);
             }
         }
         return details;

@@ -47,9 +47,12 @@ public class DomesticPaymentConsentDetailsConverterTest {
         assertThat(domesticPaymentConsentDetails.getInstructedAmount().getCurrency())
                 .isEqualTo(initiation.getAsJsonObject("InstructedAmount").get("Currency").getAsString());
 
-        assertThat(domesticPaymentConsentDetails.getMerchantName()).isEqualTo( consentDetails.get("oauth2ClientName").getAsString());
+        assertThat(domesticPaymentConsentDetails.getMerchantName()).isEqualTo(consentDetails.get("oauth2ClientName").getAsString());
 
         assertThat(domesticPaymentConsentDetails.getPaymentReference())
                 .isEqualTo(initiation.getAsJsonObject("RemittanceInformation").get("Reference").getAsString());
+
+        assertThat(domesticPaymentConsentDetails.getCharges())
+                .isNotNull();
     }
 }

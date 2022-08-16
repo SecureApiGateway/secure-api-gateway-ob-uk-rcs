@@ -36,36 +36,39 @@ public class DomesticStandingOrderConsentDetailsConverterTest {
         JsonObject consentDetails = aValidDomesticStandingOrderConsentDetails(DOMESTIC_STANDING_ORDER_INTENT_ID);
 
         // When
-        DomesticStandingOrderConsentDetails DomesticStandingOrderConsentDetails = DomesticStandingOrderConsentDetailsConverter.getInstance().toDomesticStandingOrderConsentDetails(consentDetails);
+        DomesticStandingOrderConsentDetails domesticStandingOrderConsentDetails = DomesticStandingOrderConsentDetailsConverter.getInstance().toDomesticStandingOrderConsentDetails(consentDetails);
 
         // Then
         JsonObject initiation = consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation");
 
-        assertThat(DomesticStandingOrderConsentDetails.getStandingOrder().getFinalPaymentAmount().getAmount())
+        assertThat(domesticStandingOrderConsentDetails.getStandingOrder().getFinalPaymentAmount().getAmount())
                 .isEqualTo(initiation.getAsJsonObject("FinalPaymentAmount").get("Amount").getAsString());
-        assertThat(DomesticStandingOrderConsentDetails.getStandingOrder().getFinalPaymentAmount().getCurrency())
+        assertThat(domesticStandingOrderConsentDetails.getStandingOrder().getFinalPaymentAmount().getCurrency())
                 .isEqualTo(initiation.getAsJsonObject("FinalPaymentAmount").get("Currency").getAsString());
 
-        assertThat(DomesticStandingOrderConsentDetails.getStandingOrder().getFirstPaymentAmount().getAmount())
+        assertThat(domesticStandingOrderConsentDetails.getStandingOrder().getFirstPaymentAmount().getAmount())
                 .isEqualTo(initiation.getAsJsonObject("FirstPaymentAmount").get("Amount").getAsString());
-        assertThat(DomesticStandingOrderConsentDetails.getStandingOrder().getFirstPaymentAmount().getCurrency())
+        assertThat(domesticStandingOrderConsentDetails.getStandingOrder().getFirstPaymentAmount().getCurrency())
                 .isEqualTo(initiation.getAsJsonObject("FirstPaymentAmount").get("Currency").getAsString());
 
-        assertThat(DomesticStandingOrderConsentDetails.getStandingOrder().getRecurringPaymentAmount().getAmount())
+        assertThat(domesticStandingOrderConsentDetails.getStandingOrder().getRecurringPaymentAmount().getAmount())
                 .isEqualTo(initiation.getAsJsonObject("RecurringPaymentAmount").get("Amount").getAsString());
-        assertThat(DomesticStandingOrderConsentDetails.getStandingOrder().getRecurringPaymentAmount().getCurrency())
+        assertThat(domesticStandingOrderConsentDetails.getStandingOrder().getRecurringPaymentAmount().getCurrency())
                 .isEqualTo(initiation.getAsJsonObject("RecurringPaymentAmount").get("Currency").getAsString());
 
-        assertThat(DomesticStandingOrderConsentDetails.getStandingOrder().getFinalPaymentDateTime())
+        assertThat(domesticStandingOrderConsentDetails.getStandingOrder().getFinalPaymentDateTime())
                 .isEqualTo(DATE_TIME_FORMATTER.parseDateTime(initiation.get("FinalPaymentDateTime").getAsString()));
-        assertThat(DomesticStandingOrderConsentDetails.getStandingOrder().getFirstPaymentDateTime())
+        assertThat(domesticStandingOrderConsentDetails.getStandingOrder().getFirstPaymentDateTime())
                 .isEqualTo(DATE_TIME_FORMATTER.parseDateTime(initiation.get("FirstPaymentDateTime").getAsString()));
-        assertThat(DomesticStandingOrderConsentDetails.getStandingOrder().getRecurringPaymentDateTime())
+        assertThat(domesticStandingOrderConsentDetails.getStandingOrder().getRecurringPaymentDateTime())
                 .isEqualTo(DATE_TIME_FORMATTER.parseDateTime(initiation.get("RecurringPaymentDateTime").getAsString()));
 
-        assertThat(DomesticStandingOrderConsentDetails.getMerchantName()).isEqualTo(consentDetails.get("oauth2ClientName").getAsString());
+        assertThat(domesticStandingOrderConsentDetails.getMerchantName()).isEqualTo(consentDetails.get("oauth2ClientName").getAsString());
 
-        assertThat(DomesticStandingOrderConsentDetails.getPaymentReference())
+        assertThat(domesticStandingOrderConsentDetails.getPaymentReference())
                 .isEqualTo(initiation.get("Reference").getAsString());
+
+        assertThat(domesticStandingOrderConsentDetails.getCharges())
+                .isNotNull();
     }
 }

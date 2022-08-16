@@ -17,6 +17,7 @@ package com.forgerock.securebanking.platform.client.test.support;
 
 import com.forgerock.securebanking.platform.client.ConsentStatusCode;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.joda.time.DateTime;
@@ -78,6 +79,7 @@ public class DomesticStandingOrderConsentDetailsTestFactory {
         data.addProperty("StatusUpdateDateTime", DateTime.now(DateTimeZone.forTimeZone(TimeZone.getDefault())).toString());
         data.addProperty("Status", ConsentStatusCode.AWAITINGAUTHORISATION.toString());
         data.add("Initiation", aValidFRWriteDomesticDataInitiationBuilder());
+        data.add("Charges", aValidChargesBuilder());
         return data;
     }
 
@@ -102,4 +104,18 @@ public class DomesticStandingOrderConsentDetailsTestFactory {
         return data;
     }
 
+    public static JsonArray aValidChargesBuilder() {
+        JsonArray charges = new JsonArray();
+        charges.add(JsonParser.parseString("{\n" +
+                "        \"ChargeBearer\": \"BorneByDebtor\",\n" +
+                "        \"Type\": \"UK.OBIE.CHAPSOut\",\n" +
+                "        \"Amount\": { \"Amount\": '12.91', \"Currency\": 'GBP' }" +
+                "      }"));
+        charges.add(JsonParser.parseString("{\n" +
+                "        \"ChargeBearer\": \"BorneByDebtor\",\n" +
+                "        \"Type\": \"UK.OBIE.CHAPSOut\",\n" +
+                "        \"Amount\": { \"Amount\": '8.2', \"Currency\": 'USD' }" +
+                "      }"));
+        return charges;
+    }
 }

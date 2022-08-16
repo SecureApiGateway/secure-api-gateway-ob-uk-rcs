@@ -55,8 +55,11 @@ public class DomesticPaymentConsentDetailsConverter {
         if (!isNotNull(consentDetails.get("data"))) {
             details.setInstructedAmount(null);
             details.setPaymentReference(null);
-        } else if (isNotNull(consentDetails.getAsJsonObject("data").get("Initiation"))) {
-            JsonObject initiation = consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation");
+        } else {
+            JsonObject data = consentDetails.getAsJsonObject("data");
+
+            if (isNotNull(data.get("Initiation"))) {
+                JsonObject initiation = data.getAsJsonObject("Initiation");
 
             details.setInstructedAmount(isNotNull(initiation.get("InstructedAmount")) ?
                     initiation.getAsJsonObject("InstructedAmount") :
@@ -66,6 +69,11 @@ public class DomesticPaymentConsentDetailsConverter {
                     isNotNull(initiation.getAsJsonObject("RemittanceInformation").get("Reference")) ?
                     initiation.getAsJsonObject("RemittanceInformation").get("Reference").getAsString() :
                     null);
+
+                details.setCharges(isNotNull(data.get("Charges")) ?
+                        data.getAsJsonArray("Charges") :
+                        null);
+            }
         }
         return details;
     }

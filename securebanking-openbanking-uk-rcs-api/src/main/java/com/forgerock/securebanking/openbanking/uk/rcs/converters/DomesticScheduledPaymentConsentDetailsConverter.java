@@ -59,8 +59,11 @@ public class DomesticScheduledPaymentConsentDetailsConverter {
             details.setInstructedAmount(null);
             details.setPaymentReference(null);
             details.setPaymentDate(null);
-        } else if(isNotNull(consentDetails.getAsJsonObject("data").get("Initiation"))){
-            JsonObject initiation = consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation");
+        } else {
+            JsonObject data = consentDetails.getAsJsonObject("data");
+
+            if (isNotNull(data.get("Initiation"))) {
+                JsonObject initiation = data.getAsJsonObject("Initiation");
 
             details.setInstructedAmount(isNotNull(initiation.get("InstructedAmount")) ?
                     initiation.getAsJsonObject("InstructedAmount") :
@@ -75,6 +78,10 @@ public class DomesticScheduledPaymentConsentDetailsConverter {
                     DATE_TIME_FORMATTER.parseDateTime(initiation.get("RequestedExecutionDateTime").getAsString()) :
                     null);
 
+                details.setCharges(isNotNull(data.get("Charges")) ?
+                        data.getAsJsonArray("Charges") :
+                        null);
+            }
         }
         return details;
     }

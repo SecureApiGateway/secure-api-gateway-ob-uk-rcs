@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.DomesticScheduledPaymentConsentDetailsConverter.DATE_TIME_FORMATTER;
-import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.*;
+import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.INTERNATIONAL_PAYMENT_INTENT_ID;
 import static com.forgerock.securebanking.platform.client.test.support.InternationalPaymentConsentDetailsTestFactory.aValidInternationalPaymentConsentDetails;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,36 +39,38 @@ public class InternationalPaymentConsentDetailsConverterTest {
         JsonObject consentDetails = aValidInternationalPaymentConsentDetails(INTERNATIONAL_PAYMENT_INTENT_ID);
 
         // When
-        InternationalPaymentConsentDetails InternationalPaymentConsentDetails = InternationalPaymentConsentDetailsConverter.getInstance().toInternationalPaymentConsentDetails(consentDetails);
+        InternationalPaymentConsentDetails internationalPaymentConsentDetails = InternationalPaymentConsentDetailsConverter.getInstance().toInternationalPaymentConsentDetails(consentDetails);
 
         // Then
         JsonObject data = consentDetails.getAsJsonObject("data");
         JsonObject initiation = data.getAsJsonObject("Initiation");
-        
-        assertThat(InternationalPaymentConsentDetails.getInstructedAmount().getAmount())
+
+        assertThat(internationalPaymentConsentDetails.getInstructedAmount().getAmount())
                 .isEqualTo(initiation.getAsJsonObject("InstructedAmount").get("Amount").getAsString());
 
-        assertThat(InternationalPaymentConsentDetails.getInstructedAmount().getCurrency())
+        assertThat(internationalPaymentConsentDetails.getInstructedAmount().getCurrency())
                 .isEqualTo(initiation.getAsJsonObject("InstructedAmount").get("Currency").getAsString());
 
-        assertThat(InternationalPaymentConsentDetails.getExchangeRateInformation().getExchangeRate())
+        assertThat(internationalPaymentConsentDetails.getExchangeRateInformation().getExchangeRate())
                 .isEqualTo(new BigDecimal(data.getAsJsonObject("ExchangeRateInformation").get("ExchangeRate").getAsString()));
-        assertThat(InternationalPaymentConsentDetails.getExchangeRateInformation().getUnitCurrency())
+        assertThat(internationalPaymentConsentDetails.getExchangeRateInformation().getUnitCurrency())
                 .isEqualTo(data.getAsJsonObject("ExchangeRateInformation").get("UnitCurrency").getAsString());
-        assertThat(InternationalPaymentConsentDetails.getExchangeRateInformation().getRateType())
+        assertThat(internationalPaymentConsentDetails.getExchangeRateInformation().getRateType())
                 .isEqualTo(FRExchangeRateInformation.FRRateType.fromValue(data.getAsJsonObject("ExchangeRateInformation").get("RateType").getAsString()));
-        assertThat(InternationalPaymentConsentDetails.getExchangeRateInformation().getContractIdentification())
+        assertThat(internationalPaymentConsentDetails.getExchangeRateInformation().getContractIdentification())
                 .isEqualTo(data.getAsJsonObject("ExchangeRateInformation").get("ContractIdentification").getAsString());
-        assertThat(InternationalPaymentConsentDetails.getExchangeRateInformation().getExpirationDateTime())
+        assertThat(internationalPaymentConsentDetails.getExchangeRateInformation().getExpirationDateTime())
                 .isEqualTo(DATE_TIME_FORMATTER.parseDateTime(data.getAsJsonObject("ExchangeRateInformation").get("ExpirationDateTime").getAsString()));
 
-        assertThat(InternationalPaymentConsentDetails.getMerchantName()).isEqualTo(consentDetails.get("oauth2ClientName").getAsString());
+        assertThat(internationalPaymentConsentDetails.getMerchantName()).isEqualTo(consentDetails.get("oauth2ClientName").getAsString());
 
-        assertThat(InternationalPaymentConsentDetails.getPaymentReference())
+        assertThat(internationalPaymentConsentDetails.getPaymentReference())
                 .isEqualTo(initiation.getAsJsonObject("RemittanceInformation").get("Reference").getAsString());
 
-        assertThat(InternationalPaymentConsentDetails.getCurrencyOfTransfer())
+        assertThat(internationalPaymentConsentDetails.getCurrencyOfTransfer())
                 .isEqualTo(initiation.get("CurrencyOfTransfer").getAsString());
 
+        assertThat(internationalPaymentConsentDetails.getCharges())
+                .isNotNull();
     }
 }

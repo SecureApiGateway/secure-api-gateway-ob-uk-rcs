@@ -16,6 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRStandingOrderData;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAmount;
 import com.forgerock.securebanking.platform.client.IntentType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -33,6 +34,7 @@ import org.joda.time.DateTime;
 public class InternationalStandingOrderConsentDetails extends ConsentDetails {
 
     private FRStandingOrderData standingOrder;
+    private FRAmount charges;
     private String merchantName;
     private DateTime expiredDate;
     private String currencyOfTransfer;

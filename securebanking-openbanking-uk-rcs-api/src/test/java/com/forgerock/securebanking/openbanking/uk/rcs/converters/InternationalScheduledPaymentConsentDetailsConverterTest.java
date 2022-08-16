@@ -74,5 +74,7 @@ public class InternationalScheduledPaymentConsentDetailsConverterTest {
         assertThat(internationalScheduledPaymentConsentDetails.getPaymentDate())
                 .isEqualTo(DATE_TIME_FORMATTER.parseDateTime(initiation.get("RequestedExecutionDateTime").getAsString()));
 
+        assertThat(internationalScheduledPaymentConsentDetails.getCharges())
+                .isNotNull();
     }
 }
