@@ -16,7 +16,6 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRScheduledPaymentData;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAmount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRExchangeRateInformation;
 import com.forgerock.securebanking.platform.client.IntentType;
@@ -70,9 +69,9 @@ public class InternationalScheduledPaymentConsentDetails extends ConsentDetails 
     }
 
     public void setCharges(JsonArray charges) {
-        if (!isNotNull(charges))
+        if (!isNotNull(charges)) {
             this.charges = null;
-        else {
+        } else {
             this.charges = new FRAmount();
             Double amount = 0.0;
 

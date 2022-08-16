@@ -67,9 +67,9 @@ public class InternationalPaymentConsentDetails extends ConsentDetails {
     }
 
     public void setCharges(JsonArray charges) {
-        if (!isNotNull(charges))
+        if (!isNotNull(charges)) {
             this.charges = null;
-        else {
+        } else {
             this.charges = new FRAmount();
             Double amount = 0.0;
 
