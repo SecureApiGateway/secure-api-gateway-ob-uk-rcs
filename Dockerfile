@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk14:jre-14.0.2_12
+FROM gcr.io/forgerock-io/java-17:latest
 
 RUN mkdir /app
 RUN groupadd -r rcs && useradd -r -s /bin/false -g rcs rcs
