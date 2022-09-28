@@ -60,6 +60,9 @@ public class ConsentDetailsBuilderFactory {
             case PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT -> {
                 return buildInternationalScheduledPaymentConsentDetails(consent, consentDetailsRequest, apiClient);
             }
+            case PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT -> {
+                return buildInternationalStandingOrderConsentDetails(consent, consentDetailsRequest, apiClient);
+            }
             default -> {
                 String message = String.format("Invalid type for intent ID: '%s'", intentId);
                 throw new ExceptionClient(consentDetailsRequest, ErrorType.UNKNOWN_INTENT_TYPE, message);
@@ -156,4 +159,20 @@ public class ConsentDetailsBuilderFactory {
         details.setLogo(apiClient.getLogoUri());
         return details;
     }
+
+    private static final InternationalStandingOrderConsentDetails buildInternationalStandingOrderConsentDetails(
+            JsonObject consentDetails,
+            ConsentRequest consentDetailsRequest,
+            ApiClient apiClient
+    ) {
+        InternationalStandingOrderConsentDetailsConverter consentDetailsConverter = InternationalStandingOrderConsentDetailsConverter.getInstance();
+        InternationalStandingOrderConsentDetails details = consentDetailsConverter.toInternationalStandingOrderConsentDetails(consentDetails);
+        details.setUsername(consentDetailsRequest.getUser().getUserName());
+        details.setUserId(consentDetailsRequest.getUser().getId());
+        details.setAccounts(consentDetailsRequest.getAccounts());
+        details.setClientId(consentDetailsRequest.getClientId());
+        details.setLogo(apiClient.getLogoUri());
+        return details;
+    }
+
 }
