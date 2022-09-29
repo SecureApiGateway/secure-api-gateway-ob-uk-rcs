@@ -214,8 +214,8 @@ public class ConsentDecisionApiControllerTest {
     public void ShouldGetRedirectionActionDomesticStandingOrder() throws ExceptionClient {
         // given
         ConsentDecision consentDecision = aValidDomesticPaymentConsentDecision(DOMESTIC_STANDING_ORDER_INTENT_ID);
-        JsonObject domesticStrandingOrderConsentDetails = aValidDomesticStandingOrderConsentDetails(consentDecision.getIntentId());
-        given(consentServiceClient.updateConsent(consentDecision)).willReturn(domesticStrandingOrderConsentDetails);
+        JsonObject domesticStandingOrderConsentDetails = aValidDomesticStandingOrderConsentDetails(consentDecision.getIntentId());
+        given(consentServiceClient.updateConsent(consentDecision)).willReturn(domesticStandingOrderConsentDetails);
         String jwt = JwtTestHelper.consentRequestJwt(
                 consentDecision.getClientId(),
                 consentDecision.getIntentId(),
@@ -233,7 +233,7 @@ public class ConsentDecisionApiControllerTest {
         financialAccount.setAccounts(List.of(accountIdentifier));
 
         ConsentDecisionRequest consentDecisionRequest = ConsentDecisionRequest.builder()
-                .accountIds(convert(domesticStrandingOrderConsentDetails.getAsJsonArray("accountsIds")))
+                .accountIds(convert(domesticStandingOrderConsentDetails.getAsJsonArray("accountsIds")))
                 .consentJwt(jwt)
                 .decision(Constants.ConsentDecision.AUTHORISED)
                 .debtorAccount(financialAccount)
