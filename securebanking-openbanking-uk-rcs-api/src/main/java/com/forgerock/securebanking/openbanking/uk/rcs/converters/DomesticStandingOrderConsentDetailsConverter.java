@@ -17,6 +17,7 @@ package com.forgerock.securebanking.openbanking.uk.rcs.converters;
 
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticScheduledPaymentConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticStandingOrderConsentDetails;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,31 +57,35 @@ public class DomesticStandingOrderConsentDetailsConverter {
                 consentDetails.get("oauth2ClientName").getAsString() :
                 null);
 
-        if (!isNotNull(consentDetails.get("data"))) {
-            details.setPaymentReference(null);
-            details.setStandingOrder(null);
-        } else {
-            JsonObject data = consentDetails.getAsJsonObject("data");
+        if (consentDetails.has("OBIntentObject")) {
+            final JsonObject obIntentObject = consentDetails.get("OBIntentObject").getAsJsonObject();
+            final JsonElement consentDataElement = obIntentObject.get("Data");
+            if (!isNotNull(consentDataElement)) {
+                details.setPaymentReference(null);
+                details.setStandingOrder(null);
+            } else {
+                JsonObject data = consentDataElement.getAsJsonObject();
 
-            if (isNotNull(data.get("Initiation"))) {
-                JsonObject initiation = data.getAsJsonObject("Initiation");
+                if (isNotNull(data.get("Initiation"))) {
+                    JsonObject initiation = data.getAsJsonObject("Initiation");
 
-                details.setPaymentReference(isNotNull(initiation.get("Reference")) ?
-                        initiation.get("Reference").getAsString() : null);
+                    details.setPaymentReference(isNotNull(initiation.get("Reference")) ?
+                            initiation.get("Reference").getAsString() : null);
 
-                details.setStandingOrder(
-                        isNotNull(initiation.get("FinalPaymentDateTime")) ? initiation.get("FinalPaymentDateTime") : null,
-                        isNotNull(initiation.get("FinalPaymentAmount")) ? initiation.getAsJsonObject("FinalPaymentAmount") : null,
-                        isNotNull(initiation.get("FirstPaymentDateTime")) ? initiation.get("FirstPaymentDateTime") : null,
-                        isNotNull(initiation.get("FirstPaymentAmount")) ? initiation.getAsJsonObject("FirstPaymentAmount") : null,
-                        isNotNull(initiation.get("RecurringPaymentDateTime")) ? initiation.get("RecurringPaymentDateTime") : null,
-                        isNotNull(initiation.get("RecurringPaymentAmount")) ? initiation.getAsJsonObject("RecurringPaymentAmount") : null,
-                        initiation.get("Frequency")
-                );
+                    details.setStandingOrder(
+                            isNotNull(initiation.get("FinalPaymentDateTime")) ? initiation.get("FinalPaymentDateTime") : null,
+                            isNotNull(initiation.get("FinalPaymentAmount")) ? initiation.getAsJsonObject("FinalPaymentAmount") : null,
+                            isNotNull(initiation.get("FirstPaymentDateTime")) ? initiation.get("FirstPaymentDateTime") : null,
+                            isNotNull(initiation.get("FirstPaymentAmount")) ? initiation.getAsJsonObject("FirstPaymentAmount") : null,
+                            isNotNull(initiation.get("RecurringPaymentDateTime")) ? initiation.get("RecurringPaymentDateTime") : null,
+                            isNotNull(initiation.get("RecurringPaymentAmount")) ? initiation.getAsJsonObject("RecurringPaymentAmount") : null,
+                            initiation.get("Frequency")
+                    );
 
-                details.setCharges(isNotNull(data.get("Charges")) ?
-                        data.getAsJsonArray("Charges") :
-                        null);
+                    details.setCharges(isNotNull(data.get("Charges")) ?
+                            data.getAsJsonArray("Charges") :
+                            null);
+                }
             }
         }
         return details;

@@ -42,7 +42,7 @@ public class InternationalPaymentConsentDetailsConverterTest {
         InternationalPaymentConsentDetails internationalPaymentConsentDetails = InternationalPaymentConsentDetailsConverter.getInstance().toInternationalPaymentConsentDetails(consentDetails);
 
         // Then
-        JsonObject data = consentDetails.getAsJsonObject("data");
+        JsonObject data = consentDetails.getAsJsonObject("OBIntentObject").getAsJsonObject("Data");
         JsonObject initiation = data.getAsJsonObject("Initiation");
 
         assertThat(internationalPaymentConsentDetails.getInstructedAmount().getAmount())

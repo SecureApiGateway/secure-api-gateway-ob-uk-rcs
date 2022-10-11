@@ -392,7 +392,7 @@ public class ConsentDetailsApiControllerTest {
         assertThat(responseBody.getUsername()).isEqualTo(consentDetailsRequest.getUser().getUserName());
         assertThat(responseBody.getClientId()).isEqualTo(consentDetailsRequest.getClientId());
         assertThat(responseBody.getLogo()).isEqualTo(apiClient.getLogoUri());
-        assertThat(responseBody.getPaymentDate().isEqual(DATE_TIME_FORMATTER.parseDateTime(consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation").get("RequestedExecutionDateTime").getAsString())));
+        assertThat(responseBody.getPaymentDate().isEqual(DATE_TIME_FORMATTER.parseDateTime(consentDetails.getAsJsonObject("OBIntentObject").getAsJsonObject("Data").getAsJsonObject("Initiation").get("RequestedExecutionDateTime").getAsString())));
     }
 
     @Test
@@ -524,20 +524,21 @@ public class ConsentDetailsApiControllerTest {
         assertThat(responseBody.getClientId()).isEqualTo(consentDetailsRequest.getClientId());
         assertThat(responseBody.getLogo()).isEqualTo(apiClient.getLogoUri());
 
-        assertThat(responseBody.getStandingOrder().getFinalPaymentDateTime().isEqual(DATE_TIME_FORMATTER.parseDateTime(consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation").get("FinalPaymentDateTime").getAsString())));
-        assertThat(responseBody.getStandingOrder().getFirstPaymentDateTime().isEqual(DATE_TIME_FORMATTER.parseDateTime(consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation").get("FirstPaymentDateTime").getAsString())));
-        assertThat(responseBody.getStandingOrder().getRecurringPaymentDateTime().isEqual(DATE_TIME_FORMATTER.parseDateTime(consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation").get("RecurringPaymentDateTime").getAsString())));
+        final JsonObject expectedIntentData = consentDetails.getAsJsonObject("OBIntentObject").getAsJsonObject("Data");
+        assertThat(responseBody.getStandingOrder().getFinalPaymentDateTime().isEqual(DATE_TIME_FORMATTER.parseDateTime(expectedIntentData.getAsJsonObject("Initiation").get("FinalPaymentDateTime").getAsString())));
+        assertThat(responseBody.getStandingOrder().getFirstPaymentDateTime().isEqual(DATE_TIME_FORMATTER.parseDateTime(expectedIntentData.getAsJsonObject("Initiation").get("FirstPaymentDateTime").getAsString())));
+        assertThat(responseBody.getStandingOrder().getRecurringPaymentDateTime().isEqual(DATE_TIME_FORMATTER.parseDateTime(expectedIntentData.getAsJsonObject("Initiation").get("RecurringPaymentDateTime").getAsString())));
 
-        assertThat(responseBody.getStandingOrder().getFrequency()).isEqualTo((new FRFrequency(consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation").get("Frequency").getAsString())).getSentence());
+        assertThat(responseBody.getStandingOrder().getFrequency()).isEqualTo((new FRFrequency(expectedIntentData.getAsJsonObject("Initiation").get("Frequency").getAsString())).getSentence());
 
-        assertThat(responseBody.getStandingOrder().getFinalPaymentAmount().getAmount()).isEqualTo(consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation").getAsJsonObject("FinalPaymentAmount").get("Amount").getAsString());
-        assertThat(responseBody.getStandingOrder().getFinalPaymentAmount().getCurrency()).isEqualTo(consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation").getAsJsonObject("FinalPaymentAmount").get("Currency").getAsString());
+        assertThat(responseBody.getStandingOrder().getFinalPaymentAmount().getAmount()).isEqualTo(expectedIntentData.getAsJsonObject("Initiation").getAsJsonObject("FinalPaymentAmount").get("Amount").getAsString());
+        assertThat(responseBody.getStandingOrder().getFinalPaymentAmount().getCurrency()).isEqualTo(expectedIntentData.getAsJsonObject("Initiation").getAsJsonObject("FinalPaymentAmount").get("Currency").getAsString());
 
-        assertThat(responseBody.getStandingOrder().getFirstPaymentAmount().getAmount()).isEqualTo(consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation").getAsJsonObject("FirstPaymentAmount").get("Amount").getAsString());
-        assertThat(responseBody.getStandingOrder().getFirstPaymentAmount().getCurrency()).isEqualTo(consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation").getAsJsonObject("FirstPaymentAmount").get("Currency").getAsString());
+        assertThat(responseBody.getStandingOrder().getFirstPaymentAmount().getAmount()).isEqualTo(expectedIntentData.getAsJsonObject("Initiation").getAsJsonObject("FirstPaymentAmount").get("Amount").getAsString());
+        assertThat(responseBody.getStandingOrder().getFirstPaymentAmount().getCurrency()).isEqualTo(expectedIntentData.getAsJsonObject("Initiation").getAsJsonObject("FirstPaymentAmount").get("Currency").getAsString());
 
-        assertThat(responseBody.getStandingOrder().getRecurringPaymentAmount().getAmount()).isEqualTo(consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation").getAsJsonObject("RecurringPaymentAmount").get("Amount").getAsString());
-        assertThat(responseBody.getStandingOrder().getRecurringPaymentAmount().getCurrency()).isEqualTo(consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation").getAsJsonObject("RecurringPaymentAmount").get("Currency").getAsString());
+        assertThat(responseBody.getStandingOrder().getRecurringPaymentAmount().getAmount()).isEqualTo(expectedIntentData.getAsJsonObject("Initiation").getAsJsonObject("RecurringPaymentAmount").get("Amount").getAsString());
+        assertThat(responseBody.getStandingOrder().getRecurringPaymentAmount().getCurrency()).isEqualTo(expectedIntentData.getAsJsonObject("Initiation").getAsJsonObject("RecurringPaymentAmount").get("Currency").getAsString());
     }
 
     @Test
