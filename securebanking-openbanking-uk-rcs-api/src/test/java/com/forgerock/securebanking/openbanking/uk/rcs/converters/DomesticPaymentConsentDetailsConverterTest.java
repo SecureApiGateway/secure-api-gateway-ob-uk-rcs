@@ -39,7 +39,7 @@ public class DomesticPaymentConsentDetailsConverterTest {
         DomesticPaymentConsentDetails domesticPaymentConsentDetails = DomesticPaymentConsentDetailsConverter.getInstance().toDomesticPaymentConsentDetails(consentDetails);
 
         // Then
-        JsonObject initiation = consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation");
+        JsonObject initiation = consentDetails.getAsJsonObject("OBIntentObject").getAsJsonObject("Data").getAsJsonObject("Initiation");
 
         assertThat(domesticPaymentConsentDetails.getInstructedAmount().getAmount())
                 .isEqualTo(initiation.getAsJsonObject("InstructedAmount").get("Amount").getAsString());

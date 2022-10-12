@@ -17,6 +17,7 @@ package com.forgerock.securebanking.openbanking.uk.rcs.converters;
 
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.InternationalPaymentConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.InternationalScheduledPaymentConsentDetails;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,38 +57,44 @@ public class InternationalScheduledPaymentConsentDetailsConverter {
                 consentDetails.get("oauth2ClientName").getAsString() :
                 null);
 
-        if (!isNotNull(consentDetails.get("data"))) {
-            details.setPaymentReference(null);
-            details.setCurrencyOfTransfer(null);
-            details.setExchangeRateInformation(null);
-            details.setInstructedAmount(null);
+        if (!consentDetails.has("OBIntentObject")) {
+            throw new IllegalStateException("Expected OBIntentObject field in json");
         } else {
-            JsonObject data = consentDetails.getAsJsonObject("data");
+            final JsonObject obIntentObject = consentDetails.get("OBIntentObject").getAsJsonObject();
+            final JsonElement consentDataElement = obIntentObject.get("Data");
+            if (!isNotNull(consentDataElement)) {
+                details.setPaymentReference(null);
+                details.setCurrencyOfTransfer(null);
+                details.setExchangeRateInformation(null);
+                details.setInstructedAmount(null);
+            } else {
+                JsonObject data = consentDataElement.getAsJsonObject();
 
-            details.setExchangeRateInformation(isNotNull(data.get("ExchangeRateInformation")) ?
-                    data.getAsJsonObject("ExchangeRateInformation") :
-                    null);
-
-            if (isNotNull(data.get("Initiation"))) {
-                JsonObject initiation = data.getAsJsonObject("Initiation");
-
-                details.setPaymentReference(isNotNull(initiation.get("RemittanceInformation")) && isNotNull(initiation.getAsJsonObject("RemittanceInformation").get("Reference")) ?
-                        initiation.getAsJsonObject("RemittanceInformation").get("Reference").getAsString() : null);
-
-                details.setCurrencyOfTransfer(isNotNull(initiation.get("CurrencyOfTransfer")) ?
-                        initiation.get("CurrencyOfTransfer").getAsString() : null);
-
-                details.setPaymentDate(isNotNull(initiation.get("RequestedExecutionDateTime")) ?
-                        DATE_TIME_FORMATTER.parseDateTime(initiation.get("RequestedExecutionDateTime").getAsString()) :
+                details.setExchangeRateInformation(isNotNull(data.get("ExchangeRateInformation")) ?
+                        data.getAsJsonObject("ExchangeRateInformation") :
                         null);
 
-                details.setInstructedAmount(isNotNull(initiation.get("InstructedAmount")) ?
-                        initiation.getAsJsonObject("InstructedAmount") :
-                        null);
+                if (isNotNull(data.get("Initiation"))) {
+                    JsonObject initiation = data.getAsJsonObject("Initiation");
 
-                details.setCharges(isNotNull(data.get("Charges")) ?
-                        data.getAsJsonArray("Charges") :
-                        null);
+                    details.setPaymentReference(isNotNull(initiation.get("RemittanceInformation")) && isNotNull(initiation.getAsJsonObject("RemittanceInformation").get("Reference")) ?
+                            initiation.getAsJsonObject("RemittanceInformation").get("Reference").getAsString() : null);
+
+                    details.setCurrencyOfTransfer(isNotNull(initiation.get("CurrencyOfTransfer")) ?
+                            initiation.get("CurrencyOfTransfer").getAsString() : null);
+
+                    details.setPaymentDate(isNotNull(initiation.get("RequestedExecutionDateTime")) ?
+                            DATE_TIME_FORMATTER.parseDateTime(initiation.get("RequestedExecutionDateTime").getAsString()) :
+                            null);
+
+                    details.setInstructedAmount(isNotNull(initiation.get("InstructedAmount")) ?
+                            initiation.getAsJsonObject("InstructedAmount") :
+                            null);
+
+                    details.setCharges(isNotNull(data.get("Charges")) ?
+                            data.getAsJsonArray("Charges") :
+                            null);
+                }
             }
         }
         return details;

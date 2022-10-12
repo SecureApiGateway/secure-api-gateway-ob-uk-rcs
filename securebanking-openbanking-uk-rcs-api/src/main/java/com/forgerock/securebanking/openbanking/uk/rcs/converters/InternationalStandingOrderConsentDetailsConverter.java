@@ -17,6 +17,7 @@ package com.forgerock.securebanking.openbanking.uk.rcs.converters;
 
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.InternationalPaymentConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.InternationalStandingOrderConsentDetails;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,36 +57,42 @@ public class InternationalStandingOrderConsentDetailsConverter {
                 consentDetails.get("oauth2ClientName").getAsString() :
                 null);
 
-        if (!isNotNull(consentDetails.get("data"))) {
-            details.setPaymentReference(null);
-            details.setCurrencyOfTransfer(null);
-            details.setInternationalStandingOrder(null);
+        if (!consentDetails.has("OBIntentObject")) {
+            throw new IllegalStateException("Expected OBIntentObject field in json");
         } else {
-            JsonObject data = consentDetails.getAsJsonObject("data");
+            final JsonObject obIntentObject = consentDetails.get("OBIntentObject").getAsJsonObject();
+            final JsonElement consentDataElement = obIntentObject.get("Data");
+            if (!isNotNull(consentDataElement)) {
+                details.setPaymentReference(null);
+                details.setCurrencyOfTransfer(null);
+                details.setInternationalStandingOrder(null);
+            } else {
+                JsonObject data = consentDataElement.getAsJsonObject();
 
-            if (isNotNull(data.get("Initiation"))) {
+                if (isNotNull(data.get("Initiation"))) {
 
-                JsonObject initiation = data.getAsJsonObject("Initiation");
+                    JsonObject initiation = data.getAsJsonObject("Initiation");
 
-                details.setPaymentReference(isNotNull(initiation.get("Reference")) ?
-                        initiation.get("Reference").getAsString() : null);
+                    details.setPaymentReference(isNotNull(initiation.get("Reference")) ?
+                            initiation.get("Reference").getAsString() : null);
 
-                details.setCurrencyOfTransfer(isNotNull(initiation.get("CurrencyOfTransfer")) ?
-                        initiation.get("CurrencyOfTransfer").getAsString() : null);
+                    details.setCurrencyOfTransfer(isNotNull(initiation.get("CurrencyOfTransfer")) ?
+                            initiation.get("CurrencyOfTransfer").getAsString() : null);
 
-                details.setInternationalStandingOrder(
-                        isNotNull(initiation.get("FirstPaymentDateTime")) ? initiation.get("FirstPaymentDateTime") : null,
-                        isNotNull(initiation.get("FinalPaymentDateTime")) ? initiation.get("FinalPaymentDateTime") : null,
-                        isNotNull(initiation.get("InstructedAmount")) ? initiation.getAsJsonObject("InstructedAmount") : null,
-                        initiation.get("Frequency")
-                );
+                    details.setInternationalStandingOrder(
+                            isNotNull(initiation.get("FirstPaymentDateTime")) ? initiation.get("FirstPaymentDateTime") : null,
+                            isNotNull(initiation.get("FinalPaymentDateTime")) ? initiation.get("FinalPaymentDateTime") : null,
+                            isNotNull(initiation.get("InstructedAmount")) ? initiation.getAsJsonObject("InstructedAmount") : null,
+                            initiation.get("Frequency")
+                    );
 
-                details.setCharges(isNotNull(data.get("Charges")) ?
-                        data.getAsJsonArray("Charges") :
-                        null);
+                    details.setCharges(isNotNull(data.get("Charges")) ?
+                            data.getAsJsonArray("Charges") :
+                            null);
+                }
             }
+            return details;
         }
-        return details;
     }
 
     public final InternationalStandingOrderConsentDetails toInternationalStandingOrderConsentDetails

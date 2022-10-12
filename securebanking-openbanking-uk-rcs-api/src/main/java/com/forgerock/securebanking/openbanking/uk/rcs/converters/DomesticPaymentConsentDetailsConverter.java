@@ -16,6 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.converters;
 
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticPaymentConsentDetails;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,27 +53,33 @@ public class DomesticPaymentConsentDetailsConverter {
                 consentDetails.get("oauth2ClientName").getAsString() :
                 null);
 
-        if (!isNotNull(consentDetails.get("data"))) {
-            details.setInstructedAmount(null);
-            details.setPaymentReference(null);
+        if (!consentDetails.has("OBIntentObject")) {
+            throw new IllegalStateException("Expected OBIntentObject field in json");
         } else {
-            JsonObject data = consentDetails.getAsJsonObject("data");
+            final JsonObject obIntentObject = consentDetails.get("OBIntentObject").getAsJsonObject();
+            final JsonElement consentDataElement = obIntentObject.get("Data");
+            if (!isNotNull(consentDataElement)) {
+                details.setInstructedAmount(null);
+                details.setPaymentReference(null);
+            } else {
+                JsonObject data = consentDataElement.getAsJsonObject();
 
-            if (isNotNull(data.get("Initiation"))) {
-                JsonObject initiation = data.getAsJsonObject("Initiation");
+                if (isNotNull(data.get("Initiation"))) {
+                    JsonObject initiation = data.getAsJsonObject("Initiation");
 
-                details.setInstructedAmount(isNotNull(initiation.get("InstructedAmount")) ?
-                        initiation.getAsJsonObject("InstructedAmount") :
-                        null);
+                    details.setInstructedAmount(isNotNull(initiation.get("InstructedAmount")) ?
+                            initiation.getAsJsonObject("InstructedAmount") :
+                            null);
 
-                details.setPaymentReference(isNotNull(initiation.get("RemittanceInformation")) &&
-                        isNotNull(initiation.getAsJsonObject("RemittanceInformation").get("Reference")) ?
-                        initiation.getAsJsonObject("RemittanceInformation").get("Reference").getAsString() :
-                        null);
+                    details.setPaymentReference(isNotNull(initiation.get("RemittanceInformation")) &&
+                            isNotNull(initiation.getAsJsonObject("RemittanceInformation").get("Reference")) ?
+                            initiation.getAsJsonObject("RemittanceInformation").get("Reference").getAsString() :
+                            null);
 
-                details.setCharges(isNotNull(data.get("Charges")) ?
-                        data.getAsJsonArray("Charges") :
-                        null);
+                    details.setCharges(isNotNull(data.get("Charges")) ?
+                            data.getAsJsonArray("Charges") :
+                            null);
+                }
             }
         }
         return details;

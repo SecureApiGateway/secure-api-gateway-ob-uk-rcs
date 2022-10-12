@@ -51,7 +51,9 @@ public class InternationalStandingOrderConsentDetailsTestFactory {
     public static JsonObject aValidInternationalStandingOrderConsentDetailsBuilder(String consentId) {
         JsonObject consent = new JsonObject();
         consent.addProperty("id", UUID.randomUUID().toString());
-        consent.add("data", aValidInternationalStandingOrderConsentDataDetailsBuilder(consentId));
+        final JsonObject obIntent = new JsonObject();
+        obIntent.add("Data", aValidInternationalStandingOrderConsentDataDetailsBuilder(consentId));
+        consent.add("OBIntentObject", obIntent);
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", randomUUID().toString());
         consent.addProperty("oauth2ClientName", "PISP Name");
@@ -63,7 +65,9 @@ public class InternationalStandingOrderConsentDetailsTestFactory {
     public static JsonObject aValidInternationalStandingOrderConsentDetailsBuilder(String consentId, String clientId) {
         JsonObject consent = new JsonObject();
         consent.addProperty("id", UUID.randomUUID().toString());
-        consent.add("data", aValidInternationalStandingOrderConsentDataDetailsBuilder(consentId));
+        final JsonObject obIntent = new JsonObject();
+        obIntent.add("Data", aValidInternationalStandingOrderConsentDataDetailsBuilder(consentId));
+        consent.add("OBIntentObject", obIntent);
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", clientId);
         consent.addProperty("oauth2ClientName", "PISP Name");

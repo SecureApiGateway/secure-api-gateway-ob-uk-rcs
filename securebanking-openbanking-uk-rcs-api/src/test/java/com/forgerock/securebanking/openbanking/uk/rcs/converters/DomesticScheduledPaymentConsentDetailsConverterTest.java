@@ -39,7 +39,7 @@ public class DomesticScheduledPaymentConsentDetailsConverterTest {
         DomesticScheduledPaymentConsentDetails domesticScheduledPaymentConsentDetails = DomesticScheduledPaymentConsentDetailsConverter.getInstance().toDomesticScheduledPaymentConsentDetails(consentDetails);
 
         // Then
-        JsonObject initiation = consentDetails.getAsJsonObject("data").getAsJsonObject("Initiation");
+        JsonObject initiation = consentDetails.getAsJsonObject("OBIntentObject").getAsJsonObject("Data").getAsJsonObject("Initiation");
 
         assertThat(domesticScheduledPaymentConsentDetails.getInstructedAmount().getAmount())
                 .isEqualTo(initiation.getAsJsonObject("InstructedAmount").get("Amount").getAsString());
