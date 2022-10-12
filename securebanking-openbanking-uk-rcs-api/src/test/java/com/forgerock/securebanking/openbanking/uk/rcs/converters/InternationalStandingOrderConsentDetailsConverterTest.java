@@ -38,7 +38,7 @@ public class InternationalStandingOrderConsentDetailsConverterTest {
         InternationalStandingOrderConsentDetails internationalStandingOrderConsentDetails = InternationalStandingOrderConsentDetailsConverter.getInstance().toInternationalStandingOrderConsentDetails(consentDetails);
 
         // Then
-        JsonObject data = consentDetails.getAsJsonObject("data");
+        JsonObject data = consentDetails.getAsJsonObject("OBIntentObject").getAsJsonObject("Data");
         JsonObject initiation = data.getAsJsonObject("Initiation");
 
         assertThat(internationalStandingOrderConsentDetails.getInternationalStandingOrder().getInstructedAmount().getAmount())

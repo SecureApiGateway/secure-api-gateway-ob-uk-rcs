@@ -53,7 +53,9 @@ public class DomesticPaymentConsentDetailsConverter {
                 consentDetails.get("oauth2ClientName").getAsString() :
                 null);
 
-        if (consentDetails.has("OBIntentObject")) {
+        if (!consentDetails.has("OBIntentObject")) {
+            throw new IllegalStateException("Expected OBIntentObject field in json");
+        } else {
             final JsonObject obIntentObject = consentDetails.get("OBIntentObject").getAsJsonObject();
             final JsonElement consentDataElement = obIntentObject.get("Data");
             if (!isNotNull(consentDataElement)) {
