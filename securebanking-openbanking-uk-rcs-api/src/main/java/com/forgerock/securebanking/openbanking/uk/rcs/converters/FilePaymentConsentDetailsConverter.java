@@ -76,8 +76,8 @@ public class FilePaymentConsentDetailsConverter {
 
                     details.setFilePayment(
                             isNotNull(initiation.get("NumberOfTransactions")) ? initiation.get("NumberOfTransactions") : null,
-                            isNotNull(initiation.get("ControlSum")) ? initiation.get("ControlSum") : null
-                            //isNotNull(initiation.get("RequestedExecutionDateTime")) ? initiation.getAsJsonObject("RequestedExecutionDateTime") : null,
+                            isNotNull(initiation.get("ControlSum")) ? initiation.get("ControlSum") : null,
+                            isNotNull(initiation.get("RequestedExecutionDateTime")) ? initiation.getAsJsonObject("RequestedExecutionDateTime") : null
                     );
 
                     details.setCharges(isNotNull(data.get("Charges")) ?

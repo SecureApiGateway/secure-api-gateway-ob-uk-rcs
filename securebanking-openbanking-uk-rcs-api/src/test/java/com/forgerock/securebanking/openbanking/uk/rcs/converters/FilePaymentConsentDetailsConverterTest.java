@@ -41,11 +41,12 @@ public class FilePaymentConsentDetailsConverterTest {
         JsonObject data = consentDetails.getAsJsonObject("OBIntentObject").getAsJsonObject("Data");
         JsonObject initiation = data.getAsJsonObject("Initiation");
 
-        assertThat(filePaymentConsentDetails.getFilePayment().getNumberOfTransactions()
-                .isEqualTo(initiation.getAsJsonObject("NumberOfTransactions").getAsString()));
+        assertThat(filePaymentConsentDetails.getFilePayment().getNumberOfTransactions().equals(initiation.getAsJsonObject("NumberOfTransactions").getAsString()));
 
-        assertThat(filePaymentConsentDetails.getFilePayment().getControlSum()
-                .isEqualTo(initiation.getAsJsonObject("ControlSum").getAsString()));
+        assertThat(filePaymentConsentDetails.getFilePayment().getControlSum().equals(initiation.getAsJsonObject("ControlSum").getAsBigDecimal()));
+
+        assertThat(filePaymentConsentDetails.getFilePayment().getRequestedExecutionDateTime().equals(initiation.getAsJsonObject("RequestedExecutionDateTime").getAsBigDecimal()));
+
 
         assertThat(filePaymentConsentDetails.getMerchantName()).isEqualTo(consentDetails.get("oauth2ClientName").getAsString());
 
