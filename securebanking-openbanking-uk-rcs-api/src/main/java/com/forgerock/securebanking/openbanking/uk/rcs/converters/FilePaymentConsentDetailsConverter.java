@@ -71,13 +71,11 @@ public class FilePaymentConsentDetailsConverter {
 
                     JsonObject initiation = data.getAsJsonObject("Initiation");
 
-                    details.setPaymentReference(isNotNull(initiation.get("FileReference")) ?
-                            initiation.get("FileReference").getAsString() : null);
-
                     details.setFilePayment(
                             isNotNull(initiation.get("NumberOfTransactions")) ? initiation.get("NumberOfTransactions") : null,
                             isNotNull(initiation.get("ControlSum")) ? initiation.get("ControlSum") : null,
-                            isNotNull(initiation.get("RequestedExecutionDateTime")) ? initiation.getAsJsonObject("RequestedExecutionDateTime") : null
+                            isNotNull(initiation.get("RequestedExecutionDateTime")) ? initiation.get("RequestedExecutionDateTime") : null,
+                            isNotNull(initiation.get("FileReference")) ? initiation.get("FileReference") : null
                     );
 
                     details.setCharges(isNotNull(data.get("Charges")) ?

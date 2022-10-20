@@ -91,16 +91,16 @@ public class FilePaymentConsentDetailsTestFactory {
         JsonObject data = new JsonObject();
         data.addProperty("FileType", "UK.OBIE.pain.001.001.08");
         data.addProperty("FileHash", "VEzqICCQvK7NHt8g75Kfbsb0XW5Wmeg3pgAgpN6oLQ8=");
-        data.addProperty("File Reference", "XmlExample");
+        data.addProperty("FileReference", "XmlExample");
         data.addProperty("NumberOfTransactions", "3");
         data.addProperty("ControlSum", "11500000");
-        data.addProperty("RequestedExecutionDateTime", "null");
+        data.addProperty("RequestedExecutionDateTime", "2023-09-27T13:03:06+00:00");
         data.addProperty("LocalInstrument", "null");
 
         data.add("DebtorAccount", null);
         data.add("RemittanceInformation", JsonParser.parseString("{\n" +
                 "   \"Unstructured\":\"Internal ops code 5120101\",\n" +
-                "   \"Reference\":\"FRESCO-101\",\n" +
+                "   \"Reference\":\"FRESCO-101\"\n" +
                 "}"));
 
         data.add("SupplementaryData", null);

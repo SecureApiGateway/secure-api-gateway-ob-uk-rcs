@@ -18,7 +18,6 @@ package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAmount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteFileDataInitiation;
-import com.forgerock.securebanking.openbanking.uk.rcs.converters.DomesticStandingOrderConsentDetailsConverter;
 import com.forgerock.securebanking.openbanking.uk.rcs.converters.FilePaymentConsentDetailsConverter;
 import com.forgerock.securebanking.platform.client.IntentType;
 import com.google.gson.JsonArray;
@@ -30,6 +29,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.joda.time.DateTime;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.FilePaymentConsentDetailsConverter.DATE_TIME_FORMATTER;
@@ -53,8 +53,9 @@ public class FilePaymentConsentDetails extends ConsentDetails {
     private String fileReference;
     private FRAmount totalAmount;
     private String numberOfTransactions;
+    private BigDecimal controlSum;
     private String paymentReference;
-    private DateTime requestedExecutionDateTime;
+    private String requestedExecutionDateTime;
 
     public void setFilePayment(FRWriteFileDataInitiation filePayment) {
         this.filePayment = filePayment;
@@ -77,14 +78,14 @@ public class FilePaymentConsentDetails extends ConsentDetails {
                 amount += chargeAmount.get("Amount").getAsDouble();
             }
 
-            String currency = charges.get(0).getAsJsonObject().get("Currency").getAsString();
-            
+            String currency = charges.get(0).getAsJsonObject().getAsJsonObject("Amount").get("Currency").getAsString();
+
             this.charges.setAmount(amount.toString());
             this.charges.setCurrency(currency);
         }
     }
 
-    public void setFilePayment(JsonElement numberOfTransactions, JsonElement controlSum, JsonElement requestedExecutionDateTime) {
+    public void setFilePayment(JsonElement numberOfTransactions, JsonElement controlSum, JsonElement requestedExecutionDateTime, JsonElement fileReference) {
         FRWriteFileDataInitiation filePaymentData = new FRWriteFileDataInitiation();
 
         if (isNotNull(numberOfTransactions)) {
@@ -96,7 +97,11 @@ public class FilePaymentConsentDetails extends ConsentDetails {
         }
 
         if (isNotNull(requestedExecutionDateTime)) {
-            filePaymentData.setRequestedExecutionDateTime(FilePaymentConsentDetailsConverter.DATE_TIME_FORMATTER.parseDateTime(String.valueOf(requestedExecutionDateTime.getAsBigDecimal())));
+            filePaymentData.setRequestedExecutionDateTime(FilePaymentConsentDetailsConverter.DATE_TIME_FORMATTER.parseDateTime(requestedExecutionDateTime.getAsString()));
+        }
+
+        if (isNotNull(fileReference)) {
+            filePaymentData.setFileReference(fileReference.getAsString());
         }
 
         this.filePayment = filePaymentData;

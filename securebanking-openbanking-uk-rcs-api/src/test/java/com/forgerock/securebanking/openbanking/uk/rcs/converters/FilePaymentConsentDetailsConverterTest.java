@@ -18,9 +18,11 @@ package com.forgerock.securebanking.openbanking.uk.rcs.converters;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.FilePaymentConsentDetails;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.FILE_PAYMENT_INTENT_ID;
+import static com.forgerock.securebanking.openbanking.uk.rcs.converters.FilePaymentConsentDetailsConverter.DATE_TIME_FORMATTER;
 import static com.forgerock.securebanking.platform.client.test.support.FilePaymentConsentDetailsTestFactory.aValidFilePaymentConsentDetails;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,17 +43,19 @@ public class FilePaymentConsentDetailsConverterTest {
         JsonObject data = consentDetails.getAsJsonObject("OBIntentObject").getAsJsonObject("Data");
         JsonObject initiation = data.getAsJsonObject("Initiation");
 
-        assertThat(filePaymentConsentDetails.getFilePayment().getNumberOfTransactions().equals(initiation.getAsJsonObject("NumberOfTransactions").getAsString()));
+        assertThat(filePaymentConsentDetails.getFilePayment().getNumberOfTransactions())
+                .isEqualTo(initiation.get("NumberOfTransactions").getAsString());
 
-        assertThat(filePaymentConsentDetails.getFilePayment().getControlSum().equals(initiation.getAsJsonObject("ControlSum").getAsBigDecimal()));
+        assertThat(filePaymentConsentDetails.getFilePayment().getControlSum())
+                .isEqualTo(initiation.get("ControlSum").getAsBigDecimal());
 
-        assertThat(filePaymentConsentDetails.getFilePayment().getRequestedExecutionDateTime().equals(initiation.getAsJsonObject("RequestedExecutionDateTime").getAsBigDecimal()));
+        assertThat(filePaymentConsentDetails.getFilePayment().getRequestedExecutionDateTime())
+                .isEqualTo(DATE_TIME_FORMATTER.parseDateTime(initiation.get("RequestedExecutionDateTime").getAsString()));
 
+        assertThat(filePaymentConsentDetails.getFilePayment().getFileReference())
+                .isEqualTo(initiation.get("FileReference").getAsString());
 
         assertThat(filePaymentConsentDetails.getMerchantName()).isEqualTo(consentDetails.get("oauth2ClientName").getAsString());
-
-        assertThat(filePaymentConsentDetails.getFileReference())
-                .isEqualTo(initiation.get("FileReference").getAsString());
 
         assertThat(filePaymentConsentDetails.getCharges())
                 .isNotNull();
