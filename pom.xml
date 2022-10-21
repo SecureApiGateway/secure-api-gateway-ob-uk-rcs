@@ -38,7 +38,7 @@
     <parent>
         <groupId>com.forgerock.securebanking</groupId>
         <artifactId>securebanking-parent</artifactId>
-        <version>1.0.5-SNAPSHOT</version>
+        <version>1.0.6-SNAPSHOT</version>
     </parent>
 
     <properties>

@@ -63,6 +63,9 @@ public class ConsentDetailsBuilderFactory {
             case PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT -> {
                 return buildInternationalStandingOrderConsentDetails(consent, consentDetailsRequest, apiClient);
             }
+            case PAYMENT_FILE_CONSENT -> {
+                return buildFilePaymentConsentDetails(consent, consentDetailsRequest, apiClient);
+            }
             default -> {
                 String message = String.format("Invalid type for intent ID: '%s'", intentId);
                 throw new ExceptionClient(consentDetailsRequest, ErrorType.UNKNOWN_INTENT_TYPE, message);
@@ -167,6 +170,21 @@ public class ConsentDetailsBuilderFactory {
     ) {
         InternationalStandingOrderConsentDetailsConverter consentDetailsConverter = InternationalStandingOrderConsentDetailsConverter.getInstance();
         InternationalStandingOrderConsentDetails details = consentDetailsConverter.toInternationalStandingOrderConsentDetails(consentDetails);
+        details.setUsername(consentDetailsRequest.getUser().getUserName());
+        details.setUserId(consentDetailsRequest.getUser().getId());
+        details.setAccounts(consentDetailsRequest.getAccounts());
+        details.setClientId(consentDetailsRequest.getClientId());
+        details.setLogo(apiClient.getLogoUri());
+        return details;
+    }
+
+    private static final FilePaymentConsentDetails buildFilePaymentConsentDetails(
+            JsonObject consentDetails,
+            ConsentRequest consentDetailsRequest,
+            ApiClient apiClient
+    ) {
+        FilePaymentConsentDetailsConverter consentDetailsConverter = FilePaymentConsentDetailsConverter.getInstance();
+        FilePaymentConsentDetails details = consentDetailsConverter.toFilePaymentConsentDetails(consentDetails);
         details.setUsername(consentDetailsRequest.getUser().getUserName());
         details.setUserId(consentDetailsRequest.getUser().getId());
         details.setAccounts(consentDetailsRequest.getAccounts());
