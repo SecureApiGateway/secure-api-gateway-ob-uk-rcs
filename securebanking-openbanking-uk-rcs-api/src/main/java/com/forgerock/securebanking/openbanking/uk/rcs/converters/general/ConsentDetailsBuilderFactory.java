@@ -66,6 +66,9 @@ public class ConsentDetailsBuilderFactory {
             case PAYMENT_FILE_CONSENT -> {
                 return buildFilePaymentConsentDetails(consent, consentDetailsRequest, apiClient);
             }
+            case DOMESTIC_VRP_PAYMENT_CONSENT -> {
+                return buildDomesticVrpPaymentConsentDetails(consent, consentDetailsRequest, apiClient);
+            }
             default -> {
                 String message = String.format("Invalid type for intent ID: '%s'", intentId);
                 throw new ExceptionClient(consentDetailsRequest, ErrorType.UNKNOWN_INTENT_TYPE, message);
@@ -192,5 +195,22 @@ public class ConsentDetailsBuilderFactory {
         details.setLogo(apiClient.getLogoUri());
         return details;
     }
+
+    private static final DomesticVrpPaymentConsentDetails buildDomesticVrpPaymentConsentDetails(
+            JsonObject consentDetails,
+            ConsentRequest consentDetailsRequest,
+            ApiClient apiClient
+    ) {
+        DomesticVrpPaymentConsentDetailsConverter consentDetailsConverter = DomesticVrpPaymentConsentDetailsConverter.getInstance();
+        DomesticVrpPaymentConsentDetails details = consentDetailsConverter.toDomesticVrpPaymentConsentDetails(consentDetails);
+        details.setUsername(consentDetailsRequest.getUser().getUserName());
+        details.setUserId(consentDetailsRequest.getUser().getId());
+        details.setAccounts(consentDetailsRequest.getAccounts());
+        details.setClientId(consentDetailsRequest.getClientId());
+        details.setLogo(apiClient.getLogoUri());
+        return details;
+    }
+
+
 
 }
