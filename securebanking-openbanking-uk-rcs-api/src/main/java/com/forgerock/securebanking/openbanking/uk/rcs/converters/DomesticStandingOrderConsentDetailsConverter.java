@@ -21,9 +21,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.OAUTH2_CLIENT_NAME;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.OB_INTENT_OBJECT;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.members.*;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter.isNotNull;
 
 /**
@@ -34,10 +35,9 @@ import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConv
 public class DomesticStandingOrderConsentDetailsConverter {
 
     private static volatile DomesticStandingOrderConsentDetailsConverter instance;
-    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
 
     /*
-     * Double checked locking principle to ensure that only one instance 'DomesticPaymentConsentDetailsConverter' is created
+     * Double check locking principle to ensure that only one instance 'DomesticPaymentConsentDetailsConverter' is created
      */
     public static DomesticStandingOrderConsentDetailsConverter getInstance() {
         if (instance == null) {
@@ -53,39 +53,41 @@ public class DomesticStandingOrderConsentDetailsConverter {
     public DomesticStandingOrderConsentDetails mapping(JsonObject consentDetails) {
         DomesticStandingOrderConsentDetails details = new DomesticStandingOrderConsentDetails();
 
-        details.setMerchantName(isNotNull(consentDetails.get("oauth2ClientName")) ?
-                consentDetails.get("oauth2ClientName").getAsString() :
-                null);
-
-        if (!consentDetails.has("OBIntentObject")) {
-            throw new IllegalStateException("Expected OBIntentObject field in json");
+        if (!consentDetails.has(OB_INTENT_OBJECT)) {
+            throw new IllegalStateException("Expected " + OB_INTENT_OBJECT + " field in json");
         } else {
-            final JsonObject obIntentObject = consentDetails.get("OBIntentObject").getAsJsonObject();
-            final JsonElement consentDataElement = obIntentObject.get("Data");
+            final JsonObject obIntentObject = consentDetails.get(OB_INTENT_OBJECT).getAsJsonObject();
+            final JsonElement consentDataElement = obIntentObject.get(DATA);
             if (!isNotNull(consentDataElement)) {
                 details.setPaymentReference(null);
                 details.setStandingOrder(null);
             } else {
                 JsonObject data = consentDataElement.getAsJsonObject();
 
-                if (isNotNull(data.get("Initiation"))) {
-                    JsonObject initiation = data.getAsJsonObject("Initiation");
+                if (isNotNull(data.get(INITIATION))) {
+                    JsonObject initiation = data.getAsJsonObject(INITIATION);
 
-                    details.setPaymentReference(isNotNull(initiation.get("Reference")) ?
-                            initiation.get("Reference").getAsString() : null);
+                    details.setPaymentReference(isNotNull(initiation.get(REFERENCE)) ?
+                            initiation.get(REFERENCE).getAsString() : null);
 
                     details.setStandingOrder(
-                            isNotNull(initiation.get("FinalPaymentDateTime")) ? initiation.get("FinalPaymentDateTime") : null,
-                            isNotNull(initiation.get("FinalPaymentAmount")) ? initiation.getAsJsonObject("FinalPaymentAmount") : null,
-                            isNotNull(initiation.get("FirstPaymentDateTime")) ? initiation.get("FirstPaymentDateTime") : null,
-                            isNotNull(initiation.get("FirstPaymentAmount")) ? initiation.getAsJsonObject("FirstPaymentAmount") : null,
-                            isNotNull(initiation.get("RecurringPaymentDateTime")) ? initiation.get("RecurringPaymentDateTime") : null,
-                            isNotNull(initiation.get("RecurringPaymentAmount")) ? initiation.getAsJsonObject("RecurringPaymentAmount") : null,
-                            initiation.get("Frequency")
+                            isNotNull(initiation.get(FINAL_PAYMENT_DATETIME))
+                                    ? initiation.get(FINAL_PAYMENT_DATETIME) : null,
+                            isNotNull(initiation.get(FINAL_PAYMENT_AMOUNT))
+                                    ? initiation.getAsJsonObject(FINAL_PAYMENT_AMOUNT) : null,
+                            isNotNull(initiation.get(FIRST_PAYMENT_DATETIME))
+                                    ? initiation.get(FIRST_PAYMENT_DATETIME) : null,
+                            isNotNull(initiation.get(FIRST_PAYMENT_AMOUNT))
+                                    ? initiation.getAsJsonObject(FIRST_PAYMENT_AMOUNT) : null,
+                            isNotNull(initiation.get(RECURRING_PAYMENT_DATETIME))
+                                    ? initiation.get(RECURRING_PAYMENT_DATETIME) : null,
+                            isNotNull(initiation.get(RECURRING_PAYMENT_AMOUNT))
+                                    ? initiation.getAsJsonObject(RECURRING_PAYMENT_AMOUNT) : null,
+                            initiation.get(FREQUENCY)
                     );
 
-                    details.setCharges(isNotNull(data.get("Charges")) ?
-                            data.getAsJsonArray("Charges") :
+                    details.setCharges(isNotNull(data.get(CHARGES)) ?
+                            data.getAsJsonArray(CHARGES) :
                             null);
                 }
             }
@@ -93,8 +95,7 @@ public class DomesticStandingOrderConsentDetailsConverter {
         return details;
     }
 
-    public final DomesticStandingOrderConsentDetails toDomesticStandingOrderConsentDetails(JsonObject
-                                                                                                   consentDetails) {
+    public final DomesticStandingOrderConsentDetails toDomesticStandingOrderConsentDetails(JsonObject consentDetails) {
         return mapping(consentDetails);
     }
 }

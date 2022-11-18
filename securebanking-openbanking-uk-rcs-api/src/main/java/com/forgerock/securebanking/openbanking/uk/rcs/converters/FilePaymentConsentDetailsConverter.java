@@ -20,9 +20,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.OAUTH2_CLIENT_NAME;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.OB_INTENT_OBJECT;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.members.*;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter.isNotNull;
 
 /**
@@ -31,12 +32,10 @@ import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConv
 @Slf4j
 @NoArgsConstructor
 public class FilePaymentConsentDetailsConverter {
-
-    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
     private static volatile FilePaymentConsentDetailsConverter instance;
 
     /*
-     * Double checked locking principle to ensure that only one instance 'FilePaymentConsentDetailsConverter' is created
+     * Double check locking principle to ensure that only one instance 'FilePaymentConsentDetailsConverter' is created
      */
     public static FilePaymentConsentDetailsConverter getInstance() {
         if (instance == null) {
@@ -52,43 +51,38 @@ public class FilePaymentConsentDetailsConverter {
     public FilePaymentConsentDetails mapping(JsonObject consentDetails) {
         FilePaymentConsentDetails details = new FilePaymentConsentDetails();
 
-        details.setMerchantName(isNotNull(consentDetails.get("oauth2ClientName")) ?
-                consentDetails.get("oauth2ClientName").getAsString() :
-                null);
-
-        if (!consentDetails.has("OBIntentObject")) {
-            throw new IllegalStateException("Expected OBIntentObject field in json");
+        if (!consentDetails.has(OB_INTENT_OBJECT)) {
+            throw new IllegalStateException("Expected " + OB_INTENT_OBJECT + " field in json");
         } else {
-            final JsonObject obIntentObject = consentDetails.get("OBIntentObject").getAsJsonObject();
-            final JsonElement consentDataElement = obIntentObject.get("Data");
+            final JsonObject obIntentObject = consentDetails.get(OB_INTENT_OBJECT).getAsJsonObject();
+            final JsonElement consentDataElement = obIntentObject.get(DATA);
             if (!isNotNull(consentDataElement)) {
                 details.setPaymentReference(null);
                 details.setFilePayment(null);
             } else {
                 JsonObject data = consentDataElement.getAsJsonObject();
 
-                if (isNotNull(data.get("Initiation"))) {
+                if (isNotNull(data.get(INITIATION))) {
 
-                    JsonObject initiation = data.getAsJsonObject("Initiation");
+                    JsonObject initiation = data.getAsJsonObject(INITIATION);
 
                     details.setFilePayment(
-                            isNotNull(initiation.get("NumberOfTransactions")) ? initiation.get("NumberOfTransactions") : null,
-                            isNotNull(initiation.get("ControlSum")) ? initiation.get("ControlSum") : null,
-                            isNotNull(initiation.get("RequestedExecutionDateTime")) ? initiation.get("RequestedExecutionDateTime") : null,
-                            isNotNull(initiation.get("FileReference")) ? initiation.get("FileReference") : null
+                            isNotNull(initiation.get(NUMBER_OF_TRANSACTIONS))
+                                    ? initiation.get(NUMBER_OF_TRANSACTIONS) : null,
+                            isNotNull(initiation.get(CONTROL_SUM)) ? initiation.get(CONTROL_SUM) : null,
+                            isNotNull(initiation.get(REQUESTED_EXECUTION_DATETIME))
+                                    ? initiation.get(REQUESTED_EXECUTION_DATETIME) : null,
+                            isNotNull(initiation.get(FILE_REFERENCE)) ? initiation.get(FILE_REFERENCE) : null
                     );
 
-                    details.setCharges(isNotNull(data.get("Charges")) ?
-                            data.getAsJsonArray("Charges") :
-                            null);
+                    details.setCharges(isNotNull(data.get(CHARGES)) ? data.getAsJsonArray(CHARGES) : null);
                 }
             }
             return details;
         }
     }
 
-    public final FilePaymentConsentDetails toFilePaymentConsentDetails
-            (JsonObject consentDetails) {
+    public final FilePaymentConsentDetails toFilePaymentConsentDetails(JsonObject consentDetails) {
         return mapping(consentDetails);
     }
 }

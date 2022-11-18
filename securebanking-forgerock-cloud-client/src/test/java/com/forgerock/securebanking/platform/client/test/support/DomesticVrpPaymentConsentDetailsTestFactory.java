@@ -17,11 +17,12 @@ package com.forgerock.securebanking.platform.client.test.support;
 
 import com.forgerock.securebanking.platform.client.ConsentStatusCode;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import uk.org.openbanking.datamodel.common.OBVRPAuthenticationMethods;
+import uk.org.openbanking.datamodel.common.OBVRPConsentType;
 
 import java.util.List;
 import java.util.TimeZone;
@@ -37,15 +38,23 @@ public class DomesticVrpPaymentConsentDetailsTestFactory {
     public static final Gson gson = new Gson();
 
     public static JsonObject aValidDomesticVrpPaymentConsentDetails() {
-        return aValidDomesticVrpPaymentConsentDetailsBuilder(randomUUID().toString());
+        return aValidDomesticVrpPaymentConsentDetailsBuilder(randomUUID().toString(), OBVRPConsentType.SWEEPING);
     }
 
     public static JsonObject aValidDomesticVrpPaymentConsentDetails(String consentId) {
         return aValidDomesticVrpPaymentConsentDetailsBuilder(consentId);
     }
 
+    public static JsonObject aValidDomesticVrpPaymentConsentDetails(String consentId, OBVRPConsentType vrpType) {
+        return aValidDomesticVrpPaymentConsentDetailsBuilder(consentId, vrpType);
+    }
+
     public static JsonObject aValidDomesticVrpPaymentConsentDetails(String consentId, String clientId) {
         return aValidDomesticVrpPaymentConsentDetailsBuilder(consentId, clientId);
+    }
+
+    public static JsonObject aValidDomesticVrpPaymentConsentDetails(String consentId, String clientId, OBVRPConsentType vrpType) {
+        return aValidDomesticVrpPaymentConsentDetailsBuilder(consentId, clientId, vrpType);
     }
 
     public static JsonObject aValidDomesticVrpPaymentConsentDetailsBuilder(String consentId) {
@@ -53,6 +62,20 @@ public class DomesticVrpPaymentConsentDetailsTestFactory {
         consent.addProperty("id", UUID.randomUUID().toString());
         final JsonObject obIntent = new JsonObject();
         obIntent.add("Data", aValidDomesticVrpPaymentConsentDataDetailsBuilder(consentId));
+        consent.add("OBIntentObject", obIntent);
+        consent.add("resourceOwnerUsername", null);
+        consent.addProperty("oauth2ClientId", randomUUID().toString());
+        consent.addProperty("oauth2ClientName", "PISP Name");
+        consent.addProperty("accountIds", gson.toJson(List.of(UUID.randomUUID().toString())));
+
+        return consent;
+    }
+
+    public static JsonObject aValidDomesticVrpPaymentConsentDetailsBuilder(String consentId, OBVRPConsentType vrpType) {
+        JsonObject consent = new JsonObject();
+        consent.addProperty("id", UUID.randomUUID().toString());
+        final JsonObject obIntent = new JsonObject();
+        obIntent.add("Data", aValidDomesticVrpPaymentConsentDataDetailsBuilder(consentId, vrpType));
         consent.add("OBIntentObject", obIntent);
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", randomUUID().toString());
@@ -76,50 +99,85 @@ public class DomesticVrpPaymentConsentDetailsTestFactory {
         return consent;
     }
 
+    public static JsonObject aValidDomesticVrpPaymentConsentDetailsBuilder(String consentId, String clientId, OBVRPConsentType vrpType) {
+        JsonObject consent = new JsonObject();
+        consent.addProperty("id", UUID.randomUUID().toString());
+        final JsonObject obIntent = new JsonObject();
+        obIntent.add("Data", aValidDomesticVrpPaymentConsentDataDetailsBuilder(consentId, vrpType));
+        consent.add("OBIntentObject", obIntent);
+        consent.add("resourceOwnerUsername", null);
+        consent.addProperty("oauth2ClientId", clientId);
+        consent.addProperty("oauth2ClientName", "PISP Name");
+        consent.addProperty("accountIds", gson.toJson(List.of(UUID.randomUUID().toString())));
+
+        return consent;
+    }
+
     public static JsonObject aValidDomesticVrpPaymentConsentDataDetailsBuilder(String consentId) {
         JsonObject data = new JsonObject();
         data.addProperty("ConsentId", consentId);
         data.addProperty("CreationDateTime", DateTime.now(DateTimeZone.forTimeZone(TimeZone.getDefault())).toString());
         data.addProperty("StatusUpdateDateTime", DateTime.now(DateTimeZone.forTimeZone(TimeZone.getDefault())).toString());
         data.addProperty("Status", ConsentStatusCode.AWAITINGAUTHORISATION.toString());
-        data.add("Initiation", aValidFRWriteDomesticDataInitiationBuilder());
-        //data.add("Charges", aValidChargesBuilder());
+        data.add("ControlParameters", aValidDomesticVrpPaymentControlParametersBuilder(OBVRPConsentType.SWEEPING));
+        data.add("Initiation", aValidFRWriteDomesticVrpDataInitiationBuilder());
         return data;
     }
 
-    public static JsonObject aValidFRWriteDomesticDataInitiationBuilder() {
+    public static JsonObject aValidDomesticVrpPaymentConsentDataDetailsBuilder(String consentId, OBVRPConsentType vrpType) {
         JsonObject data = new JsonObject();
+        data.addProperty("ConsentId", consentId);
+        data.addProperty("CreationDateTime", DateTime.now(DateTimeZone.forTimeZone(TimeZone.getDefault())).toString());
+        data.addProperty("StatusUpdateDateTime", DateTime.now(DateTimeZone.forTimeZone(TimeZone.getDefault())).toString());
+        data.addProperty("Status", ConsentStatusCode.AWAITINGAUTHORISATION.toString());
+        data.add("ControlParameters", aValidDomesticVrpPaymentControlParametersBuilder(vrpType));
+        data.add("Initiation", aValidFRWriteDomesticVrpDataInitiationBuilder());
+        return data;
+    }
 
+    public static JsonObject aValidDomesticVrpPaymentControlParametersBuilder(OBVRPConsentType vrpType) {
+        JsonObject controlParameters = new JsonObject();
+        controlParameters.addProperty("ValidFromDateTime", DateTime.now(DateTimeZone.forTimeZone(TimeZone.getDefault())).toString());
+        controlParameters.addProperty("ValidToDateTime", DateTime.now(DateTimeZone.forTimeZone(TimeZone.getDefault())).toString());
+        controlParameters.add(
+                "MaximumIndividualAmount",
+                JsonParser.parseString("{ \"Amount\": \"10.01\", \"Currency\": \"GBP\" }")
+        );
+        controlParameters.add(
+                "PeriodicLimits",
+                JsonParser.parseString("[{\n" +
+                        "                        \"PeriodType\": \"Month\",\n" +
+                        "                        \"PeriodAlignment\": \"Calendar\",\n" +
+                        "                        \"Amount\": \"10.01\",\n" +
+                        "                        \"Currency\": \"GBP\"\n" +
+                        "                    }]")
+        );
+        controlParameters.add("VRPType", JsonParser.parseString("[" + vrpType.getValue() + "]"));
+        controlParameters.add("PSUAuthenticationMethods", JsonParser.parseString("[" + OBVRPAuthenticationMethods.SCA_NOT_REQUIRED.getValue() + "]"));
+        controlParameters.add("PSUInteractionTypes", JsonParser.parseString("[InSession]"));
+        controlParameters.add("SupplementaryData", null);
+        return controlParameters;
+    }
+
+    public static JsonObject aValidFRWriteDomesticVrpDataInitiationBuilder() {
+        JsonObject data = new JsonObject();
+        data.add("DebtorAccount", JsonParser.parseString("{\n" +
+                "        \"SchemeName\": \"UK.OBIE.SortCodeAccountNumber\",\n" +
+                "        \"Identification\": \"08080021325698\",\n" +
+                "        \"Name\": \"ACME Inc\",\n" +
+                "        \"SecondaryIdentification\": \"0002\"\n" +
+                "      }"));
         data.add("CreditorAccount", JsonParser.parseString("{\n" +
                 "        \"SchemeName\": \"UK.OBIE.SortCodeAccountNumber\",\n" +
                 "        \"Identification\": \"08080021325698\",\n" +
                 "        \"Name\": \"ACME Inc\",\n" +
                 "        \"SecondaryIdentification\": \"0002\"\n" +
                 "      }"));
-
-        data.add("CreditorAgent", null);
-        data.add("DebtorAccount", null);
-
+        data.add("CreditorPostalAddress", null);
         data.add("RemittanceInformation", JsonParser.parseString("{\n" +
                 "   \"Unstructured\":\"Internal ops code 5120101\",\n" +
                 "   \"Reference\":\"FRESCO-101\"\n" +
                 "}"));
-
         return data;
     }
-
-    /*public static JsonArray aValidChargesBuilder() {
-        JsonArray charges = new JsonArray();
-        charges.add(JsonParser.parseString("{\n" +
-                "        \"ChargeBearer\": \"BorneByDebtor\",\n" +
-                "        \"Type\": \"UK.OBIE.CHAPSOut\",\n" +
-                "        \"Amount\": { \"Amount\": '12.91', \"Currency\": 'GBP' }" +
-                "      }"));
-        charges.add(JsonParser.parseString("{\n" +
-                "        \"ChargeBearer\": \"BorneByDebtor\",\n" +
-                "        \"Type\": \"UK.OBIE.CHAPSOut\",\n" +
-                "        \"Amount\": { \"Amount\": '8.2', \"Currency\": 'USD' }" +
-                "      }"));
-        return charges;
-    }*/
 }

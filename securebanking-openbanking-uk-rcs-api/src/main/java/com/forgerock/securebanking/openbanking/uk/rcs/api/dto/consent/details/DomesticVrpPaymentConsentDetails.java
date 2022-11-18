@@ -16,30 +16,19 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRFinancialAccount;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAmount;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRReadRefundAccount;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRRemittanceInformation;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.vrp.FRWriteDomesticVrpDataInitiation;
-import com.forgerock.securebanking.openbanking.uk.rcs.converters.DomesticVrpPaymentConsentDetailsConverter;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRReadRefundAccount;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.vrp.FRWriteDomesticVrpDataInitiation;
 import com.forgerock.securebanking.platform.client.IntentType;
-import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPControlParameters;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.joda.time.DateTime;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPControlParametersPeriodicLimits;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPControlParameters;
 
-import java.math.BigDecimal;
 import java.util.List;
 
-import static com.forgerock.securebanking.openbanking.uk.rcs.converters.DomesticVrpPaymentConsentDetailsConverter.DATE_TIME_FORMATTER;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter.isNotNull;
 
 /**
@@ -51,68 +40,14 @@ import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConv
 @NoArgsConstructor
 public class DomesticVrpPaymentConsentDetails extends ConsentDetails {
 
-    private FRWriteDomesticVrpDataInitiation domesticVrpPayment;
+    private FRWriteDomesticVrpDataInitiation initiation;
     private List<FRAccountWithBalance> accounts;
-    private FRAmount charges;
-    private String merchantName;
-    private String pispName;
-    private DateTime expiredDate;
-    private String currencyOfTransfer;
-    private String paymentReference;
-    private FRAccountIdentifier debtorAccount;
-    private FRAccountIdentifier creditorAccount;
-    private FRRemittanceInformation remittanceInformation;
-    private String secondaryIdentification;
     private FRReadRefundAccount readRefundAccount;
-    private OBDomesticVRPControlParameters obDomesticVRPControlParameters;
-    private OBActiveOrHistoricCurrencyAndAmount maximumIndividualAmount;
-    private List<OBDomesticVRPControlParametersPeriodicLimits> periodicLimits;
-    private OBDomesticVRPControlParameters supplementaryData;
-
-    public void setDomesticVrpPayment(FRWriteDomesticVrpDataInitiation domesticVrpPayment) {
-        this.domesticVrpPayment = domesticVrpPayment;
-    }
+    private OBDomesticVRPControlParameters controlParameters;
 
     @Override
     public IntentType getIntentType() {
         return IntentType.DOMESTIC_VRP_PAYMENT_CONSENT;
-    }
-
-    public void setCharges(JsonArray charges) {
-        if (!isNotNull(charges)) {
-            this.charges = null;
-        } else {
-            this.charges = new FRAmount();
-            Double amount = 0.0;
-
-            for (JsonElement charge : charges) {
-                JsonObject chargeAmount = charge.getAsJsonObject().getAsJsonObject("Amount");
-                amount += chargeAmount.get("Amount").getAsDouble();
-            }
-
-            String currency = charges.get(0).getAsJsonObject().getAsJsonObject("Amount").get("Currency").getAsString();
-
-            this.charges.setAmount(amount.toString());
-            this.charges.setCurrency(currency);
-        }
-    }
-
-    public void setDomesticVrpPayment() {
-        FRWriteDomesticVrpDataInitiation domesticVrpPaymentData = new FRWriteDomesticVrpDataInitiation();
-
-        /*if (isNotNull(secondaryIdentification)) {
-            domesticVrpPaymentData.setDebtorAccount(secondaryIdentification.getAsString());
-        }
-
-        if (isNotNull(paymentReference)) {
-            domesticVrpPaymentData.setRemittanceInformation(paymentReference.getAsBigDecimal());
-        }
-
-        if (isNotNull(obDomesticVRPControlParameters)) {
-            domesticVrpPaymentData.setDom(obDomesticVRPControlParameters.getAs());
-        }*/
-
-        this.domesticVrpPayment = domesticVrpPaymentData;
     }
 
 }

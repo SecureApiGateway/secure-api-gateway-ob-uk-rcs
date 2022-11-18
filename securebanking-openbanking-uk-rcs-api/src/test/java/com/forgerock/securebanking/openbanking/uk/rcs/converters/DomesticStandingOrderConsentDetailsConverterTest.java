@@ -18,9 +18,11 @@ package com.forgerock.securebanking.openbanking.uk.rcs.converters;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticStandingOrderConsentDetails;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.Instant;
 import org.junit.jupiter.api.Test;
 
-import static com.forgerock.securebanking.openbanking.uk.rcs.converters.DomesticStandingOrderConsentDetailsConverter.DATE_TIME_FORMATTER;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.OB_INTENT_OBJECT;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.members.*;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.DOMESTIC_STANDING_ORDER_INTENT_ID;
 import static com.forgerock.securebanking.platform.client.test.support.DomesticStandingOrderConsentDetailsTestFactory.aValidDomesticStandingOrderConsentDetails;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,37 +38,36 @@ public class DomesticStandingOrderConsentDetailsConverterTest {
         JsonObject consentDetails = aValidDomesticStandingOrderConsentDetails(DOMESTIC_STANDING_ORDER_INTENT_ID);
 
         // When
-        DomesticStandingOrderConsentDetails domesticStandingOrderConsentDetails = DomesticStandingOrderConsentDetailsConverter.getInstance().toDomesticStandingOrderConsentDetails(consentDetails);
+        DomesticStandingOrderConsentDetails domesticStandingOrderConsentDetails =
+                DomesticStandingOrderConsentDetailsConverter.getInstance().toDomesticStandingOrderConsentDetails(consentDetails);
 
         // Then
-        JsonObject initiation = consentDetails.getAsJsonObject("OBIntentObject").getAsJsonObject("Data").getAsJsonObject("Initiation");
+        JsonObject initiation = consentDetails.getAsJsonObject(OB_INTENT_OBJECT).getAsJsonObject(DATA).getAsJsonObject(INITIATION);
 
         assertThat(domesticStandingOrderConsentDetails.getStandingOrder().getFinalPaymentAmount().getAmount())
-                .isEqualTo(initiation.getAsJsonObject("FinalPaymentAmount").get("Amount").getAsString());
+                .isEqualTo(initiation.getAsJsonObject(FINAL_PAYMENT_AMOUNT).get(AMOUNT).getAsString());
         assertThat(domesticStandingOrderConsentDetails.getStandingOrder().getFinalPaymentAmount().getCurrency())
-                .isEqualTo(initiation.getAsJsonObject("FinalPaymentAmount").get("Currency").getAsString());
+                .isEqualTo(initiation.getAsJsonObject(FINAL_PAYMENT_AMOUNT).get(CURRENCY).getAsString());
 
         assertThat(domesticStandingOrderConsentDetails.getStandingOrder().getFirstPaymentAmount().getAmount())
-                .isEqualTo(initiation.getAsJsonObject("FirstPaymentAmount").get("Amount").getAsString());
+                .isEqualTo(initiation.getAsJsonObject(FIRST_PAYMENT_AMOUNT).get(AMOUNT).getAsString());
         assertThat(domesticStandingOrderConsentDetails.getStandingOrder().getFirstPaymentAmount().getCurrency())
-                .isEqualTo(initiation.getAsJsonObject("FirstPaymentAmount").get("Currency").getAsString());
+                .isEqualTo(initiation.getAsJsonObject(FIRST_PAYMENT_AMOUNT).get(CURRENCY).getAsString());
 
         assertThat(domesticStandingOrderConsentDetails.getStandingOrder().getRecurringPaymentAmount().getAmount())
-                .isEqualTo(initiation.getAsJsonObject("RecurringPaymentAmount").get("Amount").getAsString());
+                .isEqualTo(initiation.getAsJsonObject(RECURRING_PAYMENT_AMOUNT).get(AMOUNT).getAsString());
         assertThat(domesticStandingOrderConsentDetails.getStandingOrder().getRecurringPaymentAmount().getCurrency())
-                .isEqualTo(initiation.getAsJsonObject("RecurringPaymentAmount").get("Currency").getAsString());
+                .isEqualTo(initiation.getAsJsonObject(RECURRING_PAYMENT_AMOUNT).get(CURRENCY).getAsString());
 
         assertThat(domesticStandingOrderConsentDetails.getStandingOrder().getFinalPaymentDateTime())
-                .isEqualTo(DATE_TIME_FORMATTER.parseDateTime(initiation.get("FinalPaymentDateTime").getAsString()));
+                .isEqualTo(Instant.parse(initiation.get(FINAL_PAYMENT_DATETIME).getAsString()).toDateTime());
         assertThat(domesticStandingOrderConsentDetails.getStandingOrder().getFirstPaymentDateTime())
-                .isEqualTo(DATE_TIME_FORMATTER.parseDateTime(initiation.get("FirstPaymentDateTime").getAsString()));
+                .isEqualTo(Instant.parse(initiation.get(FIRST_PAYMENT_DATETIME).getAsString()).toDateTime());
         assertThat(domesticStandingOrderConsentDetails.getStandingOrder().getRecurringPaymentDateTime())
-                .isEqualTo(DATE_TIME_FORMATTER.parseDateTime(initiation.get("RecurringPaymentDateTime").getAsString()));
-
-        assertThat(domesticStandingOrderConsentDetails.getMerchantName()).isEqualTo(consentDetails.get("oauth2ClientName").getAsString());
+                .isEqualTo(Instant.parse(initiation.get(RECURRING_PAYMENT_DATETIME).getAsString()).toDateTime());
 
         assertThat(domesticStandingOrderConsentDetails.getPaymentReference())
-                .isEqualTo(initiation.get("Reference").getAsString());
+                .isEqualTo(initiation.get(REFERENCE).getAsString());
 
         assertThat(domesticStandingOrderConsentDetails.getCharges())
                 .isNotNull();

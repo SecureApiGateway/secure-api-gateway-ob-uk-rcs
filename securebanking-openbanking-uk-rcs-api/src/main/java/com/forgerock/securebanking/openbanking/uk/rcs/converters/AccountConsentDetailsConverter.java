@@ -21,7 +21,11 @@ import com.google.gson.JsonObject;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
+import org.joda.time.Instant;
 
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.OAUTH2_CLIENT_NAME;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.OB_INTENT_OBJECT;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.members.*;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter.isNotNull;
 
 /**
@@ -34,7 +38,7 @@ public class AccountConsentDetailsConverter {
     private static volatile AccountConsentDetailsConverter instance;
 
     /*
-     * Double checked locking principle to ensure that only one instance 'AccountConsentDetailsConverter' is created
+     * Double check locking principle to ensure that only one instance 'AccountConsentDetailsConverter' is created
      */
     public static AccountConsentDetailsConverter getInstance() {
         if (instance == null) {
@@ -49,15 +53,12 @@ public class AccountConsentDetailsConverter {
 
     public AccountsConsentDetails mapping(JsonObject consentDetails) {
         AccountsConsentDetails details = new AccountsConsentDetails();
-        details.setAispName(isNotNull(consentDetails.get("oauth2ClientName")) ?
-                consentDetails.get("oauth2ClientName").getAsString() :
-                null);
 
-        if (!consentDetails.has("OBIntentObject")) {
-            throw new IllegalStateException("Expected OBIntentObject field in json");
+        if (!consentDetails.has(OB_INTENT_OBJECT)) {
+            throw new IllegalStateException("Expected " + OB_INTENT_OBJECT + " field in json");
         } else {
-            final JsonObject obIntentObject = consentDetails.get("OBIntentObject").getAsJsonObject();
-            final JsonElement consentDataElement = obIntentObject.get("Data");
+            final JsonObject obIntentObject = consentDetails.get(OB_INTENT_OBJECT).getAsJsonObject();
+            final JsonElement consentDataElement = obIntentObject.get(DATA);
             if (!isNotNull(consentDataElement)) {
                 details.setFromTransaction(null);
                 details.setToTransaction(null);
@@ -66,20 +67,20 @@ public class AccountConsentDetailsConverter {
             } else {
                 JsonObject data = consentDataElement.getAsJsonObject();
 
-                details.setFromTransaction(isNotNull(data.get("TransactionFromDateTime")) ?
-                        DateTime.parse(data.get("TransactionFromDateTime").getAsString()) :
+                details.setFromTransaction(isNotNull(data.get(TRANSACTION_FROM_DATETIME)) ?
+                        Instant.parse(data.get(TRANSACTION_FROM_DATETIME).getAsString()).toDateTime() :
                         null);
 
-                details.setToTransaction(isNotNull(data.get("TransactionToDateTime")) ?
-                        DateTime.parse(data.get("TransactionToDateTime").getAsString()) :
+                details.setToTransaction(isNotNull(data.get(TRANSACTION_TO_DATETIME)) ?
+                        Instant.parse(data.get(TRANSACTION_TO_DATETIME).getAsString()).toDateTime() :
                         null);
 
-                details.setExpiredDate(isNotNull(data.get("ExpirationDateTime")) ?
-                        DateTime.parse(data.get("ExpirationDateTime").getAsString()) :
+                details.setExpiredDate(isNotNull(data.get(EXPIRATION_DATETIME)) ?
+                        Instant.parse(data.get(EXPIRATION_DATETIME).getAsString()).toDateTime() :
                         null);
 
-                details.setPermissions(isNotNull(data.get("Permissions")) ?
-                        data.getAsJsonArray("Permissions") :
+                details.setPermissions(isNotNull(data.get(PERMISSIONS)) ?
+                        data.getAsJsonArray(PERMISSIONS) :
                         null);
             }
         }

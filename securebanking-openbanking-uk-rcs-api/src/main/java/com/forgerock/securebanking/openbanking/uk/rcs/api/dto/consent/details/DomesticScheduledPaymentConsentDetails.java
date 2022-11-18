@@ -29,6 +29,8 @@ import org.joda.time.DateTime;
 
 import java.util.List;
 
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.members.AMOUNT;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.members.CURRENCY;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter.isNotNull;
 
 /**
@@ -41,7 +43,6 @@ import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConv
 public class DomesticScheduledPaymentConsentDetails extends ConsentDetails {
 
     private FRAmount instructedAmount;
-    private String merchantName;
     private List<FRAccountWithBalance> accounts;
     private DateTime paymentDate;
     private String paymentReference;
@@ -58,8 +59,12 @@ public class DomesticScheduledPaymentConsentDetails extends ConsentDetails {
             this.instructedAmount = null;
         else {
             this.instructedAmount = new FRAmount();
-            this.instructedAmount.setAmount(isNotNull(instructedAmount.get("Amount")) ? instructedAmount.get("Amount").getAsString() : null);
-            this.instructedAmount.setCurrency(isNotNull(instructedAmount.get("Currency")) ? instructedAmount.get("Currency").getAsString() : null);
+            this.instructedAmount.setAmount(
+                    isNotNull(instructedAmount.get(AMOUNT)) ? instructedAmount.get(AMOUNT).getAsString() : null
+            );
+            this.instructedAmount.setCurrency(
+                    isNotNull(instructedAmount.get(CURRENCY)) ? instructedAmount.get(CURRENCY).getAsString() : null
+            );
         }
     }
 
@@ -71,8 +76,8 @@ public class DomesticScheduledPaymentConsentDetails extends ConsentDetails {
             Double amount = 0.0;
 
             for (JsonElement charge : charges) {
-                JsonObject chargeAmount = charge.getAsJsonObject().getAsJsonObject("Amount");
-                amount += chargeAmount.get("Amount").getAsDouble();
+                JsonObject chargeAmount = charge.getAsJsonObject().getAsJsonObject(AMOUNT);
+                amount += chargeAmount.get(AMOUNT).getAsDouble();
             }
 
             this.charges.setCurrency(instructedAmount.getCurrency());

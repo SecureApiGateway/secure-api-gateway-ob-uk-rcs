@@ -76,7 +76,7 @@ public class ConsentDetailsBuilderFactory {
         }
     }
 
-    private static final AccountsConsentDetails buildAccountConsentDetails(
+    private static AccountsConsentDetails buildAccountConsentDetails(
             JsonObject consentDetails,
             ConsentRequest consentDetailsRequest,
             ApiClient apiClient
@@ -91,7 +91,7 @@ public class ConsentDetailsBuilderFactory {
         return details;
     }
 
-    private static final DomesticPaymentConsentDetails buildDomesticPaymentConsentDetails(
+    private static DomesticPaymentConsentDetails buildDomesticPaymentConsentDetails(
             JsonObject consentDetails,
             ConsentRequest consentDetailsRequest,
             ApiClient apiClient
@@ -106,7 +106,7 @@ public class ConsentDetailsBuilderFactory {
         return details;
     }
 
-    private static final DomesticScheduledPaymentConsentDetails buildDomesticScheduledPaymentConsentDetails(
+    private static DomesticScheduledPaymentConsentDetails buildDomesticScheduledPaymentConsentDetails(
             JsonObject consentDetails,
             ConsentRequest consentDetailsRequest,
             ApiClient apiClient
@@ -121,7 +121,7 @@ public class ConsentDetailsBuilderFactory {
         return details;
     }
 
-    private static final DomesticStandingOrderConsentDetails buildDomesticStandingOrderConsentDetails(
+    private static DomesticStandingOrderConsentDetails buildDomesticStandingOrderConsentDetails(
             JsonObject consentDetails,
             ConsentRequest consentDetailsRequest,
             ApiClient apiClient
@@ -136,7 +136,7 @@ public class ConsentDetailsBuilderFactory {
         return details;
     }
 
-    private static final InternationalPaymentConsentDetails buildInternationalPaymentConsentDetails(
+    private static InternationalPaymentConsentDetails buildInternationalPaymentConsentDetails(
             JsonObject consentDetails,
             ConsentRequest consentDetailsRequest,
             ApiClient apiClient
@@ -151,7 +151,7 @@ public class ConsentDetailsBuilderFactory {
         return details;
     }
 
-    private static final InternationalScheduledPaymentConsentDetails buildInternationalScheduledPaymentConsentDetails(
+    private static InternationalScheduledPaymentConsentDetails buildInternationalScheduledPaymentConsentDetails(
             JsonObject consentDetails,
             ConsentRequest consentDetailsRequest,
             ApiClient apiClient
@@ -166,7 +166,7 @@ public class ConsentDetailsBuilderFactory {
         return details;
     }
 
-    private static final InternationalStandingOrderConsentDetails buildInternationalStandingOrderConsentDetails(
+    private static InternationalStandingOrderConsentDetails buildInternationalStandingOrderConsentDetails(
             JsonObject consentDetails,
             ConsentRequest consentDetailsRequest,
             ApiClient apiClient
@@ -181,7 +181,7 @@ public class ConsentDetailsBuilderFactory {
         return details;
     }
 
-    private static final FilePaymentConsentDetails buildFilePaymentConsentDetails(
+    private static FilePaymentConsentDetails buildFilePaymentConsentDetails(
             JsonObject consentDetails,
             ConsentRequest consentDetailsRequest,
             ApiClient apiClient
@@ -196,7 +196,7 @@ public class ConsentDetailsBuilderFactory {
         return details;
     }
 
-    private static final DomesticVrpPaymentConsentDetails buildDomesticVrpPaymentConsentDetails(
+    private static DomesticVrpPaymentConsentDetails buildDomesticVrpPaymentConsentDetails(
             JsonObject consentDetails,
             ConsentRequest consentDetailsRequest,
             ApiClient apiClient
@@ -210,7 +210,6 @@ public class ConsentDetailsBuilderFactory {
         details.setLogo(apiClient.getLogoUri());
         return details;
     }
-
 
 
 }

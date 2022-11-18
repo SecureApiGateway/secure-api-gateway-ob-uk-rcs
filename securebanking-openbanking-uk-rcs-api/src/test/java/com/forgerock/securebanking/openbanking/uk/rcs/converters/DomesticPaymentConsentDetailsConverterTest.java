@@ -20,6 +20,8 @@ import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.OB_INTENT_OBJECT;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.members.*;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.DOMESTIC_PAYMENT_INTENT_ID;
 import static com.forgerock.securebanking.platform.client.test.support.DomesticPaymentConsentDetailsTestFactory.aValidDomesticPaymentConsentDetails;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,21 +38,20 @@ public class DomesticPaymentConsentDetailsConverterTest {
         JsonObject consentDetails = aValidDomesticPaymentConsentDetails(DOMESTIC_PAYMENT_INTENT_ID);
 
         // When
-        DomesticPaymentConsentDetails domesticPaymentConsentDetails = DomesticPaymentConsentDetailsConverter.getInstance().toDomesticPaymentConsentDetails(consentDetails);
+        DomesticPaymentConsentDetails domesticPaymentConsentDetails =
+                DomesticPaymentConsentDetailsConverter.getInstance().toDomesticPaymentConsentDetails(consentDetails);
 
         // Then
-        JsonObject initiation = consentDetails.getAsJsonObject("OBIntentObject").getAsJsonObject("Data").getAsJsonObject("Initiation");
+        JsonObject initiation = consentDetails.getAsJsonObject(OB_INTENT_OBJECT).getAsJsonObject(DATA).getAsJsonObject(INITIATION);
 
         assertThat(domesticPaymentConsentDetails.getInstructedAmount().getAmount())
-                .isEqualTo(initiation.getAsJsonObject("InstructedAmount").get("Amount").getAsString());
+                .isEqualTo(initiation.getAsJsonObject(INSTRUCTED_AMOUNT).get(AMOUNT).getAsString());
 
         assertThat(domesticPaymentConsentDetails.getInstructedAmount().getCurrency())
-                .isEqualTo(initiation.getAsJsonObject("InstructedAmount").get("Currency").getAsString());
-
-        assertThat(domesticPaymentConsentDetails.getMerchantName()).isEqualTo(consentDetails.get("oauth2ClientName").getAsString());
+                .isEqualTo(initiation.getAsJsonObject(INSTRUCTED_AMOUNT).get(CURRENCY).getAsString());
 
         assertThat(domesticPaymentConsentDetails.getPaymentReference())
-                .isEqualTo(initiation.getAsJsonObject("RemittanceInformation").get("Reference").getAsString());
+                .isEqualTo(initiation.getAsJsonObject(REMITTANCE_INFORMATION).get(REFERENCE).getAsString());
 
         assertThat(domesticPaymentConsentDetails.getCharges())
                 .isNotNull();

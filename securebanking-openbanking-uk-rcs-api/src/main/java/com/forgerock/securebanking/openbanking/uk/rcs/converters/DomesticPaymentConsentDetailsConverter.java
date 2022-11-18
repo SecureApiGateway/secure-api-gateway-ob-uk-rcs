@@ -21,6 +21,9 @@ import com.google.gson.JsonObject;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.OAUTH2_CLIENT_NAME;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.OB_INTENT_OBJECT;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.members.*;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter.isNotNull;
 
 /**
@@ -33,7 +36,7 @@ public class DomesticPaymentConsentDetailsConverter {
     private static volatile DomesticPaymentConsentDetailsConverter instance;
 
     /*
-     * Double checked locking principle to ensure that only one instance 'DomesticPaymentConsentDetailsConverter' is created
+     * Double check locking principle to ensure that only one instance 'DomesticPaymentConsentDetailsConverter' is created
      */
     public static DomesticPaymentConsentDetailsConverter getInstance() {
         if (instance == null) {
@@ -49,35 +52,31 @@ public class DomesticPaymentConsentDetailsConverter {
     public DomesticPaymentConsentDetails mapping(JsonObject consentDetails) {
         DomesticPaymentConsentDetails details = new DomesticPaymentConsentDetails();
 
-        details.setMerchantName(isNotNull(consentDetails.get("oauth2ClientName")) ?
-                consentDetails.get("oauth2ClientName").getAsString() :
-                null);
-
-        if (!consentDetails.has("OBIntentObject")) {
-            throw new IllegalStateException("Expected OBIntentObject field in json");
+        if (!consentDetails.has(OB_INTENT_OBJECT)) {
+            throw new IllegalStateException("Expected " + OB_INTENT_OBJECT + " field in json");
         } else {
-            final JsonObject obIntentObject = consentDetails.get("OBIntentObject").getAsJsonObject();
-            final JsonElement consentDataElement = obIntentObject.get("Data");
+            final JsonObject obIntentObject = consentDetails.get(OB_INTENT_OBJECT).getAsJsonObject();
+            final JsonElement consentDataElement = obIntentObject.get(DATA);
             if (!isNotNull(consentDataElement)) {
                 details.setInstructedAmount(null);
                 details.setPaymentReference(null);
             } else {
                 JsonObject data = consentDataElement.getAsJsonObject();
 
-                if (isNotNull(data.get("Initiation"))) {
-                    JsonObject initiation = data.getAsJsonObject("Initiation");
+                if (isNotNull(data.get(INITIATION))) {
+                    JsonObject initiation = data.getAsJsonObject(INITIATION);
 
-                    details.setInstructedAmount(isNotNull(initiation.get("InstructedAmount")) ?
-                            initiation.getAsJsonObject("InstructedAmount") :
+                    details.setInstructedAmount(isNotNull(initiation.get(INSTRUCTED_AMOUNT)) ?
+                            initiation.getAsJsonObject(INSTRUCTED_AMOUNT) :
                             null);
 
-                    details.setPaymentReference(isNotNull(initiation.get("RemittanceInformation")) &&
-                            isNotNull(initiation.getAsJsonObject("RemittanceInformation").get("Reference")) ?
-                            initiation.getAsJsonObject("RemittanceInformation").get("Reference").getAsString() :
+                    details.setPaymentReference(isNotNull(initiation.get(REMITTANCE_INFORMATION)) &&
+                            isNotNull(initiation.getAsJsonObject(REMITTANCE_INFORMATION).get(REFERENCE)) ?
+                            initiation.getAsJsonObject(REMITTANCE_INFORMATION).get(REFERENCE).getAsString() :
                             null);
 
-                    details.setCharges(isNotNull(data.get("Charges")) ?
-                            data.getAsJsonArray("Charges") :
+                    details.setCharges(isNotNull(data.get(CHARGES)) ?
+                            data.getAsJsonArray(CHARGES) :
                             null);
                 }
             }

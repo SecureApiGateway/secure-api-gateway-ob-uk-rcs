@@ -20,9 +20,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.OAUTH2_CLIENT_NAME;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.OB_INTENT_OBJECT;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.members.*;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter.isNotNull;
 
 /**
@@ -33,10 +34,9 @@ import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConv
 public class InternationalPaymentConsentDetailsConverter {
 
     private static volatile InternationalPaymentConsentDetailsConverter instance;
-    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
 
     /*
-     * Double checked locking principle to ensure that only one instance 'DomesticPaymentConsentDetailsConverter' is created
+     * Double check locking principle to ensure that only one instance 'DomesticPaymentConsentDetailsConverter' is created
      */
     public static InternationalPaymentConsentDetailsConverter getInstance() {
         if (instance == null) {
@@ -52,15 +52,11 @@ public class InternationalPaymentConsentDetailsConverter {
     public InternationalPaymentConsentDetails mapping(JsonObject consentDetails) {
         InternationalPaymentConsentDetails details = new InternationalPaymentConsentDetails();
 
-        details.setMerchantName(isNotNull(consentDetails.get("oauth2ClientName")) ?
-                consentDetails.get("oauth2ClientName").getAsString() :
-                null);
-
-        if (!consentDetails.has("OBIntentObject")) {
-            throw new IllegalStateException("Expected OBIntentObject field in json");
+        if (!consentDetails.has(OB_INTENT_OBJECT)) {
+            throw new IllegalStateException("Expected " + OB_INTENT_OBJECT + " field in json");
         } else {
-            final JsonObject obIntentObject = consentDetails.get("OBIntentObject").getAsJsonObject();
-            final JsonElement consentDataElement = obIntentObject.get("Data");
+            final JsonObject obIntentObject = consentDetails.get(OB_INTENT_OBJECT).getAsJsonObject();
+            final JsonElement consentDataElement = obIntentObject.get(DATA);
             if (!isNotNull(consentDataElement)) {
                 details.setPaymentReference(null);
                 details.setCurrencyOfTransfer(null);
@@ -69,26 +65,31 @@ public class InternationalPaymentConsentDetailsConverter {
             } else {
                 JsonObject data = consentDataElement.getAsJsonObject();
 
-                details.setExchangeRateInformation(isNotNull(data.get("ExchangeRateInformation")) ?
-                        data.getAsJsonObject("ExchangeRateInformation") :
-                        null);
+                details.setExchangeRateInformation(isNotNull(data.get(EXCHANGE_RATE_INFORMATION))
+                        ? data.getAsJsonObject(EXCHANGE_RATE_INFORMATION)
+                        : null
+                );
 
-                if (isNotNull(data.get("Initiation"))) {
-                    JsonObject initiation = data.getAsJsonObject("Initiation");
+                if (isNotNull(data.get(INITIATION))) {
+                    JsonObject initiation = data.getAsJsonObject(INITIATION);
 
-                    details.setPaymentReference(isNotNull(initiation.get("RemittanceInformation")) && isNotNull(initiation.getAsJsonObject("RemittanceInformation").get("Reference")) ?
-                            initiation.getAsJsonObject("RemittanceInformation").get("Reference").getAsString() : null);
+                    details.setPaymentReference(
+                            isNotNull(initiation.get(REMITTANCE_INFORMATION)) && isNotNull(initiation.getAsJsonObject(REMITTANCE_INFORMATION).get(REFERENCE))
+                                    ? initiation.getAsJsonObject(REMITTANCE_INFORMATION).get(REFERENCE).getAsString()
+                                    : null
+                    );
 
-                    details.setCurrencyOfTransfer(isNotNull(initiation.get("CurrencyOfTransfer")) ?
-                            initiation.get("CurrencyOfTransfer").getAsString() : null);
+                    details.setCurrencyOfTransfer(isNotNull(initiation.get(CURRENCY_OF_TRANSFER))
+                            ? initiation.get(CURRENCY_OF_TRANSFER).getAsString()
+                            : null
+                    );
 
-                    details.setInstructedAmount(isNotNull(initiation.get("InstructedAmount")) ?
-                            initiation.getAsJsonObject("InstructedAmount") :
-                            null);
+                    details.setInstructedAmount(isNotNull(initiation.get(INSTRUCTED_AMOUNT))
+                            ? initiation.getAsJsonObject(INSTRUCTED_AMOUNT)
+                            : null
+                    );
 
-                    details.setCharges(isNotNull(data.get("Charges")) ?
-                            data.getAsJsonArray("Charges") :
-                            null);
+                    details.setCharges(isNotNull(data.get(CHARGES)) ? data.getAsJsonArray(CHARGES) : null);
                 }
             }
         }

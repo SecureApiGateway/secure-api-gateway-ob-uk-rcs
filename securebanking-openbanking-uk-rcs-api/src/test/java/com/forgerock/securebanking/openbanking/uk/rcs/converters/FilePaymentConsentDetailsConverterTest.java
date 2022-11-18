@@ -18,11 +18,12 @@ package com.forgerock.securebanking.openbanking.uk.rcs.converters;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.FilePaymentConsentDetails;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
-import org.joda.time.DateTime;
+import org.joda.time.Instant;
 import org.junit.jupiter.api.Test;
 
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.OB_INTENT_OBJECT;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.members.*;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.FILE_PAYMENT_INTENT_ID;
-import static com.forgerock.securebanking.openbanking.uk.rcs.converters.FilePaymentConsentDetailsConverter.DATE_TIME_FORMATTER;
 import static com.forgerock.securebanking.platform.client.test.support.FilePaymentConsentDetailsTestFactory.aValidFilePaymentConsentDetails;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,22 +41,20 @@ public class FilePaymentConsentDetailsConverterTest {
         FilePaymentConsentDetails filePaymentConsentDetails = FilePaymentConsentDetailsConverter.getInstance().toFilePaymentConsentDetails(consentDetails);
 
         // Then
-        JsonObject data = consentDetails.getAsJsonObject("OBIntentObject").getAsJsonObject("Data");
-        JsonObject initiation = data.getAsJsonObject("Initiation");
+        JsonObject data = consentDetails.getAsJsonObject(OB_INTENT_OBJECT).getAsJsonObject(DATA);
+        JsonObject initiation = data.getAsJsonObject(INITIATION);
 
         assertThat(filePaymentConsentDetails.getFilePayment().getNumberOfTransactions())
-                .isEqualTo(initiation.get("NumberOfTransactions").getAsString());
+                .isEqualTo(initiation.get(NUMBER_OF_TRANSACTIONS).getAsString());
 
         assertThat(filePaymentConsentDetails.getFilePayment().getControlSum())
-                .isEqualTo(initiation.get("ControlSum").getAsBigDecimal());
+                .isEqualTo(initiation.get(CONTROL_SUM).getAsBigDecimal());
 
         assertThat(filePaymentConsentDetails.getFilePayment().getRequestedExecutionDateTime())
-                .isEqualTo(DATE_TIME_FORMATTER.parseDateTime(initiation.get("RequestedExecutionDateTime").getAsString()));
+                .isEqualTo(Instant.parse(initiation.get(REQUESTED_EXECUTION_DATETIME).getAsString()).toDateTime());
 
         assertThat(filePaymentConsentDetails.getFilePayment().getFileReference())
-                .isEqualTo(initiation.get("FileReference").getAsString());
-
-        assertThat(filePaymentConsentDetails.getMerchantName()).isEqualTo(consentDetails.get("oauth2ClientName").getAsString());
+                .isEqualTo(initiation.get(FILE_REFERENCE).getAsString());
 
         assertThat(filePaymentConsentDetails.getCharges())
                 .isNotNull();

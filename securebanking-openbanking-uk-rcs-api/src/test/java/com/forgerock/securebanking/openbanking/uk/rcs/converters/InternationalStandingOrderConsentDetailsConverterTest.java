@@ -20,6 +20,8 @@ import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.OB_INTENT_OBJECT;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.members.*;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.INTERNATIONAL_STANDING_ORDER_INTENT_ID;
 import static com.forgerock.securebanking.platform.client.test.support.InternationalStandingOrderConsentDetailsTestFactory.aValidInternationalStandingOrderConsentDetails;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,22 +37,22 @@ public class InternationalStandingOrderConsentDetailsConverterTest {
         JsonObject consentDetails = aValidInternationalStandingOrderConsentDetails(INTERNATIONAL_STANDING_ORDER_INTENT_ID);
 
         // When
-        InternationalStandingOrderConsentDetails internationalStandingOrderConsentDetails = InternationalStandingOrderConsentDetailsConverter.getInstance().toInternationalStandingOrderConsentDetails(consentDetails);
+        InternationalStandingOrderConsentDetails internationalStandingOrderConsentDetails =
+                InternationalStandingOrderConsentDetailsConverter.getInstance()
+                        .toInternationalStandingOrderConsentDetails(consentDetails);
 
         // Then
-        JsonObject data = consentDetails.getAsJsonObject("OBIntentObject").getAsJsonObject("Data");
-        JsonObject initiation = data.getAsJsonObject("Initiation");
+        JsonObject data = consentDetails.getAsJsonObject(OB_INTENT_OBJECT).getAsJsonObject(DATA);
+        JsonObject initiation = data.getAsJsonObject(INITIATION);
 
         assertThat(internationalStandingOrderConsentDetails.getInternationalStandingOrder().getInstructedAmount().getAmount())
-                .isEqualTo(initiation.getAsJsonObject("InstructedAmount").get("Amount").getAsString());
+                .isEqualTo(initiation.getAsJsonObject(INSTRUCTED_AMOUNT).get(AMOUNT).getAsString());
 
         assertThat(internationalStandingOrderConsentDetails.getInternationalStandingOrder().getInstructedAmount().getCurrency())
-                .isEqualTo(initiation.getAsJsonObject("InstructedAmount").get("Currency").getAsString());
-
-        assertThat(internationalStandingOrderConsentDetails.getMerchantName()).isEqualTo(consentDetails.get("oauth2ClientName").getAsString());
+                .isEqualTo(initiation.getAsJsonObject(INSTRUCTED_AMOUNT).get(CURRENCY).getAsString());
 
         assertThat(internationalStandingOrderConsentDetails.getCurrencyOfTransfer())
-                .isEqualTo(initiation.get("CurrencyOfTransfer").getAsString());
+                .isEqualTo(initiation.get(CURRENCY_OF_TRANSFER).getAsString());
 
         assertThat(internationalStandingOrderConsentDetails.getCharges())
                 .isNotNull();

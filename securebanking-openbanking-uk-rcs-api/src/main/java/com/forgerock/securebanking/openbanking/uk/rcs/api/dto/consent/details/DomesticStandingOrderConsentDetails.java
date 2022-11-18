@@ -27,10 +27,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.joda.time.Instant;
 
 import java.util.List;
 
-import static com.forgerock.securebanking.openbanking.uk.rcs.converters.DomesticStandingOrderConsentDetailsConverter.DATE_TIME_FORMATTER;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.members.AMOUNT;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.members.CURRENCY;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter.isNotNull;
 
 /**
@@ -43,7 +45,6 @@ import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConv
 public class DomesticStandingOrderConsentDetails extends ConsentDetails {
     private FRWriteDomesticStandingOrderDataInitiation standingOrder;
     private List<FRAccountWithBalance> accounts;
-    private String merchantName;
     private String paymentReference;
     private FRAmount charges;
 
@@ -59,8 +60,8 @@ public class DomesticStandingOrderConsentDetails extends ConsentDetails {
             Double amount = 0.0;
 
             for (JsonElement charge : charges) {
-                JsonObject chargeAmount = charge.getAsJsonObject().getAsJsonObject("Amount");
-                amount += chargeAmount.get("Amount").getAsDouble();
+                JsonObject chargeAmount = charge.getAsJsonObject().getAsJsonObject(AMOUNT);
+                amount += chargeAmount.get(AMOUNT).getAsDouble();
             }
 
             this.charges.setCurrency(standingOrder.getFirstPaymentAmount().getCurrency());
@@ -68,36 +69,60 @@ public class DomesticStandingOrderConsentDetails extends ConsentDetails {
         }
     }
 
-    public void setStandingOrder(JsonElement finalPaymentDateTime, JsonObject finalPaymentAmount, JsonElement firstPaymentDateTime, JsonObject firstPaymentAmount, JsonElement recurringPaymentDateTime, JsonObject recurringPaymentAmount, JsonElement frequency) {
+    public void setStandingOrder(
+            JsonElement finalPaymentDateTime,
+            JsonObject finalPaymentAmount,
+            JsonElement firstPaymentDateTime,
+            JsonObject firstPaymentAmount,
+            JsonElement recurringPaymentDateTime,
+            JsonObject recurringPaymentAmount,
+            JsonElement frequency
+    ) {
         FRWriteDomesticStandingOrderDataInitiation standingOrderData = new FRWriteDomesticStandingOrderDataInitiation();
 
         if (isNotNull(finalPaymentDateTime)) {
-            standingOrderData.setFinalPaymentDateTime(DATE_TIME_FORMATTER.parseDateTime(finalPaymentDateTime.getAsString()));
+            standingOrderData.setFinalPaymentDateTime(Instant.parse(finalPaymentDateTime.getAsString()).toDateTime());
         }
         if (isNotNull(finalPaymentAmount)) {
             FRAmount frFinalPaymentAmount = new FRAmount();
-            frFinalPaymentAmount.setAmount(isNotNull(finalPaymentAmount.get("Amount")) ? finalPaymentAmount.get("Amount").getAsString() : null);
-            frFinalPaymentAmount.setCurrency(isNotNull(finalPaymentAmount.get("Currency")) ? finalPaymentAmount.get("Currency").getAsString() : null);
+            frFinalPaymentAmount.setAmount(
+                    isNotNull(finalPaymentAmount.get(AMOUNT)) ? finalPaymentAmount.get(AMOUNT).getAsString() : null
+            );
+            frFinalPaymentAmount.setCurrency(
+                    isNotNull(finalPaymentAmount.get(CURRENCY)) ? finalPaymentAmount.get(CURRENCY).getAsString() : null
+            );
             standingOrderData.setFinalPaymentAmount(frFinalPaymentAmount);
         }
 
         if (isNotNull(firstPaymentDateTime)) {
-            standingOrderData.setFirstPaymentDateTime(DATE_TIME_FORMATTER.parseDateTime(firstPaymentDateTime.getAsString()));
+            standingOrderData.setFirstPaymentDateTime(Instant.parse(firstPaymentDateTime.getAsString()).toDateTime());
         }
         if (isNotNull(firstPaymentAmount)) {
             FRAmount frFirstPaymentAmount = new FRAmount();
-            frFirstPaymentAmount.setAmount(isNotNull(firstPaymentAmount.get("Amount")) ? firstPaymentAmount.get("Amount").getAsString() : null);
-            frFirstPaymentAmount.setCurrency(isNotNull(firstPaymentAmount.get("Currency")) ? firstPaymentAmount.get("Currency").getAsString() : null);
+            frFirstPaymentAmount.setAmount(
+                    isNotNull(firstPaymentAmount.get(AMOUNT)) ? firstPaymentAmount.get(AMOUNT).getAsString() : null
+            );
+            frFirstPaymentAmount.setCurrency(
+                    isNotNull(firstPaymentAmount.get(CURRENCY)) ? firstPaymentAmount.get(CURRENCY).getAsString() : null
+            );
             standingOrderData.setFirstPaymentAmount(frFirstPaymentAmount);
         }
 
         if (isNotNull(recurringPaymentDateTime)) {
-            standingOrderData.setRecurringPaymentDateTime(DATE_TIME_FORMATTER.parseDateTime(recurringPaymentDateTime.getAsString()));
+            standingOrderData.setRecurringPaymentDateTime(
+                    Instant.parse(recurringPaymentDateTime.getAsString()).toDateTime()
+            );
         }
         if (isNotNull(recurringPaymentAmount)) {
             FRAmount frRecurringPaymentAmount = new FRAmount();
-            frRecurringPaymentAmount.setAmount(isNotNull(recurringPaymentAmount.get("Amount")) ? recurringPaymentAmount.get("Amount").getAsString() : null);
-            frRecurringPaymentAmount.setCurrency(isNotNull(recurringPaymentAmount.get("Currency")) ? recurringPaymentAmount.get("Currency").getAsString() : null);
+            frRecurringPaymentAmount.setAmount(
+                    isNotNull(recurringPaymentAmount.get(AMOUNT))
+                            ? recurringPaymentAmount.get(AMOUNT).getAsString() : null
+            );
+            frRecurringPaymentAmount.setCurrency(
+                    isNotNull(recurringPaymentAmount.get(CURRENCY))
+                            ? recurringPaymentAmount.get(CURRENCY).getAsString() : null
+            );
             standingOrderData.setRecurringPaymentAmount(frRecurringPaymentAmount);
         }
 

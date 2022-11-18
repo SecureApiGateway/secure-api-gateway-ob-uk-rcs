@@ -1,3 +1,10 @@
+# General API provider information
+# API provider is the organization that exposes the Open Banking API capabilities to be consumed by TPPs (usually a Bank)
+api:
+  provider:
+    id: 0 # api provider ID (optional)
+    name: Forgerock Bank simulation config # api provider Name (default value: Forgerock Bank Simulation), used to display the account provider in consent user interface
+    address: Forgerock street, 99, XX1 2YY, Forgeshire, uk # api provider address (Optional)
 #Swagger
 springfox:
   documentation:

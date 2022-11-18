@@ -13,29 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
+package com.forgerock.securebanking.openbanking.uk.rcs.configuration;
 
-import com.forgerock.securebanking.platform.client.IntentType;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
-import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
-/**
- * Models the consent data for a confirmation of funds request.
- */
+@Configuration
+@ConfigurationProperties(prefix = "api.provider")
 @Data
-@SuperBuilder
-@AllArgsConstructor
-@NoArgsConstructor
-public class FundsConfirmationConsentDetails extends ConsentDetails {
-
-    private DateTime expirationDateTime;
-
-    @Override
-    public IntentType getIntentType() {
-        return IntentType.FUNDS_CONFIRMATION_CONSENT;
-    }
-
+public class ApiProviderConfiguration {
+    @Value("${name:Forgerock Bank Simulation}")
+    private String name;
+    private String address;
 }

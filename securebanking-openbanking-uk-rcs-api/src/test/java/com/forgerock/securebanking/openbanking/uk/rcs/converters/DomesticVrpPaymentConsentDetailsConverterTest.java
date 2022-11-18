@@ -18,9 +18,12 @@ package com.forgerock.securebanking.openbanking.uk.rcs.converters;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticVrpPaymentConsentDetails;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
-import org.joda.time.DateTime;
+import org.joda.time.Instant;
 import org.junit.jupiter.api.Test;
+import uk.org.openbanking.datamodel.common.OBVRPConsentType;
 
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.OB_INTENT_OBJECT;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.members.*;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.DOMESTIC_VRP_INTENT_ID;
 import static com.forgerock.securebanking.platform.client.test.support.DomesticVrpPaymentConsentDetailsTestFactory.aValidDomesticVrpPaymentConsentDetails;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,21 +33,39 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @Slf4j
 public class DomesticVrpPaymentConsentDetailsConverterTest {
+
     @Test
-    public void shouldConvertConsentDetailsToDomesticVrpPaymentConsentDetails() {
+    public void shouldConvertConsentDetailsToDomesticVrpPaymentConsentDetailsSweeping() {
         // Given
-        JsonObject consentDetails = aValidDomesticVrpPaymentConsentDetails(DOMESTIC_VRP_INTENT_ID);
+        JsonObject consentDetails = aValidDomesticVrpPaymentConsentDetails(DOMESTIC_VRP_INTENT_ID, OBVRPConsentType.SWEEPING);
 
         // When
-        DomesticVrpPaymentConsentDetails domesticVrpPaymentConsentDetails = DomesticVrpPaymentConsentDetailsConverter.getInstance().toDomesticVrpPaymentConsentDetails(consentDetails);
+        DomesticVrpPaymentConsentDetails domesticVrpPaymentConsentDetails =
+                DomesticVrpPaymentConsentDetailsConverter.getInstance().toDomesticVrpPaymentConsentDetails(consentDetails);
 
         // Then
-        JsonObject data = consentDetails.getAsJsonObject("OBIntentObject").getAsJsonObject("Data");
-        JsonObject initiation = data.getAsJsonObject("Initiation");
+        JsonObject data = consentDetails.getAsJsonObject(OB_INTENT_OBJECT).getAsJsonObject(DATA);
+        JsonObject initiation = data.getAsJsonObject(INITIATION);
+        JsonObject controlParameters = data.getAsJsonObject(CONTROL_PARAMETERS);
 
-        assertThat(domesticVrpPaymentConsentDetails.getDomesticVrpPayment().getCreditorAccount().getIdentification())
-                .isEqualTo(initiation.getAsJsonObject("CreditorAccount").get("Identification").getAsString());
+        assertThat(domesticVrpPaymentConsentDetails.getInitiation().getCreditorAccount().getIdentification())
+                .isEqualTo(initiation.getAsJsonObject(CREDITOR_ACCOUNT).get(IDENTIFICATION).getAsString());
 
+        assertThat(domesticVrpPaymentConsentDetails.getInitiation().getDebtorAccount().getIdentification())
+                .isEqualTo(initiation.getAsJsonObject(DEBTOR_ACCOUNT).get(IDENTIFICATION).getAsString());
+
+        assertThat(domesticVrpPaymentConsentDetails.getControlParameters().getValidFromDateTime())
+                .isEqualTo(Instant.parse(controlParameters.get(VALID_FROM_DATETIME).getAsString()).toDateTime());
+
+        assertThat(domesticVrpPaymentConsentDetails.getControlParameters().getValidToDateTime())
+                .isEqualTo(Instant.parse(controlParameters.get(VALID_TO_DATETIME).getAsString()).toDateTime());
+
+        assertThat(domesticVrpPaymentConsentDetails.getControlParameters().getVrPType()).containsExactly(
+                OBVRPConsentType.SWEEPING.getValue()
+        );
+
+        assertThat(domesticVrpPaymentConsentDetails.getControlParameters().getPeriodicLimits()).isNotNull().isNotEmpty();
 
     }
+
 }

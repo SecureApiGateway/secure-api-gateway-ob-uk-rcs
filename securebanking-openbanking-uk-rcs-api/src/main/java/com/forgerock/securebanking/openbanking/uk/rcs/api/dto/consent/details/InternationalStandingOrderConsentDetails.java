@@ -16,10 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRStandingOrderData;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAmount;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomesticStandingOrderDataInitiation;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternationalStandingOrderData;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternationalStandingOrderDataInitiation;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.forgerock.FRFrequency;
 import com.forgerock.securebanking.platform.client.IntentType;
@@ -31,10 +28,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.joda.time.DateTime;
+import org.joda.time.Instant;
 
 import java.util.List;
 
-import static com.forgerock.securebanking.openbanking.uk.rcs.converters.DomesticStandingOrderConsentDetailsConverter.DATE_TIME_FORMATTER;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.members.AMOUNT;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.members.CURRENCY;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter.isNotNull;
 
 /**
@@ -49,7 +48,6 @@ public class InternationalStandingOrderConsentDetails extends ConsentDetails {
     private FRWriteInternationalStandingOrderDataInitiation internationalStandingOrder;
     private List<FRAccountWithBalance> accounts;
     private FRAmount charges;
-    private String merchantName;
     private DateTime expiredDate;
     private String currencyOfTransfer;
     private String paymentReference;
@@ -71,8 +69,8 @@ public class InternationalStandingOrderConsentDetails extends ConsentDetails {
             Double amount = 0.0;
 
             for (JsonElement charge : charges) {
-                JsonObject chargeAmount = charge.getAsJsonObject().getAsJsonObject("Amount");
-                amount += chargeAmount.get("Amount").getAsDouble();
+                JsonObject chargeAmount = charge.getAsJsonObject().getAsJsonObject(AMOUNT);
+                amount += chargeAmount.get(AMOUNT).getAsDouble();
             }
 
             this.charges.setCurrency(internationalStandingOrder.getInstructedAmount().getCurrency());
@@ -80,21 +78,30 @@ public class InternationalStandingOrderConsentDetails extends ConsentDetails {
         }
     }
 
-    public void setInternationalStandingOrder(JsonElement firstPaymentDateTime, JsonElement finalPaymentDateTime, JsonObject instructedAmount, JsonElement frequency) {
+    public void setInternationalStandingOrder(
+            JsonElement firstPaymentDateTime,
+            JsonElement finalPaymentDateTime,
+            JsonObject instructedAmount,
+            JsonElement frequency
+    ) {
         FRWriteInternationalStandingOrderDataInitiation standingOrderData = new FRWriteInternationalStandingOrderDataInitiation();
 
         if (isNotNull(firstPaymentDateTime)) {
-            standingOrderData.setFirstPaymentDateTime(DATE_TIME_FORMATTER.parseDateTime(firstPaymentDateTime.getAsString()));
+            standingOrderData.setFirstPaymentDateTime(Instant.parse(firstPaymentDateTime.getAsString()).toDateTime());
         }
 
         if (isNotNull(finalPaymentDateTime)) {
-            standingOrderData.setFinalPaymentDateTime(DATE_TIME_FORMATTER.parseDateTime(finalPaymentDateTime.getAsString()));
+            standingOrderData.setFinalPaymentDateTime(Instant.parse(finalPaymentDateTime.getAsString()).toDateTime());
         }
 
         if (isNotNull(instructedAmount)) {
             FRAmount frInstructedAmount = new FRAmount();
-            frInstructedAmount.setAmount(isNotNull(instructedAmount.get("Amount")) ? instructedAmount.get("Amount").getAsString() : null);
-            frInstructedAmount.setCurrency(isNotNull(instructedAmount.get("Currency")) ? instructedAmount.get("Currency").getAsString() : null);
+            frInstructedAmount.setAmount(
+                    isNotNull(instructedAmount.get(AMOUNT)) ? instructedAmount.get(AMOUNT).getAsString() : null
+            );
+            frInstructedAmount.setCurrency(
+                    isNotNull(instructedAmount.get(CURRENCY)) ? instructedAmount.get(CURRENCY).getAsString() : null
+            );
             standingOrderData.setInstructedAmount(frInstructedAmount);
         }
 

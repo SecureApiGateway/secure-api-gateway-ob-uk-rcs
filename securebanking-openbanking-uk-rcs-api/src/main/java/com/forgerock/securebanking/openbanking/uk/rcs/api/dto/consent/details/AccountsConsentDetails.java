@@ -42,7 +42,6 @@ public class AccountsConsentDetails extends ConsentDetails {
     private List<FRAccountWithBalance> accounts;
     private DateTime fromTransaction;
     private DateTime toTransaction;
-    private String aispName;
     private DateTime expiredDate;
 
     @Override

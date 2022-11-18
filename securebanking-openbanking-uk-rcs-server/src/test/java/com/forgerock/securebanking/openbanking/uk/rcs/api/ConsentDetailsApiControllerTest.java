@@ -19,10 +19,7 @@ import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.acc
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.forgerock.FRFrequency;
 import com.forgerock.securebanking.openbanking.uk.rcs.RcsApplicationTestSupport;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.RedirectionAction;
-import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.AccountsConsentDetails;
-import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticPaymentConsentDetails;
-import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticScheduledPaymentConsentDetails;
-import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticStandingOrderConsentDetails;
+import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.*;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.rs.AccountService;
 import com.forgerock.securebanking.openbanking.uk.rcs.testsupport.JwtTestHelper;
 import com.forgerock.securebanking.platform.client.IntentType;
@@ -38,6 +35,7 @@ import com.forgerock.securebanking.platform.client.services.UserServiceClient;
 import com.forgerock.securebanking.platform.client.test.support.ApiClientTestDataFactory;
 import com.google.gson.*;
 import org.joda.time.DateTime;
+import org.joda.time.Instant;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -55,12 +53,14 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.account.FRAccountWithBalanceTestDataFactory.aValidFRAccountWithBalance;
-import static com.forgerock.securebanking.openbanking.uk.rcs.converters.DomesticScheduledPaymentConsentDetailsConverter.DATE_TIME_FORMATTER;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.OB_INTENT_OBJECT;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.members.*;
 import static com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory.aValidAccountConsentDetails;
 import static com.forgerock.securebanking.platform.client.test.support.ConsentDetailsRequestTestDataFactory.*;
 import static com.forgerock.securebanking.platform.client.test.support.DomesticPaymentConsentDetailsTestFactory.aValidDomesticPaymentConsentDetails;
 import static com.forgerock.securebanking.platform.client.test.support.DomesticScheduledPaymentConsentDetailsTestFactory.aValidDomesticScheduledPaymentConsentDetails;
 import static com.forgerock.securebanking.platform.client.test.support.DomesticStandingOrderConsentDetailsTestFactory.aValidDomesticStandingOrderConsentDetails;
+import static com.forgerock.securebanking.platform.client.test.support.DomesticVrpPaymentConsentDetailsTestFactory.aValidDomesticVrpPaymentConsentDetails;
 import static com.forgerock.securebanking.platform.client.test.support.UserTestDataFactory.aValidUser;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -392,7 +392,16 @@ public class ConsentDetailsApiControllerTest {
         assertThat(responseBody.getUsername()).isEqualTo(consentDetailsRequest.getUser().getUserName());
         assertThat(responseBody.getClientId()).isEqualTo(consentDetailsRequest.getClientId());
         assertThat(responseBody.getLogo()).isEqualTo(apiClient.getLogoUri());
-        assertThat(responseBody.getPaymentDate().isEqual(DATE_TIME_FORMATTER.parseDateTime(consentDetails.getAsJsonObject("OBIntentObject").getAsJsonObject("Data").getAsJsonObject("Initiation").get("RequestedExecutionDateTime").getAsString())));
+        assertThat(responseBody.getPaymentDate()
+                .isEqual(
+                        Instant.parse(
+                                consentDetails.getAsJsonObject(OB_INTENT_OBJECT)
+                                        .getAsJsonObject(DATA)
+                                        .getAsJsonObject(INITIATION)
+                                        .get(REQUESTED_EXECUTION_DATETIME).getAsString()
+                        ).toDateTime()
+                )
+        );
     }
 
     @Test
@@ -524,21 +533,37 @@ public class ConsentDetailsApiControllerTest {
         assertThat(responseBody.getClientId()).isEqualTo(consentDetailsRequest.getClientId());
         assertThat(responseBody.getLogo()).isEqualTo(apiClient.getLogoUri());
 
-        final JsonObject expectedIntentData = consentDetails.getAsJsonObject("OBIntentObject").getAsJsonObject("Data");
-        assertThat(responseBody.getStandingOrder().getFinalPaymentDateTime().isEqual(DATE_TIME_FORMATTER.parseDateTime(expectedIntentData.getAsJsonObject("Initiation").get("FinalPaymentDateTime").getAsString())));
-        assertThat(responseBody.getStandingOrder().getFirstPaymentDateTime().isEqual(DATE_TIME_FORMATTER.parseDateTime(expectedIntentData.getAsJsonObject("Initiation").get("FirstPaymentDateTime").getAsString())));
-        assertThat(responseBody.getStandingOrder().getRecurringPaymentDateTime().isEqual(DATE_TIME_FORMATTER.parseDateTime(expectedIntentData.getAsJsonObject("Initiation").get("RecurringPaymentDateTime").getAsString())));
+        final JsonObject expectedIntentData = consentDetails.getAsJsonObject(OB_INTENT_OBJECT).getAsJsonObject(DATA);
+        final JsonObject initiation = expectedIntentData.getAsJsonObject(INITIATION);
 
-        assertThat(responseBody.getStandingOrder().getFrequency()).isEqualTo((new FRFrequency(expectedIntentData.getAsJsonObject("Initiation").get("Frequency").getAsString())).getSentence());
+        assertThat(responseBody.getStandingOrder().getFinalPaymentDateTime()
+                .isEqual(Instant.parse(initiation.get(FINAL_PAYMENT_DATETIME).getAsString()).toDateTime())
+        );
+        assertThat(responseBody.getStandingOrder().getFirstPaymentDateTime()
+                .isEqual(Instant.parse(initiation.get(FIRST_PAYMENT_DATETIME).getAsString()).toDateTime())
+        );
 
-        assertThat(responseBody.getStandingOrder().getFinalPaymentAmount().getAmount()).isEqualTo(expectedIntentData.getAsJsonObject("Initiation").getAsJsonObject("FinalPaymentAmount").get("Amount").getAsString());
-        assertThat(responseBody.getStandingOrder().getFinalPaymentAmount().getCurrency()).isEqualTo(expectedIntentData.getAsJsonObject("Initiation").getAsJsonObject("FinalPaymentAmount").get("Currency").getAsString());
+        assertThat(responseBody.getStandingOrder().getRecurringPaymentDateTime()
+                .isEqual(Instant.parse(initiation.get(RECURRING_PAYMENT_DATETIME).getAsString()).toDateTime())
+        );
 
-        assertThat(responseBody.getStandingOrder().getFirstPaymentAmount().getAmount()).isEqualTo(expectedIntentData.getAsJsonObject("Initiation").getAsJsonObject("FirstPaymentAmount").get("Amount").getAsString());
-        assertThat(responseBody.getStandingOrder().getFirstPaymentAmount().getCurrency()).isEqualTo(expectedIntentData.getAsJsonObject("Initiation").getAsJsonObject("FirstPaymentAmount").get("Currency").getAsString());
+        assertThat(responseBody.getStandingOrder().getFrequency())
+                .isEqualTo((new FRFrequency(initiation.get(FREQUENCY).getAsString())).getSentence());
 
-        assertThat(responseBody.getStandingOrder().getRecurringPaymentAmount().getAmount()).isEqualTo(expectedIntentData.getAsJsonObject("Initiation").getAsJsonObject("RecurringPaymentAmount").get("Amount").getAsString());
-        assertThat(responseBody.getStandingOrder().getRecurringPaymentAmount().getCurrency()).isEqualTo(expectedIntentData.getAsJsonObject("Initiation").getAsJsonObject("RecurringPaymentAmount").get("Currency").getAsString());
+        assertThat(responseBody.getStandingOrder().getFinalPaymentAmount().getAmount())
+                .isEqualTo(initiation.getAsJsonObject(FINAL_PAYMENT_AMOUNT).get(AMOUNT).getAsString());
+        assertThat(responseBody.getStandingOrder().getFinalPaymentAmount().getCurrency())
+                .isEqualTo(initiation.getAsJsonObject(FINAL_PAYMENT_AMOUNT).get(CURRENCY).getAsString());
+
+        assertThat(responseBody.getStandingOrder().getFirstPaymentAmount().getAmount())
+                .isEqualTo(initiation.getAsJsonObject(FIRST_PAYMENT_AMOUNT).get(AMOUNT).getAsString());
+        assertThat(responseBody.getStandingOrder().getFirstPaymentAmount().getCurrency())
+                .isEqualTo(initiation.getAsJsonObject(FIRST_PAYMENT_AMOUNT).get(CURRENCY).getAsString());
+
+        assertThat(responseBody.getStandingOrder().getRecurringPaymentAmount().getAmount())
+                .isEqualTo(initiation.getAsJsonObject(RECURRING_PAYMENT_AMOUNT).get(AMOUNT).getAsString());
+        assertThat(responseBody.getStandingOrder().getRecurringPaymentAmount().getCurrency())
+                .isEqualTo(initiation.getAsJsonObject(RECURRING_PAYMENT_AMOUNT).get(CURRENCY).getAsString());
     }
 
     @Test
@@ -559,7 +584,11 @@ public class ConsentDetailsApiControllerTest {
         given(consentService.getConsent(any(ConsentRequest.class))).willThrow(exceptionClient);
 
         String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
-        String jwtRequest = JwtTestHelper.consentRequestJwt(consentDetailsRequest.getClientId(), consentDetailsRequest.getIntentId(), consentDetailsRequest.getUser().getId());
+        String jwtRequest = JwtTestHelper.consentRequestJwt(
+                consentDetailsRequest.getClientId(),
+                consentDetailsRequest.getIntentId(),
+                consentDetailsRequest.getUser().getId()
+        );
         HttpEntity<String> request = new HttpEntity<>(jwtRequest, headers());
 
         // when
@@ -591,7 +620,11 @@ public class ConsentDetailsApiControllerTest {
         given(userServiceClient.getUser(anyString())).willThrow(exceptionClient);
         given(consentService.getConsent(any(ConsentRequest.class))).willReturn(consentDetails);
         String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
-        String jwtRequest = JwtTestHelper.consentRequestJwt(consentDetailsRequest.getClientId(), consentDetailsRequest.getIntentId(), consentDetailsRequest.getUser().getId());
+        String jwtRequest = JwtTestHelper.consentRequestJwt(
+                consentDetailsRequest.getClientId(),
+                consentDetailsRequest.getIntentId(),
+                consentDetailsRequest.getUser().getId()
+        );
         HttpEntity<String> request = new HttpEntity<>(jwtRequest, headers());
 
         // when
@@ -627,7 +660,11 @@ public class ConsentDetailsApiControllerTest {
         given(userServiceClient.getUser(anyString())).willReturn(user);
         given(consentService.getConsent(any(ConsentRequest.class))).willReturn(consentDetails);
         String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
-        String jwtRequest = JwtTestHelper.consentRequestJwt(consentDetailsRequest.getClientId(), consentDetailsRequest.getIntentId(), consentDetailsRequest.getUser().getId());
+        String jwtRequest = JwtTestHelper.consentRequestJwt(
+                consentDetailsRequest.getClientId(),
+                consentDetailsRequest.getIntentId(),
+                consentDetailsRequest.getUser().getId()
+        );
         HttpEntity<String> request = new HttpEntity<>(jwtRequest, headers());
 
         // when
@@ -638,6 +675,39 @@ public class ConsentDetailsApiControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
+    // DOMESTIC VRP PAYMENT
+    @Test
+    public void ShouldGetDomesticVrpPaymentConsentDetailsSweeping() throws ExceptionClient {
+        // given
+        ConsentRequest consentDetailsRequest = aValidDomesticVrpPaymentConsentDetailsRequest();
+        JsonObject consentDetails = aValidDomesticVrpPaymentConsentDetails(consentDetailsRequest.getIntentId());
+        User user = aValidUser();
+        consentDetailsRequest.setUser(user);
+        ApiClient apiClient = ApiClientTestDataFactory.aValidApiClient(consentDetailsRequest.getClientId());
+        given(apiClientService.getApiClient(anyString())).willReturn(apiClient);
+        given(userServiceClient.getUser(anyString())).willReturn(user);
+        given(consentService.getConsent(any(ConsentRequest.class))).willReturn(consentDetails);
+        String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
+        String jwtRequest = JwtTestHelper.consentRequestJwt(
+                consentDetailsRequest.getClientId(),
+                consentDetailsRequest.getIntentId(),
+                consentDetailsRequest.getUser().getId()
+        );
+        HttpEntity<String> request = new HttpEntity<>(jwtRequest, headers());
+
+        // when
+        ResponseEntity<String> response = restTemplate.postForEntity(consentDetailURL, request, String.class);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(OK);
+
+        DomesticVrpPaymentConsentDetails responseBody = gson.fromJson(response.getBody(), DomesticVrpPaymentConsentDetails.class);
+        assertThat(responseBody.getIntentType()).isEqualTo(IntentType.DOMESTIC_VRP_PAYMENT_CONSENT);
+        assertThat(responseBody.getUserId()).isEqualTo(consentDetailsRequest.getUser().getId());
+        assertThat(responseBody.getUsername()).isEqualTo(consentDetailsRequest.getUser().getUserName());
+        assertThat(responseBody.getClientId()).isEqualTo(consentDetailsRequest.getClientId());
+        assertThat(responseBody.getLogo()).isEqualTo(apiClient.getLogoUri());
+    }
 
     private HttpHeaders headers() {
         HttpHeaders headers = new HttpHeaders();

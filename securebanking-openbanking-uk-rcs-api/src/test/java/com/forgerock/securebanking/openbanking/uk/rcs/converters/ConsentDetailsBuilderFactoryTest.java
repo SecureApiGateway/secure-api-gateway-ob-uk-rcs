@@ -24,6 +24,8 @@ import com.forgerock.securebanking.platform.client.test.support.ConsentDetailsRe
 import com.google.gson.JsonObject;
 import org.junit.jupiter.api.Test;
 
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.OB_INTENT_OBJECT;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.members.*;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.ACCOUNT_INTENT_ID;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.transformationForPermissionsList;
 import static com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory.aValidAccountConsentDetails;
@@ -42,22 +44,21 @@ public class ConsentDetailsBuilderFactoryTest {
         ApiClient apiClient = aValidApiClient();
         // When
         ConsentRequest consentDetailsRequest = ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest();
-        AccountsConsentDetails accountsConsentDetails = (AccountsConsentDetails) ConsentDetailsBuilderFactory.build(consentDetails, consentDetailsRequest, apiClient);
+        AccountsConsentDetails accountsConsentDetails =
+                (AccountsConsentDetails) ConsentDetailsBuilderFactory.build(consentDetails, consentDetailsRequest, apiClient);
         // Then
-        final JsonObject consentDetailsData = consentDetails.getAsJsonObject("OBIntentObject").getAsJsonObject("Data");
+        final JsonObject consentDetailsData = consentDetails.getAsJsonObject(OB_INTENT_OBJECT).getAsJsonObject(DATA);
         assertThat(transformationForPermissionsList(accountsConsentDetails.getPermissions()))
-                .isEqualTo(consentDetailsData.getAsJsonArray("Permissions"));
+                .isEqualTo(consentDetailsData.getAsJsonArray(PERMISSIONS));
 
         assertThat(accountsConsentDetails.getFromTransaction().toString())
-                .isEqualTo(consentDetailsData.get("TransactionFromDateTime").getAsString());
+                .isEqualTo(consentDetailsData.get(TRANSACTION_FROM_DATETIME).getAsString());
 
         assertThat(accountsConsentDetails.getToTransaction().toString())
-                .isEqualTo(consentDetailsData.get("TransactionToDateTime").getAsString());
-
-        assertThat(accountsConsentDetails.getAispName()).isEqualTo(consentDetails.get("oauth2ClientName").getAsString());
+                .isEqualTo(consentDetailsData.get(TRANSACTION_TO_DATETIME).getAsString());
 
         assertThat(accountsConsentDetails.getExpiredDate().toString())
-                .isEqualTo(consentDetailsData.get("ExpirationDateTime").getAsString());
+                .isEqualTo(consentDetailsData.get(EXPIRATION_DATETIME).getAsString());
     }
 
 

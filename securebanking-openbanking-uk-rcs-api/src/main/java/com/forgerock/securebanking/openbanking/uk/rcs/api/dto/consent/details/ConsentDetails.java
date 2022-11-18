@@ -50,6 +50,8 @@ public abstract class ConsentDetails {
     private String userId;
     private String logo;
     private String clientId;
+    private String clientName; // (tpp)
+    private String serviceProviderName; // (aisp, aspsp)
 
     public abstract IntentType getIntentType();
 

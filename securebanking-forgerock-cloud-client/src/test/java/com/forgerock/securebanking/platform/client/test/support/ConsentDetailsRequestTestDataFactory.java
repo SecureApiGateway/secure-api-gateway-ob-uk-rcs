@@ -114,6 +114,11 @@ public class ConsentDetailsRequestTestDataFactory {
         return aValidDomesticStandingOrderConsentDetailsRequestBuilder().build();
     }
 
+    // VRP payments
+    public static ConsentRequest aValidDomesticVrpPaymentConsentDetailsRequest() {
+        return aValidDomesticVrpPaymentConsentDetailsRequestBuilder().build();
+    }
+
     private static ConsentRequest.ConsentRequestBuilder aValidDomesticPaymentConsentDetailsRequestBuilder() {
         return getDomesticPaymentConsentDetailsRequestBuilder(IntentType.PAYMENT_DOMESTIC_CONSENT);
     }
@@ -144,6 +149,10 @@ public class ConsentDetailsRequestTestDataFactory {
 
     private static ConsentRequest.ConsentRequestBuilder aValidFundsConfirmationConsentDetailsRequestBuilder() {
         return getDomesticPaymentConsentDetailsRequestBuilder(IntentType.FUNDS_CONFIRMATION_CONSENT);
+    }
+
+    private static ConsentRequest.ConsentRequestBuilder aValidDomesticVrpPaymentConsentDetailsRequestBuilder() {
+        return getDomesticPaymentConsentDetailsRequestBuilder(IntentType.DOMESTIC_VRP_PAYMENT_CONSENT);
     }
 
     private static ConsentRequest.ConsentRequestBuilder getDomesticPaymentConsentDetailsRequestBuilder(IntentType intentType) {

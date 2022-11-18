@@ -19,11 +19,13 @@ import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.com
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.InternationalScheduledPaymentConsentDetails;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.Instant;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 
-import static com.forgerock.securebanking.openbanking.uk.rcs.converters.DomesticScheduledPaymentConsentDetailsConverter.DATE_TIME_FORMATTER;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.OB_INTENT_OBJECT;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.members.*;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter4Test.INTERNATIONAL_SCHEDULED_PAYMENT_INTENT_ID;
 import static com.forgerock.securebanking.platform.client.test.support.InternationalScheduledPaymentConsentDetailsTestFactory.aValidInternationalScheduledPaymentConsentDetails;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,36 +44,39 @@ public class InternationalScheduledPaymentConsentDetailsConverterTest {
         InternationalScheduledPaymentConsentDetails internationalScheduledPaymentConsentDetails = InternationalScheduledPaymentConsentDetailsConverter.getInstance().toInternationalScheduledPaymentConsentDetails(consentDetails);
 
         // Then
-        JsonObject data = consentDetails.getAsJsonObject("OBIntentObject").getAsJsonObject("Data");
-        JsonObject initiation = data.getAsJsonObject("Initiation");
+        JsonObject data = consentDetails.getAsJsonObject(OB_INTENT_OBJECT).getAsJsonObject(DATA);
+        JsonObject initiation = data.getAsJsonObject(INITIATION);
 
         assertThat(internationalScheduledPaymentConsentDetails.getInstructedAmount().getAmount())
-                .isEqualTo(initiation.getAsJsonObject("InstructedAmount").get("Amount").getAsString());
+                .isEqualTo(initiation.getAsJsonObject(INSTRUCTED_AMOUNT).get(AMOUNT).getAsString());
 
         assertThat(internationalScheduledPaymentConsentDetails.getInstructedAmount().getCurrency())
-                .isEqualTo(initiation.getAsJsonObject("InstructedAmount").get("Currency").getAsString());
+                .isEqualTo(initiation.getAsJsonObject(INSTRUCTED_AMOUNT).get(CURRENCY).getAsString());
 
+        JsonObject exchangeRateInformation = data.getAsJsonObject(EXCHANGE_RATE_INFORMATION);
         assertThat(internationalScheduledPaymentConsentDetails.getExchangeRateInformation().getExchangeRate())
-                .isEqualTo(new BigDecimal(data.getAsJsonObject("ExchangeRateInformation").get("ExchangeRate").getAsString()));
-        assertThat(internationalScheduledPaymentConsentDetails.getExchangeRateInformation().getUnitCurrency())
-                .isEqualTo(data.getAsJsonObject("ExchangeRateInformation").get("UnitCurrency").getAsString());
-        assertThat(internationalScheduledPaymentConsentDetails.getExchangeRateInformation().getRateType())
-                .isEqualTo(FRExchangeRateInformation.FRRateType.fromValue(data.getAsJsonObject("ExchangeRateInformation").get("RateType").getAsString()));
-        assertThat(internationalScheduledPaymentConsentDetails.getExchangeRateInformation().getContractIdentification())
-                .isEqualTo(data.getAsJsonObject("ExchangeRateInformation").get("ContractIdentification").getAsString());
-        assertThat(internationalScheduledPaymentConsentDetails.getExchangeRateInformation().getExpirationDateTime())
-                .isEqualTo(DATE_TIME_FORMATTER.parseDateTime(data.getAsJsonObject("ExchangeRateInformation").get("ExpirationDateTime").getAsString()));
+                .isEqualTo(new BigDecimal(exchangeRateInformation.get(EXCHANGE_RATE).getAsString()));
 
-        assertThat(internationalScheduledPaymentConsentDetails.getMerchantName()).isEqualTo(consentDetails.get("oauth2ClientName").getAsString());
+        assertThat(internationalScheduledPaymentConsentDetails.getExchangeRateInformation().getUnitCurrency())
+                .isEqualTo(exchangeRateInformation.get(UNIT_CURRENCY).getAsString());
+
+        assertThat(internationalScheduledPaymentConsentDetails.getExchangeRateInformation().getRateType())
+                .isEqualTo(FRExchangeRateInformation.FRRateType.fromValue(exchangeRateInformation.get(RATE_TYPE).getAsString()));
+
+        assertThat(internationalScheduledPaymentConsentDetails.getExchangeRateInformation().getContractIdentification())
+                .isEqualTo(exchangeRateInformation.get(CONTRACT_IDENTIFICATION).getAsString());
+
+        assertThat(internationalScheduledPaymentConsentDetails.getExchangeRateInformation().getExpirationDateTime())
+                .isEqualTo(Instant.parse(exchangeRateInformation.get(EXPIRATION_DATETIME).getAsString()).toDateTime());
 
         assertThat(internationalScheduledPaymentConsentDetails.getPaymentReference())
-                .isEqualTo(initiation.getAsJsonObject("RemittanceInformation").get("Reference").getAsString());
+                .isEqualTo(initiation.getAsJsonObject(REMITTANCE_INFORMATION).get(REFERENCE).getAsString());
 
         assertThat(internationalScheduledPaymentConsentDetails.getCurrencyOfTransfer())
-                .isEqualTo(initiation.get("CurrencyOfTransfer").getAsString());
+                .isEqualTo(initiation.get(CURRENCY_OF_TRANSFER).getAsString());
 
         assertThat(internationalScheduledPaymentConsentDetails.getPaymentDate())
-                .isEqualTo(DATE_TIME_FORMATTER.parseDateTime(initiation.get("RequestedExecutionDateTime").getAsString()));
+                .isEqualTo(Instant.parse(initiation.get(REQUESTED_EXECUTION_DATETIME).getAsString()).toDateTime());
 
         assertThat(internationalScheduledPaymentConsentDetails.getCharges())
                 .isNotNull();

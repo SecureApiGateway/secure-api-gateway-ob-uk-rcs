@@ -26,11 +26,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.joda.time.Instant;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-import static com.forgerock.securebanking.openbanking.uk.rcs.converters.InternationalPaymentConsentDetailsConverter.DATE_TIME_FORMATTER;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.members.*;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter.isNotNull;
 import static com.forgerock.securebanking.platform.client.services.ConsentServiceInterface.log;
 
@@ -46,7 +47,6 @@ public class InternationalPaymentConsentDetails extends ConsentDetails {
     private FRAmount instructedAmount;
     private FRExchangeRateInformation exchangeRateInformation;
     private FRAmount charges;
-    private String merchantName;
     private String currencyOfTransfer;
     private String paymentReference;
     private List<FRAccountWithBalance> accounts;
@@ -61,8 +61,12 @@ public class InternationalPaymentConsentDetails extends ConsentDetails {
             this.instructedAmount = null;
         else {
             this.instructedAmount = new FRAmount();
-            this.instructedAmount.setAmount(isNotNull(instructedAmount.get("Amount")) ? instructedAmount.get("Amount").getAsString() : null);
-            this.instructedAmount.setCurrency(isNotNull(instructedAmount.get("Currency")) ? instructedAmount.get("Currency").getAsString() : null);
+            this.instructedAmount.setAmount(
+                    isNotNull(instructedAmount.get(AMOUNT)) ? instructedAmount.get(AMOUNT).getAsString() : null
+            );
+            this.instructedAmount.setCurrency(
+                    isNotNull(instructedAmount.get(CURRENCY)) ? instructedAmount.get(CURRENCY).getAsString() : null
+            );
         }
     }
 
@@ -74,12 +78,12 @@ public class InternationalPaymentConsentDetails extends ConsentDetails {
             Double amount = 0.0;
 
             for (JsonElement charge : charges) {
-                JsonObject chargeAmount = charge.getAsJsonObject().getAsJsonObject("Amount");
-                if (chargeAmount.get("Currency").getAsString().equals(instructedAmount.getCurrency())) {
-                    amount += chargeAmount.get("Amount").getAsDouble();
+                JsonObject chargeAmount = charge.getAsJsonObject().getAsJsonObject(AMOUNT);
+                if (chargeAmount.get(CURRENCY).getAsString().equals(instructedAmount.getCurrency())) {
+                    amount += chargeAmount.get(AMOUNT).getAsDouble();
                 } else {
                     if (exchangeRateInformation.getExchangeRate() != null) {
-                        amount += chargeAmount.get("Amount").getAsDouble() * exchangeRateInformation.getExchangeRate().doubleValue();
+                        amount += chargeAmount.get(AMOUNT).getAsDouble() * exchangeRateInformation.getExchangeRate().doubleValue();
                     } else {
                         throw new IllegalArgumentException("Exchange Rate value is missing");
                     }
@@ -96,8 +100,12 @@ public class InternationalPaymentConsentDetails extends ConsentDetails {
             this.exchangeRateInformation = null;
         else {
             this.exchangeRateInformation = new FRExchangeRateInformation();
-            this.exchangeRateInformation.setUnitCurrency(isNotNull(exchangeRateInformation.get("UnitCurrency")) ? exchangeRateInformation.get("UnitCurrency").getAsString() : null);
-            String exchangeRate = isNotNull(exchangeRateInformation.get("ExchangeRate")) ? exchangeRateInformation.get("ExchangeRate").getAsString() : null;
+            this.exchangeRateInformation.setUnitCurrency(
+                    isNotNull(exchangeRateInformation.get(UNIT_CURRENCY))
+                            ? exchangeRateInformation.get(UNIT_CURRENCY).getAsString() : null
+            );
+            String exchangeRate = isNotNull(exchangeRateInformation.get(EXCHANGE_RATE))
+                    ? exchangeRateInformation.get(EXCHANGE_RATE).getAsString() : null;
             if (isNotNull(exchangeRate)) {
                 try {
                     BigDecimal exchangeRateBigDecimal = new BigDecimal(exchangeRate);
@@ -106,9 +114,20 @@ public class InternationalPaymentConsentDetails extends ConsentDetails {
                     log.error("(InternationalPaymentConsentDetails) the exchange rate couldn't be set");
                 }
             }
-            this.exchangeRateInformation.setRateType(isNotNull(exchangeRateInformation.get("RateType")) ? FRExchangeRateInformation.FRRateType.fromValue(exchangeRateInformation.get("RateType").getAsString()) : null);
-            this.exchangeRateInformation.setContractIdentification(isNotNull(exchangeRateInformation.get("ContractIdentification")) ? exchangeRateInformation.get("ContractIdentification").getAsString() : null);
-            this.exchangeRateInformation.setExpirationDateTime(isNotNull(exchangeRateInformation.get("ExpirationDateTime")) ? DATE_TIME_FORMATTER.parseDateTime(exchangeRateInformation.get("ExpirationDateTime").getAsString()) : null);
+            this.exchangeRateInformation.setRateType(
+                    isNotNull(exchangeRateInformation.get(RATE_TYPE))
+                            ? FRExchangeRateInformation.FRRateType.fromValue(exchangeRateInformation.get(RATE_TYPE).getAsString())
+                            : null
+            );
+            this.exchangeRateInformation.setContractIdentification(
+                    isNotNull(exchangeRateInformation.get(CONTRACT_IDENTIFICATION))
+                            ? exchangeRateInformation.get(CONTRACT_IDENTIFICATION).getAsString()
+                            : null);
+            this.exchangeRateInformation.setExpirationDateTime(
+                    isNotNull(exchangeRateInformation.get(EXPIRATION_DATETIME))
+                            ? Instant.parse(exchangeRateInformation.get(EXPIRATION_DATETIME).getAsString()).toDateTime()
+                            : null
+            );
         }
     }
 }
