@@ -15,7 +15,6 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAmount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRExchangeRateInformation;
 import com.forgerock.securebanking.platform.client.IntentType;
@@ -29,9 +28,9 @@ import lombok.experimental.SuperBuilder;
 import org.joda.time.Instant;
 
 import java.math.BigDecimal;
-import java.util.List;
 
-import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.members.*;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.Members.*;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.OB_INTENT_OBJECT;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter.isNotNull;
 import static com.forgerock.securebanking.platform.client.services.ConsentServiceInterface.log;
 
@@ -49,7 +48,44 @@ public class InternationalPaymentConsentDetails extends ConsentDetails {
     private FRAmount charges;
     private String currencyOfTransfer;
     private String paymentReference;
-    private List<FRAccountWithBalance> accounts;
+
+    public void mapping(JsonObject consentDetails) {
+
+        if (!consentDetails.has(OB_INTENT_OBJECT)) {
+            throw new IllegalStateException("Expected " + OB_INTENT_OBJECT + " field in json");
+        } else {
+            final JsonObject obIntentObject = consentDetails.get(OB_INTENT_OBJECT).getAsJsonObject();
+            final JsonElement consentDataElement = obIntentObject.get(DATA);
+            if (isNotNull(consentDataElement)) {
+                JsonObject data = consentDataElement.getAsJsonObject();
+
+                if (isNotNull(data.get(EXCHANGE_RATE_INFORMATION))) {
+                    setExchangeRateInformation(data.getAsJsonObject(EXCHANGE_RATE_INFORMATION));
+                }
+
+                if (isNotNull(data.get(INITIATION))) {
+                    JsonObject initiation = data.getAsJsonObject(INITIATION);
+
+                    paymentReference =
+                            isNotNull(initiation.get(REMITTANCE_INFORMATION)) && isNotNull(initiation.getAsJsonObject(REMITTANCE_INFORMATION).get(REFERENCE))
+                                    ? initiation.getAsJsonObject(REMITTANCE_INFORMATION).get(REFERENCE).getAsString()
+                                    : null;
+
+                    currencyOfTransfer = isNotNull(initiation.get(CURRENCY_OF_TRANSFER))
+                            ? initiation.get(CURRENCY_OF_TRANSFER).getAsString()
+                            : null;
+
+                    if (isNotNull(initiation.get(INSTRUCTED_AMOUNT))) {
+                        setInstructedAmount(initiation.getAsJsonObject(INSTRUCTED_AMOUNT));
+                    }
+
+                    if (isNotNull(data.get(CHARGES))) {
+                        setCharges(data.getAsJsonArray(CHARGES));
+                    }
+                }
+            }
+        }
+    }
 
     @Override
     public IntentType getIntentType() {
@@ -57,77 +93,65 @@ public class InternationalPaymentConsentDetails extends ConsentDetails {
     }
 
     public void setInstructedAmount(JsonObject instructedAmount) {
-        if (!isNotNull(instructedAmount))
-            this.instructedAmount = null;
-        else {
-            this.instructedAmount = new FRAmount();
-            this.instructedAmount.setAmount(
-                    isNotNull(instructedAmount.get(AMOUNT)) ? instructedAmount.get(AMOUNT).getAsString() : null
-            );
-            this.instructedAmount.setCurrency(
-                    isNotNull(instructedAmount.get(CURRENCY)) ? instructedAmount.get(CURRENCY).getAsString() : null
-            );
-        }
+        this.instructedAmount = new FRAmount();
+        this.instructedAmount.setAmount(
+                isNotNull(instructedAmount.get(AMOUNT)) ? instructedAmount.get(AMOUNT).getAsString() : null
+        );
+        this.instructedAmount.setCurrency(
+                isNotNull(instructedAmount.get(CURRENCY)) ? instructedAmount.get(CURRENCY).getAsString() : null
+        );
     }
 
     public void setCharges(JsonArray charges) {
-        if (!isNotNull(charges)) {
-            this.charges = null;
-        } else {
-            this.charges = new FRAmount();
-            Double amount = 0.0;
+        this.charges = new FRAmount();
+        Double amount = 0.0;
 
-            for (JsonElement charge : charges) {
-                JsonObject chargeAmount = charge.getAsJsonObject().getAsJsonObject(AMOUNT);
-                if (chargeAmount.get(CURRENCY).getAsString().equals(instructedAmount.getCurrency())) {
-                    amount += chargeAmount.get(AMOUNT).getAsDouble();
+        for (JsonElement charge : charges) {
+            JsonObject chargeAmount = charge.getAsJsonObject().getAsJsonObject(AMOUNT);
+            if (chargeAmount.get(CURRENCY).getAsString().equals(instructedAmount.getCurrency())) {
+                amount += chargeAmount.get(AMOUNT).getAsDouble();
+            } else {
+                if (exchangeRateInformation.getExchangeRate() != null) {
+                    amount += chargeAmount.get(AMOUNT).getAsDouble() * exchangeRateInformation.getExchangeRate().doubleValue();
                 } else {
-                    if (exchangeRateInformation.getExchangeRate() != null) {
-                        amount += chargeAmount.get(AMOUNT).getAsDouble() * exchangeRateInformation.getExchangeRate().doubleValue();
-                    } else {
-                        throw new IllegalArgumentException("Exchange Rate value is missing");
-                    }
+                    throw new IllegalArgumentException("Exchange Rate value is missing");
                 }
             }
-
-            this.charges.setCurrency(instructedAmount.getCurrency());
-            this.charges.setAmount(amount.toString());
         }
+
+        this.charges.setCurrency(instructedAmount.getCurrency());
+        this.charges.setAmount(amount.toString());
     }
 
     public void setExchangeRateInformation(JsonObject exchangeRateInformation) {
-        if (!isNotNull(exchangeRateInformation))
-            this.exchangeRateInformation = null;
-        else {
-            this.exchangeRateInformation = new FRExchangeRateInformation();
-            this.exchangeRateInformation.setUnitCurrency(
-                    isNotNull(exchangeRateInformation.get(UNIT_CURRENCY))
-                            ? exchangeRateInformation.get(UNIT_CURRENCY).getAsString() : null
-            );
-            String exchangeRate = isNotNull(exchangeRateInformation.get(EXCHANGE_RATE))
-                    ? exchangeRateInformation.get(EXCHANGE_RATE).getAsString() : null;
-            if (isNotNull(exchangeRate)) {
-                try {
-                    BigDecimal exchangeRateBigDecimal = new BigDecimal(exchangeRate);
-                    this.exchangeRateInformation.setExchangeRate(exchangeRateBigDecimal);
-                } catch (NumberFormatException e) {
-                    log.error("(InternationalPaymentConsentDetails) the exchange rate couldn't be set");
-                }
+        this.exchangeRateInformation = new FRExchangeRateInformation();
+        this.exchangeRateInformation.setUnitCurrency(
+                isNotNull(exchangeRateInformation.get(UNIT_CURRENCY))
+                        ? exchangeRateInformation.get(UNIT_CURRENCY).getAsString() : null
+        );
+        String exchangeRate = isNotNull(exchangeRateInformation.get(EXCHANGE_RATE))
+                ? exchangeRateInformation.get(EXCHANGE_RATE).getAsString() : null;
+        if (isNotNull(exchangeRate)) {
+            try {
+                BigDecimal exchangeRateBigDecimal = new BigDecimal(exchangeRate);
+                this.exchangeRateInformation.setExchangeRate(exchangeRateBigDecimal);
+            } catch (NumberFormatException e) {
+                log.error("(InternationalPaymentConsentDetails) the exchange rate couldn't be set");
             }
-            this.exchangeRateInformation.setRateType(
-                    isNotNull(exchangeRateInformation.get(RATE_TYPE))
-                            ? FRExchangeRateInformation.FRRateType.fromValue(exchangeRateInformation.get(RATE_TYPE).getAsString())
-                            : null
-            );
-            this.exchangeRateInformation.setContractIdentification(
-                    isNotNull(exchangeRateInformation.get(CONTRACT_IDENTIFICATION))
-                            ? exchangeRateInformation.get(CONTRACT_IDENTIFICATION).getAsString()
-                            : null);
-            this.exchangeRateInformation.setExpirationDateTime(
-                    isNotNull(exchangeRateInformation.get(EXPIRATION_DATETIME))
-                            ? Instant.parse(exchangeRateInformation.get(EXPIRATION_DATETIME).getAsString()).toDateTime()
-                            : null
-            );
         }
+        this.exchangeRateInformation.setRateType(
+                isNotNull(exchangeRateInformation.get(RATE_TYPE))
+                        ? FRExchangeRateInformation.FRRateType.fromValue(exchangeRateInformation.get(RATE_TYPE).getAsString())
+                        : null
+        );
+        this.exchangeRateInformation.setContractIdentification(
+                isNotNull(exchangeRateInformation.get(CONTRACT_IDENTIFICATION))
+                        ? exchangeRateInformation.get(CONTRACT_IDENTIFICATION).getAsString()
+                        : null);
+        this.exchangeRateInformation.setExpirationDateTime(
+                isNotNull(exchangeRateInformation.get(EXPIRATION_DATETIME))
+                        ? Instant.parse(exchangeRateInformation.get(EXPIRATION_DATETIME).getAsString()).toDateTime()
+                        : null
+        );
     }
 }

@@ -17,15 +17,15 @@ package com.forgerock.securebanking.openbanking.uk.rcs.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
-import com.forgerock.securebanking.openbanking.uk.rcs.configuration.ApiProviderConfiguration;
-import com.forgerock.securebanking.platform.client.IntentType;
 import com.forgerock.securebanking.openbanking.uk.common.claim.Claims;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.rs.AccountService;
-import com.forgerock.securebanking.openbanking.uk.rcs.converters.general.ConsentDetailsBuilderFactory;
+import com.forgerock.securebanking.openbanking.uk.rcs.configuration.ApiProviderConfiguration;
+import com.forgerock.securebanking.openbanking.uk.rcs.converters.general.ConsentDetailsFactory;
 import com.forgerock.securebanking.openbanking.uk.rcs.exception.InvalidConsentException;
 import com.forgerock.securebanking.platform.client.Constants;
+import com.forgerock.securebanking.platform.client.IntentType;
 import com.forgerock.securebanking.platform.client.configuration.ConfigurationPropertiesClient;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
@@ -38,7 +38,6 @@ import com.forgerock.securebanking.platform.client.services.UserServiceClient;
 import com.forgerock.securebanking.platform.client.utils.jwt.JwtUtil;
 import com.google.gson.JsonObject;
 import com.nimbusds.jwt.SignedJWT;
-import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
@@ -61,7 +60,7 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
     private final AccountService accountService;
     private final ConfigurationPropertiesClient configurationPropertiesClient;
     private final ApiProviderConfiguration apiProviderConfiguration;
-
+    private final ConsentDetailsFactory consentDetailsFactory;
 
     @Value("${rcs.consent.request.jwt.must-be-validated:false}")
     private Boolean jwtMustBeValidated;
@@ -72,7 +71,7 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                                        AccountService accountService,
                                        ConfigurationPropertiesClient configurationPropertiesClient,
                                        ObjectMapper objectMapper,
-                                       ApiProviderConfiguration apiProviderConfiguration) {
+                                       ApiProviderConfiguration apiProviderConfiguration, ConsentDetailsFactory consentDetailsFactory) {
         this.consentServiceClient = consentServiceClient;
         this.apiClientService = apiClientService;
         this.userServiceClient = userServiceClient;
@@ -80,6 +79,7 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
         this.configurationPropertiesClient = configurationPropertiesClient;
         this.objectMapper = objectMapper;
         this.apiProviderConfiguration = apiProviderConfiguration;
+        this.consentDetailsFactory = consentDetailsFactory;
     }
 
     @Override
@@ -106,10 +106,11 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
             ConsentRequest consentRequest = buildConsentRequest(signedJWT);
             log.debug("Intent type: '{}' with ID '{}'", IntentType.identify(intentId), intentId);
 
-            if (IntentType.identify(intentId) != null) {
-                log.debug("Intent type: '{}' with ID '{}'", IntentType.identify(intentId), intentId);
+            IntentType intentType = IntentType.identify(intentId);
+            if (intentType != null) {
+                log.debug("Intent type: '{}' with ID '{}'", intentType, intentId);
                 log.debug("Retrieve consent details:\n- Type '{}'\n-Id '{}'\n",
-                        IntentType.identify(consentRequest.getIntentId()).name(), consentRequest.getIntentId());
+                        intentType.name(), consentRequest.getIntentId());
                 JsonObject consent = consentServiceClient.getConsent(consentRequest);
 
                 log.debug("Retrieve to api client details for client Id '{}'", consentRequest.getClientId());
@@ -117,13 +118,25 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                 log.debug("ApiClient controller: " + apiClient);
                 log.debug("consent json controller: " + consent);
                 // build the consent details object for the response
-                ConsentDetails consentDetailsToDisplay = ConsentDetailsBuilderFactory.build(
-                        consent, consentRequest, apiClient
-                );
+                ConsentDetails consentDetailsToDisplay = consentDetailsFactory.getConsentDetails(intentType);
                 // the api provider name (aspsp, aisp), usually a bank
                 consentDetailsToDisplay.setServiceProviderName(apiProviderConfiguration.getName());
                 // the client Name (TPP name)
                 consentDetailsToDisplay.setClientName(apiClient.getName());
+                consentDetailsToDisplay.setUsername(consentRequest.getUser().getUserName());
+                consentDetailsToDisplay.setUserId(consentRequest.getUser().getId());
+                // TODO fix field name
+                consentDetailsToDisplay.setAccounts(consentRequest.getAccounts());
+                consentDetailsToDisplay.setClientId(consentRequest.getClientId());
+                consentDetailsToDisplay.setLogo(apiClient.getLogoUri());
+                consentDetailsToDisplay.mapping(consent);
+//                ConsentDetails consentDetailsToDisplay = ConsentDetailsBuilderFactory.build(
+//                        consent, consentRequest, apiClient
+//                );
+//                // the api provider name (aspsp, aisp), usually a bank
+//                consentDetailsToDisplay.setServiceProviderName(apiProviderConfiguration.getName());
+//                // the client Name (TPP name)
+//                consentDetailsToDisplay.setClientName(apiClient.getName());
                 return ResponseEntity.ok(consentDetailsToDisplay);
 
             } else {

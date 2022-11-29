@@ -20,12 +20,12 @@ package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
  */
 public class ConsentDetailsConstants {
 
-    public static final class intent {
+    public static final class Intent {
         public static final String CONSENT_ID = "ConsentId";
         public static final String OB_INTENT_OBJECT = "OBIntentObject";
         public static final String OAUTH2_CLIENT_NAME = "oauth2ClientName";
 
-        public static final class members {
+        public static final class Members {
             public static final String DATA = "Data";
             public static final String EXCHANGE_RATE = "ExchangeRate";
             public static final String RATE_TYPE = "RateType";

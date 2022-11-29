@@ -18,10 +18,14 @@ package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.platform.client.IntentType;
+import com.google.gson.JsonObject;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+
+import java.util.List;
 
 /**
  * Interface for each type of consent data.
@@ -52,9 +56,10 @@ public abstract class ConsentDetails {
     private String clientId;
     private String clientName; // (tpp)
     private String serviceProviderName; // (aisp, aspsp)
+    private List<FRAccountWithBalance> accounts;
 
     public abstract IntentType getIntentType();
-
+    public abstract void mapping(JsonObject consent);
     public String getDecisionApiUri() {
         return "/api/rcs/consent/decision/";
     }

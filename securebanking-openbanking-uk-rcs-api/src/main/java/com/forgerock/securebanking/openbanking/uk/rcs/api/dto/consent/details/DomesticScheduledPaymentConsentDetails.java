@@ -15,7 +15,6 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAmount;
 import com.forgerock.securebanking.platform.client.IntentType;
 import com.google.gson.JsonArray;
@@ -26,11 +25,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.joda.time.DateTime;
+import org.joda.time.Instant;
 
-import java.util.List;
-
-import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.members.AMOUNT;
-import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.members.CURRENCY;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.Members.*;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.OB_INTENT_OBJECT;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter.isNotNull;
 
 /**
@@ -43,10 +41,44 @@ import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConv
 public class DomesticScheduledPaymentConsentDetails extends ConsentDetails {
 
     private FRAmount instructedAmount;
-    private List<FRAccountWithBalance> accounts;
     private DateTime paymentDate;
     private String paymentReference;
     private FRAmount charges;
+
+    @Override
+    public void mapping(JsonObject consentDetails) {
+
+        if (!consentDetails.has(OB_INTENT_OBJECT)) {
+            throw new IllegalStateException("Expected " + OB_INTENT_OBJECT + " field in json");
+        } else {
+            final JsonObject obIntentObject = consentDetails.get(OB_INTENT_OBJECT).getAsJsonObject();
+            final JsonElement consentDataElement = obIntentObject.get(DATA);
+            if (isNotNull(consentDataElement)) {
+                JsonObject data = consentDataElement.getAsJsonObject();
+
+                if (isNotNull(data.get(INITIATION))) {
+                    JsonObject initiation = data.getAsJsonObject(INITIATION);
+
+                    if (isNotNull(initiation.get(INSTRUCTED_AMOUNT))) {
+                        setInstructedAmount(initiation.getAsJsonObject(INSTRUCTED_AMOUNT));
+                    }
+
+                    paymentReference = isNotNull(initiation.get(REMITTANCE_INFORMATION)) &&
+                            isNotNull(initiation.getAsJsonObject(REMITTANCE_INFORMATION).get(REFERENCE))
+                            ? initiation.getAsJsonObject(REMITTANCE_INFORMATION).get(REFERENCE).getAsString()
+                            : null;
+
+                    paymentDate = isNotNull(initiation.get(REQUESTED_EXECUTION_DATETIME))
+                            ? Instant.parse(initiation.get(REQUESTED_EXECUTION_DATETIME).getAsString()).toDateTime()
+                            : null;
+
+                    if (isNotNull(data.get(CHARGES))) {
+                        setCharges(data.getAsJsonArray(CHARGES));
+                    }
+                }
+            }
+        }
+    }
 
     @Override
     public IntentType getIntentType() {
@@ -55,33 +87,25 @@ public class DomesticScheduledPaymentConsentDetails extends ConsentDetails {
     }
 
     public void setInstructedAmount(JsonObject instructedAmount) {
-        if (instructedAmount == null)
-            this.instructedAmount = null;
-        else {
-            this.instructedAmount = new FRAmount();
-            this.instructedAmount.setAmount(
-                    isNotNull(instructedAmount.get(AMOUNT)) ? instructedAmount.get(AMOUNT).getAsString() : null
-            );
-            this.instructedAmount.setCurrency(
-                    isNotNull(instructedAmount.get(CURRENCY)) ? instructedAmount.get(CURRENCY).getAsString() : null
-            );
-        }
+        this.instructedAmount = new FRAmount();
+        this.instructedAmount.setAmount(
+                isNotNull(instructedAmount.get(AMOUNT)) ? instructedAmount.get(AMOUNT).getAsString() : null
+        );
+        this.instructedAmount.setCurrency(
+                isNotNull(instructedAmount.get(CURRENCY)) ? instructedAmount.get(CURRENCY).getAsString() : null
+        );
     }
 
     public void setCharges(JsonArray charges) {
-        if (!isNotNull(charges)) {
-            this.charges = null;
-        } else {
-            this.charges = new FRAmount();
-            Double amount = 0.0;
+        this.charges = new FRAmount();
+        Double amount = 0.0;
 
-            for (JsonElement charge : charges) {
-                JsonObject chargeAmount = charge.getAsJsonObject().getAsJsonObject(AMOUNT);
-                amount += chargeAmount.get(AMOUNT).getAsDouble();
-            }
-
-            this.charges.setCurrency(instructedAmount.getCurrency());
-            this.charges.setAmount(amount.toString());
+        for (JsonElement charge : charges) {
+            JsonObject chargeAmount = charge.getAsJsonObject().getAsJsonObject(AMOUNT);
+            amount += chargeAmount.get(AMOUNT).getAsDouble();
         }
+
+        this.charges.setCurrency(instructedAmount.getCurrency());
+        this.charges.setAmount(amount.toString());
     }
 }

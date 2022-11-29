@@ -21,6 +21,7 @@ import com.forgerock.securebanking.openbanking.uk.rcs.RcsApplicationTestSupport;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.RedirectionAction;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.*;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.rs.AccountService;
+import com.forgerock.securebanking.openbanking.uk.rcs.converters.general.ConsentDetailsFactory;
 import com.forgerock.securebanking.openbanking.uk.rcs.testsupport.JwtTestHelper;
 import com.forgerock.securebanking.platform.client.IntentType;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorClient;
@@ -53,8 +54,8 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.account.FRAccountWithBalanceTestDataFactory.aValidFRAccountWithBalance;
-import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.OB_INTENT_OBJECT;
-import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.members.*;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.OB_INTENT_OBJECT;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.Members.*;
 import static com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory.aValidAccountConsentDetails;
 import static com.forgerock.securebanking.platform.client.test.support.ConsentDetailsRequestTestDataFactory.*;
 import static com.forgerock.securebanking.platform.client.test.support.DomesticPaymentConsentDetailsTestFactory.aValidDomesticPaymentConsentDetails;
@@ -99,6 +100,9 @@ public class ConsentDetailsApiControllerTest {
     private ApiClientServiceClient apiClientService;
     @MockBean
     private UserServiceClient userServiceClient;
+
+    @MockBean
+    private ConsentDetailsFactory consentDetailsFactory;
     @Autowired
     private TestRestTemplate restTemplate;
 
@@ -116,6 +120,7 @@ public class ConsentDetailsApiControllerTest {
         given(accountService.getAccountsWithBalance(anyString())).willReturn(List.of(frAccountWithBalance));
         given(userServiceClient.getUser(anyString())).willReturn(user);
         given(consentService.getConsent(any(ConsentRequest.class))).willReturn(consentDetails);
+        given(consentDetailsFactory.getConsentDetails(any(IntentType.class))).willReturn(AccountsConsentDetails.builder().build());
         String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
         String jwtRequest = JwtTestHelper.consentRequestJwt(consentDetailsRequest.getClientId(), consentDetailsRequest.getIntentId(), consentDetailsRequest.getUser().getId());
         HttpEntity<String> request = new HttpEntity<>(jwtRequest, headers());
@@ -245,6 +250,7 @@ public class ConsentDetailsApiControllerTest {
         given(accountService.getAccountsWithBalance(anyString())).willReturn(List.of(frAccountWithBalance));
         given(userServiceClient.getUser(anyString())).willReturn(user);
         given(consentService.getConsent(any(ConsentRequest.class))).willReturn(consentDetails);
+        given(consentDetailsFactory.getConsentDetails(any(IntentType.class))).willReturn(DomesticPaymentConsentDetails.builder().build());
         String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
         String jwtRequest = JwtTestHelper.consentRequestJwt(consentDetailsRequest.getClientId(), consentDetailsRequest.getIntentId(), consentDetailsRequest.getUser().getId());
         HttpEntity<String> request = new HttpEntity<>(jwtRequest, headers());
@@ -375,6 +381,7 @@ public class ConsentDetailsApiControllerTest {
         given(accountService.getAccountsWithBalance(anyString())).willReturn(List.of(frAccountWithBalance));
         given(userServiceClient.getUser(anyString())).willReturn(user);
         given(consentService.getConsent(any(ConsentRequest.class))).willReturn(consentDetails);
+        given(consentDetailsFactory.getConsentDetails(any(IntentType.class))).willReturn(DomesticScheduledPaymentConsentDetails.builder().build());
         String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
         String jwtRequest = JwtTestHelper.consentRequestJwt(consentDetailsRequest.getClientId(), consentDetailsRequest.getIntentId(), consentDetailsRequest.getUser().getId());
         HttpEntity<String> request = new HttpEntity<>(jwtRequest, headers());
@@ -515,6 +522,7 @@ public class ConsentDetailsApiControllerTest {
         given(accountService.getAccountsWithBalance(anyString())).willReturn(List.of(frAccountWithBalance));
         given(userServiceClient.getUser(anyString())).willReturn(user);
         given(consentService.getConsent(any(ConsentRequest.class))).willReturn(consentDetails);
+        given(consentDetailsFactory.getConsentDetails(any(IntentType.class))).willReturn(DomesticStandingOrderConsentDetails.builder().build());
         String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
         String jwtRequest = JwtTestHelper.consentRequestJwt(consentDetailsRequest.getClientId(), consentDetailsRequest.getIntentId(), consentDetailsRequest.getUser().getId());
         HttpEntity<String> request = new HttpEntity<>(jwtRequest, headers());
@@ -687,6 +695,7 @@ public class ConsentDetailsApiControllerTest {
         given(apiClientService.getApiClient(anyString())).willReturn(apiClient);
         given(userServiceClient.getUser(anyString())).willReturn(user);
         given(consentService.getConsent(any(ConsentRequest.class))).willReturn(consentDetails);
+        given(consentDetailsFactory.getConsentDetails(any(IntentType.class))).willReturn(DomesticVrpPaymentConsentDetails.builder().build());
         String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
         String jwtRequest = JwtTestHelper.consentRequestJwt(
                 consentDetailsRequest.getClientId(),

@@ -16,10 +16,12 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
 import com.forgerock.securebanking.platform.client.IntentType;
+import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 
 /**
@@ -29,6 +31,7 @@ import org.joda.time.DateTime;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
+@Slf4j
 public class FundsConfirmationConsentDetails extends ConsentDetails {
 
     private DateTime expirationDateTime;
@@ -36,6 +39,11 @@ public class FundsConfirmationConsentDetails extends ConsentDetails {
     @Override
     public IntentType getIntentType() {
         return IntentType.FUNDS_CONFIRMATION_CONSENT;
+    }
+
+    @Override
+    public void mapping(JsonObject consent) {
+        log.warn("NOT IMPLEMENTED YET");
     }
 
 }

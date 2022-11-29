@@ -15,7 +15,6 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAmount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteFileDataInitiation;
 import com.forgerock.securebanking.platform.client.IntentType;
@@ -30,10 +29,9 @@ import org.joda.time.DateTime;
 import org.joda.time.Instant;
 
 import java.math.BigDecimal;
-import java.util.List;
 
-import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.members.AMOUNT;
-import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.members.CURRENCY;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.Members.*;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.OB_INTENT_OBJECT;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter.isNotNull;
 
 /**
@@ -46,7 +44,6 @@ import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConv
 public class FilePaymentConsentDetails extends ConsentDetails {
 
     private FRWriteFileDataInitiation filePayment;
-    private List<FRAccountWithBalance> accounts;
     private FRAmount charges;
     private DateTime expiredDate;
     private String fileReference;
@@ -55,6 +52,37 @@ public class FilePaymentConsentDetails extends ConsentDetails {
     private BigDecimal controlSum;
     private String paymentReference;
     private String requestedExecutionDateTime;
+
+    public void mapping(JsonObject consentDetails) {
+
+        if (!consentDetails.has(OB_INTENT_OBJECT)) {
+            throw new IllegalStateException("Expected " + OB_INTENT_OBJECT + " field in json");
+        } else {
+            final JsonObject obIntentObject = consentDetails.get(OB_INTENT_OBJECT).getAsJsonObject();
+            final JsonElement consentDataElement = obIntentObject.get(DATA);
+            if (isNotNull(consentDataElement)) {
+                JsonObject data = consentDataElement.getAsJsonObject();
+
+                if (isNotNull(data.get(INITIATION))) {
+
+                    JsonObject initiation = data.getAsJsonObject(INITIATION);
+
+                    setFilePayment(
+                            isNotNull(initiation.get(NUMBER_OF_TRANSACTIONS))
+                                    ? initiation.get(NUMBER_OF_TRANSACTIONS) : null,
+                            isNotNull(initiation.get(CONTROL_SUM)) ? initiation.get(CONTROL_SUM) : null,
+                            isNotNull(initiation.get(REQUESTED_EXECUTION_DATETIME))
+                                    ? initiation.get(REQUESTED_EXECUTION_DATETIME) : null,
+                            isNotNull(initiation.get(FILE_REFERENCE)) ? initiation.get(FILE_REFERENCE) : null
+                    );
+
+                    if (isNotNull(data.get(CHARGES))) {
+                        setCharges(data.getAsJsonArray(CHARGES));
+                    }
+                }
+            }
+        }
+    }
 
     public void setFilePayment(FRWriteFileDataInitiation filePayment) {
         this.filePayment = filePayment;
@@ -66,22 +94,18 @@ public class FilePaymentConsentDetails extends ConsentDetails {
     }
 
     public void setCharges(JsonArray charges) {
-        if (!isNotNull(charges)) {
-            this.charges = null;
-        } else {
-            this.charges = new FRAmount();
-            Double amount = 0.0;
+        this.charges = new FRAmount();
+        Double amount = 0.0;
 
-            for (JsonElement charge : charges) {
-                JsonObject chargeAmount = charge.getAsJsonObject().getAsJsonObject(AMOUNT);
-                amount += chargeAmount.get(AMOUNT).getAsDouble();
-            }
-
-            String currency = charges.get(0).getAsJsonObject().getAsJsonObject(AMOUNT).get(CURRENCY).getAsString();
-
-            this.charges.setAmount(amount.toString());
-            this.charges.setCurrency(currency);
+        for (JsonElement charge : charges) {
+            JsonObject chargeAmount = charge.getAsJsonObject().getAsJsonObject(AMOUNT);
+            amount += chargeAmount.get(AMOUNT).getAsDouble();
         }
+
+        String currency = charges.get(0).getAsJsonObject().getAsJsonObject(AMOUNT).get(CURRENCY).getAsString();
+
+        this.charges.setAmount(amount.toString());
+        this.charges.setCurrency(currency);
     }
 
     public void setFilePayment(

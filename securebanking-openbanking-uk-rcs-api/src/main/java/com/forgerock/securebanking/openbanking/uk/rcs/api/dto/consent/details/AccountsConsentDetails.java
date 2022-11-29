@@ -15,19 +15,24 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRExternalPermissionsCode;
 import com.forgerock.securebanking.platform.client.IntentType;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.joda.time.DateTime;
+import org.joda.time.Instant;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.Members.*;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.OB_INTENT_OBJECT;
+import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter.isNotNull;
 
 /**
  * Models the consent data that is used for an account details request.
@@ -39,7 +44,6 @@ import java.util.List;
 public class AccountsConsentDetails extends ConsentDetails {
 
     private List<FRExternalPermissionsCode> permissions;
-    private List<FRAccountWithBalance> accounts;
     private DateTime fromTransaction;
     private DateTime toTransaction;
     private DateTime expiredDate;
@@ -47,6 +51,36 @@ public class AccountsConsentDetails extends ConsentDetails {
     @Override
     public IntentType getIntentType() {
         return IntentType.ACCOUNT_ACCESS_CONSENT;
+    }
+
+    @Override
+    public void mapping(JsonObject consentDetails) {
+
+        if (!consentDetails.has(OB_INTENT_OBJECT)) {
+            throw new IllegalStateException("Expected " + OB_INTENT_OBJECT + " field in json");
+        } else {
+            final JsonObject obIntentObject = consentDetails.get(OB_INTENT_OBJECT).getAsJsonObject();
+            final JsonElement consentDataElement = obIntentObject.get(DATA);
+            if (isNotNull(consentDataElement)) {
+                JsonObject data = consentDataElement.getAsJsonObject();
+
+                fromTransaction = isNotNull(data.get(TRANSACTION_FROM_DATETIME)) ?
+                        Instant.parse(data.get(TRANSACTION_FROM_DATETIME).getAsString()).toDateTime() :
+                        null;
+
+                toTransaction = isNotNull(data.get(TRANSACTION_TO_DATETIME)) ?
+                        Instant.parse(data.get(TRANSACTION_TO_DATETIME).getAsString()).toDateTime() :
+                        null;
+
+                expiredDate = isNotNull(data.get(EXPIRATION_DATETIME)) ?
+                        Instant.parse(data.get(EXPIRATION_DATETIME).getAsString()).toDateTime() :
+                        null;
+
+                if (isNotNull(data.get(PERMISSIONS))) {
+                    setPermissions(data.getAsJsonArray(PERMISSIONS));
+                }
+            }
+        }
     }
 
     public void setPermissions(JsonArray permissions) {

@@ -15,7 +15,6 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAmount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternationalStandingOrderDataInitiation;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.forgerock.FRFrequency;
@@ -30,10 +29,8 @@ import lombok.experimental.SuperBuilder;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 
-import java.util.List;
-
-import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.members.AMOUNT;
-import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.intent.members.CURRENCY;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.Members.*;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.OB_INTENT_OBJECT;
 import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter.isNotNull;
 
 /**
@@ -46,11 +43,46 @@ import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConv
 public class InternationalStandingOrderConsentDetails extends ConsentDetails {
 
     private FRWriteInternationalStandingOrderDataInitiation internationalStandingOrder;
-    private List<FRAccountWithBalance> accounts;
     private FRAmount charges;
     private DateTime expiredDate;
     private String currencyOfTransfer;
     private String paymentReference;
+
+    @Override
+    public void mapping(JsonObject consentDetails) {
+
+        if (!consentDetails.has(OB_INTENT_OBJECT)) {
+            throw new IllegalStateException("Expected " + OB_INTENT_OBJECT + " field in json");
+        } else {
+            final JsonObject obIntentObject = consentDetails.get(OB_INTENT_OBJECT).getAsJsonObject();
+            final JsonElement consentDataElement = obIntentObject.get(DATA);
+            if (isNotNull(consentDataElement)) {
+                JsonObject data = consentDataElement.getAsJsonObject();
+
+                if (isNotNull(data.get(INITIATION))) {
+
+                    JsonObject initiation = data.getAsJsonObject(INITIATION);
+
+                    paymentReference = isNotNull(initiation.get(REFERENCE)) ?
+                            initiation.get(REFERENCE).getAsString() : null;
+
+                    currencyOfTransfer = isNotNull(initiation.get(CURRENCY_OF_TRANSFER)) ?
+                            initiation.get(CURRENCY_OF_TRANSFER).getAsString() : null;
+
+                    this.setInternationalStandingOrder(
+                            isNotNull(initiation.get(FIRST_PAYMENT_DATETIME)) ? initiation.get(FIRST_PAYMENT_DATETIME) : null,
+                            isNotNull(initiation.get(FINAL_PAYMENT_DATETIME)) ? initiation.get(FINAL_PAYMENT_DATETIME) : null,
+                            isNotNull(initiation.get(INSTRUCTED_AMOUNT)) ? initiation.getAsJsonObject(INSTRUCTED_AMOUNT) : null,
+                            initiation.get(FREQUENCY)
+                    );
+
+                    if (isNotNull(data.get(CHARGES))) {
+                        setCharges(data.getAsJsonArray(CHARGES));
+                    }
+                }
+            }
+        }
+    }
 
     public void setInternationalStandingOrder(FRWriteInternationalStandingOrderDataInitiation internationalStandingOrder) {
         this.internationalStandingOrder = internationalStandingOrder;
@@ -62,20 +94,16 @@ public class InternationalStandingOrderConsentDetails extends ConsentDetails {
     }
 
     public void setCharges(JsonArray charges) {
-        if (!isNotNull(charges)) {
-            this.charges = null;
-        } else {
-            this.charges = new FRAmount();
-            Double amount = 0.0;
+        this.charges = new FRAmount();
+        Double amount = 0.0;
 
-            for (JsonElement charge : charges) {
-                JsonObject chargeAmount = charge.getAsJsonObject().getAsJsonObject(AMOUNT);
-                amount += chargeAmount.get(AMOUNT).getAsDouble();
-            }
-
-            this.charges.setCurrency(internationalStandingOrder.getInstructedAmount().getCurrency());
-            this.charges.setAmount(amount.toString());
+        for (JsonElement charge : charges) {
+            JsonObject chargeAmount = charge.getAsJsonObject().getAsJsonObject(AMOUNT);
+            amount += chargeAmount.get(AMOUNT).getAsDouble();
         }
+
+        this.charges.setCurrency(internationalStandingOrder.getInstructedAmount().getCurrency());
+        this.charges.setAmount(amount.toString());
     }
 
     public void setInternationalStandingOrder(
