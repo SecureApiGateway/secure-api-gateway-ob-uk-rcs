@@ -27,6 +27,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
@@ -42,6 +43,7 @@ import static com.forgerock.securebanking.platform.client.services.ConsentServic
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
+@Component
 public class InternationalScheduledPaymentConsentDetails extends ConsentDetails {
     private FRAmount instructedAmount;
     private FRAmount charges;

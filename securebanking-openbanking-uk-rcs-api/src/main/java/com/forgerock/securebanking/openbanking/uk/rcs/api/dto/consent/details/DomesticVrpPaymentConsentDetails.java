@@ -31,6 +31,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.Instant;
+import org.springframework.stereotype.Component;
 import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPControlParameters;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPControlParametersPeriodicLimits;
@@ -50,6 +51,7 @@ import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConv
 @AllArgsConstructor
 @NoArgsConstructor
 @Slf4j
+@Component
 public class DomesticVrpPaymentConsentDetails extends ConsentDetails {
 
     private FRWriteDomesticVrpDataInitiation initiation;

@@ -26,6 +26,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +42,7 @@ import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConv
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
+@Component
 public class AccountsConsentDetails extends ConsentDetails {
 
     private List<FRExternalPermissionsCode> permissions;

@@ -24,6 +24,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.springframework.stereotype.Component;
 
 import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.Members.*;
 import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.OB_INTENT_OBJECT;
@@ -36,6 +37,7 @@ import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConv
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
+@Component
 public class DomesticPaymentConsentDetails extends ConsentDetails {
     private FRAmount instructedAmount;
     private String paymentReference;

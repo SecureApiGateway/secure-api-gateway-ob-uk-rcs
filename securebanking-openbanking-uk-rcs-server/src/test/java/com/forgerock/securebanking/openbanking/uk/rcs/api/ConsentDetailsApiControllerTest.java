@@ -101,7 +101,7 @@ public class ConsentDetailsApiControllerTest {
     @MockBean
     private UserServiceClient userServiceClient;
 
-    @MockBean
+    @Autowired // needed for tests purposes
     private ConsentDetailsFactory consentDetailsFactory;
     @Autowired
     private TestRestTemplate restTemplate;
@@ -120,7 +120,6 @@ public class ConsentDetailsApiControllerTest {
         given(accountService.getAccountsWithBalance(anyString())).willReturn(List.of(frAccountWithBalance));
         given(userServiceClient.getUser(anyString())).willReturn(user);
         given(consentService.getConsent(any(ConsentRequest.class))).willReturn(consentDetails);
-        given(consentDetailsFactory.getConsentDetails(any(IntentType.class))).willReturn(AccountsConsentDetails.builder().build());
         String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
         String jwtRequest = JwtTestHelper.consentRequestJwt(consentDetailsRequest.getClientId(), consentDetailsRequest.getIntentId(), consentDetailsRequest.getUser().getId());
         HttpEntity<String> request = new HttpEntity<>(jwtRequest, headers());
@@ -250,7 +249,6 @@ public class ConsentDetailsApiControllerTest {
         given(accountService.getAccountsWithBalance(anyString())).willReturn(List.of(frAccountWithBalance));
         given(userServiceClient.getUser(anyString())).willReturn(user);
         given(consentService.getConsent(any(ConsentRequest.class))).willReturn(consentDetails);
-        given(consentDetailsFactory.getConsentDetails(any(IntentType.class))).willReturn(DomesticPaymentConsentDetails.builder().build());
         String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
         String jwtRequest = JwtTestHelper.consentRequestJwt(consentDetailsRequest.getClientId(), consentDetailsRequest.getIntentId(), consentDetailsRequest.getUser().getId());
         HttpEntity<String> request = new HttpEntity<>(jwtRequest, headers());
@@ -381,7 +379,6 @@ public class ConsentDetailsApiControllerTest {
         given(accountService.getAccountsWithBalance(anyString())).willReturn(List.of(frAccountWithBalance));
         given(userServiceClient.getUser(anyString())).willReturn(user);
         given(consentService.getConsent(any(ConsentRequest.class))).willReturn(consentDetails);
-        given(consentDetailsFactory.getConsentDetails(any(IntentType.class))).willReturn(DomesticScheduledPaymentConsentDetails.builder().build());
         String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
         String jwtRequest = JwtTestHelper.consentRequestJwt(consentDetailsRequest.getClientId(), consentDetailsRequest.getIntentId(), consentDetailsRequest.getUser().getId());
         HttpEntity<String> request = new HttpEntity<>(jwtRequest, headers());
@@ -522,7 +519,6 @@ public class ConsentDetailsApiControllerTest {
         given(accountService.getAccountsWithBalance(anyString())).willReturn(List.of(frAccountWithBalance));
         given(userServiceClient.getUser(anyString())).willReturn(user);
         given(consentService.getConsent(any(ConsentRequest.class))).willReturn(consentDetails);
-        given(consentDetailsFactory.getConsentDetails(any(IntentType.class))).willReturn(DomesticStandingOrderConsentDetails.builder().build());
         String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
         String jwtRequest = JwtTestHelper.consentRequestJwt(consentDetailsRequest.getClientId(), consentDetailsRequest.getIntentId(), consentDetailsRequest.getUser().getId());
         HttpEntity<String> request = new HttpEntity<>(jwtRequest, headers());
@@ -695,7 +691,6 @@ public class ConsentDetailsApiControllerTest {
         given(apiClientService.getApiClient(anyString())).willReturn(apiClient);
         given(userServiceClient.getUser(anyString())).willReturn(user);
         given(consentService.getConsent(any(ConsentRequest.class))).willReturn(consentDetails);
-        given(consentDetailsFactory.getConsentDetails(any(IntentType.class))).willReturn(DomesticVrpPaymentConsentDetails.builder().build());
         String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
         String jwtRequest = JwtTestHelper.consentRequestJwt(
                 consentDetailsRequest.getClientId(),
