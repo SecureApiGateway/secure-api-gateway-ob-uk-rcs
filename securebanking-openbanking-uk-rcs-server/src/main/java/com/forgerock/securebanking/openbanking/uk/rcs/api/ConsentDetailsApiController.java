@@ -117,7 +117,7 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                 ApiClient apiClient = apiClientService.getApiClient(consentRequest.getClientId());
                 log.debug("ApiClient controller: " + apiClient);
                 log.debug("consent json controller: " + consent);
-                // build the consent details object for the response
+                // consent details object by intent type
                 ConsentDetails consentDetailsToDisplay = consentDetailsFactory.getConsentDetails(intentType);
                 // the api provider name (aspsp, aisp), usually a bank
                 consentDetailsToDisplay.setServiceProviderName(apiProviderConfiguration.getName());
@@ -125,18 +125,11 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                 consentDetailsToDisplay.setClientName(apiClient.getName());
                 consentDetailsToDisplay.setUsername(consentRequest.getUser().getUserName());
                 consentDetailsToDisplay.setUserId(consentRequest.getUser().getId());
-                // TODO fix field name
                 consentDetailsToDisplay.setAccounts(consentRequest.getAccounts());
                 consentDetailsToDisplay.setClientId(consentRequest.getClientId());
                 consentDetailsToDisplay.setLogo(apiClient.getLogoUri());
+                // mapping the consent retrieved from IDM to the consent Details object expected by RCS-UI
                 consentDetailsToDisplay.mapping(consent);
-//                ConsentDetails consentDetailsToDisplay = ConsentDetailsBuilderFactory.build(
-//                        consent, consentRequest, apiClient
-//                );
-//                // the api provider name (aspsp, aisp), usually a bank
-//                consentDetailsToDisplay.setServiceProviderName(apiProviderConfiguration.getName());
-//                // the client Name (TPP name)
-//                consentDetailsToDisplay.setClientName(apiClient.getName());
                 return ResponseEntity.ok(consentDetailsToDisplay);
 
             } else {
