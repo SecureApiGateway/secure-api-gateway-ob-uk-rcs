@@ -41,6 +41,9 @@ import static com.forgerock.securebanking.platform.client.test.support.Internati
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
+/**
+ * Unit test for {@link ConsentDetailsFactory} factories
+ */
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
