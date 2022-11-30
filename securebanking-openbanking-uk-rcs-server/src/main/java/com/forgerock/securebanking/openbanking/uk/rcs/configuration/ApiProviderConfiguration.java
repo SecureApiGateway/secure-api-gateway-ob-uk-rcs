@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "api.provider")
 @Data
 public class ApiProviderConfiguration {
+    private String id;
     @Value("${name:Forgerock Bank Simulation}")
     private String name;
     private String address;
