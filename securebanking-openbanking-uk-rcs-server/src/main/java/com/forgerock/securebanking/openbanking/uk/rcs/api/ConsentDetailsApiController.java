@@ -62,7 +62,7 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
     private final ConfigurationPropertiesClient configurationPropertiesClient;
     private final ApiProviderConfiguration apiProviderConfiguration;
     //    private final ConsentDetailsFactoryOld consentDetailsFactory;
-    private final ConsentDetailsFactoryProvider consentDetailsFactoryLocator;
+    private final ConsentDetailsFactoryProvider consentDetailsFactoryProvider;
 
     @Value("${rcs.consent.request.jwt.must-be-validated:false}")
     private Boolean jwtMustBeValidated;
@@ -74,7 +74,7 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                                        ConfigurationPropertiesClient configurationPropertiesClient,
                                        ObjectMapper objectMapper,
                                        ApiProviderConfiguration apiProviderConfiguration,
-                                       ConsentDetailsFactoryProvider consentDetailsFactoryLocator
+                                       ConsentDetailsFactoryProvider consentDetailsFactoryProvider
     ) {
         this.consentServiceClient = consentServiceClient;
         this.apiClientService = apiClientService;
@@ -83,7 +83,7 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
         this.configurationPropertiesClient = configurationPropertiesClient;
         this.objectMapper = objectMapper;
         this.apiProviderConfiguration = apiProviderConfiguration;
-        this.consentDetailsFactoryLocator = consentDetailsFactoryLocator;
+        this.consentDetailsFactoryProvider = consentDetailsFactoryProvider;
     }
 
     @Override
@@ -122,7 +122,7 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                 log.debug("ApiClient controller: " + apiClient);
                 log.debug("consent json controller: " + consent);
                 // consent details object thread safe instance by intent type
-                ConsentDetailsFactory consentDetailsFactory = consentDetailsFactoryLocator.getFactory(intentType);
+                ConsentDetailsFactory consentDetailsFactory = consentDetailsFactoryProvider.getFactory(intentType);
                 ConsentDetails details = consentDetailsFactory.decode(consent);
                 details.setConsentId(intentId);
                 // the api provider name (aspsp, aisp), usually a bank
