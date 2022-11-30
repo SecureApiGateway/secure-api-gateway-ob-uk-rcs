@@ -20,9 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
-import org.springframework.stereotype.Component;
 
 /**
  * Models the consent data for a confirmation of funds request.
@@ -31,8 +29,6 @@ import org.springframework.stereotype.Component;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-@Slf4j
-@Component
 public class FundsConfirmationConsentDetails extends ConsentDetails {
 
     private DateTime expirationDateTime;

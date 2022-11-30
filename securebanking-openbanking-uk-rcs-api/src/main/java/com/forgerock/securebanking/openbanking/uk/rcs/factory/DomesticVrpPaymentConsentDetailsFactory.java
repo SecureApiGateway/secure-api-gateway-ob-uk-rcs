@@ -27,7 +27,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.Instant;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPControlParameters;
@@ -48,16 +47,10 @@ import static java.util.Objects.requireNonNull;
 @Component
 public class DomesticVrpPaymentConsentDetailsFactory implements ConsentDetailsFactory<DomesticVrpPaymentConsentDetails> {
 
-    private final DomesticVrpPaymentConsentDetails details;
-
-    @Autowired
-    public DomesticVrpPaymentConsentDetailsFactory(DomesticVrpPaymentConsentDetails details) {
-        this.details = details;
-    }
-
     @Override
     public DomesticVrpPaymentConsentDetails decode(JsonObject json) {
         requireNonNull(json, "decode(json) parameter 'json' cannot be null");
+        DomesticVrpPaymentConsentDetails details = DomesticVrpPaymentConsentDetails.builder().build();
         if (!json.has(OB_INTENT_OBJECT)) {
             throw new IllegalStateException("Expected " + OB_INTENT_OBJECT + " field in json");
         } else {
@@ -69,11 +62,11 @@ public class DomesticVrpPaymentConsentDetailsFactory implements ConsentDetailsFa
                 log.debug("{}.{}: {}", OB_INTENT_OBJECT, DATA, data);
 
                 if (isNotNull(data.get(INITIATION))) {
-                    details.setInitiation(initiationDetailsBuilder(data));
+                    details.setInitiation(decodeDataInitiation(data));
                 }
 
                 if (isNotNull(data.get(CONTROL_PARAMETERS))) {
-                    details.setControlParameters(controlParametersBuilder(data));
+                    details.setControlParameters(decodeControlParameters(data));
                 }
 
             }
@@ -83,10 +76,10 @@ public class DomesticVrpPaymentConsentDetailsFactory implements ConsentDetailsFa
 
     @Override
     public IntentType getIntentType() {
-        return details.getIntentType();
+        return IntentType.DOMESTIC_VRP_PAYMENT_CONSENT;
     }
 
-    private FRWriteDomesticVrpDataInitiation initiationDetailsBuilder(JsonObject data) {
+    private FRWriteDomesticVrpDataInitiation decodeDataInitiation(JsonObject data) {
         JsonObject initiation = data.getAsJsonObject(INITIATION);
         log.debug("{}.{}.{}: {}", OB_INTENT_OBJECT, DATA, INITIATION, initiation);
         JsonObject debtorAccount = initiation.getAsJsonObject(DEBTOR_ACCOUNT);
@@ -138,7 +131,7 @@ public class DomesticVrpPaymentConsentDetailsFactory implements ConsentDetailsFa
         return vrpDataInitiation;
     }
 
-    private OBDomesticVRPControlParameters controlParametersBuilder(JsonObject data) {
+    private OBDomesticVRPControlParameters decodeControlParameters(JsonObject data) {
         final JsonObject controlParameters = data.get(CONTROL_PARAMETERS).getAsJsonObject();
         log.debug("{}.{}.{}: {}", OB_INTENT_OBJECT, DATA, CONTROL_PARAMETERS, controlParameters);
 
@@ -164,16 +157,16 @@ public class DomesticVrpPaymentConsentDetailsFactory implements ConsentDetailsFa
         ctrlParams.setPsUAuthenticationMethods(vrpAuthMethodsList);
 
         if (isNotNull(controlParameters.get(MAXIMUM_INDIVIDUAL_AMOUNT))) {
-            ctrlParams.setMaximumIndividualAmount(maximumIndividualAmountBuilder(controlParameters));
+            ctrlParams.setMaximumIndividualAmount(decodeMaximumIndividualAmount(controlParameters));
         }
 
         if (isNotNull(controlParameters.get(PERIODIC_LIMITS))) {
-            ctrlParams.setPeriodicLimits(periodicLimitsBuilder(controlParameters));
+            ctrlParams.setPeriodicLimits(decodePeriodicLimits(controlParameters));
         }
         return ctrlParams;
     }
 
-    private OBActiveOrHistoricCurrencyAndAmount maximumIndividualAmountBuilder(JsonObject controlParameters) {
+    private OBActiveOrHistoricCurrencyAndAmount decodeMaximumIndividualAmount(JsonObject controlParameters) {
         final JsonObject maximumIndividualAmount = controlParameters.get(MAXIMUM_INDIVIDUAL_AMOUNT).getAsJsonObject();
         log.debug("{}.{}.{}.{}: {}", OB_INTENT_OBJECT, DATA, CONTROL_PARAMETERS, MAXIMUM_INDIVIDUAL_AMOUNT, maximumIndividualAmount);
         OBActiveOrHistoricCurrencyAndAmount maxIndividualAmount = new OBActiveOrHistoricCurrencyAndAmount();
@@ -182,7 +175,7 @@ public class DomesticVrpPaymentConsentDetailsFactory implements ConsentDetailsFa
         return maxIndividualAmount;
     }
 
-    private List<OBDomesticVRPControlParametersPeriodicLimits> periodicLimitsBuilder(JsonObject controlParameters) {
+    private List<OBDomesticVRPControlParametersPeriodicLimits> decodePeriodicLimits(JsonObject controlParameters) {
         final JsonArray periodicLimits = controlParameters.get(PERIODIC_LIMITS).getAsJsonArray();
         log.debug("{}.{}.{}.{}: {}", OB_INTENT_OBJECT, DATA, CONTROL_PARAMETERS, PERIODIC_LIMITS, periodicLimits);
         List<OBDomesticVRPControlParametersPeriodicLimits> periodicLimitsList = new ArrayList<>();

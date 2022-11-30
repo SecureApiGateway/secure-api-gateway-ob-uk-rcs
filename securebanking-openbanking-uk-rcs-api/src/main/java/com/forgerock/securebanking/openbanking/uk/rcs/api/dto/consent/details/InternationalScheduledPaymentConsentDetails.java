@@ -23,7 +23,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.joda.time.DateTime;
-import org.springframework.stereotype.Component;
 
 /**
  * Models the consent data for an international scheduled payment.
@@ -32,7 +31,6 @@ import org.springframework.stereotype.Component;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-@Component
 public class InternationalScheduledPaymentConsentDetails extends ConsentDetails {
     private FRAmount instructedAmount;
     private FRAmount charges;

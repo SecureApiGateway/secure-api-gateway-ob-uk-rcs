@@ -23,28 +23,23 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.joda.time.Instant;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.Members.*;
-import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.Members.CHARGES;
 import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.OB_INTENT_OBJECT;
 import static com.forgerock.securebanking.openbanking.uk.rcs.json.utils.JsonUtilValidation.isNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * File Payment consent details factory implements {@link ConsentDetailsFactory}
  */
 @Component
-public class FilePaymentConsentDetailsFactory implements ConsentDetailsFactory<FilePaymentConsentDetails>{
-    private final FilePaymentConsentDetails details;
-
-    @Autowired
-    public FilePaymentConsentDetailsFactory(FilePaymentConsentDetails details) {
-        this.details = details;
-    }
+public class FilePaymentConsentDetailsFactory implements ConsentDetailsFactory<FilePaymentConsentDetails> {
 
     @Override
     public FilePaymentConsentDetails decode(JsonObject json) {
+        requireNonNull(json, "decode(json) parameter 'json' cannot be null");
+        FilePaymentConsentDetails details = FilePaymentConsentDetails.builder().build();
         if (!json.has(OB_INTENT_OBJECT)) {
             throw new IllegalStateException("Expected " + OB_INTENT_OBJECT + " field in json");
         } else {
@@ -56,18 +51,19 @@ public class FilePaymentConsentDetailsFactory implements ConsentDetailsFactory<F
                 if (isNotNull(data.get(INITIATION))) {
 
                     JsonObject initiation = data.getAsJsonObject(INITIATION);
-
-                    setFilePayment(
-                            isNotNull(initiation.get(NUMBER_OF_TRANSACTIONS))
-                                    ? initiation.get(NUMBER_OF_TRANSACTIONS) : null,
-                            isNotNull(initiation.get(CONTROL_SUM)) ? initiation.get(CONTROL_SUM) : null,
-                            isNotNull(initiation.get(REQUESTED_EXECUTION_DATETIME))
-                                    ? initiation.get(REQUESTED_EXECUTION_DATETIME) : null,
-                            isNotNull(initiation.get(FILE_REFERENCE)) ? initiation.get(FILE_REFERENCE) : null
+                    details.setFileDataInitiation(
+                            decodeFileDataInitiation(
+                                    isNotNull(initiation.get(NUMBER_OF_TRANSACTIONS))
+                                            ? initiation.get(NUMBER_OF_TRANSACTIONS) : null,
+                                    isNotNull(initiation.get(CONTROL_SUM)) ? initiation.get(CONTROL_SUM) : null,
+                                    isNotNull(initiation.get(REQUESTED_EXECUTION_DATETIME))
+                                            ? initiation.get(REQUESTED_EXECUTION_DATETIME) : null,
+                                    isNotNull(initiation.get(FILE_REFERENCE)) ? initiation.get(FILE_REFERENCE) : null
+                            )
                     );
 
                     if (isNotNull(data.get(CHARGES))) {
-                        setCharges(data.getAsJsonArray(CHARGES));
+                        details.setCharges(decodeCharges(data.getAsJsonArray(CHARGES)));
                     }
                 }
             }
@@ -77,25 +73,26 @@ public class FilePaymentConsentDetailsFactory implements ConsentDetailsFactory<F
 
     @Override
     public IntentType getIntentType() {
-        return details.getIntentType();
+        return IntentType.PAYMENT_FILE_CONSENT;
     }
 
-    private void setCharges(JsonArray charges) {
-        details.setCharges(FRAmount.builder().build());
+    private FRAmount decodeCharges(JsonArray chargesArray) {
+        FRAmount charges = FRAmount.builder().build();
         Double amount = 0.0;
 
-        for (JsonElement charge : charges) {
+        for (JsonElement charge : chargesArray) {
             JsonObject chargeAmount = charge.getAsJsonObject().getAsJsonObject(AMOUNT);
             amount += chargeAmount.get(AMOUNT).getAsDouble();
         }
 
-        String currency = charges.get(0).getAsJsonObject().getAsJsonObject(AMOUNT).get(CURRENCY).getAsString();
+        String currency = chargesArray.get(0).getAsJsonObject().getAsJsonObject(AMOUNT).get(CURRENCY).getAsString();
 
-        details.getCharges().setAmount(amount.toString());
-        details.getCharges().setCurrency(currency);
+        charges.setAmount(amount.toString());
+        charges.setCurrency(currency);
+        return charges;
     }
 
-    private void setFilePayment(
+    private FRWriteFileDataInitiation decodeFileDataInitiation(
             JsonElement numberOfTransactions,
             JsonElement controlSum,
             JsonElement requestedExecutionDateTime,
@@ -121,6 +118,6 @@ public class FilePaymentConsentDetailsFactory implements ConsentDetailsFactory<F
             fileDataInitiation.setFileReference(fileReference.getAsString());
         }
 
-        details.setFileDataInitiation(fileDataInitiation);
+        return fileDataInitiation;
     }
 }

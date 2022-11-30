@@ -22,7 +22,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.joda.time.Instant;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.Members.*;
@@ -36,16 +35,10 @@ import static java.util.Objects.requireNonNull;
 @Component
 public class DomesticScheduledPaymentConsentDetailsFactory implements ConsentDetailsFactory<DomesticScheduledPaymentConsentDetails> {
 
-    private final DomesticScheduledPaymentConsentDetails details;
-
-    @Autowired
-    public DomesticScheduledPaymentConsentDetailsFactory(DomesticScheduledPaymentConsentDetails details) {
-        this.details = details;
-    }
-
     @Override
     public DomesticScheduledPaymentConsentDetails decode(JsonObject json) {
         requireNonNull(json, "decode(json) parameter 'json' cannot be null");
+        DomesticScheduledPaymentConsentDetails details = DomesticScheduledPaymentConsentDetails.builder().build();
         if (!json.has(OB_INTENT_OBJECT)) {
             throw new IllegalStateException("Expected " + OB_INTENT_OBJECT + " field in json");
         } else {
@@ -58,7 +51,9 @@ public class DomesticScheduledPaymentConsentDetailsFactory implements ConsentDet
                     JsonObject initiation = data.getAsJsonObject(INITIATION);
 
                     if (isNotNull(initiation.get(INSTRUCTED_AMOUNT))) {
-                        setInstructedAmount(initiation.getAsJsonObject(INSTRUCTED_AMOUNT));
+                        details.setInstructedAmount(
+                                decodeInstructedAmount(initiation.getAsJsonObject(INSTRUCTED_AMOUNT))
+                        );
                     }
 
                     details.setPaymentReference(
@@ -75,7 +70,9 @@ public class DomesticScheduledPaymentConsentDetailsFactory implements ConsentDet
                     );
 
                     if (isNotNull(data.get(CHARGES))) {
-                        setCharges(data.getAsJsonArray(CHARGES));
+                        details.setCharges(
+                                decodeCharges(data.getAsJsonArray(CHARGES), details.getInstructedAmount().getCurrency())
+                        );
                     }
                 }
             }
@@ -85,27 +82,29 @@ public class DomesticScheduledPaymentConsentDetailsFactory implements ConsentDet
 
     @Override
     public IntentType getIntentType() {
-        return details.getIntentType();
+        return IntentType.PAYMENT_DOMESTIC_SCHEDULED_CONSENT;
     }
 
-    private void setCharges(JsonArray chargesArray) {
-        details.setCharges(FRAmount.builder().build());
+    private FRAmount decodeCharges(JsonArray chargesArray, String currency) {
+        FRAmount charges = FRAmount.builder().build();
         Double amount = 0.0;
         for (JsonElement charge : chargesArray) {
             JsonObject chargeAmount = charge.getAsJsonObject().getAsJsonObject(AMOUNT);
             amount += chargeAmount.get(AMOUNT).getAsDouble();
         }
-        details.getCharges().setAmount(amount.toString());
-        details.getCharges().setCurrency(details.getInstructedAmount().getCurrency());
+        charges.setAmount(amount.toString());
+        charges.setCurrency(currency);
+        return charges;
     }
 
-    private void setInstructedAmount(JsonObject instructedAmount) {
-        details.setInstructedAmount(FRAmount.builder().build());
-        details.getInstructedAmount().setAmount(
+    private FRAmount decodeInstructedAmount(JsonObject instructedAmount) {
+        FRAmount frAmount = FRAmount.builder().build();
+        frAmount.setAmount(
                 isNotNull(instructedAmount.get(AMOUNT)) ? instructedAmount.get(AMOUNT).getAsString() : null
         );
-        details.getInstructedAmount().setCurrency(
+        frAmount.setCurrency(
                 isNotNull(instructedAmount.get(CURRENCY)) ? instructedAmount.get(CURRENCY).getAsString() : null
         );
+        return frAmount;
     }
 }

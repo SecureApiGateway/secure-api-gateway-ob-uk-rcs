@@ -23,11 +23,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.joda.time.DateTime;
-import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-
-import static com.forgerock.securebanking.openbanking.uk.rcs.json.utils.JsonUtilValidation.isNotNull;
 
 /**
  * Models the consent data for a file payment.
@@ -36,7 +33,6 @@ import static com.forgerock.securebanking.openbanking.uk.rcs.json.utils.JsonUtil
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-@Component
 public class FilePaymentConsentDetails extends ConsentDetails {
 
     private FRWriteFileDataInitiation fileDataInitiation;

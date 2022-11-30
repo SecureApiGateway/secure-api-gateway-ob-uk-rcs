@@ -24,7 +24,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.joda.time.Instant;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.Members.*;
@@ -37,16 +36,11 @@ import static java.util.Objects.requireNonNull;
  */
 @Component
 public class DomesticStandingOrderConsentDetailsFactory implements ConsentDetailsFactory<DomesticStandingOrderConsentDetails> {
-    private final DomesticStandingOrderConsentDetails details;
-
-    @Autowired
-    public DomesticStandingOrderConsentDetailsFactory(DomesticStandingOrderConsentDetails details) {
-        this.details = details;
-    }
 
     @Override
     public DomesticStandingOrderConsentDetails decode(JsonObject json) {
         requireNonNull(json, "decode(json) parameter 'json' cannot be null");
+        DomesticStandingOrderConsentDetails details = DomesticStandingOrderConsentDetails.builder().build();
         if (!json.has(OB_INTENT_OBJECT)) {
             throw new IllegalStateException("Expected " + OB_INTENT_OBJECT + " field in json");
         } else {
@@ -63,25 +57,31 @@ public class DomesticStandingOrderConsentDetailsFactory implements ConsentDetail
                                     initiation.get(REFERENCE).getAsString() :
                                     null
                     );
-
-                    setStandingOrder(
-                            isNotNull(initiation.get(FINAL_PAYMENT_DATETIME))
-                                    ? initiation.get(FINAL_PAYMENT_DATETIME) : null,
-                            isNotNull(initiation.get(FINAL_PAYMENT_AMOUNT))
-                                    ? initiation.getAsJsonObject(FINAL_PAYMENT_AMOUNT) : null,
-                            isNotNull(initiation.get(FIRST_PAYMENT_DATETIME))
-                                    ? initiation.get(FIRST_PAYMENT_DATETIME) : null,
-                            isNotNull(initiation.get(FIRST_PAYMENT_AMOUNT))
-                                    ? initiation.getAsJsonObject(FIRST_PAYMENT_AMOUNT) : null,
-                            isNotNull(initiation.get(RECURRING_PAYMENT_DATETIME))
-                                    ? initiation.get(RECURRING_PAYMENT_DATETIME) : null,
-                            isNotNull(initiation.get(RECURRING_PAYMENT_AMOUNT))
-                                    ? initiation.getAsJsonObject(RECURRING_PAYMENT_AMOUNT) : null,
-                            initiation.get(FREQUENCY)
+                    details.setStandingOrder(
+                            decodeStandingOrder(
+                                    isNotNull(initiation.get(FINAL_PAYMENT_DATETIME))
+                                            ? initiation.get(FINAL_PAYMENT_DATETIME) : null,
+                                    isNotNull(initiation.get(FINAL_PAYMENT_AMOUNT))
+                                            ? initiation.getAsJsonObject(FINAL_PAYMENT_AMOUNT) : null,
+                                    isNotNull(initiation.get(FIRST_PAYMENT_DATETIME))
+                                            ? initiation.get(FIRST_PAYMENT_DATETIME) : null,
+                                    isNotNull(initiation.get(FIRST_PAYMENT_AMOUNT))
+                                            ? initiation.getAsJsonObject(FIRST_PAYMENT_AMOUNT) : null,
+                                    isNotNull(initiation.get(RECURRING_PAYMENT_DATETIME))
+                                            ? initiation.get(RECURRING_PAYMENT_DATETIME) : null,
+                                    isNotNull(initiation.get(RECURRING_PAYMENT_AMOUNT))
+                                            ? initiation.getAsJsonObject(RECURRING_PAYMENT_AMOUNT) : null,
+                                    initiation.get(FREQUENCY)
+                            )
                     );
 
                     if (isNotNull(data.get(CHARGES))) {
-                        setCharges(data.getAsJsonArray(CHARGES));
+                        details.setCharges(
+                                decodeCharges(
+                                        data.getAsJsonArray(CHARGES),
+                                        details.getStandingOrder().getFirstPaymentAmount().getCurrency()
+                                )
+                        );
                     }
                 }
             }
@@ -91,21 +91,22 @@ public class DomesticStandingOrderConsentDetailsFactory implements ConsentDetail
 
     @Override
     public IntentType getIntentType() {
-        return details.getIntentType();
+        return IntentType.PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT;
     }
 
-    private void setCharges(JsonArray chargesArray) {
-        details.setCharges(FRAmount.builder().build());
+    private FRAmount decodeCharges(JsonArray chargesArray, String currency) {
+        FRAmount charges = FRAmount.builder().build();
         Double amount = 0.0;
         for (JsonElement charge : chargesArray) {
             JsonObject chargeAmount = charge.getAsJsonObject().getAsJsonObject(AMOUNT);
             amount += chargeAmount.get(AMOUNT).getAsDouble();
         }
-        details.getCharges().setAmount(amount.toString());
-        details.getCharges().setCurrency(details.getStandingOrder().getFirstPaymentAmount().getCurrency());
+        charges.setAmount(amount.toString());
+        charges.setCurrency(currency);
+        return charges;
     }
 
-    private void setStandingOrder(
+    private FRWriteDomesticStandingOrderDataInitiation decodeStandingOrder(
             JsonElement finalPaymentDateTime,
             JsonObject finalPaymentAmount,
             JsonElement firstPaymentDateTime,
@@ -169,6 +170,6 @@ public class DomesticStandingOrderConsentDetailsFactory implements ConsentDetail
             standingOrderData.setFrequency(sentence);
         }
 
-        details.setStandingOrder(standingOrderData);
+        return standingOrderData;
     }
 }

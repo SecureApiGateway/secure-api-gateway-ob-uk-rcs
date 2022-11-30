@@ -22,7 +22,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.springframework.stereotype.Component;
 
 /**
  * Models the consent data for an international payment.
@@ -31,7 +30,6 @@ import org.springframework.stereotype.Component;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-@Component
 public class InternationalPaymentConsentDetails extends ConsentDetails {
 
     private FRAmount instructedAmount;

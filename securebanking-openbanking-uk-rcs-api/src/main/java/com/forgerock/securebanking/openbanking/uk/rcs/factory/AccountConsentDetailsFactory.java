@@ -22,7 +22,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.joda.time.Instant;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -39,16 +38,10 @@ import static java.util.Objects.requireNonNull;
 @Component
 public class AccountConsentDetailsFactory implements ConsentDetailsFactory<AccountsConsentDetails> {
 
-    private final AccountsConsentDetails details;
-
-    @Autowired
-    public AccountConsentDetailsFactory(AccountsConsentDetails details) {
-        this.details = details;
-    }
-
     @Override
     public AccountsConsentDetails decode(JsonObject json) {
         requireNonNull(json, "decode(json) parameter 'json' cannot be null");
+        AccountsConsentDetails details = AccountsConsentDetails.builder().build();
         if (!json.has(OB_INTENT_OBJECT)) {
             throw new IllegalStateException("Expected " + OB_INTENT_OBJECT + " field in json");
         } else {
@@ -76,7 +69,7 @@ public class AccountConsentDetailsFactory implements ConsentDetailsFactory<Accou
                 );
 
                 if (isNotNull(data.get(PERMISSIONS))) {
-                    setPermissions(data.getAsJsonArray(PERMISSIONS));
+                    details.setPermissions(decodePermissions(data.getAsJsonArray(PERMISSIONS)));
                 }
             }
         }
@@ -85,18 +78,18 @@ public class AccountConsentDetailsFactory implements ConsentDetailsFactory<Accou
 
     @Override
     public IntentType getIntentType() {
-        return details.getIntentType();
+        return IntentType.ACCOUNT_ACCESS_CONSENT;
     }
 
-    private void setPermissions(JsonArray permissions) {
+    private List<FRExternalPermissionsCode> decodePermissions(JsonArray permissions) {
+        List<FRExternalPermissionsCode> permissionsCodeList = new ArrayList<>();
         if (permissions == null || permissions.size() == 0)
-            details.setPermissions(null);
+            return null;
         else {
-            List<FRExternalPermissionsCode> permissionsCodeList = new ArrayList<>();
             for (JsonElement permission : permissions) {
                 permissionsCodeList.add(FRExternalPermissionsCode.fromValue(permission.getAsString()));
             }
-            details.setPermissions(permissionsCodeList);
         }
+        return permissionsCodeList;
     }
 }

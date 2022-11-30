@@ -49,23 +49,14 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 @ContextConfiguration(classes = {
         ConsentDetailsFactoryProvider.class,
         AccountConsentDetailsFactory.class,
-        AccountsConsentDetails.class,
         DomesticPaymentConsentDetailsFactory.class,
-        DomesticPaymentConsentDetails.class,
         DomesticScheduledPaymentConsentDetailsFactory.class,
-        DomesticScheduledPaymentConsentDetails.class,
         DomesticStandingOrderConsentDetailsFactory.class,
-        DomesticStandingOrderConsentDetails.class,
         DomesticVrpPaymentConsentDetailsFactory.class,
-        DomesticVrpPaymentConsentDetails.class,
         InternationalPaymentConsentDetailsFactory.class,
-        InternationalPaymentConsentDetails.class,
         InternationalScheduledPaymentConsentDetailsFactory.class,
-        InternationalScheduledPaymentConsentDetails.class,
         InternationalStandingOrderConsentDetailsFactory.class,
-        InternationalStandingOrderConsentDetails.class,
-        FilePaymentConsentDetailsFactory.class,
-        FilePaymentConsentDetails.class
+        FilePaymentConsentDetailsFactory.class
 })
 public class ConsentDetailsFactoryTest {
 

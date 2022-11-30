@@ -24,7 +24,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.joda.time.Instant;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.Members.*;
@@ -37,16 +36,11 @@ import static java.util.Objects.requireNonNull;
  */
 @Component
 public class InternationalStandingOrderConsentDetailsFactory implements ConsentDetailsFactory<InternationalStandingOrderConsentDetails> {
-    private final InternationalStandingOrderConsentDetails details;
-
-    @Autowired
-    public InternationalStandingOrderConsentDetailsFactory(InternationalStandingOrderConsentDetails details) {
-        this.details = details;
-    }
 
     @Override
     public InternationalStandingOrderConsentDetails decode(JsonObject json) {
         requireNonNull(json, "decode(json) parameter 'json' cannot be null");
+        InternationalStandingOrderConsentDetails details = InternationalStandingOrderConsentDetails.builder().build();
         if (!json.has(OB_INTENT_OBJECT)) {
             throw new IllegalStateException("Expected " + OB_INTENT_OBJECT + " field in json");
         } else {
@@ -71,15 +65,22 @@ public class InternationalStandingOrderConsentDetailsFactory implements ConsentD
                                     null
                     );
 
-                    this.setInternationalStandingOrder(
-                            isNotNull(initiation.get(FIRST_PAYMENT_DATETIME)) ? initiation.get(FIRST_PAYMENT_DATETIME) : null,
-                            isNotNull(initiation.get(FINAL_PAYMENT_DATETIME)) ? initiation.get(FINAL_PAYMENT_DATETIME) : null,
-                            isNotNull(initiation.get(INSTRUCTED_AMOUNT)) ? initiation.getAsJsonObject(INSTRUCTED_AMOUNT) : null,
-                            initiation.get(FREQUENCY)
+                    details.setInternationalStandingOrderDataInitiation(
+                            decodeInternationalStandingOrderDataInitiation(
+                                    isNotNull(initiation.get(FIRST_PAYMENT_DATETIME)) ? initiation.get(FIRST_PAYMENT_DATETIME) : null,
+                                    isNotNull(initiation.get(FINAL_PAYMENT_DATETIME)) ? initiation.get(FINAL_PAYMENT_DATETIME) : null,
+                                    isNotNull(initiation.get(INSTRUCTED_AMOUNT)) ? initiation.getAsJsonObject(INSTRUCTED_AMOUNT) : null,
+                                    initiation.get(FREQUENCY)
+                            )
                     );
 
                     if (isNotNull(data.get(CHARGES))) {
-                        setCharges(data.getAsJsonArray(CHARGES));
+                        details.setCharges(
+                                decodeCharges(
+                                        data.getAsJsonArray(CHARGES),
+                                        details.getInternationalStandingOrderDataInitiation().getInstructedAmount().getCurrency()
+                                )
+                        );
                     }
                 }
             }
@@ -89,23 +90,24 @@ public class InternationalStandingOrderConsentDetailsFactory implements ConsentD
 
     @Override
     public IntentType getIntentType() {
-        return details.getIntentType();
+        return IntentType.PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT;
     }
 
-    private void setCharges(JsonArray charges) {
-        details.setCharges(FRAmount.builder().build());
+    private FRAmount decodeCharges(JsonArray chargesArray, String currency) {
+        FRAmount charges = FRAmount.builder().build();
         Double amount = 0.0;
 
-        for (JsonElement charge : charges) {
+        for (JsonElement charge : chargesArray) {
             JsonObject chargeAmount = charge.getAsJsonObject().getAsJsonObject(AMOUNT);
             amount += chargeAmount.get(AMOUNT).getAsDouble();
         }
 
-        details.getCharges().setCurrency(details.getInternationalStandingOrder().getInstructedAmount().getCurrency());
-        details.getCharges().setAmount(amount.toString());
+        charges.setCurrency(currency);
+        charges.setAmount(amount.toString());
+        return charges;
     }
 
-    private void setInternationalStandingOrder(
+    private FRWriteInternationalStandingOrderDataInitiation decodeInternationalStandingOrderDataInitiation(
             JsonElement firstPaymentDateTime,
             JsonElement finalPaymentDateTime,
             JsonObject instructedAmount,
@@ -139,6 +141,6 @@ public class InternationalStandingOrderConsentDetailsFactory implements ConsentD
             standingOrderData.setFrequency(sentence);
         }
 
-        details.setInternationalStandingOrder(standingOrderData);
+        return standingOrderData;
     }
 }

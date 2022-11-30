@@ -22,7 +22,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.springframework.stereotype.Component;
 
 /**
  * Models the consent data for a domestic standing order.
@@ -31,7 +30,6 @@ import org.springframework.stereotype.Component;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-@Component
 public class DomesticStandingOrderConsentDetails extends ConsentDetails {
     private FRWriteDomesticStandingOrderDataInitiation standingOrder;
     private String paymentReference;

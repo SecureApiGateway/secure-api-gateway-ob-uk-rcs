@@ -19,7 +19,6 @@ import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.Fu
 import com.forgerock.securebanking.platform.client.IntentType;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import static java.util.Objects.requireNonNull;
@@ -30,22 +29,17 @@ import static java.util.Objects.requireNonNull;
 @Component
 @Slf4j
 public class FundsConfirmationConsentDetailsFactory implements ConsentDetailsFactory<FundsConfirmationConsentDetails> {
-    private final FundsConfirmationConsentDetails details;
-
-    @Autowired
-    public FundsConfirmationConsentDetailsFactory(FundsConfirmationConsentDetails details) {
-        this.details = details;
-    }
 
     @Override
     public FundsConfirmationConsentDetails decode(JsonObject json) {
         requireNonNull(json, "decode(json) parameter 'json' cannot be null");
+        FundsConfirmationConsentDetails details = FundsConfirmationConsentDetails.builder().build();
         log.warn("Funds Confirmation Consent Details 'decode' NOT IMPLEMENTED YET");
         return details;
     }
 
     @Override
     public IntentType getIntentType() {
-        return details.getIntentType();
+        return IntentType.FUNDS_CONFIRMATION_CONSENT;
     }
 }

@@ -23,7 +23,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.joda.time.DateTime;
-import org.springframework.stereotype.Component;
 
 /**
  * Models the consent data for an international standing order.
@@ -32,10 +31,9 @@ import org.springframework.stereotype.Component;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-@Component
 public class InternationalStandingOrderConsentDetails extends ConsentDetails {
 
-    private FRWriteInternationalStandingOrderDataInitiation internationalStandingOrder;
+    private FRWriteInternationalStandingOrderDataInitiation internationalStandingOrderDataInitiation;
     private FRAmount charges;
     private DateTime expiredDate;
     private String currencyOfTransfer;

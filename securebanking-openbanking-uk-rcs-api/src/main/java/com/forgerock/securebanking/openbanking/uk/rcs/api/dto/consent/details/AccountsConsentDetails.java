@@ -22,7 +22,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.joda.time.DateTime;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -33,7 +32,6 @@ import java.util.List;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-@Component
 public class AccountsConsentDetails extends ConsentDetails {
 
     private List<FRExternalPermissionsCode> permissions;
