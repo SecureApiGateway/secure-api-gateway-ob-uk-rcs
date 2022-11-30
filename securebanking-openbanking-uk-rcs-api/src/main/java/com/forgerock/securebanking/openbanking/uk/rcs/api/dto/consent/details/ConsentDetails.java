@@ -20,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.platform.client.IntentType;
-import com.google.gson.JsonObject;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -49,6 +48,7 @@ import java.util.List;
 @SuperBuilder
 public abstract class ConsentDetails {
 
+    private String consentId;
     private String decisionApiUri;
     private String username;
     private String userId;
@@ -58,9 +58,8 @@ public abstract class ConsentDetails {
     private String serviceProviderName; // (aisp, aspsp)
     private List<FRAccountWithBalance> accounts;
 
-    public abstract <T> T getInstance();
     public abstract IntentType getIntentType();
-    public abstract void mapping(JsonObject consent);
+
     public String getDecisionApiUri() {
         return "/api/rcs/consent/decision/";
     }

@@ -21,7 +21,7 @@ import com.forgerock.securebanking.openbanking.uk.rcs.RcsApplicationTestSupport;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.RedirectionAction;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.*;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.rs.AccountService;
-import com.forgerock.securebanking.openbanking.uk.rcs.converters.general.ConsentDetailsFactory;
+import com.forgerock.securebanking.openbanking.uk.rcs.factory.ConsentDetailsFactoryProvider;
 import com.forgerock.securebanking.openbanking.uk.rcs.testsupport.JwtTestHelper;
 import com.forgerock.securebanking.platform.client.IntentType;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorClient;
@@ -52,10 +52,11 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Objects;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.account.FRAccountWithBalanceTestDataFactory.aValidFRAccountWithBalance;
-import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.OB_INTENT_OBJECT;
 import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.Members.*;
+import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.OB_INTENT_OBJECT;
 import static com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory.aValidAccountConsentDetails;
 import static com.forgerock.securebanking.platform.client.test.support.ConsentDetailsRequestTestDataFactory.*;
 import static com.forgerock.securebanking.platform.client.test.support.DomesticPaymentConsentDetailsTestFactory.aValidDomesticPaymentConsentDetails;
@@ -102,7 +103,7 @@ public class ConsentDetailsApiControllerTest {
     private UserServiceClient userServiceClient;
 
     @Autowired // needed for tests purposes
-    private ConsentDetailsFactory consentDetailsFactory;
+    private ConsentDetailsFactoryProvider consentDetailsFactoryLocator;
     @Autowired
     private TestRestTemplate restTemplate;
 
@@ -166,8 +167,8 @@ public class ConsentDetailsApiControllerTest {
         // when
         ResponseEntity<RedirectionAction> response = restTemplate.postForEntity(consentDetailURL, request, RedirectionAction.class);
 
-        assertThat(response.getBody().getRedirectUri()).isNotEmpty();
-        assertThat(response.getBody().getConsentJwt()).isNotEmpty();
+        assertThat(Objects.requireNonNull(response.getBody()).getRedirectUri()).isNotEmpty();
+        assertThat(Objects.requireNonNull(response.getBody().getConsentJwt())).isNotEmpty();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 

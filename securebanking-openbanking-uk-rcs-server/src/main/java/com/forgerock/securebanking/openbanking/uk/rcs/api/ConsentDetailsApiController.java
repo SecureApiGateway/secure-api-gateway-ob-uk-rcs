@@ -22,8 +22,9 @@ import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.rs.AccountService;
 import com.forgerock.securebanking.openbanking.uk.rcs.configuration.ApiProviderConfiguration;
-import com.forgerock.securebanking.openbanking.uk.rcs.converters.general.ConsentDetailsFactory;
 import com.forgerock.securebanking.openbanking.uk.rcs.exception.InvalidConsentException;
+import com.forgerock.securebanking.openbanking.uk.rcs.factory.ConsentDetailsFactory;
+import com.forgerock.securebanking.openbanking.uk.rcs.factory.ConsentDetailsFactoryProvider;
 import com.forgerock.securebanking.platform.client.Constants;
 import com.forgerock.securebanking.platform.client.IntentType;
 import com.forgerock.securebanking.platform.client.configuration.ConfigurationPropertiesClient;
@@ -60,7 +61,8 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
     private final AccountService accountService;
     private final ConfigurationPropertiesClient configurationPropertiesClient;
     private final ApiProviderConfiguration apiProviderConfiguration;
-    private final ConsentDetailsFactory consentDetailsFactory;
+    //    private final ConsentDetailsFactoryOld consentDetailsFactory;
+    private final ConsentDetailsFactoryProvider consentDetailsFactoryLocator;
 
     @Value("${rcs.consent.request.jwt.must-be-validated:false}")
     private Boolean jwtMustBeValidated;
@@ -71,7 +73,9 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                                        AccountService accountService,
                                        ConfigurationPropertiesClient configurationPropertiesClient,
                                        ObjectMapper objectMapper,
-                                       ApiProviderConfiguration apiProviderConfiguration, ConsentDetailsFactory consentDetailsFactory) {
+                                       ApiProviderConfiguration apiProviderConfiguration,
+                                       ConsentDetailsFactoryProvider consentDetailsFactoryLocator
+    ) {
         this.consentServiceClient = consentServiceClient;
         this.apiClientService = apiClientService;
         this.userServiceClient = userServiceClient;
@@ -79,7 +83,7 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
         this.configurationPropertiesClient = configurationPropertiesClient;
         this.objectMapper = objectMapper;
         this.apiProviderConfiguration = apiProviderConfiguration;
-        this.consentDetailsFactory = consentDetailsFactory;
+        this.consentDetailsFactoryLocator = consentDetailsFactoryLocator;
     }
 
     @Override
@@ -118,19 +122,19 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                 log.debug("ApiClient controller: " + apiClient);
                 log.debug("consent json controller: " + consent);
                 // consent details object thread safe instance by intent type
-                ConsentDetails consentDetailsToDisplay = consentDetailsFactory.getConsentDetailsInstance(intentType);
+                ConsentDetailsFactory consentDetailsFactory = consentDetailsFactoryLocator.getFactory(intentType);
+                ConsentDetails details = consentDetailsFactory.decode(consent);
+                details.setConsentId(intentId);
                 // the api provider name (aspsp, aisp), usually a bank
-                consentDetailsToDisplay.setServiceProviderName(apiProviderConfiguration.getName());
+                details.setServiceProviderName(apiProviderConfiguration.getName());
                 // the client Name (TPP name)
-                consentDetailsToDisplay.setClientName(apiClient.getName());
-                consentDetailsToDisplay.setUsername(consentRequest.getUser().getUserName());
-                consentDetailsToDisplay.setUserId(consentRequest.getUser().getId());
-                consentDetailsToDisplay.setAccounts(consentRequest.getAccounts());
-                consentDetailsToDisplay.setClientId(consentRequest.getClientId());
-                consentDetailsToDisplay.setLogo(apiClient.getLogoUri());
-                // mapping the consent retrieved from IDM to the consent Details object expected by RCS-UI
-                consentDetailsToDisplay.mapping(consent);
-                return ResponseEntity.ok(consentDetailsToDisplay);
+                details.setClientName(apiClient.getName());
+                details.setUsername(consentRequest.getUser().getUserName());
+                details.setUserId(consentRequest.getUser().getId());
+                details.setAccounts(consentRequest.getAccounts());
+                details.setClientId(consentRequest.getClientId());
+                details.setLogo(apiClient.getLogoUri());
+                return ResponseEntity.ok(details);
 
             } else {
                 String message = String.format("Invalid type for intent ID: '%s'", intentId);
