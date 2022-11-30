@@ -75,6 +75,11 @@ public class DomesticPaymentConsentDetails extends ConsentDetails {
     }
 
     @Override
+    public DomesticPaymentConsentDetails getInstance() {
+        return new DomesticPaymentConsentDetails();
+    }
+
+    @Override
     public IntentType getIntentType() {
         return IntentType.PAYMENT_DOMESTIC_CONSENT;
     }

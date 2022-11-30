@@ -39,6 +39,11 @@ public class FundsConfirmationConsentDetails extends ConsentDetails {
     private DateTime expirationDateTime;
 
     @Override
+    public FundsConfirmationConsentDetails getInstance() {
+        return new FundsConfirmationConsentDetails();
+    }
+    
+    @Override
     public IntentType getIntentType() {
         return IntentType.FUNDS_CONFIRMATION_CONSENT;
     }

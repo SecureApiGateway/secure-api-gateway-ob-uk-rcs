@@ -53,6 +53,11 @@ public class InternationalScheduledPaymentConsentDetails extends ConsentDetails 
     private String paymentReference;
 
     @Override
+    public InternationalScheduledPaymentConsentDetails getInstance() {
+        return new InternationalScheduledPaymentConsentDetails();
+    }
+
+    @Override
     public void mapping(JsonObject consentDetails) {
 
         if (!consentDetails.has(OB_INTENT_OBJECT)) {

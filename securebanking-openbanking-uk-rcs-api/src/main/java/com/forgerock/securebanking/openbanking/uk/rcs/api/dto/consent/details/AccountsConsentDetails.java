@@ -51,6 +51,11 @@ public class AccountsConsentDetails extends ConsentDetails {
     private DateTime expiredDate;
 
     @Override
+    public AccountsConsentDetails getInstance() {
+        return new AccountsConsentDetails();
+    }
+
+    @Override
     public IntentType getIntentType() {
         return IntentType.ACCOUNT_ACCESS_CONSENT;
     }

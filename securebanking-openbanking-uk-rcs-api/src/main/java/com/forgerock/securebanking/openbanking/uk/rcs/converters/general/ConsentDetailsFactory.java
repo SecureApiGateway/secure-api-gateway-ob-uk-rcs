@@ -26,7 +26,7 @@ import java.util.List;
 @Component
 public class ConsentDetailsFactory {
 
-    private EnumMap<IntentType, ConsentDetails> consentDetailsEnumMap;
+    private final EnumMap<IntentType, ConsentDetails> consentDetailsEnumMap;
 
     @Autowired
     public ConsentDetailsFactory(List<ConsentDetails> consentDetailsList) {
@@ -36,7 +36,13 @@ public class ConsentDetailsFactory {
         }
     }
 
-    public ConsentDetails getConsentDetails(IntentType intentType){
-        return this.consentDetailsEnumMap.get(intentType);
+    /**
+     * To get a {@link ConsentDetails} instance (thread safe)
+     * @param intentType to get the instance
+     * @return a {@link ConsentDetails} instance
+     */
+    public ConsentDetails getConsentDetailsInstance(IntentType intentType){
+        // thread safe returning a consent details instance
+        return this.consentDetailsEnumMap.get(intentType).getInstance();
     }
 }

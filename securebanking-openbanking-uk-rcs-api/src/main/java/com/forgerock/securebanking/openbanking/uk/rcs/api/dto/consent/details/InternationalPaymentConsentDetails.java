@@ -51,6 +51,11 @@ public class InternationalPaymentConsentDetails extends ConsentDetails {
     private String currencyOfTransfer;
     private String paymentReference;
 
+    @Override
+    public InternationalPaymentConsentDetails getInstance() {
+        return new InternationalPaymentConsentDetails();
+    }
+
     public void mapping(JsonObject consentDetails) {
 
         if (!consentDetails.has(OB_INTENT_OBJECT)) {

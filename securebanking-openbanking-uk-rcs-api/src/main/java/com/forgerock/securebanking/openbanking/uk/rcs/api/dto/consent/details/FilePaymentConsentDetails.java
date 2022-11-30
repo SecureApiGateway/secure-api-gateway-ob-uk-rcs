@@ -55,6 +55,11 @@ public class FilePaymentConsentDetails extends ConsentDetails {
     private String paymentReference;
     private String requestedExecutionDateTime;
 
+    @Override
+    public FilePaymentConsentDetails getInstance() {
+        return new FilePaymentConsentDetails();
+    }
+
     public void mapping(JsonObject consentDetails) {
 
         if (!consentDetails.has(OB_INTENT_OBJECT)) {

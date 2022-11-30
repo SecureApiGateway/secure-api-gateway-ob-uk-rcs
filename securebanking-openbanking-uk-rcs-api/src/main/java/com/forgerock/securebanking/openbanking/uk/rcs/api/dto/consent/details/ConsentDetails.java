@@ -58,6 +58,7 @@ public abstract class ConsentDetails {
     private String serviceProviderName; // (aisp, aspsp)
     private List<FRAccountWithBalance> accounts;
 
+    public abstract <T> T getInstance();
     public abstract IntentType getIntentType();
     public abstract void mapping(JsonObject consent);
     public String getDecisionApiUri() {

@@ -48,6 +48,11 @@ public class DomesticScheduledPaymentConsentDetails extends ConsentDetails {
     private FRAmount charges;
 
     @Override
+    public DomesticScheduledPaymentConsentDetails getInstance() {
+        return new DomesticScheduledPaymentConsentDetails();
+    }
+
+    @Override
     public void mapping(JsonObject consentDetails) {
 
         if (!consentDetails.has(OB_INTENT_OBJECT)) {

@@ -117,8 +117,8 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                 ApiClient apiClient = apiClientService.getApiClient(consentRequest.getClientId());
                 log.debug("ApiClient controller: " + apiClient);
                 log.debug("consent json controller: " + consent);
-                // consent details object by intent type
-                ConsentDetails consentDetailsToDisplay = consentDetailsFactory.getConsentDetails(intentType);
+                // consent details object thread safe instance by intent type
+                ConsentDetails consentDetailsToDisplay = consentDetailsFactory.getConsentDetailsInstance(intentType);
                 // the api provider name (aspsp, aisp), usually a bank
                 consentDetailsToDisplay.setServiceProviderName(apiProviderConfiguration.getName());
                 // the client Name (TPP name)

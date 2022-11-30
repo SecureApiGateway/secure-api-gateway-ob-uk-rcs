@@ -59,6 +59,11 @@ public class DomesticVrpPaymentConsentDetails extends ConsentDetails {
     private OBDomesticVRPControlParameters controlParameters;
 
     @Override
+    public DomesticVrpPaymentConsentDetails getInstance() {
+        return new DomesticVrpPaymentConsentDetails();
+    }
+
+    @Override
     public IntentType getIntentType() {
         return IntentType.DOMESTIC_VRP_PAYMENT_CONSENT;
     }

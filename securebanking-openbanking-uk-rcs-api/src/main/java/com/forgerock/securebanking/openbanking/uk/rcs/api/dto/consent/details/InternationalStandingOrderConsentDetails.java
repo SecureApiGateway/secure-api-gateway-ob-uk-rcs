@@ -51,6 +51,11 @@ public class InternationalStandingOrderConsentDetails extends ConsentDetails {
     private String paymentReference;
 
     @Override
+    public InternationalStandingOrderConsentDetails getInstance() {
+        return new InternationalStandingOrderConsentDetails();
+    }
+
+    @Override
     public void mapping(JsonObject consentDetails) {
 
         if (!consentDetails.has(OB_INTENT_OBJECT)) {

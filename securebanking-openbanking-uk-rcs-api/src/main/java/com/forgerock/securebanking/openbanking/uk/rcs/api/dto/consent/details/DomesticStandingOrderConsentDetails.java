@@ -47,6 +47,11 @@ public class DomesticStandingOrderConsentDetails extends ConsentDetails {
     private FRAmount charges;
 
     @Override
+    public DomesticStandingOrderConsentDetails getInstance() {
+        return new DomesticStandingOrderConsentDetails();
+    }
+
+    @Override
     public void mapping(JsonObject consentDetails) {
 
         if (!consentDetails.has(OB_INTENT_OBJECT)) {
