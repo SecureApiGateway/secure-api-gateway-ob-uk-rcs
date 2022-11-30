@@ -42,7 +42,6 @@ public class ConsentDetailsFactory {
      * @return a {@link ConsentDetails} instance
      */
     public ConsentDetails getConsentDetailsInstance(IntentType intentType){
-        // thread safe returning a consent details instance
         return this.consentDetailsEnumMap.get(intentType).getInstance();
     }
 }
