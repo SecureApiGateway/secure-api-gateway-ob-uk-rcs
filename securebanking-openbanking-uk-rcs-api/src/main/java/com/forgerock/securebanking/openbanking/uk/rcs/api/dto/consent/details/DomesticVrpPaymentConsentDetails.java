@@ -15,32 +15,31 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRExternalPermissionsCode;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRReadRefundAccount;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.vrp.FRWriteDomesticVrpDataInitiation;
 import com.forgerock.securebanking.platform.client.IntentType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.joda.time.DateTime;
-
-import java.util.List;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPControlParameters;
 
 /**
- * Models the consent data that is used for an account details request.
+ * Models the consent data for a domestic vrp payment.
  */
 @Data
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AccountsConsentDetails extends ConsentDetails {
+public class DomesticVrpPaymentConsentDetails extends ConsentDetails {
 
-    private List<FRExternalPermissionsCode> permissions;
-    private DateTime fromTransaction;
-    private DateTime toTransaction;
-    private DateTime expiredDate;
+    private FRWriteDomesticVrpDataInitiation initiation;
+    private FRReadRefundAccount readRefundAccount;
+    private OBDomesticVRPControlParameters controlParameters;
 
     @Override
     public IntentType getIntentType() {
-        return IntentType.ACCOUNT_ACCESS_CONSENT;
+        return IntentType.DOMESTIC_VRP_PAYMENT_CONSENT;
     }
 }
+

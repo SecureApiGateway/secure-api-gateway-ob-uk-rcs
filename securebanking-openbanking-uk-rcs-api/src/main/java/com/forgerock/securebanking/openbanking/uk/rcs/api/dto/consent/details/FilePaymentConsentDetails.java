@@ -15,14 +15,9 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAmount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteFileDataInitiation;
-import com.forgerock.securebanking.openbanking.uk.rcs.converters.FilePaymentConsentDetailsConverter;
 import com.forgerock.securebanking.platform.client.IntentType;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,10 +25,6 @@ import lombok.experimental.SuperBuilder;
 import org.joda.time.DateTime;
 
 import java.math.BigDecimal;
-import java.util.List;
-
-import static com.forgerock.securebanking.openbanking.uk.rcs.converters.FilePaymentConsentDetailsConverter.DATE_TIME_FORMATTER;
-import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConverter.isNotNull;
 
 /**
  * Models the consent data for a file payment.
@@ -44,11 +35,8 @@ import static com.forgerock.securebanking.openbanking.uk.rcs.converters.UtilConv
 @NoArgsConstructor
 public class FilePaymentConsentDetails extends ConsentDetails {
 
-    private FRWriteFileDataInitiation filePayment;
-    private List<FRAccountWithBalance> accounts;
+    private FRWriteFileDataInitiation fileDataInitiation;
     private FRAmount charges;
-    private String merchantName;
-    private String pispName;
     private DateTime expiredDate;
     private String fileReference;
     private FRAmount totalAmount;
@@ -57,54 +45,8 @@ public class FilePaymentConsentDetails extends ConsentDetails {
     private String paymentReference;
     private String requestedExecutionDateTime;
 
-    public void setFilePayment(FRWriteFileDataInitiation filePayment) {
-        this.filePayment = filePayment;
-    }
-
     @Override
     public IntentType getIntentType() {
         return IntentType.PAYMENT_FILE_CONSENT;
     }
-
-    public void setCharges(JsonArray charges) {
-        if (!isNotNull(charges)) {
-            this.charges = null;
-        } else {
-            this.charges = new FRAmount();
-            Double amount = 0.0;
-
-            for (JsonElement charge : charges) {
-                JsonObject chargeAmount = charge.getAsJsonObject().getAsJsonObject("Amount");
-                amount += chargeAmount.get("Amount").getAsDouble();
-            }
-
-            String currency = charges.get(0).getAsJsonObject().getAsJsonObject("Amount").get("Currency").getAsString();
-
-            this.charges.setAmount(amount.toString());
-            this.charges.setCurrency(currency);
-        }
-    }
-
-    public void setFilePayment(JsonElement numberOfTransactions, JsonElement controlSum, JsonElement requestedExecutionDateTime, JsonElement fileReference) {
-        FRWriteFileDataInitiation filePaymentData = new FRWriteFileDataInitiation();
-
-        if (isNotNull(numberOfTransactions)) {
-            filePaymentData.setNumberOfTransactions(numberOfTransactions.getAsString());
-        }
-
-        if (isNotNull(controlSum)) {
-            filePaymentData.setControlSum(controlSum.getAsBigDecimal());
-        }
-
-        if (isNotNull(requestedExecutionDateTime)) {
-            filePaymentData.setRequestedExecutionDateTime(FilePaymentConsentDetailsConverter.DATE_TIME_FORMATTER.parseDateTime(requestedExecutionDateTime.getAsString()));
-        }
-
-        if (isNotNull(fileReference)) {
-            filePaymentData.setFileReference(fileReference.getAsString());
-        }
-
-        this.filePayment = filePaymentData;
-    }
-
 }

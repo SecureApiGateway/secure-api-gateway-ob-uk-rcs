@@ -72,22 +72,6 @@ public class ConfigurationPropertiesClientTest {
         assertThat(configurationPropertiesClient.getContextsRepoConsent().get(DELETE)).isNotNull();
     }
 
-//    @Test
-//    public void shouldHaveAccountContextVerbProperties() {
-//        assertThat(configurationPropertiesClient.getContextsAccountsConsent().get(GET)).isNotNull();
-//        assertThat(configurationPropertiesClient.getContextsAccountsConsent().get(PUT)).isNotNull();
-//        assertThat(configurationPropertiesClient.getContextsAccountsConsent().get(PATCH)).isNotNull();
-//        assertThat(configurationPropertiesClient.getContextsAccountsConsent().get(DELETE)).isNotNull();
-//    }
-//
-//    @Test
-//    public void shouldHavePaymentContextVerbProperties() {
-//        assertThat(configurationPropertiesClient.getContextsDomesticPaymentConsent().get(GET)).isNotNull();
-//        assertThat(configurationPropertiesClient.getContextsDomesticPaymentConsent().get(PUT)).isNotNull();
-//        assertThat(configurationPropertiesClient.getContextsDomesticPaymentConsent().get(PATCH)).isNotNull();
-//        assertThat(configurationPropertiesClient.getContextsDomesticPaymentConsent().get(DELETE)).isNotNull();
-//    }
-
     @Test
     public void shouldHaveApiClientContextVerbProperties() {
         assertThat(configurationPropertiesClient.getContextsApiClient().get(GET)).isNotNull();

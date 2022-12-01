@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.openbanking.uk.rcs.converters;
+package com.forgerock.securebanking.openbanking.uk.rcs.json.utils;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-public class UtilConverter {
+public class JsonUtilValidation {
 
     public static final boolean isNotNull(JsonObject jsonObject) {
         if (jsonObject == null) {
