@@ -41,7 +41,7 @@ public class AccountConsentDetailsFactory implements ConsentDetailsFactory<Accou
     @Override
     public AccountsConsentDetails decode(JsonObject json) {
         requireNonNull(json, "decode(json) parameter 'json' cannot be null");
-        AccountsConsentDetails details = AccountsConsentDetails.builder().build();
+        AccountsConsentDetails details = new AccountsConsentDetails();
         if (!json.has(OB_INTENT_OBJECT)) {
             throw new IllegalStateException("Expected " + OB_INTENT_OBJECT + " field in json");
         } else {

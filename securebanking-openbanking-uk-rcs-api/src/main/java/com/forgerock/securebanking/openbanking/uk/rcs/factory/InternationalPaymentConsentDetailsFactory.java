@@ -42,7 +42,7 @@ public class InternationalPaymentConsentDetailsFactory implements ConsentDetails
     @Override
     public InternationalPaymentConsentDetails decode(JsonObject json) {
         requireNonNull(json, "decode(json) parameter 'json' cannot be null");
-        InternationalPaymentConsentDetails details = InternationalPaymentConsentDetails.builder().build();
+        InternationalPaymentConsentDetails details = new InternationalPaymentConsentDetails();
         if (!json.has(OB_INTENT_OBJECT)) {
             throw new IllegalStateException("Expected " + OB_INTENT_OBJECT + " field in json");
         } else {
@@ -99,7 +99,7 @@ public class InternationalPaymentConsentDetailsFactory implements ConsentDetails
     }
 
     private FRAmount decodeInstructedAmount(JsonObject instructedAmount) {
-        FRAmount frAmount = FRAmount.builder().build();
+        FRAmount frAmount = new FRAmount();
         frAmount.setAmount(
                 isNotNull(instructedAmount.get(AMOUNT)) ? instructedAmount.get(AMOUNT).getAsString() : null
         );
@@ -110,7 +110,7 @@ public class InternationalPaymentConsentDetailsFactory implements ConsentDetails
     }
 
     private FRAmount decodeCharges(JsonArray chargesArray, String currency, FRExchangeRateInformation rateInformation) {
-        FRAmount charges = FRAmount.builder().build();
+        FRAmount charges = new FRAmount();
         Double amount = 0.0;
 
         for (JsonElement charge : chargesArray) {
@@ -133,7 +133,7 @@ public class InternationalPaymentConsentDetailsFactory implements ConsentDetails
     }
 
     private FRExchangeRateInformation decodeExchangeRateInformation(JsonObject exchangeRateInformation) {
-        FRExchangeRateInformation rateInformation = FRExchangeRateInformation.builder().build();
+        FRExchangeRateInformation rateInformation = new FRExchangeRateInformation();
         rateInformation.setUnitCurrency(
                 isNotNull(exchangeRateInformation.get(UNIT_CURRENCY))
                         ? exchangeRateInformation.get(UNIT_CURRENCY).getAsString() : null

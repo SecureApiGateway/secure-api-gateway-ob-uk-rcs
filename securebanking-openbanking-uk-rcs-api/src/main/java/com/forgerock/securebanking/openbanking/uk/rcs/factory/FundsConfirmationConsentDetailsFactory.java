@@ -33,7 +33,7 @@ public class FundsConfirmationConsentDetailsFactory implements ConsentDetailsFac
     @Override
     public FundsConfirmationConsentDetails decode(JsonObject json) {
         requireNonNull(json, "decode(json) parameter 'json' cannot be null");
-        FundsConfirmationConsentDetails details = FundsConfirmationConsentDetails.builder().build();
+        FundsConfirmationConsentDetails details = new FundsConfirmationConsentDetails();
         log.warn("Funds Confirmation Consent Details 'decode' NOT IMPLEMENTED YET");
         return details;
     }

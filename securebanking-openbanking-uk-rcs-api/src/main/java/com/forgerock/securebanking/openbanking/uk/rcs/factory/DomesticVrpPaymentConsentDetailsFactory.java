@@ -50,7 +50,7 @@ public class DomesticVrpPaymentConsentDetailsFactory implements ConsentDetailsFa
     @Override
     public DomesticVrpPaymentConsentDetails decode(JsonObject json) {
         requireNonNull(json, "decode(json) parameter 'json' cannot be null");
-        DomesticVrpPaymentConsentDetails details = DomesticVrpPaymentConsentDetails.builder().build();
+        DomesticVrpPaymentConsentDetails details = new DomesticVrpPaymentConsentDetails();
         if (!json.has(OB_INTENT_OBJECT)) {
             throw new IllegalStateException("Expected " + OB_INTENT_OBJECT + " field in json");
         } else {

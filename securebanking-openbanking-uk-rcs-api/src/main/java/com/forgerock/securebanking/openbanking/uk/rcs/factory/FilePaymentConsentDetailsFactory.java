@@ -39,7 +39,7 @@ public class FilePaymentConsentDetailsFactory implements ConsentDetailsFactory<F
     @Override
     public FilePaymentConsentDetails decode(JsonObject json) {
         requireNonNull(json, "decode(json) parameter 'json' cannot be null");
-        FilePaymentConsentDetails details = FilePaymentConsentDetails.builder().build();
+        FilePaymentConsentDetails details = new FilePaymentConsentDetails();
         if (!json.has(OB_INTENT_OBJECT)) {
             throw new IllegalStateException("Expected " + OB_INTENT_OBJECT + " field in json");
         } else {
@@ -77,7 +77,7 @@ public class FilePaymentConsentDetailsFactory implements ConsentDetailsFactory<F
     }
 
     private FRAmount decodeCharges(JsonArray chargesArray) {
-        FRAmount charges = FRAmount.builder().build();
+        FRAmount charges = new FRAmount();
         Double amount = 0.0;
 
         for (JsonElement charge : chargesArray) {

@@ -40,7 +40,7 @@ public class InternationalStandingOrderConsentDetailsFactory implements ConsentD
     @Override
     public InternationalStandingOrderConsentDetails decode(JsonObject json) {
         requireNonNull(json, "decode(json) parameter 'json' cannot be null");
-        InternationalStandingOrderConsentDetails details = InternationalStandingOrderConsentDetails.builder().build();
+        InternationalStandingOrderConsentDetails details = new InternationalStandingOrderConsentDetails();
         if (!json.has(OB_INTENT_OBJECT)) {
             throw new IllegalStateException("Expected " + OB_INTENT_OBJECT + " field in json");
         } else {
@@ -94,7 +94,7 @@ public class InternationalStandingOrderConsentDetailsFactory implements ConsentD
     }
 
     private FRAmount decodeCharges(JsonArray chargesArray, String currency) {
-        FRAmount charges = FRAmount.builder().build();
+        FRAmount charges = new FRAmount();
         Double amount = 0.0;
 
         for (JsonElement charge : chargesArray) {

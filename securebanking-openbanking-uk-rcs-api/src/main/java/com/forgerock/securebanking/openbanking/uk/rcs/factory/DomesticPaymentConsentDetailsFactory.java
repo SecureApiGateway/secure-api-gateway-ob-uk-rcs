@@ -37,7 +37,7 @@ public class DomesticPaymentConsentDetailsFactory implements ConsentDetailsFacto
     @Override
     public DomesticPaymentConsentDetails decode(JsonObject json) {
         requireNonNull(json, "decode(json) parameter 'json' cannot be null");
-        DomesticPaymentConsentDetails details = DomesticPaymentConsentDetails.builder().build();
+        DomesticPaymentConsentDetails details = new DomesticPaymentConsentDetails();
         if (!json.has(OB_INTENT_OBJECT)) {
             throw new IllegalStateException("Expected " + OB_INTENT_OBJECT + " field in json");
         } else {
@@ -83,7 +83,7 @@ public class DomesticPaymentConsentDetailsFactory implements ConsentDetailsFacto
     }
 
     private FRAmount decodeCharges(JsonArray chargesArray, String currency) {
-        FRAmount charges = FRAmount.builder().build();
+        FRAmount charges = new FRAmount();
         Double amount = 0.0;
         for (JsonElement charge : chargesArray) {
             JsonObject chargeAmount = charge.getAsJsonObject().getAsJsonObject(AMOUNT);
@@ -95,7 +95,7 @@ public class DomesticPaymentConsentDetailsFactory implements ConsentDetailsFacto
     }
 
     private FRAmount decodeInstructedAmount(JsonObject instructedAmount) {
-        FRAmount frAmount = FRAmount.builder().build();
+        FRAmount frAmount = new FRAmount();
         frAmount.setAmount(
                 isNotNull(instructedAmount.get(AMOUNT)) ? instructedAmount.get(AMOUNT).getAsString() : null
         );

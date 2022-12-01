@@ -42,7 +42,7 @@ public class InternationalScheduledPaymentConsentDetailsFactory implements Conse
     @Override
     public InternationalScheduledPaymentConsentDetails decode(JsonObject json) {
         requireNonNull(json, "decode(json) parameter 'json' cannot be null");
-        InternationalScheduledPaymentConsentDetails details = InternationalScheduledPaymentConsentDetails.builder().build();
+        InternationalScheduledPaymentConsentDetails details = new InternationalScheduledPaymentConsentDetails();
         if (!json.has(OB_INTENT_OBJECT)) {
             throw new IllegalStateException("Expected " + OB_INTENT_OBJECT + " field in json");
         } else {
@@ -106,7 +106,7 @@ public class InternationalScheduledPaymentConsentDetailsFactory implements Conse
     }
 
     private FRAmount decodeInstructedAmount(JsonObject instructedAmount) {
-        FRAmount frAmount = FRAmount.builder().build();
+        FRAmount frAmount = new FRAmount();
         frAmount.setAmount(
                 isNotNull(instructedAmount.get(AMOUNT)) ? instructedAmount.get(AMOUNT).getAsString() : null
         );
@@ -117,7 +117,7 @@ public class InternationalScheduledPaymentConsentDetailsFactory implements Conse
     }
 
     private FRAmount decodeCharges(JsonArray chargesArray, String currency, FRExchangeRateInformation exchangeRateInformation) {
-        FRAmount charges = FRAmount.builder().build();
+        FRAmount charges = new FRAmount();
         Double amount = 0.0;
 
         for (JsonElement charge : chargesArray) {
@@ -140,7 +140,7 @@ public class InternationalScheduledPaymentConsentDetailsFactory implements Conse
     }
 
     private FRExchangeRateInformation decodeExchangeRateInformation(JsonObject exchangeRateInformation) {
-        FRExchangeRateInformation frExchangeRateInformation = FRExchangeRateInformation.builder().build();
+        FRExchangeRateInformation frExchangeRateInformation = new FRExchangeRateInformation();
         frExchangeRateInformation.setUnitCurrency(
                 isNotNull(exchangeRateInformation.get(UNIT_CURRENCY))
                         ? exchangeRateInformation.get(UNIT_CURRENCY).getAsString()
