@@ -15,8 +15,8 @@
  */
 package com.forgerock.securebanking.platform.client.exceptions;
 
-import com.forgerock.securebanking.platform.client.models.ConsentDecision;
-import com.forgerock.securebanking.platform.client.models.ConsentRequest;
+import com.forgerock.securebanking.platform.client.models.ConsentClientDecisionRequest;
+import com.forgerock.securebanking.platform.client.models.ConsentClientDetailsRequest;
 
 /**
  * Generic Client Cloud exception object
@@ -25,7 +25,7 @@ public class ExceptionClient extends Exception {
 
     ErrorClient errorClient;
 
-    public ExceptionClient(ConsentDecision consentDecision) {
+    public ExceptionClient(ConsentClientDecisionRequest consentDecision) {
         super(ErrorType.INTERNAL_SERVER_ERROR.getDescription());
         this.errorClient = ErrorClient.builder()
                 .errorType(ErrorType.INTERNAL_SERVER_ERROR)
@@ -33,7 +33,7 @@ public class ExceptionClient extends Exception {
                 .build();
     }
 
-    public ExceptionClient(ConsentRequest consentRequest) {
+    public ExceptionClient(ConsentClientDetailsRequest consentRequest) {
         super(ErrorType.INTERNAL_SERVER_ERROR.getDescription());
         this.errorClient = ErrorClient.builder()
                 .errorType(ErrorType.INTERNAL_SERVER_ERROR)
@@ -43,7 +43,7 @@ public class ExceptionClient extends Exception {
                 .build();
     }
 
-    public ExceptionClient(ConsentRequest consentRequest, ErrorType errorType) {
+    public ExceptionClient(ConsentClientDetailsRequest consentRequest, ErrorType errorType) {
         super(errorType != null ? errorType.getDescription() : ErrorType.INTERNAL_SERVER_ERROR.getDescription());
         this.errorClient = ErrorClient.builder()
                 .errorType(errorType != null ? errorType : ErrorType.INTERNAL_SERVER_ERROR)
@@ -53,7 +53,7 @@ public class ExceptionClient extends Exception {
                 .build();
     }
 
-    public ExceptionClient(ConsentDecision consentDecision, ErrorType errorType) {
+    public ExceptionClient(ConsentClientDecisionRequest consentDecision, ErrorType errorType) {
         super(errorType != null ? errorType.getDescription() : ErrorType.INTERNAL_SERVER_ERROR.getDescription());
         this.errorClient = ErrorClient.builder()
                 .errorType(errorType != null ? errorType : ErrorType.INTERNAL_SERVER_ERROR)
@@ -61,7 +61,7 @@ public class ExceptionClient extends Exception {
                 .build();
     }
 
-    public ExceptionClient(ConsentRequest consentRequest, ErrorType errorType, String message) {
+    public ExceptionClient(ConsentClientDetailsRequest consentRequest, ErrorType errorType, String message) {
         super(message);
         this.errorClient = ErrorClient.builder()
                 .errorType(errorType != null ? errorType : ErrorType.INTERNAL_SERVER_ERROR)
@@ -71,7 +71,7 @@ public class ExceptionClient extends Exception {
                 .build();
     }
 
-    public ExceptionClient(ConsentDecision consentDecision, ErrorType errorType, String message) {
+    public ExceptionClient(ConsentClientDecisionRequest consentDecision, ErrorType errorType, String message) {
         super(message);
         this.errorClient = ErrorClient.builder()
                 .errorType(errorType != null ? errorType : ErrorType.INTERNAL_SERVER_ERROR)
@@ -79,7 +79,7 @@ public class ExceptionClient extends Exception {
                 .build();
     }
 
-    public ExceptionClient(ConsentRequest consentRequest, ErrorType errorType, String message, Exception exception) {
+    public ExceptionClient(ConsentClientDetailsRequest consentRequest, ErrorType errorType, String message, Exception exception) {
         super(message, exception);
         this.errorClient = ErrorClient.builder()
                 .errorType(errorType != null ? errorType : ErrorType.INTERNAL_SERVER_ERROR)
@@ -89,7 +89,7 @@ public class ExceptionClient extends Exception {
                 .build();
     }
 
-    public ExceptionClient(ConsentDecision consentDecision, ErrorType errorType, String message, Exception exception) {
+    public ExceptionClient(ConsentClientDecisionRequest consentDecision, ErrorType errorType, String message, Exception exception) {
         super(message, exception);
         this.errorClient = ErrorClient.builder()
                 .errorType(errorType != null ? errorType : ErrorType.INTERNAL_SERVER_ERROR)

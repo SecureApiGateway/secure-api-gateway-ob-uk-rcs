@@ -20,8 +20,8 @@ import com.forgerock.securebanking.platform.client.configuration.ConfigurationPr
 import com.forgerock.securebanking.platform.client.exceptions.ErrorClient;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
-import com.forgerock.securebanking.platform.client.models.ConsentDecision;
-import com.forgerock.securebanking.platform.client.models.ConsentRequest;
+import com.forgerock.securebanking.platform.client.models.ConsentClientDecisionRequest;
+import com.forgerock.securebanking.platform.client.models.ConsentClientDetailsRequest;
 import com.forgerock.securebanking.platform.client.utils.url.UrlContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -56,7 +56,7 @@ public class ConsentService implements ConsentServiceInterface {
     }
 
     @Override
-    public JsonObject getConsent(ConsentRequest consentRequest) throws ExceptionClient {
+    public JsonObject getConsent(ConsentClientDetailsRequest consentRequest) throws ExceptionClient {
         log.debug("Received a consent request with JWT: '{}'", consentRequest.getConsentRequestJwtString());
         String intentId = consentRequest.getIntentId();
         log.debug("=> The consent detailsRequest id: '{}'", intentId);
@@ -83,11 +83,11 @@ public class ConsentService implements ConsentServiceInterface {
     }
 
     @Override
-    public JsonObject updateConsent(ConsentDecision consentDecision) throws ExceptionClient {
+    public JsonObject updateConsent(ConsentClientDecisionRequest consentDecision) throws ExceptionClient {
         String intendId = consentDecision.getIntentId();
         log.debug("Received an request to update the consent: '{}'", consentDecision);
         log.debug("=> The owner id: '{}'", consentDecision.getResourceOwnerUsername());
-        HttpEntity<ConsentDecision> requestEntity = new HttpEntity<>(consentDecision, getHeaders());
+        HttpEntity<ConsentClientDecisionRequest> requestEntity = new HttpEntity<>(consentDecision, getHeaders());
         JsonObject consentDetails = request(intendId, PATCH, requestEntity);
         return consentDetails;
     }

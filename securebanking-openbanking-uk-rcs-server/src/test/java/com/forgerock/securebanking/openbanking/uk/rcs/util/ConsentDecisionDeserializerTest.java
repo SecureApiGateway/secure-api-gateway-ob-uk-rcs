@@ -17,7 +17,7 @@ package com.forgerock.securebanking.openbanking.uk.rcs.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
-import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision.ConsentDecisionRequest;
+import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision.ConsentDecisionDeserialized;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,10 +30,10 @@ public class ConsentDecisionDeserializerTest {
     @Test
     public void shouldDeserializeConsent() throws OBErrorException {
 
-        ConsentDecisionRequest result = ConsentDecisionDeserializer.deserializeConsentDecision(
+        ConsentDecisionDeserialized result = ConsentDecisionDeserializer.deserializeConsentDecision(
                 aValidConsentDecisionSerialised(),
                 new ObjectMapper(),
-                ConsentDecisionRequest.class);
+                ConsentDecisionDeserialized.class);
 
         assertThat(result.getAccountIds()).isNotNull();
         assertThat(result.getAccountIds().size()).isEqualTo(3);

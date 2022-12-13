@@ -23,9 +23,11 @@ import static com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType.RCS
 
 public class ConsentDecisionDeserializer {
 
-    public static <T> T deserializeConsentDecision(String consentDecisionSerialised,
-                                                   ObjectMapper objectMapper,
-                                                   Class<T> consentClass) throws OBErrorException {
+    public static <T> T deserializeConsentDecision(
+            String consentDecisionSerialised,
+            ObjectMapper objectMapper,
+            Class<T> consentClass
+    ) throws OBErrorException {
         try {
             return objectMapper.readValue(consentDecisionSerialised, consentClass);
         } catch (JsonProcessingException e) {

@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.openbanking.uk.rcs.factory;
+package com.forgerock.securebanking.openbanking.uk.rcs.factory.details;
 
-import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.*;
+import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetails;
+import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants;
 import com.forgerock.securebanking.platform.client.IntentType;
 import com.google.gson.JsonObject;
 import org.junit.jupiter.api.extension.ExtendWith;

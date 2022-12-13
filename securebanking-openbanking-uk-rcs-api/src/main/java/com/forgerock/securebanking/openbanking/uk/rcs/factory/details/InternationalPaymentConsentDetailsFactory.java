@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.openbanking.uk.rcs.factory;
+package com.forgerock.securebanking.openbanking.uk.rcs.factory.details;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAmount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRExchangeRateInformation;
-import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.InternationalScheduledPaymentConsentDetails;
+import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.InternationalPaymentConsentDetails;
 import com.forgerock.securebanking.platform.client.IntentType;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -34,15 +34,15 @@ import static com.forgerock.securebanking.platform.client.services.ConsentServic
 import static java.util.Objects.requireNonNull;
 
 /**
- * International Scheduled Payment consent details factory implements {@link ConsentDetailsFactory}
+ * International Payment consent details factory implements {@link ConsentDetailsFactory}
  */
 @Component
-public class InternationalScheduledPaymentConsentDetailsFactory implements ConsentDetailsFactory<InternationalScheduledPaymentConsentDetails> {
+public class InternationalPaymentConsentDetailsFactory implements ConsentDetailsFactory<InternationalPaymentConsentDetails> {
 
     @Override
-    public InternationalScheduledPaymentConsentDetails decode(JsonObject json) {
+    public InternationalPaymentConsentDetails decode(JsonObject json) {
         requireNonNull(json, "decode(json) parameter 'json' cannot be null");
-        InternationalScheduledPaymentConsentDetails details = new InternationalScheduledPaymentConsentDetails();
+        InternationalPaymentConsentDetails details = new InternationalPaymentConsentDetails();
         if (!json.has(OB_INTENT_OBJECT)) {
             throw new IllegalStateException("Expected " + OB_INTENT_OBJECT + " field in json");
         } else {
@@ -61,8 +61,7 @@ public class InternationalScheduledPaymentConsentDetailsFactory implements Conse
                     JsonObject initiation = data.getAsJsonObject(INITIATION);
 
                     details.setPaymentReference(
-                            isNotNull(initiation.get(REMITTANCE_INFORMATION)) &&
-                                    isNotNull(initiation.getAsJsonObject(REMITTANCE_INFORMATION).get(REFERENCE))
+                            isNotNull(initiation.get(REMITTANCE_INFORMATION)) && isNotNull(initiation.getAsJsonObject(REMITTANCE_INFORMATION).get(REFERENCE))
                                     ? initiation.getAsJsonObject(REMITTANCE_INFORMATION).get(REFERENCE).getAsString()
                                     : null
                     );
@@ -70,12 +69,6 @@ public class InternationalScheduledPaymentConsentDetailsFactory implements Conse
                     details.setCurrencyOfTransfer(
                             isNotNull(initiation.get(CURRENCY_OF_TRANSFER))
                                     ? initiation.get(CURRENCY_OF_TRANSFER).getAsString()
-                                    : null
-                    );
-
-                    details.setPaymentDate(
-                            isNotNull(initiation.get(REQUESTED_EXECUTION_DATETIME))
-                                    ? Instant.parse(initiation.get(REQUESTED_EXECUTION_DATETIME).getAsString()).toDateTime()
                                     : null
                     );
 
@@ -102,7 +95,7 @@ public class InternationalScheduledPaymentConsentDetailsFactory implements Conse
 
     @Override
     public IntentType getIntentType() {
-        return IntentType.PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT;
+        return IntentType.PAYMENT_INTERNATIONAL_CONSENT;
     }
 
     private FRAmount decodeInstructedAmount(JsonObject instructedAmount) {
@@ -116,18 +109,18 @@ public class InternationalScheduledPaymentConsentDetailsFactory implements Conse
         return frAmount;
     }
 
-    private FRAmount decodeCharges(JsonArray chargesArray, String currency, FRExchangeRateInformation exchangeRateInformation) {
+    private FRAmount decodeCharges(JsonArray chargesArray, String currency, FRExchangeRateInformation rateInformation) {
         FRAmount charges = new FRAmount();
         Double amount = 0.0;
 
         for (JsonElement charge : chargesArray) {
-            JsonObject chargeAmount = charge.getAsJsonObject().getAsJsonObject("Amount");
+            JsonObject chargeAmount = charge.getAsJsonObject().getAsJsonObject(AMOUNT);
             if (chargeAmount.get(CURRENCY).getAsString().equals(currency)) {
                 amount += chargeAmount.get(AMOUNT).getAsDouble();
             } else {
-                if (exchangeRateInformation.getExchangeRate() != null) {
+                if (rateInformation != null) {
                     amount += chargeAmount.get(AMOUNT).getAsDouble() *
-                            exchangeRateInformation.getExchangeRate().doubleValue();
+                            rateInformation.getExchangeRate().doubleValue();
                 } else {
                     throw new IllegalArgumentException("Exchange Rate value is missing");
                 }
@@ -140,38 +133,35 @@ public class InternationalScheduledPaymentConsentDetailsFactory implements Conse
     }
 
     private FRExchangeRateInformation decodeExchangeRateInformation(JsonObject exchangeRateInformation) {
-        FRExchangeRateInformation frExchangeRateInformation = new FRExchangeRateInformation();
-        frExchangeRateInformation.setUnitCurrency(
+        FRExchangeRateInformation rateInformation = new FRExchangeRateInformation();
+        rateInformation.setUnitCurrency(
                 isNotNull(exchangeRateInformation.get(UNIT_CURRENCY))
-                        ? exchangeRateInformation.get(UNIT_CURRENCY).getAsString()
-                        : null
+                        ? exchangeRateInformation.get(UNIT_CURRENCY).getAsString() : null
         );
         String exchangeRate = isNotNull(exchangeRateInformation.get(EXCHANGE_RATE))
-                ? exchangeRateInformation.get(EXCHANGE_RATE).getAsString()
-                : null;
+                ? exchangeRateInformation.get(EXCHANGE_RATE).getAsString() : null;
         if (isNotNull(exchangeRate)) {
             try {
                 BigDecimal exchangeRateBigDecimal = new BigDecimal(exchangeRate);
-                frExchangeRateInformation.setExchangeRate(exchangeRateBigDecimal);
+                rateInformation.setExchangeRate(exchangeRateBigDecimal);
             } catch (NumberFormatException e) {
-                log.error("(InternationalScheduledPaymentConsentDetails) the exchange rate couldn't be set");
+                log.error("(InternationalPaymentConsentDetails) the exchange rate couldn't be set");
             }
         }
-        frExchangeRateInformation.setRateType(
+        rateInformation.setRateType(
                 isNotNull(exchangeRateInformation.get(RATE_TYPE))
                         ? FRExchangeRateInformation.FRRateType.fromValue(exchangeRateInformation.get(RATE_TYPE).getAsString())
                         : null
         );
-        frExchangeRateInformation.setContractIdentification(
+        rateInformation.setContractIdentification(
                 isNotNull(exchangeRateInformation.get(CONTRACT_IDENTIFICATION))
                         ? exchangeRateInformation.get(CONTRACT_IDENTIFICATION).getAsString()
-                        : null
-        );
-        frExchangeRateInformation.setExpirationDateTime(
+                        : null);
+        rateInformation.setExpirationDateTime(
                 isNotNull(exchangeRateInformation.get(EXPIRATION_DATETIME))
                         ? Instant.parse(exchangeRateInformation.get(EXPIRATION_DATETIME).getAsString()).toDateTime()
                         : null
         );
-        return frExchangeRateInformation;
+        return rateInformation;
     }
 }

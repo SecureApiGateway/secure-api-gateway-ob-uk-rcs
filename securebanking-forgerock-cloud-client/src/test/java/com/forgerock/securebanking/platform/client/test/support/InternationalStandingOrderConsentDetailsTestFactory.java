@@ -23,7 +23,6 @@ import com.google.gson.JsonParser;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
-import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -57,8 +56,6 @@ public class InternationalStandingOrderConsentDetailsTestFactory {
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", randomUUID().toString());
         consent.addProperty("oauth2ClientName", "PISP Name");
-        consent.addProperty("accountIds", gson.toJson(List.of(UUID.randomUUID().toString())));
-
         return consent;
     }
 
@@ -71,8 +68,6 @@ public class InternationalStandingOrderConsentDetailsTestFactory {
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", clientId);
         consent.addProperty("oauth2ClientName", "PISP Name");
-        consent.addProperty("accountIds", gson.toJson(List.of(UUID.randomUUID().toString())));
-
         return consent;
     }
 

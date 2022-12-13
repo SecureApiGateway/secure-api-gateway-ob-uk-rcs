@@ -13,18 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.openbanking.uk.rcs.converters.general;
+package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision;
 
-import org.modelmapper.ModelMapper;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRFinancialAccount;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-public interface Converter {
+import java.util.List;
 
-    String getTypeMapName();
-
-    ModelMapper getModelMapper();
-
-    void configuration(ModelMapper modelMapper);
-
-    void mapping(ModelMapper modelMapper);
-
+/**
+ * Represents the PSU consent decision.
+ */
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class ConsentDecisionDeserialized {
+    private String consentJwt;
+    private String decision;
+    private List<String> accountIds;
+    private FRFinancialAccount debtorAccount;
 }

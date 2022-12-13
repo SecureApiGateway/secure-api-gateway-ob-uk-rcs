@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.openbanking.uk.rcs.factory;
+package com.forgerock.securebanking.openbanking.uk.rcs.factory.details;
 
 import com.forgerock.securebanking.platform.client.IntentType;
 import lombok.extern.slf4j.Slf4j;
@@ -34,12 +34,12 @@ public class ConsentDetailsFactoryProvider {
 
     /**
      * Spring populates the list with all known objects of type {@link ConsentDetailsFactory} annotated as {@link Component}
-     * @param ConsentDetailsFactoryList a list of type {@link ConsentDetailsFactory}
+     * @param consentDetailsFactoryList a list of type {@link ConsentDetailsFactory}
      */
     @Autowired
-    public ConsentDetailsFactoryProvider(List<ConsentDetailsFactory> ConsentDetailsFactoryList) {
+    public ConsentDetailsFactoryProvider(List<ConsentDetailsFactory> consentDetailsFactoryList) {
         this.consentDetailsFactories = new EnumMap<>(IntentType.class);
-        for (ConsentDetailsFactory consentDetailsFactory : ConsentDetailsFactoryList) {
+        for (ConsentDetailsFactory consentDetailsFactory : consentDetailsFactoryList) {
             this.consentDetailsFactories.put(consentDetailsFactory.getIntentType(), consentDetailsFactory);
             log.debug(
                     "ConsentDetailsFactory {}:{} added to {}",

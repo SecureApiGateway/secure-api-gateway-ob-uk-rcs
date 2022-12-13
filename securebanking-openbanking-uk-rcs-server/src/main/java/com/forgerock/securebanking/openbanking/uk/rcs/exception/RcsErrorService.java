@@ -120,6 +120,11 @@ public class RcsErrorService {
                     .body(RedirectionAction.builder()
                             .consentJwt(consentContextJwt)
                             .redirectUri(uriComponents.toUriString())
+                            .errorMessage(
+                                    invalidConsentException.getErrorType() != null ?
+                                            invalidConsentException.getErrorType().getDescription() :
+                                            null
+                            )
                             .requestMethod(HttpMethod.GET)
                             .build());
         } catch (Exception e) {

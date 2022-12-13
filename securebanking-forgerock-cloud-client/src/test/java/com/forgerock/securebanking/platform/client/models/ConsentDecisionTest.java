@@ -34,7 +34,7 @@ import java.util.UUID;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 /**
- * Unit Test for {@link ConsentDecision}
+ * Unit Test for {@link ConsentClientDecisionRequest}
  */
 @Slf4j
 public class ConsentDecisionTest {
@@ -61,7 +61,7 @@ public class ConsentDecisionTest {
         String json = getJsonAccounts();
 
         // When
-        ConsentDecision consentDecision = mapper.readValue(json, ConsentDecision.class);
+        ConsentClientDecisionRequest consentDecision = mapper.readValue(json, ConsentClientDecisionRequest.class);
 
         // Then
         assertThat(consentDecision).isNotNull();
@@ -75,7 +75,7 @@ public class ConsentDecisionTest {
         String json = getJsonPayments();
 
         // When
-        ConsentDecision consentDecision = mapper.readValue(json, ConsentDecision.class);
+        ConsentClientDecisionRequest consentDecision = mapper.readValue(json, ConsentClientDecisionRequest.class);
 
         // Then
         assertThat(consentDecision).isNotNull();
@@ -89,10 +89,10 @@ public class ConsentDecisionTest {
     public void shouldSerializeAccounts() throws JsonProcessingException {
         // Given
 
-        ConsentDecision consentDecision = ConsentDecision.builder()
+        ConsentClientDecisionRequest consentDecision = ConsentClientDecisionRequest.builder()
                 .data(
-                        ConsentDecisionData.builder()
-                                .status(Constants.ConsentDecision.AUTHORISED)
+                        ConsentClientDecisionRequestData.builder()
+                                .status(Constants.ConsentDecisionStatus.AUTHORISED)
                                 .build()
                 ).accountIds(List.of("12345", "67890"))
                 .resourceOwnerUsername(USER_ID)
@@ -104,17 +104,17 @@ public class ConsentDecisionTest {
 
         // Then
         assertThat(json).containsPattern("\"resourceOwnerUsername\".:.\"" + USER_ID + "\"");
-        assertThat(json).containsPattern("\"Status\".:.\"" + Constants.ConsentDecision.AUTHORISED + "\"");
+        assertThat(json).containsPattern("\"Status\".:.\"" + Constants.ConsentDecisionStatus.AUTHORISED + "\"");
     }
 
     @Test
     public void shouldSerializePayments() throws JsonProcessingException {
         // Given
 
-        ConsentDecision consentDecision = ConsentDecision.builder()
+        ConsentClientDecisionRequest consentDecision = ConsentClientDecisionRequest.builder()
                 .data(
-                        ConsentDecisionData.builder()
-                                .status(Constants.ConsentDecision.AUTHORISED)
+                        ConsentClientDecisionRequestData.builder()
+                                .status(Constants.ConsentDecisionStatus.AUTHORISED)
                                 .debtorAccount(FRAccountIdentifier.builder()
                                         .identification(DEB_ACC_IDENTIFIER)
                                         .name("name")
@@ -133,7 +133,7 @@ public class ConsentDecisionTest {
 
         // Then
         assertThat(json).containsPattern("\"resourceOwnerUsername\".:.\"" + USER_ID + "\"");
-        assertThat(json).containsPattern("\"Status\".:.\"" + Constants.ConsentDecision.AUTHORISED + "\"");
+        assertThat(json).containsPattern("\"Status\".:.\"" + Constants.ConsentDecisionStatus.AUTHORISED + "\"");
         assertThat(json).containsPattern("\"identification\".:.\"" + DEB_ACC_IDENTIFIER + "\"");
     }
 
@@ -147,9 +147,9 @@ public class ConsentDecisionTest {
 
     private String getJsonAccounts(String userId) {
         return "{" +
-                "\"type\" : \"ConsentDecision\"," +
+                "\"type\" : \"ConsentClientDecisionRequest\"," +
                 "\"data\" : {" +
-                "\"Status\" : \"" + Constants.ConsentDecision.AUTHORISED + "\"" +
+                "\"Status\" : \"" + Constants.ConsentDecisionStatus.AUTHORISED + "\"" +
                 "}," +
                 "\"accountIds\" : [ \"" + ACCOUNT_ID + "\" ]," +
                 "\"resourceOwnerUsername\" : \"" + userId + "\"" +
@@ -158,9 +158,9 @@ public class ConsentDecisionTest {
 
     private String getJsonPayments(String userId) {
         return "{" +
-                "\"type\" : \"ConsentDecision\"," +
+                "\"type\" : \"ConsentClientDecisionRequest\"," +
                 "\"data\" : {" +
-                "\"Status\" : \"" + Constants.ConsentDecision.AUTHORISED + "\"," +
+                "\"Status\" : \"" + Constants.ConsentDecisionStatus.AUTHORISED + "\"," +
                 "\"debtorAccount\": {" +
                 "\"schemeName\": \"UK.OBIE.SortCodeAccountNumber\"," +
                 "\"identification\": \"" + DEB_ACC_IDENTIFIER + "\"," +
