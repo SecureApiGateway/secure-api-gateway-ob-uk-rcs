@@ -15,6 +15,8 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.factory.decision;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRFinancialAccount;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision.ConsentDecisionDeserialized;
 import com.forgerock.securebanking.openbanking.uk.rcs.mapper.decision.ConsentDecisionMapper;
 import com.forgerock.securebanking.platform.client.Constants;
@@ -28,20 +30,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 
-import static com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory.aValidAccountConsentDetails;
-import static com.forgerock.securebanking.platform.client.test.support.ConsentDecisionRequestTestDataFactory.aValidAccountConsentClientDecisionRequest;
-import static com.forgerock.securebanking.platform.client.test.support.DomesticPaymentConsentDetailsTestFactory.aValidDomesticPaymentConsentDetails;
-import static com.forgerock.securebanking.platform.client.test.support.DomesticScheduledPaymentConsentDetailsTestFactory.aValidDomesticScheduledPaymentConsentDetails;
-import static com.forgerock.securebanking.platform.client.test.support.DomesticStandingOrderConsentDetailsTestFactory.aValidDomesticStandingOrderConsentDetails;
-import static com.forgerock.securebanking.platform.client.test.support.DomesticVrpPaymentConsentDetailsTestFactory.aValidDomesticVrpPaymentConsentDetails;
-import static com.forgerock.securebanking.platform.client.test.support.FilePaymentConsentDetailsTestFactory.aValidFilePaymentConsentDetails;
-import static com.forgerock.securebanking.platform.client.test.support.InternationalPaymentConsentDetailsTestFactory.aValidInternationalPaymentConsentDetails;
-import static com.forgerock.securebanking.platform.client.test.support.InternationalScheduledPaymentConsentDetailsTestFactory.aValidInternationalScheduledPaymentConsentDetails;
-import static com.forgerock.securebanking.platform.client.test.support.InternationalStandingOrderConsentDetailsTestFactory.aValidInternationalStandingOrderConsentDetails;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Unit test for {@link ConsentDecisionMapper} factories
+ * Unit test for {@link ConsentDecisionMapper}
  */
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
@@ -56,10 +48,18 @@ public class ConsentDecisionMapperTest {
     @Test
     public void shouldMapConsentDecisionDeserializedToConsentClientDecisionRequest() {
         // Given
-        ConsentDecisionDeserialized consentDecisionDeserialized =ConsentDecisionDeserialized.builder()
+        FRAccountIdentifier accountIdentifier = new FRAccountIdentifier();
+        accountIdentifier.setIdentification("76064512389965");
+        accountIdentifier.setName("John");
+        accountIdentifier.setSchemeName("UK.OBIE.SortCodeAccountNumber");
+        FRFinancialAccount financialAccount = new FRFinancialAccount();
+        financialAccount.setAccounts(List.of(accountIdentifier));
+        financialAccount.setAccountId("30ff5da7-7d0f-43fe-974c-7b34717cbeec");
+        ConsentDecisionDeserialized consentDecisionDeserialized = ConsentDecisionDeserialized.builder()
                 .accountIds(List.of("account1", "account2"))
                 .consentJwt("asfdasdfasdf")
                 .decision(Constants.ConsentDecisionStatus.AUTHORISED)
+                .debtorAccount(financialAccount)
                 .build();
 
         // When
@@ -69,7 +69,7 @@ public class ConsentDecisionMapperTest {
         assertThat(consentClientDecisionRequest.getAccountIds()).containsExactlyElementsOf(
                 consentDecisionDeserialized.getAccountIds()
         );
-
+        assertThat(consentClientDecisionRequest.getData().getDebtorAccount()).isEqualTo(accountIdentifier);
         assertThat(consentClientDecisionRequest.getConsentJwt()).isEqualTo(consentDecisionDeserialized.getConsentJwt());
     }
 }
