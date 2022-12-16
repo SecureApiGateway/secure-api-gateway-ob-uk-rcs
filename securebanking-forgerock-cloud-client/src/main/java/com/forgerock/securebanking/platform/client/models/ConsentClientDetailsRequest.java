@@ -15,19 +15,32 @@
  */
 package com.forgerock.securebanking.platform.client.models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
+import com.nimbusds.jwt.SignedJWT;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
+import java.util.List;
+
+/**
+ * Represents the required information to provide the details of a consent.
+ */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
-public class ConsentDecisionData {
-    @JsonProperty("Status")
-    private String status;
-    private FRAccountIdentifier debtorAccount;
+@AllArgsConstructor
+public class ConsentClientDetailsRequest {
+    public String intentId;
+    protected SignedJWT consentRequestJwt;
+    protected User user;
+    protected String clientId;
+    List<FRAccountWithBalance> accounts;
+
+    public List<FRAccountWithBalance> getAccounts() {
+        return accounts;
+    }
+
+    public String getConsentRequestJwtString() {
+        return consentRequestJwt.getParsedString();
+    }
 }

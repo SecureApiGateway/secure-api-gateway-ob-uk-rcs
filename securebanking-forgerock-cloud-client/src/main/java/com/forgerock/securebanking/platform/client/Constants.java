@@ -29,7 +29,7 @@ public class Constants {
         public static final String CLAIMS = "claims";
     }
 
-    public static class ConsentDecision {
+    public static class ConsentDecisionStatus {
         public static final String AUTHORISED = "Authorised";
         public static final String REJECTED = "Rejected";
         public static final String REVOKED = "Revoked";

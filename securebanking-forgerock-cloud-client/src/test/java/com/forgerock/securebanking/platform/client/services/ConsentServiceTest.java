@@ -17,7 +17,7 @@ package com.forgerock.securebanking.platform.client.services;
 
 import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
-import com.forgerock.securebanking.platform.client.models.ConsentRequest;
+import com.forgerock.securebanking.platform.client.models.ConsentClientDetailsRequest;
 import com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory;
 import com.forgerock.securebanking.platform.client.test.support.ConsentDetailsRequestTestDataFactory;
 import com.google.gson.JsonObject;
@@ -42,7 +42,7 @@ public class ConsentServiceTest extends BaseServiceClientTest {
     @Test
     public void shouldGetConsentDetails() throws ExceptionClient {
         // Given
-        ConsentRequest consentRequest = ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest();
+        ConsentClientDetailsRequest consentRequest = ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest();
         JsonObject details = AccountAccessConsentDetailsTestFactory.aValidAccountConsentDetails(consentRequest.getIntentId());
         details.addProperty("oauth2ClientId", consentRequest.getClientId());
         when(restTemplate.exchange(
@@ -64,7 +64,7 @@ public class ConsentServiceTest extends BaseServiceClientTest {
     @Test
     public void shouldGetInvalidRequestConsentDetails() {
         // Given
-        ConsentRequest ConsentRequest = ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest();
+        ConsentClientDetailsRequest ConsentRequest = ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest();
         JsonObject consentDetails = AccountAccessConsentDetailsTestFactory.aValidAccountConsentDetails(ConsentRequest.getIntentId());
         when(restTemplate.exchange(
                         anyString(),
@@ -86,7 +86,7 @@ public class ConsentServiceTest extends BaseServiceClientTest {
     @Test
     public void shouldGetNotFoundConsentDetails() {
         // Given
-        ConsentRequest ConsentRequest = ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest();
+        ConsentClientDetailsRequest ConsentRequest = ConsentDetailsRequestTestDataFactory.aValidAccountConsentDetailsRequest();
         when(restTemplate.exchange(
                         anyString(),
                         eq(GET),

@@ -16,8 +16,8 @@
 package com.forgerock.securebanking.platform.client.services;
 
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
-import com.forgerock.securebanking.platform.client.models.ConsentDecision;
-import com.forgerock.securebanking.platform.client.models.ConsentRequest;
+import com.forgerock.securebanking.platform.client.models.ConsentClientDecisionRequest;
+import com.forgerock.securebanking.platform.client.models.ConsentClientDetailsRequest;
 import com.google.gson.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,18 +31,18 @@ public interface ConsentServiceInterface {
     /**
      * Retrieves the specific consent for the type of the consent from the platform.
      *
-     * @param ConsentRequest A {@link ConsentRequest} containing the required information to provide the consent details.
+     * @param ConsentRequest A {@link ConsentClientDetailsRequest} containing the required information to provide the consent details.
      * @return The underlying Consent, depending on the type of the consent.
      * @throws ExceptionClient if an error occurs.
      */
-    JsonObject getConsent(ConsentRequest ConsentRequest) throws ExceptionClient;
+    JsonObject getConsent(ConsentClientDetailsRequest ConsentRequest) throws ExceptionClient;
 
     /**
-     * Update the specific {@link ConsentDecision} for the type of the consent on the platform.
+     * Update the specific {@link ConsentClientDecisionRequest} for the type of the consent on the platform.
      *
-     * @param consentDecision A {@link ConsentDecision} containing the required information to provide the consent details.
+     * @param consentDecision A {@link ConsentClientDecisionRequest} containing the required information to provide the consent details.
      * @return The underlying Consent, depending on the type of the consent.
      * @throws ExceptionClient if an error occurs.
      */
-    JsonObject updateConsent(ConsentDecision consentDecision) throws ExceptionClient;
+    JsonObject updateConsent(ConsentClientDecisionRequest consentDecision) throws ExceptionClient;
 }

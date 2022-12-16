@@ -15,14 +15,19 @@
  */
 package com.forgerock.securebanking.platform.client.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.forgerock.securebanking.platform.client.IntentType;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
+import com.nimbusds.jwt.JWTClaimsSet;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
+
+import java.util.List;
 
 /**
- * Abstract class for each type of consent data.
+ * Abstract class for each type of consent decision data.
  */
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
@@ -30,17 +35,26 @@ import lombok.experimental.SuperBuilder;
 )
 @Data
 @NoArgsConstructor
-@SuperBuilder
-public abstract class Consent {
+@Builder
+@AllArgsConstructor
+public class ConsentClientDecisionRequest {
+    @JsonIgnore
+    private String consentJwt;
+    @JsonIgnore
+    private String intentId;
+    @JsonIgnore
+    private String clientId;
+    @JsonIgnore
+    private List<String> scopes;
+    @JsonIgnore
+    private JWTClaimsSet jwtClaimsSet;
 
-    private String id;
-    private String resourceOwnerUsername;
-    private String oauth2ClientId;
-    private String oauth2ClientName;
+    private List<String> accountIds;
 
-    public abstract IntentType getIntentType();
-
-    public String getDecisionApiUri() {
-        return "/api/rcs/consent/decision/";
+    public void setDataDebtorAccount(FRAccountIdentifier accountIdentifier) {
+        this.data.setDebtorAccount(accountIdentifier);
     }
+
+    private ConsentClientDecisionRequestData data;
+    private String resourceOwnerUsername;
 }

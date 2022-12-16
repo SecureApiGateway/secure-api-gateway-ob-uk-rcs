@@ -17,6 +17,7 @@ package com.forgerock.securebanking.platform.client.test.support;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRExternalPermissionsCode;
 import com.forgerock.securebanking.platform.client.ConsentStatusCode;
+import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.joda.time.DateTime;
@@ -56,7 +57,14 @@ public class AccountAccessConsentDetailsTestFactory {
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", randomUUID().toString());
         consent.addProperty("oauth2ClientName", "AISP Name");
-        consent.addProperty("accountIds", gson.toJson(List.of(UUID.randomUUID().toString())));
+        consent.add(
+                "accountIds",
+                gson.toJsonTree(
+                        List.of(UUID.randomUUID().toString()),
+                        new TypeToken<List<String>>() {
+                        }.getType()
+                )
+        );
 
         return consent;
     }
@@ -70,8 +78,14 @@ public class AccountAccessConsentDetailsTestFactory {
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", clientId);
         consent.addProperty("oauth2ClientName", "AISP Name");
-        consent.addProperty("accountIds", gson.toJson(List.of(UUID.randomUUID().toString())));
-
+        consent.add(
+                "accountIds",
+                gson.toJsonTree(
+                        List.of(UUID.randomUUID().toString()),
+                        new TypeToken<List<String>>() {
+                        }.getType()
+                )
+        );
         return consent;
     }
 

@@ -17,8 +17,8 @@ package com.forgerock.securebanking.platform.client.test.support;
 
 import com.forgerock.securebanking.platform.client.Constants;
 import com.forgerock.securebanking.platform.client.IntentType;
-import com.forgerock.securebanking.platform.client.models.ConsentDecision;
-import com.forgerock.securebanking.platform.client.models.ConsentDecisionData;
+import com.forgerock.securebanking.platform.client.models.ConsentClientDecisionRequest;
+import com.forgerock.securebanking.platform.client.models.ConsentClientDecisionRequestData;
 import com.nimbusds.jwt.JWTClaimsSet;
 
 import java.util.List;
@@ -27,43 +27,43 @@ import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamo
 import static java.util.UUID.randomUUID;
 
 /**
- * Test data factory for {@link ConsentDecision}.
+ * Test data factory for {@link ConsentClientDecisionRequest}.
  */
-public class ConsentDecisionTestDataFactory {
+public class ConsentDecisionRequestTestDataFactory {
 
     // ACCOUNTS
-    public static ConsentDecision aValidAccountConsentDecision() {
-        return aValidAccountConsentDecisionBuilder().build();
+    public static ConsentClientDecisionRequest aValidAccountConsentClientDecisionRequest() {
+        return aValidAccountConsentClientDecisionRequestBuilder().build();
     }
 
-    public static ConsentDecision aValidAccountConsentDecision(String intentId) {
-        return aValidAccountConsentDecisionBuilder(intentId).build();
+    public static ConsentClientDecisionRequest aValidAccountConsentClientDecisionRequest(String intentId) {
+        return aValidAccountConsentClientDecisionRequestBuilder(intentId).build();
     }
 
-    public static ConsentDecision aValidAccountConsentDecision(String intentId, String clientId) {
-        return aValidAccountConsentDecisionBuilder(intentId, clientId).build();
+    public static ConsentClientDecisionRequest aValidAccountConsentClientDecisionRequest(String intentId, String clientId) {
+        return aValidAccountConsentClientDecisionRequestBuilder(intentId, clientId).build();
     }
 
-    private static ConsentDecision.ConsentDecisionBuilder aValidAccountConsentDecisionBuilder() {
-        return getAccountConsentDecisionBuilder(IntentType.ACCOUNT_ACCESS_CONSENT);
+    private static ConsentClientDecisionRequest.ConsentClientDecisionRequestBuilder aValidAccountConsentClientDecisionRequestBuilder() {
+        return getAccountConsentClientDecisionRequestBuilder(IntentType.ACCOUNT_ACCESS_CONSENT);
     }
 
-    private static ConsentDecision.ConsentDecisionBuilder aValidAccountConsentDecisionBuilder(String intentId) {
-        return getAccountConsentDecisionBuilder(intentId);
+    private static ConsentClientDecisionRequest.ConsentClientDecisionRequestBuilder aValidAccountConsentClientDecisionRequestBuilder(String intentId) {
+        return getAccountConsentClientDecisionRequestBuilder(intentId);
     }
 
-    private static ConsentDecision.ConsentDecisionBuilder aValidAccountConsentDecisionBuilder(String intentId, String clientId) {
-        return getAccountConsentDecisionBuilder(intentId, clientId);
+    private static ConsentClientDecisionRequest.ConsentClientDecisionRequestBuilder aValidAccountConsentClientDecisionRequestBuilder(String intentId, String clientId) {
+        return getAccountConsentClientDecisionRequestBuilder(intentId, clientId);
     }
 
-    private static ConsentDecision.ConsentDecisionBuilder getAccountConsentDecisionBuilder(IntentType intentType) {
-        return ConsentDecision.builder()
+    private static ConsentClientDecisionRequest.ConsentClientDecisionRequestBuilder getAccountConsentClientDecisionRequestBuilder(IntentType intentType) {
+        return ConsentClientDecisionRequest.builder()
                 .intentId(intentType.generateIntentId())
                 .consentJwt("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
                         "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +
                         "SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c")
-                .data(ConsentDecisionData.builder()
-                        .status(Constants.ConsentDecision.AUTHORISED)
+                .data(ConsentClientDecisionRequestData.builder()
+                        .status(Constants.ConsentDecisionStatus.AUTHORISED)
                         .build())
                 .clientId(randomUUID().toString())
                 .accountIds(List.of(aValidFRAccountWithBalance().toString()))
@@ -72,14 +72,14 @@ public class ConsentDecisionTestDataFactory {
                 .scopes(List.of("openid", "accounts"));
     }
 
-    private static ConsentDecision.ConsentDecisionBuilder getAccountConsentDecisionBuilder(String intentId) {
-        return ConsentDecision.builder()
+    private static ConsentClientDecisionRequest.ConsentClientDecisionRequestBuilder getAccountConsentClientDecisionRequestBuilder(String intentId) {
+        return ConsentClientDecisionRequest.builder()
                 .intentId(intentId)
                 .consentJwt("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
                         "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +
                         "SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c")
-                .data(ConsentDecisionData.builder()
-                        .status(Constants.ConsentDecision.AUTHORISED)
+                .data(ConsentClientDecisionRequestData.builder()
+                        .status(Constants.ConsentDecisionStatus.AUTHORISED)
                         .build())
                 .clientId(randomUUID().toString())
                 .accountIds(List.of(aValidFRAccountWithBalance().toString()))
@@ -88,14 +88,14 @@ public class ConsentDecisionTestDataFactory {
                 .scopes(List.of("openid", "accounts"));
     }
 
-    private static ConsentDecision.ConsentDecisionBuilder getAccountConsentDecisionBuilder(String intentId, String clientId) {
-        return ConsentDecision.builder()
+    private static ConsentClientDecisionRequest.ConsentClientDecisionRequestBuilder getAccountConsentClientDecisionRequestBuilder(String intentId, String clientId) {
+        return ConsentClientDecisionRequest.builder()
                 .intentId(intentId)
                 .consentJwt("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
                         "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +
                         "SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c")
-                .data(ConsentDecisionData.builder()
-                        .status(Constants.ConsentDecision.AUTHORISED)
+                .data(ConsentClientDecisionRequestData.builder()
+                        .status(Constants.ConsentDecisionStatus.AUTHORISED)
                         .build())
                 .clientId(clientId)
                 .accountIds(List.of(aValidFRAccountWithBalance().toString()))
@@ -105,38 +105,38 @@ public class ConsentDecisionTestDataFactory {
     }
 
     // DOMESTIC PAYMENTS
-    public static ConsentDecision aValidDomesticPaymentConsentDecision() {
+    public static ConsentClientDecisionRequest aValidDomesticPaymentConsentClientDecisionRequest() {
         return aValidDomesticPaymentConsentDecisionBuilder().build();
     }
 
-    public static ConsentDecision aValidDomesticPaymentConsentDecision(String intentId) {
-        return aValidAccountConsentDecisionBuilder(intentId).build();
+    public static ConsentClientDecisionRequest aValidDomesticPaymentConsentClientDecisionRequest(String intentId) {
+        return aValidAccountConsentClientDecisionRequestBuilder(intentId).build();
     }
 
-    public static ConsentDecision aValidDomesticPaymentConsentDecision(String intentId, String clientId) {
-        return aValidAccountConsentDecisionBuilder(intentId, clientId).build();
+    public static ConsentClientDecisionRequest aValidDomesticPaymentConsentClientDecisionRequest(String intentId, String clientId) {
+        return aValidAccountConsentClientDecisionRequestBuilder(intentId, clientId).build();
     }
 
-    private static ConsentDecision.ConsentDecisionBuilder aValidDomesticPaymentConsentDecisionBuilder() {
+    private static ConsentClientDecisionRequest.ConsentClientDecisionRequestBuilder aValidDomesticPaymentConsentDecisionBuilder() {
         return getDomesticPaymentConsentDecisionBuilder(IntentType.PAYMENT_DOMESTIC_CONSENT);
     }
 
-    private static ConsentDecision.ConsentDecisionBuilder aValidDomesticPaymentConsentDecisionBuilder(String intentId) {
-        return getAccountConsentDecisionBuilder(intentId);
+    private static ConsentClientDecisionRequest.ConsentClientDecisionRequestBuilder aValidDomesticPaymentConsentDecisionBuilder(String intentId) {
+        return getAccountConsentClientDecisionRequestBuilder(intentId);
     }
 
-    private static ConsentDecision.ConsentDecisionBuilder aValidDomesticPaymentConsentDecisionBuilder(String intentId, String clientId) {
-        return getAccountConsentDecisionBuilder(intentId, clientId);
+    private static ConsentClientDecisionRequest.ConsentClientDecisionRequestBuilder aValidDomesticPaymentConsentDecisionBuilder(String intentId, String clientId) {
+        return getAccountConsentClientDecisionRequestBuilder(intentId, clientId);
     }
 
-    private static ConsentDecision.ConsentDecisionBuilder getDomesticPaymentConsentDecisionBuilder(IntentType intentType) {
-        return ConsentDecision.builder()
+    private static ConsentClientDecisionRequest.ConsentClientDecisionRequestBuilder getDomesticPaymentConsentDecisionBuilder(IntentType intentType) {
+        return ConsentClientDecisionRequest.builder()
                 .intentId(intentType.generateIntentId())
                 .consentJwt("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
                         "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +
                         "SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c")
-                .data(ConsentDecisionData.builder()
-                        .status(Constants.ConsentDecision.AUTHORISED)
+                .data(ConsentClientDecisionRequestData.builder()
+                        .status(Constants.ConsentDecisionStatus.AUTHORISED)
                         .build())
                 .clientId(randomUUID().toString())
                 .accountIds(List.of(aValidFRAccountWithBalance().toString()))
@@ -145,14 +145,14 @@ public class ConsentDecisionTestDataFactory {
                 .scopes(List.of("openid", "payments"));
     }
 
-    private static ConsentDecision.ConsentDecisionBuilder getDomesticPaymentConsentDecisionBuilder(String intentId) {
-        return ConsentDecision.builder()
+    private static ConsentClientDecisionRequest.ConsentClientDecisionRequestBuilder getDomesticPaymentConsentDecisionBuilder(String intentId) {
+        return ConsentClientDecisionRequest.builder()
                 .intentId(intentId)
                 .consentJwt("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
                         "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +
                         "SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c")
-                .data(ConsentDecisionData.builder()
-                        .status(Constants.ConsentDecision.AUTHORISED)
+                .data(ConsentClientDecisionRequestData.builder()
+                        .status(Constants.ConsentDecisionStatus.AUTHORISED)
                         .build())
                 .clientId(randomUUID().toString())
                 .accountIds(List.of(aValidFRAccountWithBalance().toString()))
@@ -161,14 +161,14 @@ public class ConsentDecisionTestDataFactory {
                 .scopes(List.of("openid", "payments"));
     }
 
-    private static ConsentDecision.ConsentDecisionBuilder getDomesticPaymentConsentDecisionBuilder(String intentId, String clientId) {
-        return ConsentDecision.builder()
+    private static ConsentClientDecisionRequest.ConsentClientDecisionRequestBuilder getDomesticPaymentConsentDecisionBuilder(String intentId, String clientId) {
+        return ConsentClientDecisionRequest.builder()
                 .intentId(intentId)
                 .consentJwt("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
                         "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +
                         "SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c")
-                .data(ConsentDecisionData.builder()
-                        .status(Constants.ConsentDecision.AUTHORISED)
+                .data(ConsentClientDecisionRequestData.builder()
+                        .status(Constants.ConsentDecisionStatus.AUTHORISED)
                         .build())
                 .clientId(clientId)
                 .accountIds(List.of(aValidFRAccountWithBalance().toString()))

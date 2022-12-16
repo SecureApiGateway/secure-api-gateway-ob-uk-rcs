@@ -19,18 +19,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.RedirectionAction;
-import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision.ConsentDecisionRequest;
-import com.forgerock.securebanking.openbanking.uk.rcs.converters.general.ConsentDecisionBuilderFactory;
+import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision.ConsentDecisionDeserialized;
 import com.forgerock.securebanking.openbanking.uk.rcs.exception.InvalidConsentException;
 import com.forgerock.securebanking.platform.client.Constants;
+import com.forgerock.securebanking.platform.client.IntentType;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorClient;
+import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
-import com.forgerock.securebanking.platform.client.models.ConsentDecision;
+import com.forgerock.securebanking.platform.client.models.ConsentClientDecisionRequest;
+import com.forgerock.securebanking.platform.client.models.ConsentClientDecisionRequestData;
 import com.forgerock.securebanking.platform.client.services.ConsentServiceClient;
 import com.forgerock.securebanking.platform.client.services.JwkServiceClient;
 import com.forgerock.securebanking.platform.client.utils.jwt.JwtUtil;
 import com.google.gson.JsonObject;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.context.annotation.ComponentScan;
@@ -38,9 +41,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import java.text.ParseException;
+import java.util.stream.Collectors;
 
 import static com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType.RCS_CONSENT_DECISION_EMPTY;
 import static com.forgerock.securebanking.openbanking.uk.rcs.util.ConsentDecisionDeserializer.deserializeConsentDecision;
+import static com.forgerock.securebanking.platform.client.Constants.Claims.*;
 import static com.forgerock.securebanking.platform.client.exceptions.ErrorType.JWT_INVALID;
 
 @Controller
@@ -52,7 +57,10 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
     private final ConsentServiceClient consentServiceClient;
     private final JwkServiceClient jwkServiceClient;
 
-    public ConsentDecisionApiController(ObjectMapper objectMapper, ConsentServiceClient consentServiceClient, JwkServiceClient jwkServiceClient) {
+    public ConsentDecisionApiController(
+            ObjectMapper objectMapper,
+            ConsentServiceClient consentServiceClient,
+            JwkServiceClient jwkServiceClient) {
         this.objectMapper = objectMapper;
         this.consentServiceClient = consentServiceClient;
         this.jwkServiceClient = jwkServiceClient;
@@ -66,50 +74,108 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
             throw new OBErrorException(RCS_CONSENT_DECISION_EMPTY);
         }
 
-        ConsentDecisionRequest consentDecisionRequest = deserializeConsentDecision(
+        ConsentDecisionDeserialized consentDecisionDeserialized = deserializeConsentDecision(
                 consentDecisionSerialised,
                 objectMapper,
-                ConsentDecisionRequest.class);
+                ConsentDecisionDeserialized.class
+        );
+
 
         try {
-            boolean decision = Constants.ConsentDecision.AUTHORISED.equals(consentDecisionRequest.getDecision());
-            log.debug("submitConsentDecision(consentDecisionSerialised) The decision is '{}'", decision);
+            boolean decision = Constants.ConsentDecisionStatus.AUTHORISED.equals(consentDecisionDeserialized.getDecision());
+            log.debug("The decision is '{}'", decision);
+            SignedJWT signedJWT = JwtUtil.getSignedJWT(consentDecisionDeserialized.getConsentJwt());
+            String intentId = JwtUtil.getIdTokenClaim(signedJWT, INTENT_ID);
+            log.debug("Intent Id from the requested claims '{}'", intentId);
+            String clientId = JwtUtil.getClaimValue(signedJWT, CLIENT_ID);
+            log.debug("Client Id from the JWT claims '{}'", clientId);
+            String resourceOwner = JwtUtil.getClaimValue(signedJWT, USER_NAME);
+            log.debug("Resource owner from the JWT claims '{}'", resourceOwner);
 
-            ConsentDecision consentDecision =
-                    ConsentDecisionBuilderFactory.build(consentDecisionRequest);
+            IntentType intentType = IntentType.identify(intentId);
+            if (intentType != null) {
 
-            JsonObject consentUpdated = consentServiceClient.updateConsent(consentDecision);
-            log.debug("submitConsentDecision(consentDecisionSerialised) Consent updated '{}", consentUpdated);
+                ConsentClientDecisionRequest consentClientDecisionRequest = ConsentClientDecisionRequest.builder()
+                        .accountIds(consentDecisionDeserialized.getAccountIds())
+                        .clientId(clientId)
+                        .consentJwt(consentDecisionDeserialized.getConsentJwt())
+                        .data(ConsentClientDecisionRequestData.builder()
+                                .debtorAccount(
+                                        consentDecisionDeserialized.getDebtorAccount() != null ?
+                                                consentDecisionDeserialized.getDebtorAccount().getFirstAccount() :
+                                                null
+                                )
+                                .status(consentDecisionDeserialized.getDecision())
+                                .build())
+                        .intentId(intentId)
+                        .jwtClaimsSet(signedJWT.getJWTClaimsSet())
+                        .resourceOwnerUsername(resourceOwner)
+                        .scopes(
+                                JwtUtil.getClaimValueMap(signedJWT, "scopes").values().stream().map(o -> (String) o).collect(Collectors.toList())
+                        )
+                        .build();
 
-            JWTClaimsSet jwtClaimsSetGenerated = generateConsentResponse(decision, consentDecision);
-            log.debug("submitConsentDecision(consentDecisionSerialised) jwt claims generated '{}'", jwtClaimsSetGenerated.toJSONObject());
-            String consentSignedJwt = jwkServiceClient.signClaims(jwtClaimsSetGenerated, consentDecision.getIntentId());
-            log.debug("submitConsentDecision(consentDecisionSerialised) consentSignedJwt '{}'", consentSignedJwt);
-            String consentApprovalRedirectUri = JwtUtil.getClaimValue(consentSignedJwt, "consentApprovalRedirectUri");
-            log.debug("submitConsentDecision(consentDecisionSerialised) CONSENT_APPROVAL_REDIRECT_URI: {} ", consentApprovalRedirectUri);
-            return ResponseEntity.ok(RedirectionAction.builder()
-                    .redirectUri(consentApprovalRedirectUri)
-                    .consentJwt(consentSignedJwt)
-                    .build());
+                JsonObject consentUpdated = consentServiceClient.updateConsent(consentClientDecisionRequest);
+                log.debug("Consent updated '{}", consentUpdated);
 
-        } catch (ExceptionClient e) {
+                JWTClaimsSet jwtClaimsSetGenerated = generateJWTResponse(decision, consentClientDecisionRequest);
+                log.debug("JWT claims generated '{}'", jwtClaimsSetGenerated.toJSONObject());
+
+                String consentSignedJwt = jwkServiceClient.signClaims(jwtClaimsSetGenerated, consentClientDecisionRequest.getIntentId());
+                log.debug("consentSignedJwt '{}'", consentSignedJwt);
+
+                String consentApprovalRedirectUri = JwtUtil.getClaimValue(consentSignedJwt, "consentApprovalRedirectUri");
+                log.debug("consentApprovalRedirectUri: {} ", consentApprovalRedirectUri);
+                return ResponseEntity.ok(RedirectionAction.builder()
+                        .redirectUri(consentApprovalRedirectUri)
+                        .consentJwt(consentSignedJwt)
+                        .build());
+            } else {
+                String message = String.format("Invalid type for intent ID: '%s'", intentId);
+                log.error(message);
+                throw new InvalidConsentException(
+                        consentDecisionDeserialized.getConsentJwt(),
+                        ErrorType.UNKNOWN_INTENT_TYPE,
+                        OBRIErrorType.REQUEST_BINDING_FAILED,
+                        message,
+                        clientId,
+                        intentId
+                );
+            }
+        } catch (ExceptionClient | ParseException e) {
             String errorMessage = String.format("%s", e.getMessage());
             log.error(errorMessage);
-            throw new InvalidConsentException(consentDecisionRequest.getConsentJwt(), e.getErrorClient().getErrorType(),
-                    OBRIErrorType.REQUEST_BINDING_FAILED, errorMessage,
-                    e.getErrorClient().getClientId(),
-                    e.getErrorClient().getIntentId());
+            if (e instanceof ExceptionClient) {
+                throw new InvalidConsentException(
+                        consentDecisionDeserialized.getConsentJwt(),
+                        ((ExceptionClient) e).getErrorClient().getErrorType(),
+                        OBRIErrorType.REQUEST_BINDING_FAILED,
+                        errorMessage,
+                        ((ExceptionClient) e).getErrorClient().getClientId(),
+                        ((ExceptionClient) e).getErrorClient().getIntentId()
+                );
+            } else {
+                log.error("Could not parse the signedJWT to retrieve the claim set.", e);
+                throw new InvalidConsentException(
+                        consentDecisionDeserialized.getConsentJwt(),
+                        JWT_INVALID,
+                        OBRIErrorType.REQUEST_BINDING_FAILED,
+                        errorMessage,
+                        null,
+                        null
+                );
+            }
         }
     }
 
-    public JWTClaimsSet generateConsentResponse(
-            boolean decision, ConsentDecision consentDecision
+    private JWTClaimsSet generateJWTResponse(
+            boolean decision, ConsentClientDecisionRequest consentClientDecisionRequest
     ) throws ExceptionClient {
         try {
-            JWTClaimsSet jwtClaimsSet = JWTClaimsSet.parse(consentDecision.getJwtClaimsSet().toJSONObject());
+            JWTClaimsSet jwtClaimsSet = JWTClaimsSet.parse(consentClientDecisionRequest.getJwtClaimsSet().toJSONObject());
             return new JWTClaimsSet.Builder(jwtClaimsSet)
                     .claim("decision", decision)
-                    .claim("scopes", consentDecision.getScopes().toArray())
+                    .claim("scopes", consentClientDecisionRequest.getScopes().toArray())
                     .expirationTime(DateTime.now().plusMinutes(5).toDate())
                     .issuer(jwtClaimsSet.getIssuer())
                     .audience(jwtClaimsSet.getIssuer())

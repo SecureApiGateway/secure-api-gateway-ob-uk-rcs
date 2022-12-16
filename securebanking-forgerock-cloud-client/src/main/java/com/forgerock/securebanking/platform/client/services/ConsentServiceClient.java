@@ -18,8 +18,8 @@ package com.forgerock.securebanking.platform.client.services;
 import com.forgerock.securebanking.platform.client.IntentType;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
-import com.forgerock.securebanking.platform.client.models.ConsentDecision;
-import com.forgerock.securebanking.platform.client.models.ConsentRequest;
+import com.forgerock.securebanking.platform.client.models.ConsentClientDecisionRequest;
+import com.forgerock.securebanking.platform.client.models.ConsentClientDetailsRequest;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -35,32 +35,32 @@ public class ConsentServiceClient implements ConsentServiceInterface {
     }
 
     @Override
-    public JsonObject getConsent(ConsentRequest consentRequest) throws ExceptionClient {
-        String intentId = consentRequest.getIntentId();
+    public JsonObject getConsent(ConsentClientDetailsRequest consentClientRequest) throws ExceptionClient {
+        String intentId = consentClientRequest.getIntentId();
         log.debug("Retrieving the intent Id '{}", intentId);
 
         if (IntentType.identify(intentId) != null) {
             log.debug("Intent type: '{}' with ID '{}'", IntentType.identify(intentId), intentId);
-            return consentService.getConsent(consentRequest);
+            return consentService.getConsent(consentClientRequest);
         } else {
             String message = String.format("Invalid type for intent ID: '%s'", intentId);
             log.error(message);
-            throw new ExceptionClient(consentRequest, ErrorType.UNKNOWN_INTENT_TYPE, message);
+            throw new ExceptionClient(consentClientRequest, ErrorType.UNKNOWN_INTENT_TYPE, message);
         }
     }
 
     @Override
-    public JsonObject updateConsent(ConsentDecision consentDecision) throws ExceptionClient {
-        String intentId = consentDecision.getIntentId();
-        log.debug("Updating the intent Id '{}", consentDecision.getIntentId());
+    public JsonObject updateConsent(ConsentClientDecisionRequest consentClientDecisionRequest) throws ExceptionClient {
+        String intentId = consentClientDecisionRequest.getIntentId();
+        log.debug("Updating the intent Id '{}", consentClientDecisionRequest.getIntentId());
 
         if (IntentType.identify(intentId) != null) {
             log.debug("Intent type: '{}' with ID '{}'", IntentType.identify(intentId), intentId);
-            return consentService.updateConsent(consentDecision);
+            return consentService.updateConsent(consentClientDecisionRequest);
         } else {
             String message = String.format("Invalid type to update for intent ID: '%s'", intentId);
             log.error(message);
-            throw new ExceptionClient(consentDecision, ErrorType.UNKNOWN_INTENT_TYPE, message);
+            throw new ExceptionClient(consentClientDecisionRequest, ErrorType.UNKNOWN_INTENT_TYPE, message);
         }
     }
 }

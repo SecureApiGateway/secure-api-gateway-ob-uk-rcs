@@ -23,15 +23,15 @@ import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.Co
 import com.forgerock.securebanking.openbanking.uk.rcs.client.rs.AccountService;
 import com.forgerock.securebanking.openbanking.uk.rcs.configuration.ApiProviderConfiguration;
 import com.forgerock.securebanking.openbanking.uk.rcs.exception.InvalidConsentException;
-import com.forgerock.securebanking.openbanking.uk.rcs.factory.ConsentDetailsFactory;
-import com.forgerock.securebanking.openbanking.uk.rcs.factory.ConsentDetailsFactoryProvider;
+import com.forgerock.securebanking.openbanking.uk.rcs.factory.details.ConsentDetailsFactory;
+import com.forgerock.securebanking.openbanking.uk.rcs.factory.details.ConsentDetailsFactoryProvider;
 import com.forgerock.securebanking.platform.client.Constants;
 import com.forgerock.securebanking.platform.client.IntentType;
 import com.forgerock.securebanking.platform.client.configuration.ConfigurationPropertiesClient;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
 import com.forgerock.securebanking.platform.client.models.ApiClient;
-import com.forgerock.securebanking.platform.client.models.ConsentRequest;
+import com.forgerock.securebanking.platform.client.models.ConsentClientDetailsRequest;
 import com.forgerock.securebanking.platform.client.models.User;
 import com.forgerock.securebanking.platform.client.services.ApiClientServiceClient;
 import com.forgerock.securebanking.platform.client.services.ConsentServiceClient;
@@ -89,7 +89,7 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
     @Override
     public ResponseEntity<ConsentDetails> getConsentDetails(String consentRequestJws) throws InvalidConsentException {
         try {
-            // TODO: the jwt should be validate here or in IG (JWTValidatorFilter)?
+            // TODO: the jwt should be validated here or in IG (JWTValidatorFilter)?
             if (jwtMustBeValidated) {
                 JwtUtil.validateJWT(consentRequestJws, configurationPropertiesClient.getJwkUri());
             }
@@ -107,18 +107,18 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
             String intentId = JwtUtil.getIdTokenClaim(signedJWT, Constants.Claims.INTENT_ID);
             log.debug("Intent Id from the requested claims '{}'", intentId);
 
-            ConsentRequest consentRequest = buildConsentRequest(signedJWT);
+            ConsentClientDetailsRequest consentClientRequest = buildConsentClientRequest(signedJWT);
             log.debug("Intent type: '{}' with ID '{}'", IntentType.identify(intentId), intentId);
 
             IntentType intentType = IntentType.identify(intentId);
             if (intentType != null) {
                 log.debug("Intent type: '{}' with ID '{}'", intentType, intentId);
                 log.debug("Retrieve consent details:\n- Type '{}'\n-Id '{}'\n",
-                        intentType.name(), consentRequest.getIntentId());
-                JsonObject consent = consentServiceClient.getConsent(consentRequest);
+                        intentType.name(), consentClientRequest.getIntentId());
+                JsonObject consent = consentServiceClient.getConsent(consentClientRequest);
 
-                log.debug("Retrieve to api client details for client Id '{}'", consentRequest.getClientId());
-                ApiClient apiClient = apiClientService.getApiClient(consentRequest.getClientId());
+                log.debug("Retrieve to api client details for client Id '{}'", consentClientRequest.getClientId());
+                ApiClient apiClient = apiClientService.getApiClient(consentClientRequest.getClientId());
                 log.debug("ApiClient controller: " + apiClient);
                 log.debug("consent json controller: " + consent);
                 // consent details object thread safe instance by intent type
@@ -129,17 +129,17 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                 details.setServiceProviderName(apiProviderConfiguration.getName());
                 // the client Name (TPP name)
                 details.setClientName(apiClient.getName());
-                details.setUsername(consentRequest.getUser().getUserName());
-                details.setUserId(consentRequest.getUser().getId());
-                details.setAccounts(consentRequest.getAccounts());
-                details.setClientId(consentRequest.getClientId());
+                details.setUsername(consentClientRequest.getUser().getUserName());
+                details.setUserId(consentClientRequest.getUser().getId());
+                details.setAccounts(consentClientRequest.getAccounts());
+                details.setClientId(consentClientRequest.getClientId());
                 details.setLogo(apiClient.getLogoUri());
                 return ResponseEntity.ok(details);
 
             } else {
                 String message = String.format("Invalid type for intent ID: '%s'", intentId);
                 log.error(message);
-                throw new ExceptionClient(consentRequest, ErrorType.UNKNOWN_INTENT_TYPE, message);
+                throw new ExceptionClient(consentClientRequest, ErrorType.UNKNOWN_INTENT_TYPE, message);
             }
 
         } catch (ExceptionClient e) {
@@ -152,7 +152,7 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
         }
     }
 
-    private ConsentRequest buildConsentRequest(SignedJWT signedJWT) throws ExceptionClient {
+    private ConsentClientDetailsRequest buildConsentClientRequest(SignedJWT signedJWT) throws ExceptionClient {
         String intentId = JwtUtil.getIdTokenClaim(signedJWT, Constants.Claims.INTENT_ID);
         log.debug("Intent Id from the requested claims '{}'", intentId);
         String clientId = JwtUtil.getClaimValue(signedJWT, Constants.Claims.CLIENT_ID);
@@ -163,7 +163,7 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
         log.debug("Retrieve the user details for user Id '{}'", userId);
         User user = userServiceClient.getUser(userId);
 
-        return ConsentRequest.builder()
+        return ConsentClientDetailsRequest.builder()
                 .intentId(intentId)
                 .consentRequestJwt(signedJWT)
                 .accounts(accounts)

@@ -66,8 +66,6 @@ public class DomesticVrpPaymentConsentDetailsTestFactory {
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", randomUUID().toString());
         consent.addProperty("oauth2ClientName", "PISP Name");
-        consent.addProperty("accountIds", gson.toJson(List.of(UUID.randomUUID().toString())));
-
         return consent;
     }
 
@@ -80,8 +78,6 @@ public class DomesticVrpPaymentConsentDetailsTestFactory {
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", randomUUID().toString());
         consent.addProperty("oauth2ClientName", "PISP Name");
-        consent.addProperty("accountIds", gson.toJson(List.of(UUID.randomUUID().toString())));
-
         return consent;
     }
 
