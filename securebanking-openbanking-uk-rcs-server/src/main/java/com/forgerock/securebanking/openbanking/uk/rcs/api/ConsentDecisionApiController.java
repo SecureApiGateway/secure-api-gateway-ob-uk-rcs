@@ -21,13 +21,13 @@ import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.RedirectionAction;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision.ConsentDecisionDeserialized;
 import com.forgerock.securebanking.openbanking.uk.rcs.exception.InvalidConsentException;
-import com.forgerock.securebanking.openbanking.uk.rcs.mapper.decision.ConsentDecisionMapper;
 import com.forgerock.securebanking.platform.client.Constants;
 import com.forgerock.securebanking.platform.client.IntentType;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorClient;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
 import com.forgerock.securebanking.platform.client.models.ConsentClientDecisionRequest;
+import com.forgerock.securebanking.platform.client.models.ConsentClientDecisionRequestData;
 import com.forgerock.securebanking.platform.client.services.ConsentServiceClient;
 import com.forgerock.securebanking.platform.client.services.JwkServiceClient;
 import com.forgerock.securebanking.platform.client.utils.jwt.JwtUtil;
@@ -56,17 +56,14 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
     private final ObjectMapper objectMapper;
     private final ConsentServiceClient consentServiceClient;
     private final JwkServiceClient jwkServiceClient;
-    private final ConsentDecisionMapper consentDecisionMapper;
 
     public ConsentDecisionApiController(
             ObjectMapper objectMapper,
             ConsentServiceClient consentServiceClient,
-            JwkServiceClient jwkServiceClient,
-            ConsentDecisionMapper consentDecisionMapper) {
+            JwkServiceClient jwkServiceClient) {
         this.objectMapper = objectMapper;
         this.consentServiceClient = consentServiceClient;
         this.jwkServiceClient = jwkServiceClient;
-        this.consentDecisionMapper = consentDecisionMapper;
     }
 
     @Override
@@ -83,6 +80,7 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
                 ConsentDecisionDeserialized.class
         );
 
+
         try {
             boolean decision = Constants.ConsentDecisionStatus.AUTHORISED.equals(consentDecisionDeserialized.getDecision());
             log.debug("The decision is '{}'", decision);
@@ -91,11 +89,31 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
             log.debug("Intent Id from the requested claims '{}'", intentId);
             String clientId = JwtUtil.getClaimValue(signedJWT, CLIENT_ID);
             log.debug("Client Id from the JWT claims '{}'", clientId);
+            String resourceOwner = JwtUtil.getClaimValue(signedJWT, USER_NAME);
+            log.debug("Resource owner from the JWT claims '{}'", resourceOwner);
 
             IntentType intentType = IntentType.identify(intentId);
             if (intentType != null) {
-                ConsentClientDecisionRequest consentClientDecisionRequest = consentDecisionMapper.map(consentDecisionDeserialized);
-                completeConsentDecisionRequestData(consentClientDecisionRequest, signedJWT, intentId, clientId);
+
+                ConsentClientDecisionRequest consentClientDecisionRequest = ConsentClientDecisionRequest.builder()
+                        .accountIds(consentDecisionDeserialized.getAccountIds())
+                        .clientId(clientId)
+                        .consentJwt(consentDecisionDeserialized.getConsentJwt())
+                        .data(ConsentClientDecisionRequestData.builder()
+                                .debtorAccount(
+                                        consentDecisionDeserialized.getDebtorAccount() != null ?
+                                                consentDecisionDeserialized.getDebtorAccount().getFirstAccount() :
+                                                null
+                                )
+                                .status(consentDecisionDeserialized.getDecision())
+                                .build())
+                        .intentId(intentId)
+                        .jwtClaimsSet(signedJWT.getJWTClaimsSet())
+                        .resourceOwnerUsername(resourceOwner)
+                        .scopes(
+                                JwtUtil.getClaimValueMap(signedJWT, "scopes").values().stream().map(o -> (String) o).collect(Collectors.toList())
+                        )
+                        .build();
 
                 JsonObject consentUpdated = consentServiceClient.updateConsent(consentClientDecisionRequest);
                 log.debug("Consent updated '{}", consentUpdated);
@@ -124,16 +142,29 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
                         intentId
                 );
             }
-        } catch (ExceptionClient e) {
+        } catch (ExceptionClient | ParseException e) {
             String errorMessage = String.format("%s", e.getMessage());
             log.error(errorMessage);
-            throw new InvalidConsentException(
-                    consentDecisionDeserialized.getConsentJwt(),
-                    e.getErrorClient().getErrorType(),
-                    OBRIErrorType.REQUEST_BINDING_FAILED,
-                    errorMessage,
-                    e.getErrorClient().getClientId(),
-                    e.getErrorClient().getIntentId());
+            if (e instanceof ExceptionClient) {
+                throw new InvalidConsentException(
+                        consentDecisionDeserialized.getConsentJwt(),
+                        ((ExceptionClient) e).getErrorClient().getErrorType(),
+                        OBRIErrorType.REQUEST_BINDING_FAILED,
+                        errorMessage,
+                        ((ExceptionClient) e).getErrorClient().getClientId(),
+                        ((ExceptionClient) e).getErrorClient().getIntentId()
+                );
+            } else {
+                log.error("Could not parse the signedJWT to retrieve the claim set.", e);
+                throw new InvalidConsentException(
+                        consentDecisionDeserialized.getConsentJwt(),
+                        JWT_INVALID,
+                        OBRIErrorType.REQUEST_BINDING_FAILED,
+                        errorMessage,
+                        null,
+                        null
+                );
+            }
         }
     }
 
@@ -151,34 +182,6 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
                     .build();
         } catch (ParseException exception) {
             log.error("generateConsentResponse(decision, consentDecision) Could not parse the consentJwt from consent decision object.", exception);
-            throw new ExceptionClient(
-                    ErrorClient.builder()
-                            .errorType(JWT_INVALID)
-                            .build(),
-                    String.format(JWT_INVALID.getDescription(), exception.getMessage()),
-                    exception
-            );
-        }
-    }
-
-    private void completeConsentDecisionRequestData(
-            ConsentClientDecisionRequest consentClientDecisionRequest,
-            SignedJWT signedJWT,
-            String intentId,
-            String clientId
-    ) throws ExceptionClient {
-        try {
-            String resourceOwner = JwtUtil.getClaimValue(signedJWT, USER_NAME);
-            log.debug("Resource owner from the JWT claims '{}'", resourceOwner);
-            consentClientDecisionRequest.setJwtClaimsSet(signedJWT.getJWTClaimsSet());
-            consentClientDecisionRequest.setScopes(
-                    JwtUtil.getClaimValueMap(signedJWT, "scopes").values().stream().map(o -> (String) o).collect(Collectors.toList())
-            );
-            consentClientDecisionRequest.setResourceOwnerUsername(resourceOwner);
-            consentClientDecisionRequest.setIntentId(intentId);
-            consentClientDecisionRequest.setClientId(clientId);
-        } catch (ParseException exception) {
-            log.error("Could not parse the signedJWT to retrieve the claim set.", exception);
             throw new ExceptionClient(
                     ErrorClient.builder()
                             .errorType(JWT_INVALID)

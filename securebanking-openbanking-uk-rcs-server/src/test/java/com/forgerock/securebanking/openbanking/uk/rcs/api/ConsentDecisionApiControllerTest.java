@@ -20,7 +20,6 @@ import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.com
 import com.forgerock.securebanking.openbanking.uk.rcs.RcsApplicationTestSupport;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.RedirectionAction;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision.ConsentDecisionDeserialized;
-import com.forgerock.securebanking.openbanking.uk.rcs.mapper.decision.ConsentDecisionMapper;
 import com.forgerock.securebanking.openbanking.uk.rcs.testsupport.JwtTestHelper;
 import com.forgerock.securebanking.platform.client.Constants;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
@@ -92,9 +91,6 @@ public class ConsentDecisionApiControllerTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
-
-    @Autowired
-    ConsentDecisionMapper consentDecisionMapper;
 
     @Test
     public void ShouldGetAccountsRedirectAction(
