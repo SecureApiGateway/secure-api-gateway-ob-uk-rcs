@@ -51,6 +51,8 @@ public class ConsentClientDecisionRequest {
 
     private List<String> accountIds;
 
+    private String accountId;
+
     public void setDataDebtorAccount(FRAccountIdentifier accountIdentifier) {
         this.data.setDebtorAccount(accountIdentifier);
     }

@@ -97,6 +97,11 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
 
                 ConsentClientDecisionRequest consentClientDecisionRequest = ConsentClientDecisionRequest.builder()
                         .accountIds(consentDecisionDeserialized.getAccountIds())
+                        .accountId(
+                                consentDecisionDeserialized.getDebtorAccount() != null ?
+                                        consentDecisionDeserialized.getDebtorAccount().getAccountId() :
+                                        null
+                        ) // Backward compatibility //TODO needs to be deleted to use only the debtor account
                         .clientId(clientId)
                         .consentJwt(consentDecisionDeserialized.getConsentJwt())
                         .data(ConsentClientDecisionRequestData.builder()
