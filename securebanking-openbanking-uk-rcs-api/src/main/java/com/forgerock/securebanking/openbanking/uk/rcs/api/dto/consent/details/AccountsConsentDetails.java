@@ -16,6 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRExternalPermissionsCode;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
 import com.forgerock.securebanking.platform.client.IntentType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -38,6 +39,11 @@ public class AccountsConsentDetails extends ConsentDetails {
     private DateTime fromTransaction;
     private DateTime toTransaction;
     private DateTime expiredDate;
+
+    @Override
+    public FRAccountIdentifier getDebtorAccount() {
+        return null;
+    }
 
     @Override
     public IntentType getIntentType() {

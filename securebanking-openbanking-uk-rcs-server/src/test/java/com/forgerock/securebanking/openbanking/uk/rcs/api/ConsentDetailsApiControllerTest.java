@@ -16,6 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.api;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.forgerock.FRFrequency;
 import com.forgerock.securebanking.openbanking.uk.rcs.RcsApplicationTestSupport;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.RedirectionAction;
@@ -541,33 +542,33 @@ public class ConsentDetailsApiControllerTest {
         final JsonObject expectedIntentData = consentDetails.getAsJsonObject(OB_INTENT_OBJECT).getAsJsonObject(DATA);
         final JsonObject initiation = expectedIntentData.getAsJsonObject(INITIATION);
 
-        assertThat(responseBody.getStandingOrder().getFinalPaymentDateTime()
+        assertThat(responseBody.getInitiation().getFinalPaymentDateTime()
                 .isEqual(Instant.parse(initiation.get(FINAL_PAYMENT_DATETIME).getAsString()).toDateTime())
         );
-        assertThat(responseBody.getStandingOrder().getFirstPaymentDateTime()
+        assertThat(responseBody.getInitiation().getFirstPaymentDateTime()
                 .isEqual(Instant.parse(initiation.get(FIRST_PAYMENT_DATETIME).getAsString()).toDateTime())
         );
 
-        assertThat(responseBody.getStandingOrder().getRecurringPaymentDateTime()
+        assertThat(responseBody.getInitiation().getRecurringPaymentDateTime()
                 .isEqual(Instant.parse(initiation.get(RECURRING_PAYMENT_DATETIME).getAsString()).toDateTime())
         );
 
-        assertThat(responseBody.getStandingOrder().getFrequency())
+        assertThat(responseBody.getInitiation().getFrequency())
                 .isEqualTo((new FRFrequency(initiation.get(FREQUENCY).getAsString())).getSentence());
 
-        assertThat(responseBody.getStandingOrder().getFinalPaymentAmount().getAmount())
+        assertThat(responseBody.getInitiation().getFinalPaymentAmount().getAmount())
                 .isEqualTo(initiation.getAsJsonObject(FINAL_PAYMENT_AMOUNT).get(AMOUNT).getAsString());
-        assertThat(responseBody.getStandingOrder().getFinalPaymentAmount().getCurrency())
+        assertThat(responseBody.getInitiation().getFinalPaymentAmount().getCurrency())
                 .isEqualTo(initiation.getAsJsonObject(FINAL_PAYMENT_AMOUNT).get(CURRENCY).getAsString());
 
-        assertThat(responseBody.getStandingOrder().getFirstPaymentAmount().getAmount())
+        assertThat(responseBody.getInitiation().getFirstPaymentAmount().getAmount())
                 .isEqualTo(initiation.getAsJsonObject(FIRST_PAYMENT_AMOUNT).get(AMOUNT).getAsString());
-        assertThat(responseBody.getStandingOrder().getFirstPaymentAmount().getCurrency())
+        assertThat(responseBody.getInitiation().getFirstPaymentAmount().getCurrency())
                 .isEqualTo(initiation.getAsJsonObject(FIRST_PAYMENT_AMOUNT).get(CURRENCY).getAsString());
 
-        assertThat(responseBody.getStandingOrder().getRecurringPaymentAmount().getAmount())
+        assertThat(responseBody.getInitiation().getRecurringPaymentAmount().getAmount())
                 .isEqualTo(initiation.getAsJsonObject(RECURRING_PAYMENT_AMOUNT).get(AMOUNT).getAsString());
-        assertThat(responseBody.getStandingOrder().getRecurringPaymentAmount().getCurrency())
+        assertThat(responseBody.getInitiation().getRecurringPaymentAmount().getCurrency())
                 .isEqualTo(initiation.getAsJsonObject(RECURRING_PAYMENT_AMOUNT).get(CURRENCY).getAsString());
     }
 
@@ -685,11 +686,18 @@ public class ConsentDetailsApiControllerTest {
     public void ShouldGetDomesticVrpPaymentConsentDetailsSweeping() throws ExceptionClient {
         // given
         ConsentClientDetailsRequest consentDetailsRequest = aValidDomesticVrpPaymentConsentDetailsRequest();
-        JsonObject consentDetails = aValidDomesticVrpPaymentConsentDetails(consentDetailsRequest.getIntentId());
+        FRAccountWithBalance frAccountWithBalance = aValidFRAccountWithBalance();
+        JsonObject consentDetails = aValidDomesticVrpPaymentConsentDetails(
+                consentDetailsRequest.getIntentId(), frAccountWithBalance.getAccount().getFirstAccount()
+        );
+
         User user = aValidUser();
         consentDetailsRequest.setUser(user);
         ApiClient apiClient = ApiClientTestDataFactory.aValidApiClient(consentDetailsRequest.getClientId());
         given(apiClientService.getApiClient(anyString())).willReturn(apiClient);
+        given(accountService.getAccountWithBalanceByIdentifiers(anyString(), anyString(), anyString(), anyString())).willReturn(
+                frAccountWithBalance
+        );
         given(userServiceClient.getUser(anyString())).willReturn(user);
         given(consentService.getConsent(any(ConsentClientDetailsRequest.class))).willReturn(consentDetails);
         String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
@@ -712,6 +720,12 @@ public class ConsentDetailsApiControllerTest {
         assertThat(responseBody.getUsername()).isEqualTo(consentDetailsRequest.getUser().getUserName());
         assertThat(responseBody.getClientId()).isEqualTo(consentDetailsRequest.getClientId());
         assertThat(responseBody.getLogo()).isEqualTo(apiClient.getLogoUri());
+        FRAccountIdentifier accountIdentifier = frAccountWithBalance.getAccount().getFirstAccount();
+        FRAccountIdentifier debtorAccount = responseBody.getInitiation().getDebtorAccount();
+        assertThat(debtorAccount.getAccountId()).isEqualTo(frAccountWithBalance.getAccount().getAccountId());
+        assertThat(debtorAccount.getIdentification()).isEqualTo(accountIdentifier.getIdentification());
+        assertThat(debtorAccount.getName()).isEqualTo(accountIdentifier.getName());
+        assertThat(debtorAccount.getSchemeName()).isEqualTo(accountIdentifier.getSchemeName());
     }
 
     private HttpHeaders headers() {

@@ -30,7 +30,8 @@ public class RsBackofficeConfiguration {
     private Map<String, String> domesticPayments = new LinkedCaseInsensitiveMap<>();
 
     public enum UriContexts {
-        FIND_USER_BY_ID("findUserById");
+        FIND_USER_BY_ID("findUserById"),
+        FIND_BY_ACCOUNT_IDENTIFIERS("findByAccountIdentifiers");
         private final String uriContext;
 
         UriContexts(String uriContext) {

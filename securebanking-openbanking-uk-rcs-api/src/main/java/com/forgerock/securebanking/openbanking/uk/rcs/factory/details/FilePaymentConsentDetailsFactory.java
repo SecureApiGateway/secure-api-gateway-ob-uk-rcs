@@ -15,6 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.factory.details;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAmount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteFileDataInitiation;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.FilePaymentConsentDetails;
@@ -22,6 +23,7 @@ import com.forgerock.securebanking.platform.client.IntentType;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import lombok.extern.slf4j.Slf4j;
 import org.joda.time.Instant;
 import org.springframework.stereotype.Component;
 
@@ -34,6 +36,7 @@ import static java.util.Objects.requireNonNull;
  * File Payment consent details factory implements {@link ConsentDetailsFactory}
  */
 @Component
+@Slf4j
 public class FilePaymentConsentDetailsFactory implements ConsentDetailsFactory<FilePaymentConsentDetails> {
 
     @Override
@@ -49,18 +52,8 @@ public class FilePaymentConsentDetailsFactory implements ConsentDetailsFactory<F
                 JsonObject data = consentDataElement.getAsJsonObject();
 
                 if (isNotNull(data.get(INITIATION))) {
-
                     JsonObject initiation = data.getAsJsonObject(INITIATION);
-                    details.setFileDataInitiation(
-                            decodeFileDataInitiation(
-                                    isNotNull(initiation.get(NUMBER_OF_TRANSACTIONS))
-                                            ? initiation.get(NUMBER_OF_TRANSACTIONS) : null,
-                                    isNotNull(initiation.get(CONTROL_SUM)) ? initiation.get(CONTROL_SUM) : null,
-                                    isNotNull(initiation.get(REQUESTED_EXECUTION_DATETIME))
-                                            ? initiation.get(REQUESTED_EXECUTION_DATETIME) : null,
-                                    isNotNull(initiation.get(FILE_REFERENCE)) ? initiation.get(FILE_REFERENCE) : null
-                            )
-                    );
+                    details.setInitiation(decodeDataInitiation(initiation));
 
                     if (isNotNull(data.get(CHARGES))) {
                         details.setCharges(decodeCharges(data.getAsJsonArray(CHARGES)));
@@ -92,30 +85,43 @@ public class FilePaymentConsentDetailsFactory implements ConsentDetailsFactory<F
         return charges;
     }
 
-    private FRWriteFileDataInitiation decodeFileDataInitiation(
-            JsonElement numberOfTransactions,
-            JsonElement controlSum,
-            JsonElement requestedExecutionDateTime,
-            JsonElement fileReference
-    ) {
+    private FRWriteFileDataInitiation decodeDataInitiation(JsonObject initiation) {
+        log.debug("{}.{}.{}: {}", OB_INTENT_OBJECT, DATA, INITIATION, initiation);
+
         FRWriteFileDataInitiation fileDataInitiation = new FRWriteFileDataInitiation();
 
-        if (isNotNull(numberOfTransactions)) {
-            fileDataInitiation.setNumberOfTransactions(numberOfTransactions.getAsString());
-        }
-
-        if (isNotNull(controlSum)) {
-            fileDataInitiation.setControlSum(controlSum.getAsBigDecimal());
-        }
-
-        if (isNotNull(requestedExecutionDateTime)) {
-            fileDataInitiation.setRequestedExecutionDateTime(
-                    Instant.parse(requestedExecutionDateTime.getAsString()).toDateTime()
+        if (isNotNull(initiation.get(DEBTOR_ACCOUNT))) {
+            JsonObject debtorAccount = initiation.getAsJsonObject(DEBTOR_ACCOUNT);
+            fileDataInitiation.setDebtorAccount(
+                    FRAccountIdentifier.builder()
+                            .identification(debtorAccount.get(IDENTIFICATION).getAsString())
+                            .name(debtorAccount.get(NAME).getAsString())
+                            .schemeName(debtorAccount.get(SCHEME_NAME).getAsString())
+                            .secondaryIdentification(
+                                    isNotNull(debtorAccount.get(SECONDARY_IDENTIFICATION)) ?
+                                            debtorAccount.get(SECONDARY_IDENTIFICATION).getAsString() :
+                                            null
+                            )
+                            .build()
             );
         }
 
-        if (isNotNull(fileReference)) {
-            fileDataInitiation.setFileReference(fileReference.getAsString());
+        if (isNotNull(initiation.get(NUMBER_OF_TRANSACTIONS))) {
+            fileDataInitiation.setNumberOfTransactions(initiation.get(NUMBER_OF_TRANSACTIONS).getAsString());
+        }
+
+        if (isNotNull(initiation.get(CONTROL_SUM))) {
+            fileDataInitiation.setControlSum(initiation.get(CONTROL_SUM).getAsBigDecimal());
+        }
+
+        if (isNotNull(initiation.get(REQUESTED_EXECUTION_DATETIME))) {
+            fileDataInitiation.setRequestedExecutionDateTime(
+                    Instant.parse(initiation.get(REQUESTED_EXECUTION_DATETIME).getAsString()).toDateTime()
+            );
+        }
+
+        if (isNotNull(initiation.get(FILE_REFERENCE))) {
+            fileDataInitiation.setFileReference(initiation.get(FILE_REFERENCE).getAsString());
         }
 
         return fileDataInitiation;

@@ -51,6 +51,7 @@ rs:
     uris:
       accounts:
         findUserById: /backoffice/accounts/search/findByUserId
+        findByAccountIdentifiers: /backoffice/accounts/search/findByAccountIdentifiers
       domestic-payments:
         findUserById: /backoffice/domestic-payments/search/findByUserId
 #  internal-port: 8081

@@ -15,6 +15,7 @@
  */
 package com.forgerock.securebanking.platform.client.test.support;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
 import com.forgerock.securebanking.platform.client.ConsentStatusCode;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -45,8 +46,12 @@ public class DomesticVrpPaymentConsentDetailsTestFactory {
         return aValidDomesticVrpPaymentConsentDetailsBuilder(consentId);
     }
 
-    public static JsonObject aValidDomesticVrpPaymentConsentDetails(String consentId, OBVRPConsentType vrpType) {
-        return aValidDomesticVrpPaymentConsentDetailsBuilder(consentId, vrpType);
+    public static JsonObject aValidDomesticVrpPaymentConsentDetails(String consentId, FRAccountIdentifier accountIdentifier) {
+        return aValidDomesticVrpPaymentConsentDetailsBuilder(consentId, accountIdentifier);
+    }
+
+    public static JsonObject aValidDomesticVrpPaymentConsentDetails(String consentId,  OBVRPConsentType vrpType) {
+        return aValidDomesticVrpPaymentConsentDetailsBuilder(consentId,vrpType);
     }
 
     public static JsonObject aValidDomesticVrpPaymentConsentDetails(String consentId, String clientId) {
@@ -62,6 +67,18 @@ public class DomesticVrpPaymentConsentDetailsTestFactory {
         consent.addProperty("id", UUID.randomUUID().toString());
         final JsonObject obIntent = new JsonObject();
         obIntent.add("Data", aValidDomesticVrpPaymentConsentDataDetailsBuilder(consentId));
+        consent.add("OBIntentObject", obIntent);
+        consent.add("resourceOwnerUsername", null);
+        consent.addProperty("oauth2ClientId", randomUUID().toString());
+        consent.addProperty("oauth2ClientName", "PISP Name");
+        return consent;
+    }
+
+    public static JsonObject aValidDomesticVrpPaymentConsentDetailsBuilder(String consentId, FRAccountIdentifier accountIdentifier) {
+        JsonObject consent = new JsonObject();
+        consent.addProperty("id", UUID.randomUUID().toString());
+        final JsonObject obIntent = new JsonObject();
+        obIntent.add("Data", aValidDomesticVrpPaymentConsentDataDetailsBuilder(consentId, accountIdentifier));
         consent.add("OBIntentObject", obIntent);
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", randomUUID().toString());
@@ -120,6 +137,17 @@ public class DomesticVrpPaymentConsentDetailsTestFactory {
         return data;
     }
 
+    public static JsonObject aValidDomesticVrpPaymentConsentDataDetailsBuilder(String consentId, FRAccountIdentifier accountIdentifier) {
+        JsonObject data = new JsonObject();
+        data.addProperty("ConsentId", consentId);
+        data.addProperty("CreationDateTime", DateTime.now(DateTimeZone.forTimeZone(TimeZone.getDefault())).toString());
+        data.addProperty("StatusUpdateDateTime", DateTime.now(DateTimeZone.forTimeZone(TimeZone.getDefault())).toString());
+        data.addProperty("Status", ConsentStatusCode.AWAITINGAUTHORISATION.toString());
+        data.add("ControlParameters", aValidDomesticVrpPaymentControlParametersBuilder(OBVRPConsentType.SWEEPING));
+        data.add("Initiation", aValidFRWriteDomesticVrpDataInitiationBuilder(accountIdentifier));
+        return data;
+    }
+
     public static JsonObject aValidDomesticVrpPaymentConsentDataDetailsBuilder(String consentId, OBVRPConsentType vrpType) {
         JsonObject data = new JsonObject();
         data.addProperty("ConsentId", consentId);
@@ -157,22 +185,44 @@ public class DomesticVrpPaymentConsentDetailsTestFactory {
 
     public static JsonObject aValidFRWriteDomesticVrpDataInitiationBuilder() {
         JsonObject data = new JsonObject();
-        data.add("DebtorAccount", JsonParser.parseString("{\n" +
-                "        \"SchemeName\": \"UK.OBIE.SortCodeAccountNumber\",\n" +
-                "        \"Identification\": \"08080021325698\",\n" +
-                "        \"Name\": \"ACME Inc\",\n" +
-                "        \"SecondaryIdentification\": \"0002\"\n" +
+        data.add("DebtorAccount", JsonParser.parseString("{" +
+                "        'SchemeName': 'UK.OBIE.SortCodeAccountNumber'," +
+                "        'Identification': '08080021325698'," +
+                "        'Name': 'ACME Inc'," +
+                "        'SecondaryIdentification': '0002'" +
                 "      }"));
-        data.add("CreditorAccount", JsonParser.parseString("{\n" +
-                "        \"SchemeName\": \"UK.OBIE.SortCodeAccountNumber\",\n" +
-                "        \"Identification\": \"08080021325698\",\n" +
-                "        \"Name\": \"ACME Inc\",\n" +
-                "        \"SecondaryIdentification\": \"0002\"\n" +
+        data.add("CreditorAccount", JsonParser.parseString("{" +
+                "        'SchemeName': 'UK.OBIE.SortCodeAccountNumber'," +
+                "        'Identification': '08080021325698'," +
+                "        'Name': 'ACME Inc'," +
+                "        'SecondaryIdentification': '0002'" +
                 "      }"));
         data.add("CreditorPostalAddress", null);
-        data.add("RemittanceInformation", JsonParser.parseString("{\n" +
-                "   \"Unstructured\":\"Internal ops code 5120101\",\n" +
-                "   \"Reference\":\"FRESCO-101\"\n" +
+        data.add("RemittanceInformation", JsonParser.parseString("{" +
+                "   'Unstructured':'Internal ops code 5120101'," +
+                "   'Reference':'FRESCO-101'" +
+                "}"));
+        return data;
+    }
+
+    public static JsonObject aValidFRWriteDomesticVrpDataInitiationBuilder(FRAccountIdentifier accountIdentifier) {
+        JsonObject data = new JsonObject();
+        String debtorAccount = "{'SchemeName': '"+accountIdentifier.getSchemeName()+"',"
+                + "'Identification': '"+accountIdentifier.getIdentification()+"',"
+                + "'Name': '"+accountIdentifier.getName()+"',"
+                + "'SecondaryIdentification': '0002'"
+                + "}";
+        data.add("DebtorAccount", JsonParser.parseString(debtorAccount));
+        data.add("CreditorAccount", JsonParser.parseString("{" +
+                "        'SchemeName': 'UK.OBIE.SortCodeAccountNumber'," +
+                "        'Identification': '08080021325698'," +
+                "        'Name': 'ACME Inc'," +
+                "        'SecondaryIdentification': '0002'" +
+                "      }"));
+        data.add("CreditorPostalAddress", null);
+        data.add("RemittanceInformation", JsonParser.parseString("{" +
+                "   'Unstructured':'Internal ops code 5120101'," +
+                "   'Reference':'FRESCO-101'" +
                 "}"));
         return data;
     }

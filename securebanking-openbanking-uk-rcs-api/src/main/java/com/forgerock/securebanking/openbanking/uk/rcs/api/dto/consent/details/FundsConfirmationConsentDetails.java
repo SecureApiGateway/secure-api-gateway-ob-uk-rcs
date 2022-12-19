@@ -15,6 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
 import com.forgerock.securebanking.platform.client.IntentType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,6 +33,11 @@ import org.joda.time.DateTime;
 public class FundsConfirmationConsentDetails extends ConsentDetails {
 
     private DateTime expirationDateTime;
+
+    @Override
+    public FRAccountIdentifier getDebtorAccount() {
+        return null;
+    }
 
     @Override
     public IntentType getIntentType() {

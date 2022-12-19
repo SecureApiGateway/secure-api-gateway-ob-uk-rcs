@@ -15,8 +15,10 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.factory.details;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAmount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRExchangeRateInformation;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternationalScheduledDataInitiation;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.InternationalScheduledPaymentConsentDetails;
 import com.forgerock.securebanking.platform.client.IntentType;
 import com.google.gson.JsonArray;
@@ -59,6 +61,7 @@ public class InternationalScheduledPaymentConsentDetailsFactory implements Conse
 
                 if (isNotNull(data.get(INITIATION))) {
                     JsonObject initiation = data.getAsJsonObject(INITIATION);
+                    details.setInitiation(decodeDataInitiation(initiation));
 
                     details.setPaymentReference(
                             isNotNull(initiation.get(REMITTANCE_INFORMATION)) &&
@@ -103,6 +106,29 @@ public class InternationalScheduledPaymentConsentDetailsFactory implements Conse
     @Override
     public IntentType getIntentType() {
         return IntentType.PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT;
+    }
+
+    private FRWriteInternationalScheduledDataInitiation decodeDataInitiation(JsonObject initiation){
+        log.debug("{}.{}.{}: {}", OB_INTENT_OBJECT, DATA, INITIATION, initiation);
+
+        if(isNotNull(initiation.get(DEBTOR_ACCOUNT))) {
+            JsonObject debtorAccount = initiation.getAsJsonObject(DEBTOR_ACCOUNT);
+            return FRWriteInternationalScheduledDataInitiation.builder()
+                    .debtorAccount(
+                            FRAccountIdentifier.builder()
+                                    .identification(debtorAccount.get(IDENTIFICATION).getAsString())
+                                    .name(debtorAccount.get(NAME).getAsString())
+                                    .schemeName(debtorAccount.get(SCHEME_NAME).getAsString())
+                                    .secondaryIdentification(
+                                            isNotNull(debtorAccount.get(SECONDARY_IDENTIFICATION)) ?
+                                                    debtorAccount.get(SECONDARY_IDENTIFICATION).getAsString() :
+                                                    null
+                                    )
+                                    .build()
+                    )
+                    .build();
+        }
+        return FRWriteInternationalScheduledDataInitiation.builder().build();
     }
 
     private FRAmount decodeInstructedAmount(JsonObject instructedAmount) {

@@ -15,7 +15,9 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAmount;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomesticDataInitiation;
 import com.forgerock.securebanking.platform.client.IntentType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,9 +32,17 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DomesticPaymentConsentDetails extends ConsentDetails {
+
+    private FRWriteDomesticDataInitiation initiation;
     private FRAmount instructedAmount;
     private String paymentReference;
     private FRAmount charges;
+
+
+    @Override
+    public FRAccountIdentifier getDebtorAccount() {
+        return initiation.getDebtorAccount();
+    }
 
     @Override
     public IntentType getIntentType() {

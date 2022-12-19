@@ -15,8 +15,10 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAmount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRExchangeRateInformation;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternationalScheduledDataInitiation;
 import com.forgerock.securebanking.platform.client.IntentType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,6 +34,7 @@ import org.joda.time.DateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class InternationalScheduledPaymentConsentDetails extends ConsentDetails {
+    private FRWriteInternationalScheduledDataInitiation initiation;
     private FRAmount instructedAmount;
     private FRAmount charges;
     private FRExchangeRateInformation exchangeRateInformation;
@@ -39,6 +42,10 @@ public class InternationalScheduledPaymentConsentDetails extends ConsentDetails 
     private String currencyOfTransfer;
     private String paymentReference;
 
+    @Override
+    public FRAccountIdentifier getDebtorAccount() {
+        return initiation.getDebtorAccount();
+    }
     @Override
     public IntentType getIntentType() {
         return IntentType.PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT;

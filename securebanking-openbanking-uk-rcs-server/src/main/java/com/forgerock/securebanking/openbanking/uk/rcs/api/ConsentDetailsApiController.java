@@ -17,9 +17,11 @@ package com.forgerock.securebanking.openbanking.uk.rcs.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
 import com.forgerock.securebanking.openbanking.uk.common.claim.Claims;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetails;
+import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticVrpPaymentConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.rs.AccountService;
 import com.forgerock.securebanking.openbanking.uk.rcs.configuration.ApiProviderConfiguration;
 import com.forgerock.securebanking.openbanking.uk.rcs.exception.InvalidConsentException;
@@ -46,6 +48,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
+import java.util.Objects;
 
 import static com.forgerock.securebanking.platform.client.exceptions.ErrorType.INVALID_REQUEST;
 
@@ -111,7 +114,7 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
             log.debug("Intent type: '{}' with ID '{}'", IntentType.identify(intentId), intentId);
 
             IntentType intentType = IntentType.identify(intentId);
-            if (intentType != null) {
+            if (Objects.nonNull(intentType)) {
                 log.debug("Intent type: '{}' with ID '{}'", intentType, intentId);
                 log.debug("Retrieve consent details:\n- Type '{}'\n-Id '{}'\n",
                         intentType.name(), consentClientRequest.getIntentId());
@@ -131,7 +134,15 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                 details.setClientName(apiClient.getName());
                 details.setUsername(consentClientRequest.getUser().getUserName());
                 details.setUserId(consentClientRequest.getUser().getId());
-                details.setAccounts(consentClientRequest.getAccounts());
+
+                // DebtorAccount is optional, but the PISP could provide the account identifier details for the PSU
+                // The accounts displayed in the RCS ui needs to be The debtor account if is provided in the consent otherwise the user accounts
+                if (Objects.nonNull(details.getDebtorAccount())) {
+                    setDebtorAccountWithBalance(details, consentRequestJws, intentId);
+                } else {
+                    details.setAccounts(accountService.getAccountsWithBalance(details.getUserId()));
+                }
+
                 details.setClientId(consentClientRequest.getClientId());
                 details.setLogo(apiClient.getLogoUri());
                 return ResponseEntity.ok(details);
@@ -150,6 +161,32 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                     e.getErrorClient().getClientId(),
                     e.getErrorClient().getIntentId());
         }
+
+    }
+
+    /*
+        DebtorAccount is optional, but the PISP could provide the account identification details for the PSU.
+        If the account identifier match with an existing one for that psu then we update the debtor account with the proper accountId
+        and set the debtor account with balance as accounts to be display in the consent UI
+     */
+    private void setDebtorAccountWithBalance(ConsentDetails details, String consentRequestJws, String intentId) {
+        FRAccountIdentifier debtorAccount = details.getDebtorAccount();
+        if (Objects.nonNull(debtorAccount)) {
+            FRAccountWithBalance accountWithBalance = accountService.getAccountWithBalanceByIdentifiers(
+                    details.getUserId(), debtorAccount.getName(), debtorAccount.getIdentification(), debtorAccount.getSchemeName()
+            );
+            if (Objects.nonNull(accountWithBalance)) {
+                debtorAccount.setAccountId(accountWithBalance.getAccount().getAccountId());
+                details.setAccounts(List.of(accountWithBalance));
+            } else {
+                String message = String.format("Invalid debtor account provide in the consent for the intent ID: '%s', the debtor account provided in the consent doesn't exist", intentId);
+                log.error(message);
+                throw new InvalidConsentException(consentRequestJws, ErrorType.ACCOUNT_SELECTION_REQUIRED,
+                        OBRIErrorType.REQUEST_BINDING_FAILED, message,
+                        details.getClientId(),
+                        intentId);
+            }
+        }
     }
 
     private ConsentClientDetailsRequest buildConsentClientRequest(SignedJWT signedJWT) throws ExceptionClient {
@@ -159,14 +196,12 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
         log.debug("Client Id from the JWT claims '{}'", clientId);
         String userId = JwtUtil.getClaimValue(signedJWT, Constants.Claims.USER_NAME);
         log.debug("User Id from the JWT claims '{}'", userId);
-        List<FRAccountWithBalance> accounts = accountService.getAccountsWithBalance(userId);
         log.debug("Retrieve the user details for user Id '{}'", userId);
         User user = userServiceClient.getUser(userId);
 
         return ConsentClientDetailsRequest.builder()
                 .intentId(intentId)
                 .consentRequestJwt(signedJWT)
-                .accounts(accounts)
                 .user(user)
                 .clientId(clientId)
                 .build();

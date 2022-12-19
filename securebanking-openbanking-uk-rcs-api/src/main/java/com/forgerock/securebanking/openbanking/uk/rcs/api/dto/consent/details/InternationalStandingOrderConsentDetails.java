@@ -15,6 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAmount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternationalStandingOrderDataInitiation;
 import com.forgerock.securebanking.platform.client.IntentType;
@@ -33,11 +34,16 @@ import org.joda.time.DateTime;
 @NoArgsConstructor
 public class InternationalStandingOrderConsentDetails extends ConsentDetails {
 
-    private FRWriteInternationalStandingOrderDataInitiation internationalStandingOrderDataInitiation;
+    private FRWriteInternationalStandingOrderDataInitiation initiation;
     private FRAmount charges;
     private DateTime expiredDate;
     private String currencyOfTransfer;
     private String paymentReference;
+
+    @Override
+    public FRAccountIdentifier getDebtorAccount() {
+        return initiation.getDebtorAccount();
+    }
 
     @Override
     public IntentType getIntentType() {

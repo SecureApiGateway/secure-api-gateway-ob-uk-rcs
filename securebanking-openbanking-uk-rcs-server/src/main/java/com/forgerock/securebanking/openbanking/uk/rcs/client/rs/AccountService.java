@@ -17,6 +17,7 @@ package com.forgerock.securebanking.openbanking.uk.rcs.client.rs;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
 import com.forgerock.securebanking.openbanking.uk.rcs.configuration.RcsConfigurationProperties;
 import com.forgerock.securebanking.openbanking.uk.rcs.configuration.RsBackofficeConfiguration;
 import lombok.extern.slf4j.Slf4j;
@@ -88,6 +89,54 @@ public class AccountService {
 
         URI uri = builder.build().encode().toUri();
         ResponseEntity<List<FRAccountWithBalance>> entity = restTemplate.exchange(uri, GET, null, ptr);
+        return entity.getBody();
+    }
+
+    public FRAccountWithBalance getAccountWithBalanceByIdentifiers(String userID, String name, String identification, String schemeName) {
+        // This is necessary as auth server always uses lowercase user id
+        String lowercaseUserId = userID.toLowerCase();
+        log.debug("Searching for accounts with balance for user ID: {}", lowercaseUserId);
+        ParameterizedTypeReference<FRAccountWithBalance> ptr = new ParameterizedTypeReference<>() {
+        };
+
+        UriComponentsBuilder builder = fromHttpUrl(
+                configurationProperties.getRsFqdnURIAsString() +
+                        rsBackofficeConfiguration.getAccounts().get(
+                                RsBackofficeConfiguration.UriContexts.FIND_BY_ACCOUNT_IDENTIFIERS.toString()
+                        )
+        );
+
+        builder.queryParam("userId", lowercaseUserId);
+        builder.queryParam("name", name);
+        builder.queryParam("identification", identification);
+        builder.queryParam("schemeName", schemeName);
+
+        URI uri = builder.build().encode().toUri();
+        ResponseEntity<FRAccountWithBalance> entity = restTemplate.exchange(uri, GET, null, ptr);
+        return entity.getBody();
+    }
+
+    public FRAccountIdentifier getAccountIdentifier(String userID, String name, String identification, String schemeName) {
+        // This is necessary as auth server always uses lowercase user id
+        String lowercaseUserId = userID.toLowerCase();
+        log.debug("Searching for accounts with balance for user ID: {}", lowercaseUserId);
+        ParameterizedTypeReference<FRAccountIdentifier> ptr = new ParameterizedTypeReference<>() {
+        };
+
+        UriComponentsBuilder builder = fromHttpUrl(
+                configurationProperties.getRsFqdnURIAsString() +
+                        rsBackofficeConfiguration.getAccounts().get(
+                                RsBackofficeConfiguration.UriContexts.FIND_BY_ACCOUNT_IDENTIFIERS.toString()
+                        )
+        );
+
+        builder.queryParam("userId", lowercaseUserId);
+        builder.queryParam("name", name);
+        builder.queryParam("identification", identification);
+        builder.queryParam("schemeName", schemeName);
+
+        URI uri = builder.build().encode().toUri();
+        ResponseEntity<FRAccountIdentifier> entity = restTemplate.exchange(uri, GET, null, ptr);
         return entity.getBody();
     }
 }

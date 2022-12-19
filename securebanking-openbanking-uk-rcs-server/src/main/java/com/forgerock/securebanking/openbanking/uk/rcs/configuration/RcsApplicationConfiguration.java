@@ -48,7 +48,6 @@ public class RcsApplicationConfiguration {
         List<HttpMessageConverter<?>> messageConverters = restTemplate.getMessageConverters();
         messageConverters.removeIf(c -> c instanceof MappingJackson2HttpMessageConverter);
         messageConverters.add(converter);
-//        restTemplate.setErrorHandler(new ClientResponseErrorHandler());
         // support for http PATCH calls
         HttpClient httpClient = HttpClientBuilder.create().build();
         HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);

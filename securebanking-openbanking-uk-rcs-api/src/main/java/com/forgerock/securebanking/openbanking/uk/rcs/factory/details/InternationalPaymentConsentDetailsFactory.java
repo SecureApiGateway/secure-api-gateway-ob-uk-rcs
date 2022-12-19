@@ -15,13 +15,16 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.factory.details;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAmount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRExchangeRateInformation;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternationalDataInitiation;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.InternationalPaymentConsentDetails;
 import com.forgerock.securebanking.platform.client.IntentType;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import lombok.extern.slf4j.Slf4j;
 import org.joda.time.Instant;
 import org.springframework.stereotype.Component;
 
@@ -30,13 +33,13 @@ import java.math.BigDecimal;
 import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.Members.*;
 import static com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.OB_INTENT_OBJECT;
 import static com.forgerock.securebanking.openbanking.uk.rcs.json.utils.JsonUtilValidation.isNotNull;
-import static com.forgerock.securebanking.platform.client.services.ConsentServiceInterface.log;
 import static java.util.Objects.requireNonNull;
 
 /**
  * International Payment consent details factory implements {@link ConsentDetailsFactory}
  */
 @Component
+@Slf4j
 public class InternationalPaymentConsentDetailsFactory implements ConsentDetailsFactory<InternationalPaymentConsentDetails> {
 
     @Override
@@ -59,6 +62,7 @@ public class InternationalPaymentConsentDetailsFactory implements ConsentDetails
 
                 if (isNotNull(data.get(INITIATION))) {
                     JsonObject initiation = data.getAsJsonObject(INITIATION);
+                    details.setInitiation(decodeDataInitiation(initiation));
 
                     details.setPaymentReference(
                             isNotNull(initiation.get(REMITTANCE_INFORMATION)) && isNotNull(initiation.getAsJsonObject(REMITTANCE_INFORMATION).get(REFERENCE))
@@ -96,6 +100,30 @@ public class InternationalPaymentConsentDetailsFactory implements ConsentDetails
     @Override
     public IntentType getIntentType() {
         return IntentType.PAYMENT_INTERNATIONAL_CONSENT;
+    }
+
+    private FRWriteInternationalDataInitiation decodeDataInitiation(JsonObject initiation){
+        log.debug("{}.{}.{}: {}", OB_INTENT_OBJECT, DATA, INITIATION, initiation);
+
+        if(isNotNull(initiation.get(DEBTOR_ACCOUNT))) {
+            JsonObject debtorAccount = initiation.getAsJsonObject(DEBTOR_ACCOUNT);
+            return FRWriteInternationalDataInitiation.builder()
+                    .debtorAccount(
+                            FRAccountIdentifier.builder()
+                                    .identification(debtorAccount.get(IDENTIFICATION).getAsString())
+                                    .name(debtorAccount.get(NAME).getAsString())
+                                    .schemeName(debtorAccount.get(SCHEME_NAME).getAsString())
+                                    .secondaryIdentification(
+                                            isNotNull(debtorAccount.get(SECONDARY_IDENTIFICATION)) ?
+                                                    debtorAccount.get(SECONDARY_IDENTIFICATION).getAsString() :
+                                                    null
+                                    )
+                                    .build()
+                    )
+                    .build();
+
+        }
+        return FRWriteInternationalDataInitiation.builder().build();
     }
 
     private FRAmount decodeInstructedAmount(JsonObject instructedAmount) {

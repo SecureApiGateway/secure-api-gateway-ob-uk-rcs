@@ -16,6 +16,7 @@
 package com.forgerock.securebanking.platform.client.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRFinancialAccount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,5 +30,5 @@ import lombok.NoArgsConstructor;
 public class ConsentClientDecisionRequestData {
     @JsonProperty("Status")
     private String status;
-    private FRAccountIdentifier debtorAccount;
+    private FRFinancialAccount debtorAccount;
 }

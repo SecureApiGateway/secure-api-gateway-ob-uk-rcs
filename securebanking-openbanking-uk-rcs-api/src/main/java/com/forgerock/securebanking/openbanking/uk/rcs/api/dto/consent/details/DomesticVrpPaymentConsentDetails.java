@@ -15,6 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRReadRefundAccount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.vrp.FRWriteDomesticVrpDataInitiation;
 import com.forgerock.securebanking.platform.client.IntentType;
@@ -37,6 +38,10 @@ public class DomesticVrpPaymentConsentDetails extends ConsentDetails {
     private FRReadRefundAccount readRefundAccount;
     private OBDomesticVRPControlParameters controlParameters;
 
+    @Override
+    public FRAccountIdentifier getDebtorAccount() {
+        return initiation.getDebtorAccount();
+    }
     @Override
     public IntentType getIntentType() {
         return IntentType.DOMESTIC_VRP_PAYMENT_CONSENT;
