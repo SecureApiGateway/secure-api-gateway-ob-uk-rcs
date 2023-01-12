@@ -32,7 +32,7 @@ import org.joda.time.DateTime;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class InternationalStandingOrderConsentDetails extends ConsentDetails {
+public class InternationalStandingOrderConsentDetails extends PaymentsConsentDetails {
 
     private FRWriteInternationalStandingOrderDataInitiation initiation;
     private FRAmount charges;

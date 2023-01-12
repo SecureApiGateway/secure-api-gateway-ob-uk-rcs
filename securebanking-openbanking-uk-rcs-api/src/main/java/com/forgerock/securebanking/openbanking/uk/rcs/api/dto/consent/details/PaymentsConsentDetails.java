@@ -15,32 +15,14 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRExternalPermissionsCode;
-import com.forgerock.securebanking.platform.client.IntentType;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.joda.time.DateTime;
 
-import java.util.List;
-
-/**
- * Models the consent data that is used for an account details request.
- */
-@Data
 @SuperBuilder
-@AllArgsConstructor
 @NoArgsConstructor
-public class AccountsConsentDetails extends ConsentDetails {
-
-    private List<FRExternalPermissionsCode> permissions;
-    private DateTime fromTransaction;
-    private DateTime toTransaction;
-    private DateTime expiredDate;
-
-    @Override
-    public IntentType getIntentType() {
-        return IntentType.ACCOUNT_ACCESS_CONSENT;
-    }
+public abstract class PaymentsConsentDetails extends ConsentDetails {
+    @JsonIgnore
+    public abstract FRAccountIdentifier getDebtorAccount();
 }

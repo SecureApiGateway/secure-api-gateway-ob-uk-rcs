@@ -31,7 +31,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DomesticStandingOrderConsentDetails extends ConsentDetails {
+public class DomesticStandingOrderConsentDetails extends PaymentsConsentDetails {
     private FRWriteDomesticStandingOrderDataInitiation initiation;
     private String paymentReference;
     private FRAmount charges;

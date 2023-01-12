@@ -32,7 +32,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class InternationalPaymentConsentDetails extends ConsentDetails {
+public class InternationalPaymentConsentDetails extends PaymentsConsentDetails {
 
     private FRWriteInternationalDataInitiation initiation;
     private FRAmount instructedAmount;

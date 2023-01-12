@@ -32,7 +32,7 @@ import uk.org.openbanking.datamodel.vrp.OBDomesticVRPControlParameters;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DomesticVrpPaymentConsentDetails extends ConsentDetails {
+public class DomesticVrpPaymentConsentDetails extends PaymentsConsentDetails {
 
     private FRWriteDomesticVrpDataInitiation initiation;
     private FRReadRefundAccount readRefundAccount;

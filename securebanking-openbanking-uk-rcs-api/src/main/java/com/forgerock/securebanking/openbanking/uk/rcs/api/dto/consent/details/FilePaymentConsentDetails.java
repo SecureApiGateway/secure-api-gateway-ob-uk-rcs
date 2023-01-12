@@ -34,7 +34,7 @@ import java.math.BigDecimal;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FilePaymentConsentDetails extends ConsentDetails {
+public class FilePaymentConsentDetails extends PaymentsConsentDetails {
 
     private FRWriteFileDataInitiation initiation;
     private FRAmount charges;

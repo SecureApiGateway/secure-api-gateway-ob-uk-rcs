@@ -33,7 +33,7 @@ import org.joda.time.DateTime;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class InternationalScheduledPaymentConsentDetails extends ConsentDetails {
+public class InternationalScheduledPaymentConsentDetails extends PaymentsConsentDetails {
     private FRWriteInternationalScheduledDataInitiation initiation;
     private FRAmount instructedAmount;
     private FRAmount charges;

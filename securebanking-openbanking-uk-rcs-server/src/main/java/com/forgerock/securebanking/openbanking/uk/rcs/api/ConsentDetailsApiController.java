@@ -21,7 +21,7 @@ import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.com
 import com.forgerock.securebanking.openbanking.uk.common.claim.Claims;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.ConsentDetails;
-import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.DomesticVrpPaymentConsentDetails;
+import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details.PaymentsConsentDetails;
 import com.forgerock.securebanking.openbanking.uk.rcs.client.rs.AccountService;
 import com.forgerock.securebanking.openbanking.uk.rcs.configuration.ApiProviderConfiguration;
 import com.forgerock.securebanking.openbanking.uk.rcs.exception.InvalidConsentException;
@@ -135,13 +135,15 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                 details.setUsername(consentClientRequest.getUser().getUserName());
                 details.setUserId(consentClientRequest.getUser().getId());
 
+                details.setAccounts(accountService.getAccountsWithBalance(details.getUserId()));
+
                 // DebtorAccount is optional, but the PISP could provide the account identifier details for the PSU
                 // The accounts displayed in the RCS ui needs to be The debtor account if is provided in the consent otherwise the user accounts
-                // TODO debtorAccount logic for VRP payments until fix  https://github.com/secureapigateway/secureapigateway/issues/731
-                if (Objects.nonNull(details.getDebtorAccount()) & details.getIntentType().equals(IntentType.DOMESTIC_VRP_PAYMENT_CONSENT)) {
-                    setDebtorAccountWithBalance(details, consentRequestJws, intentId);
-                } else {
-                    details.setAccounts(accountService.getAccountsWithBalance(details.getUserId()));
+                // TODO debtorAccount logic for VRP sweeping payments case until it will fixed for all payments  https://github.com/secureapigateway/secureapigateway/issues/731
+                if (details.getIntentType().equals(IntentType.DOMESTIC_VRP_PAYMENT_CONSENT)) {
+                    if(Objects.nonNull(((PaymentsConsentDetails) details).getDebtorAccount())) {
+                        setDebtorAccountWithBalance((PaymentsConsentDetails) details, consentRequestJws, intentId);
+                    }
                 }
 
                 details.setClientId(consentClientRequest.getClientId());
@@ -170,7 +172,7 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
         If the account identifier match with an existing one for that psu then we update the debtor account with the proper accountId
         and set the debtor account with balance as accounts to be display in the consent UI
      */
-    private void setDebtorAccountWithBalance(ConsentDetails details, String consentRequestJws, String intentId) {
+    private void setDebtorAccountWithBalance(PaymentsConsentDetails details, String consentRequestJws, String intentId) {
         FRAccountIdentifier debtorAccount = details.getDebtorAccount();
         if (Objects.nonNull(debtorAccount)) {
             FRAccountWithBalance accountWithBalance = accountService.getAccountWithBalanceByIdentifiers(
