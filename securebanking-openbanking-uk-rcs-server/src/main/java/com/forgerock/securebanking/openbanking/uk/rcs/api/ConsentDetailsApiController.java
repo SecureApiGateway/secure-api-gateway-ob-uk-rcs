@@ -137,7 +137,8 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
 
                 // DebtorAccount is optional, but the PISP could provide the account identifier details for the PSU
                 // The accounts displayed in the RCS ui needs to be The debtor account if is provided in the consent otherwise the user accounts
-                if (Objects.nonNull(details.getDebtorAccount())) {
+                // TODO debtorAccount logic for VRP payments until fix  https://github.com/secureapigateway/secureapigateway/issues/731
+                if (Objects.nonNull(details.getDebtorAccount()) & details.getIntentType().equals(IntentType.DOMESTIC_VRP_PAYMENT_CONSENT)) {
                     setDebtorAccountWithBalance(details, consentRequestJws, intentId);
                 } else {
                     details.setAccounts(accountService.getAccountsWithBalance(details.getUserId()));
