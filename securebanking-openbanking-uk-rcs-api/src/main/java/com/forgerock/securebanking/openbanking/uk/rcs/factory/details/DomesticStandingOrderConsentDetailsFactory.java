@@ -96,7 +96,6 @@ public class DomesticStandingOrderConsentDetailsFactory implements ConsentDetail
     private FRWriteDomesticStandingOrderDataInitiation decodeDataInitiation(JsonObject initiation) {
         log.debug("{}.{}.{}: {}", OB_INTENT_OBJECT, DATA, INITIATION, initiation);
 
-
         FRWriteDomesticStandingOrderDataInitiation domesticStandingOrderDataInitiation = new FRWriteDomesticStandingOrderDataInitiation();
         if (isNotNull(initiation.get(DEBTOR_ACCOUNT))) {
             JsonObject debtorAccount = initiation.getAsJsonObject(DEBTOR_ACCOUNT);
@@ -118,7 +117,7 @@ public class DomesticStandingOrderConsentDetailsFactory implements ConsentDetail
                     Instant.parse(initiation.get(FINAL_PAYMENT_DATETIME).getAsString()).toDateTime()
             );
         }
-        if (isNotNull(initiation.getAsJsonObject(FINAL_PAYMENT_AMOUNT))) {
+        if (isNotNull(initiation.get(FINAL_PAYMENT_AMOUNT))) {
             JsonObject finalPaymentAmount = initiation.getAsJsonObject(FINAL_PAYMENT_AMOUNT);
             FRAmount frFinalPaymentAmount = new FRAmount();
             frFinalPaymentAmount.setAmount(
@@ -137,7 +136,7 @@ public class DomesticStandingOrderConsentDetailsFactory implements ConsentDetail
                     Instant.parse(initiation.get(FIRST_PAYMENT_DATETIME).getAsString()).toDateTime()
             );
         }
-        if (isNotNull(initiation.getAsJsonObject(FIRST_PAYMENT_AMOUNT))) {
+        if (isNotNull(initiation.get(FIRST_PAYMENT_AMOUNT))) {
             JsonObject firstPaymentAmount = initiation.getAsJsonObject(FIRST_PAYMENT_AMOUNT);
             FRAmount frFirstPaymentAmount = new FRAmount();
             frFirstPaymentAmount.setAmount(
@@ -154,7 +153,7 @@ public class DomesticStandingOrderConsentDetailsFactory implements ConsentDetail
                     Instant.parse(initiation.get(RECURRING_PAYMENT_DATETIME).getAsString()).toDateTime()
             );
         }
-        if (isNotNull(initiation.getAsJsonObject(RECURRING_PAYMENT_AMOUNT))) {
+        if (isNotNull(initiation.get(RECURRING_PAYMENT_AMOUNT))) {
             JsonObject recurringPaymentAmount = initiation.getAsJsonObject(RECURRING_PAYMENT_AMOUNT);
             FRAmount frRecurringPaymentAmount = new FRAmount();
             frRecurringPaymentAmount.setAmount(

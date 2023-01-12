@@ -136,7 +136,7 @@ public class InternationalStandingOrderConsentDetailsFactory implements ConsentD
             );
         }
 
-        if (isNotNull(initiation.getAsJsonObject(INSTRUCTED_AMOUNT))) {
+        if (isNotNull(initiation.get(INSTRUCTED_AMOUNT))) {
             JsonObject instructedAmount = initiation.getAsJsonObject(INSTRUCTED_AMOUNT);
             FRAmount frInstructedAmount = new FRAmount();
             frInstructedAmount.setAmount(
