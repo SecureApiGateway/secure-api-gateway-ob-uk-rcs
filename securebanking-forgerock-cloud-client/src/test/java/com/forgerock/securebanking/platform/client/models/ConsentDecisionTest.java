@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRFinancialAccount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
 import com.forgerock.securebanking.platform.client.Constants;
 import lombok.extern.slf4j.Slf4j;
@@ -81,7 +82,7 @@ public class ConsentDecisionTest {
         assertThat(consentDecision).isNotNull();
         assertThat(consentDecision.getAccountIds()).isNull();
         assertThat(consentDecision.getData().getDebtorAccount()).isNotNull();
-        assertThat(consentDecision.getData().getDebtorAccount().getIdentification()).isEqualTo(DEB_ACC_IDENTIFIER);
+        assertThat(consentDecision.getData().getDebtorAccount().getFirstAccount().getIdentification()).isEqualTo(DEB_ACC_IDENTIFIER);
 
     }
 
@@ -110,19 +111,26 @@ public class ConsentDecisionTest {
     @Test
     public void shouldSerializePayments() throws JsonProcessingException {
         // Given
-
         ConsentClientDecisionRequest consentDecision = ConsentClientDecisionRequest.builder()
                 .data(
                         ConsentClientDecisionRequestData.builder()
                                 .status(Constants.ConsentDecisionStatus.AUTHORISED)
-                                .debtorAccount(FRAccountIdentifier.builder()
-                                        .identification(DEB_ACC_IDENTIFIER)
-                                        .name("name")
-                                        .schemeName("schemeName")
-                                        .secondaryIdentification("secId")
+                                .debtorAccount(FRFinancialAccount.builder()
+                                        .accountId("30ff5da7-7d0f-43fe-974c-7b34717cbeec")
+                                        .accounts(
+                                                List.of(
+                                                        FRAccountIdentifier.builder()
+                                                                .identification(DEB_ACC_IDENTIFIER)
+                                                                .name("name")
+                                                                .schemeName("schemeName")
+                                                                .secondaryIdentification("secId")
+                                                                .build()
+                                                )
+                                        )
                                         .build()
                                 )
                                 .build()
+
                 )
                 .resourceOwnerUsername(USER_ID)
                 .build();
@@ -161,14 +169,16 @@ public class ConsentDecisionTest {
                 "\"type\" : \"ConsentClientDecisionRequest\"," +
                 "\"data\" : {" +
                 "\"Status\" : \"" + Constants.ConsentDecisionStatus.AUTHORISED + "\"," +
-                "\"debtorAccount\": {" +
-                "\"schemeName\": \"UK.OBIE.SortCodeAccountNumber\"," +
-                "\"identification\": \"" + DEB_ACC_IDENTIFIER + "\"," +
-                "\"name\": \"7b78b560-6057-41c5-bf1f-1ed590b1c30b\"," +
-                "\"secondaryIdentification\": \"49704112\" }" +
-                "}," +
+                "\"debtorAccount\" : {" +
+                "\"accountId\" : \"30ff5da7-7d0f-43fe-974c-7b34717cbeec\"," +
+                "\"accounts\" : [ {" +
+                "\"schemeName\" : \"schemeName\"," +
+                "\"identification\" : \"79126738233670\"," +
+                "\"name\" : \"name\"," +
+                "\"secondaryIdentification\" : \"secId\"" +
+                "}]" +
+                "}}," +
                 "\"resourceOwnerUsername\" : \"" + userId + "\"" +
                 "}";
     }
-
 }

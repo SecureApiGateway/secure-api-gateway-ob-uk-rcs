@@ -15,6 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.factory.details;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAmount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternationalStandingOrderDataInitiation;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.forgerock.FRFrequency;
@@ -23,6 +24,7 @@ import com.forgerock.securebanking.platform.client.IntentType;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import lombok.extern.slf4j.Slf4j;
 import org.joda.time.Instant;
 import org.springframework.stereotype.Component;
 
@@ -35,6 +37,7 @@ import static java.util.Objects.requireNonNull;
  * International Standing Order consent details factory implements {@link ConsentDetailsFactory}
  */
 @Component
+@Slf4j
 public class InternationalStandingOrderConsentDetailsFactory implements ConsentDetailsFactory<InternationalStandingOrderConsentDetails> {
 
     @Override
@@ -65,20 +68,13 @@ public class InternationalStandingOrderConsentDetailsFactory implements ConsentD
                                     null
                     );
 
-                    details.setInternationalStandingOrderDataInitiation(
-                            decodeInternationalStandingOrderDataInitiation(
-                                    isNotNull(initiation.get(FIRST_PAYMENT_DATETIME)) ? initiation.get(FIRST_PAYMENT_DATETIME) : null,
-                                    isNotNull(initiation.get(FINAL_PAYMENT_DATETIME)) ? initiation.get(FINAL_PAYMENT_DATETIME) : null,
-                                    isNotNull(initiation.get(INSTRUCTED_AMOUNT)) ? initiation.getAsJsonObject(INSTRUCTED_AMOUNT) : null,
-                                    initiation.get(FREQUENCY)
-                            )
-                    );
+                    details.setInitiation(decodeDataInitiation(initiation));
 
                     if (isNotNull(data.get(CHARGES))) {
                         details.setCharges(
                                 decodeCharges(
                                         data.getAsJsonArray(CHARGES),
-                                        details.getInternationalStandingOrderDataInitiation().getInstructedAmount().getCurrency()
+                                        details.getInitiation().getInstructedAmount().getCurrency()
                                 )
                         );
                     }
@@ -107,23 +103,41 @@ public class InternationalStandingOrderConsentDetailsFactory implements ConsentD
         return charges;
     }
 
-    private FRWriteInternationalStandingOrderDataInitiation decodeInternationalStandingOrderDataInitiation(
-            JsonElement firstPaymentDateTime,
-            JsonElement finalPaymentDateTime,
-            JsonObject instructedAmount,
-            JsonElement frequency
-    ) {
-        FRWriteInternationalStandingOrderDataInitiation standingOrderData = new FRWriteInternationalStandingOrderDataInitiation();
+    private FRWriteInternationalStandingOrderDataInitiation decodeDataInitiation(JsonObject initiation) {
+        log.debug("{}.{}.{}: {}", OB_INTENT_OBJECT, DATA, INITIATION, initiation);
 
-        if (isNotNull(firstPaymentDateTime)) {
-            standingOrderData.setFirstPaymentDateTime(Instant.parse(firstPaymentDateTime.getAsString()).toDateTime());
+        FRWriteInternationalStandingOrderDataInitiation internationalStandingOrderDataInitiation = new FRWriteInternationalStandingOrderDataInitiation();
+
+        if (isNotNull(initiation.get(DEBTOR_ACCOUNT))) {
+            JsonObject debtorAccount = initiation.getAsJsonObject(DEBTOR_ACCOUNT);
+            internationalStandingOrderDataInitiation.setDebtorAccount(
+                    FRAccountIdentifier.builder()
+                            .identification(debtorAccount.get(IDENTIFICATION).getAsString())
+                            .name(debtorAccount.get(NAME).getAsString())
+                            .schemeName(debtorAccount.get(SCHEME_NAME).getAsString())
+                            .secondaryIdentification(
+                                    isNotNull(debtorAccount.get(SECONDARY_IDENTIFICATION)) ?
+                                            debtorAccount.get(SECONDARY_IDENTIFICATION).getAsString() :
+                                            null
+                            )
+                            .build()
+            );
         }
 
-        if (isNotNull(finalPaymentDateTime)) {
-            standingOrderData.setFinalPaymentDateTime(Instant.parse(finalPaymentDateTime.getAsString()).toDateTime());
+        if (isNotNull(initiation.get(FIRST_PAYMENT_DATETIME))) {
+            internationalStandingOrderDataInitiation.setFirstPaymentDateTime(
+                    Instant.parse(initiation.get(FIRST_PAYMENT_DATETIME).getAsString()).toDateTime()
+            );
         }
 
-        if (isNotNull(instructedAmount)) {
+        if (isNotNull(initiation.get(FINAL_PAYMENT_DATETIME))) {
+            internationalStandingOrderDataInitiation.setFinalPaymentDateTime(
+                    Instant.parse(initiation.get(FINAL_PAYMENT_DATETIME).getAsString()).toDateTime()
+            );
+        }
+
+        if (isNotNull(initiation.get(INSTRUCTED_AMOUNT))) {
+            JsonObject instructedAmount = initiation.getAsJsonObject(INSTRUCTED_AMOUNT);
             FRAmount frInstructedAmount = new FRAmount();
             frInstructedAmount.setAmount(
                     isNotNull(instructedAmount.get(AMOUNT)) ? instructedAmount.get(AMOUNT).getAsString() : null
@@ -131,16 +145,16 @@ public class InternationalStandingOrderConsentDetailsFactory implements ConsentD
             frInstructedAmount.setCurrency(
                     isNotNull(instructedAmount.get(CURRENCY)) ? instructedAmount.get(CURRENCY).getAsString() : null
             );
-            standingOrderData.setInstructedAmount(frInstructedAmount);
+            internationalStandingOrderDataInitiation.setInstructedAmount(frInstructedAmount);
         }
 
-        if (isNotNull(frequency)) {
-            String frequencyType = frequency.getAsString();
+        if (isNotNull(initiation.get(FREQUENCY))) {
+            String frequencyType = initiation.get(FREQUENCY).getAsString();
             FRFrequency frFrequency = new FRFrequency(frequencyType);
             String sentence = frFrequency.getSentence();
-            standingOrderData.setFrequency(sentence);
+            internationalStandingOrderDataInitiation.setFrequency(sentence);
         }
 
-        return standingOrderData;
+        return internationalStandingOrderDataInitiation;
     }
 }

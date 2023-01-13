@@ -80,7 +80,7 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
                 ConsentDecisionDeserialized.class
         );
 
-
+        log.debug("decision deserialised \n {}", consentDecisionDeserialized);
         try {
             boolean decision = Constants.ConsentDecisionStatus.AUTHORISED.equals(consentDecisionDeserialized.getDecision());
             log.debug("The decision is '{}'", decision);
@@ -94,7 +94,6 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
 
             IntentType intentType = IntentType.identify(intentId);
             if (intentType != null) {
-
                 ConsentClientDecisionRequest consentClientDecisionRequest = ConsentClientDecisionRequest.builder()
                         .accountIds(consentDecisionDeserialized.getAccountIds())
                         .clientId(clientId)
@@ -102,7 +101,7 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
                         .data(ConsentClientDecisionRequestData.builder()
                                 .debtorAccount(
                                         consentDecisionDeserialized.getDebtorAccount() != null ?
-                                                consentDecisionDeserialized.getDebtorAccount().getFirstAccount() :
+                                                consentDecisionDeserialized.getDebtorAccount() :
                                                 null
                                 )
                                 .status(consentDecisionDeserialized.getDecision())
@@ -114,7 +113,7 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
                                 JwtUtil.getClaimValueMap(signedJWT, "scopes").values().stream().map(o -> (String) o).collect(Collectors.toList())
                         )
                         .build();
-
+                log.debug("consentClientDecisionRequest \n {}", consentClientDecisionRequest);
                 JsonObject consentUpdated = consentServiceClient.updateConsent(consentClientDecisionRequest);
                 log.debug("Consent updated '{}", consentUpdated);
 

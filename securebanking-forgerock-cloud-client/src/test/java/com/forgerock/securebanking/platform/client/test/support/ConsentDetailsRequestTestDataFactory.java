@@ -63,7 +63,6 @@ public class ConsentDetailsRequestTestDataFactory {
                     .consentRequestJwt(SignedJWT.parse("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
                             "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +
                             "SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"))
-                    .accounts(List.of(aValidFRAccountWithBalance()))
                     .user(UserTestDataFactory.aValidUser(randomUUID().toString(), "testUserName"))
                     .clientId(randomUUID().toString());
         } catch (ParseException e) {
@@ -78,7 +77,6 @@ public class ConsentDetailsRequestTestDataFactory {
                     .consentRequestJwt(SignedJWT.parse("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
                             "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +
                             "SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"))
-                    .accounts(List.of(aValidFRAccountWithBalance()))
                     .user(UserTestDataFactory.aValidUser(randomUUID().toString(), "testUserName"))
                     .clientId(randomUUID().toString());
         } catch (ParseException e) {
@@ -93,7 +91,6 @@ public class ConsentDetailsRequestTestDataFactory {
                     .consentRequestJwt(SignedJWT.parse("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
                             "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +
                             "SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"))
-                    .accounts(List.of(aValidFRAccountWithBalance()))
                     .user(user)
                     .clientId(randomUUID().toString());
         } catch (ParseException e) {

@@ -34,11 +34,6 @@ public class ConsentClientDetailsRequest {
     protected SignedJWT consentRequestJwt;
     protected User user;
     protected String clientId;
-    List<FRAccountWithBalance> accounts;
-
-    public List<FRAccountWithBalance> getAccounts() {
-        return accounts;
-    }
 
     public String getConsentRequestJwtString() {
         return consentRequestJwt.getParsedString();

@@ -27,5 +27,4 @@ public class InvalidConsentException extends RuntimeException {
     String reason;
     String clientId;
     String consentId;
-//    List<FRAccountWithBalance> accounts;
 }

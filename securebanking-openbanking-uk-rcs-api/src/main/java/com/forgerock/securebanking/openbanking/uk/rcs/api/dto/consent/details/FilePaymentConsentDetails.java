@@ -15,6 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.details;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAmount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteFileDataInitiation;
 import com.forgerock.securebanking.platform.client.IntentType;
@@ -33,9 +34,9 @@ import java.math.BigDecimal;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FilePaymentConsentDetails extends ConsentDetails {
+public class FilePaymentConsentDetails extends PaymentsConsentDetails {
 
-    private FRWriteFileDataInitiation fileDataInitiation;
+    private FRWriteFileDataInitiation initiation;
     private FRAmount charges;
     private DateTime expiredDate;
     private String fileReference;
@@ -44,6 +45,11 @@ public class FilePaymentConsentDetails extends ConsentDetails {
     private BigDecimal controlSum;
     private String paymentReference;
     private String requestedExecutionDateTime;
+
+    @Override
+    public FRAccountIdentifier getDebtorAccount() {
+        return initiation.getDebtorAccount();
+    }
 
     @Override
     public IntentType getIntentType() {

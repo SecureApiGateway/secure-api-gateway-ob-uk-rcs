@@ -15,6 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rcs.factory.details;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAmount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomesticStandingOrderDataInitiation;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.forgerock.FRFrequency;
@@ -23,6 +24,7 @@ import com.forgerock.securebanking.platform.client.IntentType;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import lombok.extern.slf4j.Slf4j;
 import org.joda.time.Instant;
 import org.springframework.stereotype.Component;
 
@@ -35,6 +37,7 @@ import static java.util.Objects.requireNonNull;
  * Domestic Standing Order consent details factory implements {@link ConsentDetailsFactory}
  */
 @Component
+@Slf4j
 public class DomesticStandingOrderConsentDetailsFactory implements ConsentDetailsFactory<DomesticStandingOrderConsentDetails> {
 
     @Override
@@ -57,29 +60,13 @@ public class DomesticStandingOrderConsentDetailsFactory implements ConsentDetail
                                     initiation.get(REFERENCE).getAsString() :
                                     null
                     );
-                    details.setStandingOrder(
-                            decodeStandingOrder(
-                                    isNotNull(initiation.get(FINAL_PAYMENT_DATETIME))
-                                            ? initiation.get(FINAL_PAYMENT_DATETIME) : null,
-                                    isNotNull(initiation.get(FINAL_PAYMENT_AMOUNT))
-                                            ? initiation.getAsJsonObject(FINAL_PAYMENT_AMOUNT) : null,
-                                    isNotNull(initiation.get(FIRST_PAYMENT_DATETIME))
-                                            ? initiation.get(FIRST_PAYMENT_DATETIME) : null,
-                                    isNotNull(initiation.get(FIRST_PAYMENT_AMOUNT))
-                                            ? initiation.getAsJsonObject(FIRST_PAYMENT_AMOUNT) : null,
-                                    isNotNull(initiation.get(RECURRING_PAYMENT_DATETIME))
-                                            ? initiation.get(RECURRING_PAYMENT_DATETIME) : null,
-                                    isNotNull(initiation.get(RECURRING_PAYMENT_AMOUNT))
-                                            ? initiation.getAsJsonObject(RECURRING_PAYMENT_AMOUNT) : null,
-                                    initiation.get(FREQUENCY)
-                            )
-                    );
+                    details.setInitiation(decodeDataInitiation(initiation));
 
                     if (isNotNull(data.get(CHARGES))) {
                         details.setCharges(
                                 decodeCharges(
                                         data.getAsJsonArray(CHARGES),
-                                        details.getStandingOrder().getFirstPaymentAmount().getCurrency()
+                                        details.getInitiation().getFirstPaymentAmount().getCurrency()
                                 )
                         );
                     }
@@ -106,35 +93,51 @@ public class DomesticStandingOrderConsentDetailsFactory implements ConsentDetail
         return charges;
     }
 
-    private FRWriteDomesticStandingOrderDataInitiation decodeStandingOrder(
-            JsonElement finalPaymentDateTime,
-            JsonObject finalPaymentAmount,
-            JsonElement firstPaymentDateTime,
-            JsonObject firstPaymentAmount,
-            JsonElement recurringPaymentDateTime,
-            JsonObject recurringPaymentAmount,
-            JsonElement frequency
-    ) {
-        FRWriteDomesticStandingOrderDataInitiation standingOrderData = new FRWriteDomesticStandingOrderDataInitiation();
+    private FRWriteDomesticStandingOrderDataInitiation decodeDataInitiation(JsonObject initiation) {
+        log.debug("{}.{}.{}: {}", OB_INTENT_OBJECT, DATA, INITIATION, initiation);
 
-        if (isNotNull(finalPaymentDateTime)) {
-            standingOrderData.setFinalPaymentDateTime(Instant.parse(finalPaymentDateTime.getAsString()).toDateTime());
+        FRWriteDomesticStandingOrderDataInitiation domesticStandingOrderDataInitiation = new FRWriteDomesticStandingOrderDataInitiation();
+        if (isNotNull(initiation.get(DEBTOR_ACCOUNT))) {
+            JsonObject debtorAccount = initiation.getAsJsonObject(DEBTOR_ACCOUNT);
+            domesticStandingOrderDataInitiation.setDebtorAccount(
+                    FRAccountIdentifier.builder()
+                            .identification(debtorAccount.get(IDENTIFICATION).getAsString())
+                            .name(debtorAccount.get(NAME).getAsString())
+                            .schemeName(debtorAccount.get(SCHEME_NAME).getAsString())
+                            .secondaryIdentification(
+                                    isNotNull(debtorAccount.get(SECONDARY_IDENTIFICATION)) ?
+                                            debtorAccount.get(SECONDARY_IDENTIFICATION).getAsString() :
+                                            null
+                            )
+                            .build()
+            );
         }
-        if (isNotNull(finalPaymentAmount)) {
+        if (isNotNull(initiation.get(FINAL_PAYMENT_DATETIME))) {
+            domesticStandingOrderDataInitiation.setFinalPaymentDateTime(
+                    Instant.parse(initiation.get(FINAL_PAYMENT_DATETIME).getAsString()).toDateTime()
+            );
+        }
+        if (isNotNull(initiation.get(FINAL_PAYMENT_AMOUNT))) {
+            JsonObject finalPaymentAmount = initiation.getAsJsonObject(FINAL_PAYMENT_AMOUNT);
             FRAmount frFinalPaymentAmount = new FRAmount();
             frFinalPaymentAmount.setAmount(
-                    isNotNull(finalPaymentAmount.get(AMOUNT)) ? finalPaymentAmount.get(AMOUNT).getAsString() : null
+                    isNotNull(initiation.getAsJsonObject(FINAL_PAYMENT_AMOUNT).get(AMOUNT)) ?
+                            initiation.getAsJsonObject(FINAL_PAYMENT_AMOUNT).get(AMOUNT).getAsString() :
+                            null
             );
             frFinalPaymentAmount.setCurrency(
                     isNotNull(finalPaymentAmount.get(CURRENCY)) ? finalPaymentAmount.get(CURRENCY).getAsString() : null
             );
-            standingOrderData.setFinalPaymentAmount(frFinalPaymentAmount);
+            domesticStandingOrderDataInitiation.setFinalPaymentAmount(frFinalPaymentAmount);
         }
 
-        if (isNotNull(firstPaymentDateTime)) {
-            standingOrderData.setFirstPaymentDateTime(Instant.parse(firstPaymentDateTime.getAsString()).toDateTime());
+        if (isNotNull(initiation.get(FIRST_PAYMENT_DATETIME))) {
+            domesticStandingOrderDataInitiation.setFirstPaymentDateTime(
+                    Instant.parse(initiation.get(FIRST_PAYMENT_DATETIME).getAsString()).toDateTime()
+            );
         }
-        if (isNotNull(firstPaymentAmount)) {
+        if (isNotNull(initiation.get(FIRST_PAYMENT_AMOUNT))) {
+            JsonObject firstPaymentAmount = initiation.getAsJsonObject(FIRST_PAYMENT_AMOUNT);
             FRAmount frFirstPaymentAmount = new FRAmount();
             frFirstPaymentAmount.setAmount(
                     isNotNull(firstPaymentAmount.get(AMOUNT)) ? firstPaymentAmount.get(AMOUNT).getAsString() : null
@@ -142,15 +145,16 @@ public class DomesticStandingOrderConsentDetailsFactory implements ConsentDetail
             frFirstPaymentAmount.setCurrency(
                     isNotNull(firstPaymentAmount.get(CURRENCY)) ? firstPaymentAmount.get(CURRENCY).getAsString() : null
             );
-            standingOrderData.setFirstPaymentAmount(frFirstPaymentAmount);
+            domesticStandingOrderDataInitiation.setFirstPaymentAmount(frFirstPaymentAmount);
         }
 
-        if (isNotNull(recurringPaymentDateTime)) {
-            standingOrderData.setRecurringPaymentDateTime(
-                    Instant.parse(recurringPaymentDateTime.getAsString()).toDateTime()
+        if (isNotNull(initiation.get(RECURRING_PAYMENT_DATETIME))) {
+            domesticStandingOrderDataInitiation.setRecurringPaymentDateTime(
+                    Instant.parse(initiation.get(RECURRING_PAYMENT_DATETIME).getAsString()).toDateTime()
             );
         }
-        if (isNotNull(recurringPaymentAmount)) {
+        if (isNotNull(initiation.get(RECURRING_PAYMENT_AMOUNT))) {
+            JsonObject recurringPaymentAmount = initiation.getAsJsonObject(RECURRING_PAYMENT_AMOUNT);
             FRAmount frRecurringPaymentAmount = new FRAmount();
             frRecurringPaymentAmount.setAmount(
                     isNotNull(recurringPaymentAmount.get(AMOUNT))
@@ -160,16 +164,16 @@ public class DomesticStandingOrderConsentDetailsFactory implements ConsentDetail
                     isNotNull(recurringPaymentAmount.get(CURRENCY))
                             ? recurringPaymentAmount.get(CURRENCY).getAsString() : null
             );
-            standingOrderData.setRecurringPaymentAmount(frRecurringPaymentAmount);
+            domesticStandingOrderDataInitiation.setRecurringPaymentAmount(frRecurringPaymentAmount);
         }
 
-        if (isNotNull(frequency)) {
-            String frequencyType = frequency.getAsString();
+        if (isNotNull(initiation.get(FREQUENCY))) {
+            String frequencyType = initiation.get(FREQUENCY).getAsString();
             FRFrequency frFrequency = new FRFrequency(frequencyType);
             String sentence = frFrequency.getSentence();
-            standingOrderData.setFrequency(sentence);
+            domesticStandingOrderDataInitiation.setFrequency(sentence);
         }
 
-        return standingOrderData;
+        return domesticStandingOrderDataInitiation;
     }
 }

@@ -68,7 +68,6 @@ public class DomesticVrpPaymentConsentDetailsFactory implements ConsentDetailsFa
                 if (isNotNull(data.get(CONTROL_PARAMETERS))) {
                     details.setControlParameters(decodeControlParameters(data));
                 }
-
             }
         }
         return details;
@@ -82,34 +81,37 @@ public class DomesticVrpPaymentConsentDetailsFactory implements ConsentDetailsFa
     private FRWriteDomesticVrpDataInitiation decodeDataInitiation(JsonObject data) {
         JsonObject initiation = data.getAsJsonObject(INITIATION);
         log.debug("{}.{}.{}: {}", OB_INTENT_OBJECT, DATA, INITIATION, initiation);
-        JsonObject debtorAccount = initiation.getAsJsonObject(DEBTOR_ACCOUNT);
-        JsonObject creditorAccount = initiation.getAsJsonObject(CREDITOR_ACCOUNT);
-        FRWriteDomesticVrpDataInitiation vrpDataInitiation = FRWriteDomesticVrpDataInitiation.builder()
-                .creditorAccount(
-                        FRAccountIdentifier.builder()
-                                .identification(creditorAccount.get(IDENTIFICATION).getAsString())
-                                .name(creditorAccount.get(NAME).getAsString())
-                                .schemeName(creditorAccount.get(SCHEME_NAME).getAsString())
-                                .secondaryIdentification(
-                                        isNotNull(creditorAccount.get(SECONDARY_IDENTIFICATION)) ?
-                                                creditorAccount.get(SECONDARY_IDENTIFICATION).getAsString() :
-                                                null
-                                )
-                                .build()
-                )
-                .debtorAccount(
-                        FRAccountIdentifier.builder()
-                                .identification(debtorAccount.get(IDENTIFICATION).getAsString())
-                                .name(debtorAccount.get(NAME).getAsString())
-                                .schemeName(debtorAccount.get(SCHEME_NAME).getAsString())
-                                .secondaryIdentification(
-                                        isNotNull(debtorAccount.get(SECONDARY_IDENTIFICATION)) ?
-                                                debtorAccount.get(SECONDARY_IDENTIFICATION).getAsString() :
-                                                null
-                                )
-                                .build()
-                )
-                .build();
+        FRWriteDomesticVrpDataInitiation vrpDataInitiation = new FRWriteDomesticVrpDataInitiation();
+        if(isNotNull(initiation.get(DEBTOR_ACCOUNT))) {
+            JsonObject debtorAccount = initiation.getAsJsonObject(DEBTOR_ACCOUNT);
+            vrpDataInitiation.setDebtorAccount(
+                    FRAccountIdentifier.builder()
+                            .identification(debtorAccount.get(IDENTIFICATION).getAsString())
+                            .name(debtorAccount.get(NAME).getAsString())
+                            .schemeName(debtorAccount.get(SCHEME_NAME).getAsString())
+                            .secondaryIdentification(
+                                    isNotNull(debtorAccount.get(SECONDARY_IDENTIFICATION)) ?
+                                            debtorAccount.get(SECONDARY_IDENTIFICATION).getAsString() :
+                                            null
+                            )
+                            .build()
+            );
+        }
+        if(isNotNull(initiation.get(CREDITOR_ACCOUNT))){
+            JsonObject creditorAccount = initiation.getAsJsonObject(CREDITOR_ACCOUNT);
+            vrpDataInitiation.setCreditorAccount(
+                    FRAccountIdentifier.builder()
+                            .identification(creditorAccount.get(IDENTIFICATION).getAsString())
+                            .name(creditorAccount.get(NAME).getAsString())
+                            .schemeName(creditorAccount.get(SCHEME_NAME).getAsString())
+                            .secondaryIdentification(
+                                    isNotNull(creditorAccount.get(SECONDARY_IDENTIFICATION)) ?
+                                            creditorAccount.get(SECONDARY_IDENTIFICATION).getAsString() :
+                                            null
+                            )
+                            .build()
+            );
+        }
 
         if (isNotNull(initiation.get(REMITTANCE_INFORMATION))) {
             JsonObject remittanceInformation = initiation.getAsJsonObject(REMITTANCE_INFORMATION);
