@@ -135,27 +135,22 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                 details.setUsername(consentClientRequest.getUser().getUserName());
                 details.setUserId(consentClientRequest.getUser().getId());
 
-                details.setAccounts(accountService.getAccountsWithBalance(details.getUserId()));
-
                 // DebtorAccount is optional, but the PISP could provide the account identifier details for the PSU
                 // The accounts displayed in the RCS ui needs to be The debtor account if is provided in the consent otherwise the user accounts
-                // TODO debtorAccount logic for VRP sweeping payments case until it will fixed for all payments  https://github.com/secureapigateway/secureapigateway/issues/731
-                if (details.getIntentType().equals(IntentType.DOMESTIC_VRP_PAYMENT_CONSENT)) {
-                    if(Objects.nonNull(((PaymentsConsentDetails) details).getDebtorAccount())) {
-                        setDebtorAccountWithBalance((PaymentsConsentDetails) details, consentRequestJws, intentId);
-                    }
+                if (Objects.nonNull(((PaymentsConsentDetails) details).getDebtorAccount())) {
+                    setDebtorAccountWithBalance((PaymentsConsentDetails) details, consentRequestJws, intentId);
+                } else {
+                    details.setAccounts(accountService.getAccountsWithBalance(details.getUserId()));
                 }
 
                 details.setClientId(consentClientRequest.getClientId());
                 details.setLogo(apiClient.getLogoUri());
                 return ResponseEntity.ok(details);
-
             } else {
                 String message = String.format("Invalid type for intent ID: '%s'", intentId);
                 log.error(message);
                 throw new ExceptionClient(consentClientRequest, ErrorType.UNKNOWN_INTENT_TYPE, message);
             }
-
         } catch (ExceptionClient e) {
             String errorMessage = String.format("%s", e.getMessage());
             log.error(errorMessage);
@@ -164,7 +159,6 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                     e.getErrorClient().getClientId(),
                     e.getErrorClient().getIntentId());
         }
-
     }
 
     /*
