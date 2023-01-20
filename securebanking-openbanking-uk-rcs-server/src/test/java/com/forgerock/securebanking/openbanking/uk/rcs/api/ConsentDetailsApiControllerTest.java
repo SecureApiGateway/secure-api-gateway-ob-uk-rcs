@@ -61,6 +61,7 @@ import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamo
 import static com.forgerock.securebanking.openbanking.uk.rcs.api.ConsentDetailsTestValidations.validateDomesticScheduledConsentDetailsResponse;
 import static com.forgerock.securebanking.openbanking.uk.rcs.api.ConsentDetailsTestValidations.validateDomesticStandingOrderConsentDetailsResponse;
 import static com.forgerock.securebanking.openbanking.uk.rcs.util.Constants.*;
+import static com.forgerock.securebanking.platform.client.test.support.AccountAccessConsentDetailsTestFactory.aValidAccountConsentDetails;
 import static com.forgerock.securebanking.platform.client.test.support.ConsentDetailsRequestTestDataFactory.aValidConsentDetailsRequest;
 import static com.forgerock.securebanking.platform.client.test.support.DomesticPaymentConsentDetailsTestFactory.aValidDomesticPaymentConsentDetails;
 import static com.forgerock.securebanking.platform.client.test.support.DomesticScheduledPaymentConsentDetailsTestFactory.aValidDomesticScheduledPaymentConsentDetails;
@@ -114,6 +115,12 @@ public class ConsentDetailsApiControllerTest {
 
     private static Stream<Arguments> validPositiveArguments() {
         return Stream.of(
+                arguments(
+                        ACCOUNT_INTENT_ID,
+                        aValidAccountConsentDetails(ACCOUNT_INTENT_ID),
+                        IntentType.ACCOUNT_ACCESS_CONSENT,
+                        AccountsConsentDetails.class
+                ),
                 arguments(
                         DOMESTIC_PAYMENT_INTENT_ID,
                         aValidDomesticPaymentConsentDetails(DOMESTIC_PAYMENT_INTENT_ID),
@@ -193,7 +200,7 @@ public class ConsentDetailsApiControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(OK);
 
         // Generic validations
-        PaymentsConsentDetails responseDetails = gson.fromJson(response.getBody(), classOf);
+        ConsentDetails responseDetails = gson.fromJson(response.getBody(), classOf);
         assertThat(responseDetails.getAccounts()).isNotEmpty();
         assertThat(responseDetails.getIntentType()).isEqualTo(intentType);
         assertThat(responseDetails.getUserId()).isEqualTo(consentDetailsRequest.getUser().getId());
@@ -207,6 +214,10 @@ public class ConsentDetailsApiControllerTest {
 
     private static Stream<Arguments> validNegativeArguments() {
         return Stream.of(
+                arguments(
+                        ACCOUNT_INTENT_ID,
+                        aValidAccountConsentDetails(ACCOUNT_INTENT_ID)
+                ),
                 arguments(
                         DOMESTIC_PAYMENT_INTENT_ID,
                         aValidDomesticPaymentConsentDetails(DOMESTIC_PAYMENT_INTENT_ID)
@@ -406,7 +417,7 @@ public class ConsentDetailsApiControllerTest {
     private void validations(
             Class classOf,
             JsonObject consentDetails,
-            PaymentsConsentDetails responseDetails
+            ConsentDetails responseDetails
     ) {
         switch (classOf.getSimpleName()) {
             case "DomesticScheduledPaymentConsentDetails":

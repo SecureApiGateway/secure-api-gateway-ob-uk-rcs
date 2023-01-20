@@ -135,9 +135,10 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                 details.setUsername(consentClientRequest.getUser().getUserName());
                 details.setUserId(consentClientRequest.getUser().getId());
 
+                // Initiation payment case
                 // DebtorAccount is optional, but the PISP could provide the account identifier details for the PSU
                 // The accounts displayed in the RCS ui needs to be The debtor account if is provided in the consent otherwise the user accounts
-                if (Objects.nonNull(((PaymentsConsentDetails) details).getDebtorAccount())) {
+                if ((details instanceof PaymentsConsentDetails) && Objects.nonNull(((PaymentsConsentDetails) details).getDebtorAccount())) {
                     setDebtorAccountWithBalance((PaymentsConsentDetails) details, consentRequestJws, intentId);
                 } else {
                     details.setAccounts(accountService.getAccountsWithBalance(details.getUserId()));
