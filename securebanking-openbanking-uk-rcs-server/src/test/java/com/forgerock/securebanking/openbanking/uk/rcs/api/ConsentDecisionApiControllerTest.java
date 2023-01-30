@@ -26,10 +26,8 @@ import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
 import com.forgerock.securebanking.platform.client.models.ConsentClientDecisionRequest;
 import com.forgerock.securebanking.platform.client.services.ConsentServiceClient;
-import com.forgerock.securebanking.platform.client.services.JwkServiceClient;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.nimbusds.jwt.JWTClaimsSet;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -64,8 +62,6 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpStatus.OK;
@@ -86,9 +82,6 @@ public class ConsentDecisionApiControllerTest {
     @MockBean
     private ConsentServiceClient consentServiceClient;
 
-    @MockBean
-    private JwkServiceClient jwkServiceClient;
-
     @Autowired
     private TestRestTemplate restTemplate;
 
@@ -105,7 +98,6 @@ public class ConsentDecisionApiControllerTest {
                 consentClientDecisionRequest.getResourceOwnerUsername()
         );
 
-        given(jwkServiceClient.signClaims(any(JWTClaimsSet.class), anyString())).willReturn(jwt);
         String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
 
         ConsentDecisionDeserialized consentDecisionDeserialized = ConsentDecisionDeserialized.builder()
@@ -187,7 +179,6 @@ public class ConsentDecisionApiControllerTest {
                 consentClientDecisionRequest.getResourceOwnerUsername()
         );
 
-        given(jwkServiceClient.signClaims(any(JWTClaimsSet.class), anyString())).willReturn(jwt);
         String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
 
         FRAccountIdentifier accountIdentifier = new FRAccountIdentifier();

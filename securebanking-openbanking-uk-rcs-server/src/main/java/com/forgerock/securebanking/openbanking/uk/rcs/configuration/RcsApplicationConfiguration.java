@@ -19,9 +19,20 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
+import com.forgerock.securebanking.openbanking.uk.rcs.jwt.RcsJwtSigner;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSSigner;
+import com.nimbusds.jose.crypto.RSASSASigner;
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.RSAKey;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,11 +42,16 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
 @Configuration
 public class RcsApplicationConfiguration {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Bean
     public RestTemplate restTemplate(@Qualifier("mappingJacksonHttpMessageConverter") MappingJackson2HttpMessageConverter converter) {
@@ -74,4 +90,17 @@ public class RcsApplicationConfiguration {
         };
     }
 
+    @Bean
+    public RcsJwtSigner rcsJwtSigner(@Value("${rcs.consent.response.jwt.signingKeyId}") String signingKeyId,
+                                     @Value("${rcs.consent.response.jwt.signingAlgorithm:PS256}") String signingAlgorithm,
+                                     @Value("${rcs.consent.response.jwt.privateKeyPath}") Path privateKeyPath) throws IOException, JOSEException {
+
+        logger.info("Configuring JWT Signer - keyId: {}, signingAlgo: {}, privateKeyPath: {}", signingKeyId, signingAlgorithm, privateKeyPath);
+        final JWK jwk = JWK.parseFromPEMEncodedObjects(Files.readString(privateKeyPath));
+        if (!(jwk instanceof RSAKey)) {
+            throw new IllegalArgumentException("private key file must contain an RSA Private Key");
+        }
+        final JWSSigner signer = new RSASSASigner((RSAKey) jwk);
+        return new RcsJwtSigner(signingKeyId, JWSAlgorithm.parse(signingAlgorithm), signer);
+    }
 }
