@@ -81,12 +81,16 @@ spec:
             value: {{ .Values.deployment.java.opts }}
           - name: RCS_CONSENT_RESPONSE_JWT_PRIVATEKEYPATH
             value: /app/secrets/rcs-signing-key
-          # TODO lookup value from config map
           - name: RCS_CONSENT_RESPONSE_JWT_SIGNINGKEYID
-            value: rcs-jwt-signer
-          # TODO lookup value from config map
+            valueFrom:
+              configMapKeyRef:
+                name: securebanking-platform-config
+                key: RCS_CONSENT_RESPONSE_JWT_SIGNINGKEYID
           - name: RCS_CONSENT_RESPONSE_JWT_ISSUER
-            value: secure-open-banking-rcs
+            valueFrom:
+              configMapKeyRef:
+                name: securebanking-platform-config
+                key: RCS_CONSENT_RESPONSE_JWT_ISSUER
           resources:
             {{- toYaml .Values.deployment.resources | nindent 12 }}
       volumes:
