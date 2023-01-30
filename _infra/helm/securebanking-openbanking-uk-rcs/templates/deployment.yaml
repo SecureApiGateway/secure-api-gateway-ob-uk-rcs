@@ -83,7 +83,7 @@ spec:
             value: /app/secrets/rcs-signing-key
           # TODO lookup value from config map
           - name: RCS_CONSENT_RESPONSE_JWT_SIGNINGKEYID
-            value: rcs-signing
+            value: rcs-jwt-signer
           # TODO lookup value from config map
           - name: RCS_CONSENT_RESPONSE_JWT_ISSUER
             value: secure-open-banking-rcs
