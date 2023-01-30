@@ -81,6 +81,12 @@ spec:
             value: {{ .Values.deployment.java.opts }}
           - name: RCS_CONSENT_RESPONSE_JWT_PRIVATEKEYPATH
             value: /app/secrets/rcs-signing-key
+          # TODO lookup value from config map
+          - name: RCS_CONSENT_RESPONSE_JWT_SIGNINGKEYID
+            value: rcs-signing
+          # TODO lookup value from config map
+          - name: RCS_CONSENT_RESPONSE_JWT_ISSUER
+            value: secure-open-banking-rcs
           resources:
             {{- toYaml .Values.deployment.resources | nindent 12 }}
       volumes:
