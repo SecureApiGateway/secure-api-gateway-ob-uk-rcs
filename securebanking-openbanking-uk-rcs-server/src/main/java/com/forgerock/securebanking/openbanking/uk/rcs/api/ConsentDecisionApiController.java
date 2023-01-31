@@ -171,7 +171,7 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
             final String errorMessage = "Failed to sign consent decision response JWT";
             log.error(errorMessage, e);
             throw new InvalidConsentException(consentDecisionDeserialized.getConsentJwt(), INTERNAL_SERVER_ERROR,
-                                              OBRIErrorType.REQUEST_BINDING_FAILED, errorMessage, null, null);
+                                              OBRIErrorType.RCS_CONSENT_RESPONSE_FAILURE, errorMessage, null, null);
         }
     }
 
