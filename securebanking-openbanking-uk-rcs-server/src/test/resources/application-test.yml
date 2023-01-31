@@ -45,9 +45,10 @@ rcs:
         must-be-validated: false
     response:
       jwt:
-        signingKeyId: rcs-jwt-signer
+        signingKeyId: test-rcs-jwt-signer
         privateKeyPath: src/test/resources/test-jwt-signing-key.pem
         issuer: secure-open-banking-rcs
+        signingAlgorithm: PS256
 
   rs_fqdn: ${RS_FQDN:localhost}
   schema: https

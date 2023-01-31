@@ -123,7 +123,7 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
 
                 JWTClaimsSet jwtClaimsSetGenerated = generateJWTResponse(decision, consentClientDecisionRequest);
                 log.debug("JWT claims generated '{}'", jwtClaimsSetGenerated.toJSONObject());
-                String consentSignedJwt = jwtSigner.signPayload(jwtClaimsSetGenerated);
+                String consentSignedJwt = jwtSigner.createSignedJwt(jwtClaimsSetGenerated);
                 log.debug("consentSignedJwt '{}'", consentSignedJwt);
 
                 String consentApprovalRedirectUri = JwtUtil.getClaimValue(consentSignedJwt, "consentApprovalRedirectUri");
