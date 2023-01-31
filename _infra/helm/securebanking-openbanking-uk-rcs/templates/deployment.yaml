@@ -30,7 +30,7 @@ spec:
           {{- end}}
           imagePullPolicy: {{ .Values.deployment.imagePullPolicy }}
           volumeMounts:
-            - name: rcs-signing-key
+            - name: rcs-signing
               mountPath: /app/secrets
               readOnly: true
           ports:
@@ -80,7 +80,7 @@ spec:
           - name: JAVA_OPTS
             value: {{ .Values.deployment.java.opts }}
           - name: RCS_CONSENT_RESPONSE_JWT_PRIVATEKEYPATH
-            value: /app/secrets/rcs-signing-key
+            value: /app/secrets/rcs-signing.key
           - name: RCS_CONSENT_RESPONSE_JWT_SIGNINGKEYID
             valueFrom:
               configMapKeyRef:
@@ -94,7 +94,7 @@ spec:
           resources:
             {{- toYaml .Values.deployment.resources | nindent 12 }}
       volumes:
-        - name: rcs-signing-key
+        - name: rcs-signing
           secret:
-            secretName: rcs-signing-key
+            secretName: rcs-signing
             optional: false
