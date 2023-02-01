@@ -29,6 +29,10 @@ spec:
           image: "eu.gcr.io/sbat-gcr-release/securebanking/${{ .Chart.Name }}:{{ .Chart.AppVersion }}"
           {{- end}}
           imagePullPolicy: {{ .Values.deployment.imagePullPolicy }}
+          volumeMounts:
+            - name: rcs-signing
+              mountPath: /app/secrets
+              readOnly: true
           ports:
             - name: http-server
               containerPort: {{ .Values.deployment.server.port }}
@@ -75,5 +79,22 @@ spec:
             value: "docker"
           - name: JAVA_OPTS
             value: {{ .Values.deployment.java.opts }}
+          - name: RCS_CONSENT_RESPONSE_JWT_PRIVATEKEYPATH
+            value: /app/secrets/rcs-signing.key
+          - name: RCS_CONSENT_RESPONSE_JWT_SIGNINGKEYID
+            valueFrom:
+              configMapKeyRef:
+                name: securebanking-platform-config
+                key: RCS_CONSENT_RESPONSE_JWT_SIGNINGKEYID
+          - name: RCS_CONSENT_RESPONSE_JWT_ISSUER
+            valueFrom:
+              configMapKeyRef:
+                name: securebanking-platform-config
+                key: RCS_CONSENT_RESPONSE_JWT_ISSUER
           resources:
             {{- toYaml .Values.deployment.resources | nindent 12 }}
+      volumes:
+        - name: rcs-signing
+          secret:
+            secretName: rcs-signing
+            optional: false

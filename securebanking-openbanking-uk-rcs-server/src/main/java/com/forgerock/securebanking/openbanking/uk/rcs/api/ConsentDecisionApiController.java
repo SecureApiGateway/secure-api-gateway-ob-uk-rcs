@@ -21,6 +21,7 @@ import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.RedirectionAction;
 import com.forgerock.securebanking.openbanking.uk.rcs.api.dto.consent.decision.ConsentDecisionDeserialized;
 import com.forgerock.securebanking.openbanking.uk.rcs.exception.InvalidConsentException;
+import com.forgerock.securebanking.openbanking.uk.rcs.jwt.RcsJwtSigner;
 import com.forgerock.securebanking.platform.client.Constants;
 import com.forgerock.securebanking.platform.client.IntentType;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorClient;
@@ -29,13 +30,15 @@ import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
 import com.forgerock.securebanking.platform.client.models.ConsentClientDecisionRequest;
 import com.forgerock.securebanking.platform.client.models.ConsentClientDecisionRequestData;
 import com.forgerock.securebanking.platform.client.services.ConsentServiceClient;
-import com.forgerock.securebanking.platform.client.services.JwkServiceClient;
 import com.forgerock.securebanking.platform.client.utils.jwt.JwtUtil;
 import com.google.gson.JsonObject;
+import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -46,6 +49,7 @@ import java.util.stream.Collectors;
 import static com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType.RCS_CONSENT_DECISION_EMPTY;
 import static com.forgerock.securebanking.openbanking.uk.rcs.util.ConsentDecisionDeserializer.deserializeConsentDecision;
 import static com.forgerock.securebanking.platform.client.Constants.Claims.*;
+import static com.forgerock.securebanking.platform.client.exceptions.ErrorType.INTERNAL_SERVER_ERROR;
 import static com.forgerock.securebanking.platform.client.exceptions.ErrorType.JWT_INVALID;
 
 @Controller
@@ -55,15 +59,15 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
 
     private final ObjectMapper objectMapper;
     private final ConsentServiceClient consentServiceClient;
-    private final JwkServiceClient jwkServiceClient;
+    private final RcsJwtSigner jwtSigner;
+    private final String rcsJwtIssuer;
 
-    public ConsentDecisionApiController(
-            ObjectMapper objectMapper,
-            ConsentServiceClient consentServiceClient,
-            JwkServiceClient jwkServiceClient) {
+    public ConsentDecisionApiController(ObjectMapper objectMapper, ConsentServiceClient consentServiceClient,
+            RcsJwtSigner jwtSigner, @Value("${rcs.consent.response.jwt.issuer}") String rcsJwtIssuer) {
         this.objectMapper = objectMapper;
         this.consentServiceClient = consentServiceClient;
-        this.jwkServiceClient = jwkServiceClient;
+        this.jwtSigner = jwtSigner;
+        this.rcsJwtIssuer = rcsJwtIssuer;
     }
 
     @Override
@@ -119,8 +123,7 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
 
                 JWTClaimsSet jwtClaimsSetGenerated = generateJWTResponse(decision, consentClientDecisionRequest);
                 log.debug("JWT claims generated '{}'", jwtClaimsSetGenerated.toJSONObject());
-
-                String consentSignedJwt = jwkServiceClient.signClaims(jwtClaimsSetGenerated, consentClientDecisionRequest.getIntentId());
+                String consentSignedJwt = jwtSigner.createSignedJwt(jwtClaimsSetGenerated);
                 log.debug("consentSignedJwt '{}'", consentSignedJwt);
 
                 String consentApprovalRedirectUri = JwtUtil.getClaimValue(consentSignedJwt, "consentApprovalRedirectUri");
@@ -164,6 +167,11 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
                         null
                 );
             }
+        } catch (JOSEException e) {
+            final String errorMessage = "Failed to sign consent decision response JWT";
+            log.error(errorMessage, e);
+            throw new InvalidConsentException(consentDecisionDeserialized.getConsentJwt(), INTERNAL_SERVER_ERROR,
+                                              OBRIErrorType.RCS_CONSENT_RESPONSE_FAILURE, errorMessage, null, null);
         }
     }
 
@@ -176,7 +184,7 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
                     .claim("decision", decision)
                     .claim("scopes", consentClientDecisionRequest.getScopes().toArray())
                     .expirationTime(DateTime.now().plusMinutes(5).toDate())
-                    .issuer(jwtClaimsSet.getIssuer())
+                    .issuer(rcsJwtIssuer)
                     .audience(jwtClaimsSet.getIssuer())
                     .build();
         } catch (ParseException exception) {

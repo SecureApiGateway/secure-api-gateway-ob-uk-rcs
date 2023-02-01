@@ -26,15 +26,22 @@ import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
 import com.forgerock.securebanking.platform.client.models.ConsentClientDecisionRequest;
 import com.forgerock.securebanking.platform.client.services.ConsentServiceClient;
-import com.forgerock.securebanking.platform.client.services.JwkServiceClient;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSObject;
+import com.nimbusds.jose.JWSVerifier;
+import com.nimbusds.jose.crypto.RSASSAVerifier;
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jwt.JWTClaimsSet;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -45,6 +52,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.text.ParseException;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -63,9 +73,9 @@ import static com.forgerock.securebanking.platform.client.test.support.Internati
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpStatus.OK;
@@ -85,12 +95,24 @@ public class ConsentDecisionApiControllerTest {
     private int port;
     @MockBean
     private ConsentServiceClient consentServiceClient;
-
-    @MockBean
-    private JwkServiceClient jwkServiceClient;
-
     @Autowired
     private TestRestTemplate restTemplate;
+
+    @Value("${rcs.consent.response.jwt.signingKeyId}")
+    private String expectedSigningKeyId;
+
+    @Value("${rcs.consent.response.jwt.signingAlgorithm}")
+    private String expectedSigningAlgorithm;
+
+    @Value("${rcs.consent.response.jwt.issuer}")
+    private String expectedConsentResponseJwtIssuer;
+
+    private JWSVerifier jwsVerifier;
+
+    public ConsentDecisionApiControllerTest(@Value("${rcs.consent.response.jwt.privateKeyPath}") Path privateKeyPath) throws Exception {
+        final JWK jwk = JWK.parseFromPEMEncodedObjects(Files.readString(privateKeyPath));
+        jwsVerifier = new RSASSAVerifier((RSAKey) jwk);
+    }
 
     @Test
     public void ShouldGetAccountsRedirectAction(
@@ -105,7 +127,6 @@ public class ConsentDecisionApiControllerTest {
                 consentClientDecisionRequest.getResourceOwnerUsername()
         );
 
-        given(jwkServiceClient.signClaims(any(JWTClaimsSet.class), anyString())).willReturn(jwt);
         String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
 
         ConsentDecisionDeserialized consentDecisionDeserialized = ConsentDecisionDeserialized.builder()
@@ -123,7 +144,9 @@ public class ConsentDecisionApiControllerTest {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getConsentJwt()).isNotEmpty();
+        final String consentJwt = response.getBody().getConsentJwt();
+        assertThat(consentJwt).isNotEmpty();
+        verifyConsentResponseJwt(consentJwt);
         assertThat(response.getBody().getRedirectUri()).isNotEmpty();
     }
 
@@ -187,7 +210,6 @@ public class ConsentDecisionApiControllerTest {
                 consentClientDecisionRequest.getResourceOwnerUsername()
         );
 
-        given(jwkServiceClient.signClaims(any(JWTClaimsSet.class), anyString())).willReturn(jwt);
         String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
 
         FRAccountIdentifier accountIdentifier = new FRAccountIdentifier();
@@ -211,7 +233,10 @@ public class ConsentDecisionApiControllerTest {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getConsentJwt()).isNotEmpty();
+        final String consentJwt = response.getBody().getConsentJwt();
+        assertThat(consentJwt).isNotEmpty();
+        verifyConsentResponseJwt(consentJwt);
+
         assertThat(response.getBody().getRedirectUri()).isNotEmpty();
     }
 
@@ -243,5 +268,19 @@ public class ConsentDecisionApiControllerTest {
         headers.setContentType(APPLICATION_JSON);
         headers.add("Cookie", "iPlanetDirectoryPro=aSsoToken");
         return headers;
+    }
+
+    private void verifyConsentResponseJwt(String consentResponseJwt) {
+        assertNotNull(consentResponseJwt);
+        try {
+            final JWSObject parsedConsent = JWSObject.parse(consentResponseJwt);
+            assertEquals(expectedSigningAlgorithm, parsedConsent.getHeader().getAlgorithm().getName());
+            assertEquals(expectedSigningKeyId, parsedConsent.getHeader().getKeyID());
+            final JWTClaimsSet jwtClaimsSet = JWTClaimsSet.parse(parsedConsent.getPayload().toJSONObject());
+            assertEquals(expectedConsentResponseJwtIssuer, jwtClaimsSet.getIssuer());
+            assertTrue(parsedConsent.verify(jwsVerifier), "consentResponseJwt sig failed validation");
+        } catch (ParseException | JOSEException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
