@@ -90,7 +90,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @SpringBootTest(classes = RcsApplicationTestSupport.class, webEnvironment = RANDOM_PORT)
 public class ConsentDetailsApiControllerTest {
     private static final String BASE_URL = "http://localhost:";
-    private static final String CONTEXT_DETAILS_URI = "/api/rcs/consent/details";
+    private static final String CONTEXT_DETAILS_URI = "/rcs/api/consent/details";
     private final Gson gson = new GsonBuilder().registerTypeAdapter(DateTime.class, new JsonDeserializer<DateTime>() {
         @Override
         public DateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)

@@ -61,6 +61,6 @@ public abstract class ConsentDetails {
     public abstract IntentType getIntentType();
 
     public String getDecisionApiUri() {
-        return "/api/rcs/consent/decision/";
+        return "/rcs/api/consent/decision/";
     }
 }
