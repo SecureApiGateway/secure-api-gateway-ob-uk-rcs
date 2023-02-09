@@ -31,7 +31,7 @@ public interface ConsentDetailsApi {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Consent details", response = ConsentDetails.class)
     })
-    @RequestMapping(value = "/api/rcs/consent/details",
+    @RequestMapping(value = "/rcs/api/consent/details",
             consumes = {"application/jwt; charset=utf-8", "application/json; charset=utf-8"},
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)

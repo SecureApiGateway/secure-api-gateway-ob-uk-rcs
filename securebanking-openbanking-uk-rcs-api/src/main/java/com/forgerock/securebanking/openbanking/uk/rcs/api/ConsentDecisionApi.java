@@ -37,7 +37,7 @@ public interface ConsentDecisionApi {
             @ApiResponse(code = 200, message = "A redirection response, specifying the URI the PSU should be redirected to",
                     response = RedirectionAction.class)
     })
-    @RequestMapping(value = "/api/rcs/consent/decision",
+    @RequestMapping(value = "/rcs/api/consent/decision",
             consumes = {"application/json; charset=utf-8"},
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)

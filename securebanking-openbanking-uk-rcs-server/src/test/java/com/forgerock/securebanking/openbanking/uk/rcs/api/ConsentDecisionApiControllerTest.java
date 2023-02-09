@@ -90,7 +90,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 public class ConsentDecisionApiControllerTest {
 
     private static final String BASE_URL = "http://localhost:";
-    private static final String CONTEXT_DETAILS_URI = "/api/rcs/consent/decision";
+    private static final String CONTEXT_DETAILS_URI = "/rcs/api/consent/decision";
     @LocalServerPort
     private int port;
     @MockBean
