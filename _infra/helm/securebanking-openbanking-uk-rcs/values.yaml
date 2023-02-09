@@ -30,12 +30,6 @@ deployment:
     limits:
       cpu: 0.5
       memory: 512Mi
-
-  domain: localhost
-  subdomain: rcs
-  tls:
-    secretName: sslcert
-    subdomain: "*"
   
 service:
   apiVersion: v1
