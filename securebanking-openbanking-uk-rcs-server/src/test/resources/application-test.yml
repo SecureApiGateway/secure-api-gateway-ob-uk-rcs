@@ -50,10 +50,8 @@ rcs:
         issuer: secure-open-banking-rcs
         signingAlgorithm: PS256
 
-  rs_fqdn: ${RS_FQDN:localhost}
-  schema: https
-
 rs:
+  baseUri: http://${rs.internal.svc:localhost}:8080
   backoffice:
     uris:
       accounts:

@@ -27,23 +27,22 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Unit test for {@link RcsConfigurationProperties}
+ * Unit test for {@link RsConfiguration}
  */
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {RcsConfigurationProperties.class, RsBackofficeConfiguration.class}, initializers = ConfigFileApplicationContextInitializer.class)
+@ContextConfiguration(classes = {RsConfiguration.class, RsBackofficeConfiguration.class}, initializers = ConfigFileApplicationContextInitializer.class)
 @EnableConfigurationProperties(value = RsBackofficeConfiguration.class)
 @ActiveProfiles("test")
 public class RcsConfigurationPropertiesTest {
 
     @Autowired
-    private RcsConfigurationProperties configurationProperties;
+    private RsConfiguration configurationProperties;
     @Autowired
     private RsBackofficeConfiguration rsBackofficeConfiguration;
 
     @Test
     public void shouldHaveAllRCSProperties() {
-        assertThat(configurationProperties.getRsFqdn()).isNotNull();
-        assertThat(configurationProperties.getSchema()).isNotNull();
+        assertThat(configurationProperties.getBaseUri()).isNotNull();
     }
 
     @Test

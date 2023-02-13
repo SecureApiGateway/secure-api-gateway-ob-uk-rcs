@@ -66,11 +66,11 @@ spec:
                configMapKeyRef:
                  name: securebanking-platform-config
                  key: IDENTITY_PLATFORM_FQDN
-          - name: RS_FQDN
+          - name: RS_INTERNAL_SVC
             valueFrom:
               configMapKeyRef:
                 name: securebanking-platform-config
-                key: RS_FQDN
+                key: RS_INTERNAL_SVC
           - name: SERVER_PORT
             value: {{ .Values.deployment.server.port | quote }}
           - name: SPRING_CLOUD_CONFIG_URI
