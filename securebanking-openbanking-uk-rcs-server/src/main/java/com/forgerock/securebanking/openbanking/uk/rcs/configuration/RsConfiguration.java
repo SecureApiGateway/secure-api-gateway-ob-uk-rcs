@@ -17,29 +17,14 @@ package com.forgerock.securebanking.openbanking.uk.rcs.configuration;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.LinkedCaseInsensitiveMap;
-
-import java.net.URI;
-import java.util.Map;
 
 import java.net.URI;
 
 @Configuration
 @Data
-public class RcsConfigurationProperties {
-    private static final String _delimiter = "://";
-    @Value("${rcs.rs_fqdn}")
-    private String rsFqdn;
-    @Value("${rcs.schema:https}")
-    private String schema;
+public class RsConfiguration {
 
-    public String getRsFqdnURIAsString() {
-        return String.join(_delimiter, schema, rsFqdn);
-    }
-
-    public URI getRsFqdnURI() {
-        return URI.create(String.join(_delimiter, schema, rsFqdn));
-    }
+    @Value("${rs.baseUri}")
+    private String baseUri;
 }

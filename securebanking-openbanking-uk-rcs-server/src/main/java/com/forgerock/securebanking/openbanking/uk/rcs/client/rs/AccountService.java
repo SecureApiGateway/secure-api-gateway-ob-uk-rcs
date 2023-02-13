@@ -18,7 +18,7 @@ package com.forgerock.securebanking.openbanking.uk.rcs.client.rs;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
-import com.forgerock.securebanking.openbanking.uk.rcs.configuration.RcsConfigurationProperties;
+import com.forgerock.securebanking.openbanking.uk.rcs.configuration.RsConfiguration;
 import com.forgerock.securebanking.openbanking.uk.rcs.configuration.RsBackofficeConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -38,16 +38,16 @@ import static org.springframework.web.util.UriComponentsBuilder.fromHttpUrl;
 public class AccountService {
 
     private final RestTemplate restTemplate;
-    private final RcsConfigurationProperties configurationProperties;
+    private final RsConfiguration rsConfiguration;
     private final RsBackofficeConfiguration rsBackofficeConfiguration;
 
     public AccountService(
             RestTemplate restTemplate,
-            RcsConfigurationProperties configurationProperties,
+            RsConfiguration rsConfiguration,
             RsBackofficeConfiguration rsBackofficeConfiguration
     ) {
         this.restTemplate = restTemplate;
-        this.configurationProperties = configurationProperties;
+        this.rsConfiguration = rsConfiguration;
         this.rsBackofficeConfiguration = rsBackofficeConfiguration;
     }
 
@@ -59,7 +59,7 @@ public class AccountService {
         ParameterizedTypeReference<List<FRAccount>> ptr = new ParameterizedTypeReference<>() {
         };
         UriComponentsBuilder builder = fromHttpUrl(
-                configurationProperties.getRsFqdnURIAsString() +
+                rsConfiguration.getBaseUri() +
                         rsBackofficeConfiguration.getAccounts().get(
                                 RsBackofficeConfiguration.UriContexts.FIND_USER_BY_ID.toString()
                         )
@@ -79,7 +79,7 @@ public class AccountService {
         ParameterizedTypeReference<List<FRAccountWithBalance>> ptr = new ParameterizedTypeReference<>() {
         };
         UriComponentsBuilder builder = fromHttpUrl(
-                configurationProperties.getRsFqdnURIAsString() +
+                rsConfiguration.getBaseUri() +
                         rsBackofficeConfiguration.getAccounts().get(
                                 RsBackofficeConfiguration.UriContexts.FIND_USER_BY_ID.toString()
                         )
@@ -100,7 +100,7 @@ public class AccountService {
         };
 
         UriComponentsBuilder builder = fromHttpUrl(
-                configurationProperties.getRsFqdnURIAsString() +
+                rsConfiguration.getBaseUri() +
                         rsBackofficeConfiguration.getAccounts().get(
                                 RsBackofficeConfiguration.UriContexts.FIND_BY_ACCOUNT_IDENTIFIERS.toString()
                         )
@@ -124,7 +124,7 @@ public class AccountService {
         };
 
         UriComponentsBuilder builder = fromHttpUrl(
-                configurationProperties.getRsFqdnURIAsString() +
+                rsConfiguration.getBaseUri() +
                         rsBackofficeConfiguration.getAccounts().get(
                                 RsBackofficeConfiguration.UriContexts.FIND_BY_ACCOUNT_IDENTIFIERS.toString()
                         )

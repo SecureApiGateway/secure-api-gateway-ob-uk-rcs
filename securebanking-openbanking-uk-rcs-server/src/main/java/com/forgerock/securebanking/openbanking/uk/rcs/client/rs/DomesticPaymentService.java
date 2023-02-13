@@ -16,7 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rcs.client.rs;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomestic;
-import com.forgerock.securebanking.openbanking.uk.rcs.configuration.RcsConfigurationProperties;
+import com.forgerock.securebanking.openbanking.uk.rcs.configuration.RsConfiguration;
 import com.forgerock.securebanking.openbanking.uk.rcs.configuration.RsBackofficeConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -36,17 +36,17 @@ import static org.springframework.web.util.UriComponentsBuilder.fromHttpUrl;
 public class DomesticPaymentService {
 
     private final RestTemplate restTemplate;
-    private final RcsConfigurationProperties configurationProperties;
+    private final RsConfiguration rsConfiguration;
     private final RsBackofficeConfiguration rsBackofficeConfiguration;
 
     public DomesticPaymentService(
             RestTemplate restTemplate,
-            RcsConfigurationProperties configurationProperties,
+            RsConfiguration rsConfiguration,
             RsBackofficeConfiguration rsBackofficeConfiguration
 
     ) {
         this.restTemplate = restTemplate;
-        this.configurationProperties = configurationProperties;
+        this.rsConfiguration = rsConfiguration;
         this.rsBackofficeConfiguration = rsBackofficeConfiguration;
     }
 
@@ -58,7 +58,7 @@ public class DomesticPaymentService {
         ParameterizedTypeReference<List<FRWriteDomestic>> ptr = new ParameterizedTypeReference<>() {
         };
         UriComponentsBuilder builder = fromHttpUrl(
-                configurationProperties.getRsFqdnURIAsString() +
+                rsConfiguration.getBaseUri() +
                         rsBackofficeConfiguration.getDomesticPayments().get(
                                 RsBackofficeConfiguration.UriContexts.FIND_USER_BY_ID.toString()
                         )
