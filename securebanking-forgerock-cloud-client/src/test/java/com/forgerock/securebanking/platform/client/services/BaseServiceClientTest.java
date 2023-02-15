@@ -15,7 +15,7 @@
  */
 package com.forgerock.securebanking.platform.client.services;
 
-import com.forgerock.securebanking.platform.client.configuration.ConfigurationPropertiesClient;
+import com.forgerock.securebanking.platform.client.configuration.ConsentRepoConfiguration;
 import com.forgerock.securebanking.platform.client.utils.url.UrlContext;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +31,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 @ExtendWith(MockitoExtension.class)
 public class BaseServiceClientTest {
     @Mock
-    protected ConfigurationPropertiesClient configurationProperties;
+    protected ConsentRepoConfiguration configurationProperties;
 
     @Mock
     protected RestTemplate restTemplate;

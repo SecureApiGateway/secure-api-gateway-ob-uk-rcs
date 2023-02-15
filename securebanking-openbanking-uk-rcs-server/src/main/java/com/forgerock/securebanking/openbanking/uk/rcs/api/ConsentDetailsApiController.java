@@ -29,7 +29,7 @@ import com.forgerock.securebanking.openbanking.uk.rcs.factory.details.ConsentDet
 import com.forgerock.securebanking.openbanking.uk.rcs.factory.details.ConsentDetailsFactoryProvider;
 import com.forgerock.securebanking.platform.client.Constants;
 import com.forgerock.securebanking.platform.client.IntentType;
-import com.forgerock.securebanking.platform.client.configuration.ConfigurationPropertiesClient;
+import com.forgerock.securebanking.platform.client.configuration.ConsentRepoConfiguration;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
 import com.forgerock.securebanking.platform.client.models.ApiClient;
@@ -42,7 +42,6 @@ import com.forgerock.securebanking.platform.client.utils.jwt.JwtUtil;
 import com.google.gson.JsonObject;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -62,19 +61,14 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
     private final ApiClientServiceClient apiClientService;
     private final UserServiceClient userServiceClient;
     private final AccountService accountService;
-    private final ConfigurationPropertiesClient configurationPropertiesClient;
     private final ApiProviderConfiguration apiProviderConfiguration;
     //    private final ConsentDetailsFactoryOld consentDetailsFactory;
     private final ConsentDetailsFactoryProvider consentDetailsFactoryProvider;
-
-    @Value("${rcs.consent.request.jwt.must-be-validated:false}")
-    private Boolean jwtMustBeValidated;
 
     public ConsentDetailsApiController(ConsentServiceClient consentServiceClient,
                                        ApiClientServiceClient apiClientService,
                                        UserServiceClient userServiceClient,
                                        AccountService accountService,
-                                       ConfigurationPropertiesClient configurationPropertiesClient,
                                        ObjectMapper objectMapper,
                                        ApiProviderConfiguration apiProviderConfiguration,
                                        ConsentDetailsFactoryProvider consentDetailsFactoryProvider
@@ -83,7 +77,6 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
         this.apiClientService = apiClientService;
         this.userServiceClient = userServiceClient;
         this.accountService = accountService;
-        this.configurationPropertiesClient = configurationPropertiesClient;
         this.objectMapper = objectMapper;
         this.apiProviderConfiguration = apiProviderConfiguration;
         this.consentDetailsFactoryProvider = consentDetailsFactoryProvider;
@@ -92,11 +85,6 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
     @Override
     public ResponseEntity<ConsentDetails> getConsentDetails(String consentRequestJws) throws InvalidConsentException {
         try {
-            // TODO: the jwt should be validated here or in IG (JWTValidatorFilter)?
-            if (jwtMustBeValidated) {
-                JwtUtil.validateJWT(consentRequestJws, configurationPropertiesClient.getJwkUri());
-            }
-
             SignedJWT signedJWT = JwtUtil.getSignedJWT(consentRequestJws);
             Claims claims = JwtUtil.getClaims(signedJWT);
 
