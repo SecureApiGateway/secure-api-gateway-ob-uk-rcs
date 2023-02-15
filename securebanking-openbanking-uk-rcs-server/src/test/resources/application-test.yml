@@ -12,12 +12,11 @@ springfox:
       v2:
         path: /api-docs
 
-# identity-platform properties for client
-identity-platform:
+consent-repo:
   client:
-    ig_fqdn: ${IG_FQDN:https://obdemo.dev.forgerock.financial}
-    identity_platform_fqdn: ${IDENTITY_PLATFORM_FQDN:https://iam.dev.forgerock.financial}
-    jwk_uri: ${identity-platform.client.identity_platform_fqdn}/am/oauth2/connect/jwk_uri
+    scheme: http
+    host: ${CONSENT_REPO_HOST:ig}
+    port: 80
     contexts_api_client:
       get: /repo/apiclients/@ClientId@
       put: /repo/apiclients/@ClientId@
@@ -33,9 +32,6 @@ identity-platform:
       put: /repo/consents/@IntentId@
       patch: /repo/consents/@IntentId@
       delete: /repo/consents/@IntentId@
-    #jwk signing service
-    jwkms_request_method: POST
-    jwkms_consent_signing_endpoint: /jwkms/rcs/signresponse
 
 rcs:
 #  issuerId: forgerock-rcs

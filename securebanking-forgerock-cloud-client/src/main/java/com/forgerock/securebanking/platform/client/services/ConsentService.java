@@ -16,7 +16,7 @@
 package com.forgerock.securebanking.platform.client.services;
 
 import com.forgerock.securebanking.platform.client.IntentType;
-import com.forgerock.securebanking.platform.client.configuration.ConfigurationPropertiesClient;
+import com.forgerock.securebanking.platform.client.configuration.ConsentRepoConfiguration;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorClient;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
@@ -48,11 +48,11 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 public class ConsentService implements ConsentServiceInterface {
 
     private final RestTemplate restTemplate;
-    private final ConfigurationPropertiesClient configurationProperties;
+    private final ConsentRepoConfiguration consentRepoConfiguration;
 
-    public ConsentService(RestTemplate restTemplate, ConfigurationPropertiesClient configurationProperties) {
+    public ConsentService(RestTemplate restTemplate, ConsentRepoConfiguration consentRepoConfiguration) {
         this.restTemplate = restTemplate;
-        this.configurationProperties = configurationProperties;
+        this.consentRepoConfiguration = consentRepoConfiguration;
     }
 
     @Override
@@ -106,9 +106,9 @@ public class ConsentService implements ConsentServiceInterface {
                     errorMessage
             );
         }
-        consentURL = configurationProperties.getIgFqdnURIAsString() +
+        consentURL = consentRepoConfiguration.getConsentRepoBaseUri() +
                 UrlContext.replaceParameterContextIntentId(
-                        configurationProperties.getContextsRepoConsent().get(httpMethod.name()),
+                        consentRepoConfiguration.getContextsRepoConsent().get(httpMethod.name()),
                         intentId
                 );
 

@@ -16,7 +16,7 @@
 package com.forgerock.securebanking.platform.client.services;
 
 import com.forgerock.securebanking.platform.client.Constants;
-import com.forgerock.securebanking.platform.client.configuration.ConfigurationPropertiesClient;
+import com.forgerock.securebanking.platform.client.configuration.ConsentRepoConfiguration;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorClient;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
@@ -38,11 +38,11 @@ import static org.springframework.http.HttpMethod.GET;
 public class ApiClientServiceClient {
 
     private final RestTemplate restTemplate;
-    private final ConfigurationPropertiesClient configurationProperties;
+    private final ConsentRepoConfiguration consentRepoConfiguration;
 
-    public ApiClientServiceClient(RestTemplate restTemplate, ConfigurationPropertiesClient configurationProperties) {
+    public ApiClientServiceClient(RestTemplate restTemplate, ConsentRepoConfiguration consentRepoConfiguration) {
         this.restTemplate = restTemplate;
-        this.configurationProperties = configurationProperties;
+        this.consentRepoConfiguration = consentRepoConfiguration;
     }
 
     public ApiClient getApiClient(String apiClientId) throws ExceptionClient {
@@ -62,9 +62,9 @@ public class ApiClientServiceClient {
     }
 
     private ApiClient request(String apiClientId) throws ExceptionClient {
-        String apiClientURL = configurationProperties.getIgFqdnURIAsString() +
+        String apiClientURL = consentRepoConfiguration.getConsentRepoBaseUri() +
                 UrlContext.replaceParameterContextValue(
-                        configurationProperties.getContextsApiClient().get(GET.name()),
+                        consentRepoConfiguration.getContextsApiClient().get(GET.name()),
                         Constants.URLParameters.CLIENT_ID,
                         apiClientId
                 );

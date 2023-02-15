@@ -16,7 +16,7 @@
 package com.forgerock.securebanking.platform.client.services;
 
 import com.forgerock.securebanking.platform.client.Constants;
-import com.forgerock.securebanking.platform.client.configuration.ConfigurationPropertiesClient;
+import com.forgerock.securebanking.platform.client.configuration.ConsentRepoConfiguration;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorClient;
 import com.forgerock.securebanking.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.platform.client.exceptions.ExceptionClient;
@@ -38,11 +38,11 @@ import static org.springframework.http.HttpMethod.GET;
 public class UserServiceClient {
 
     private final RestTemplate restTemplate;
-    private final ConfigurationPropertiesClient configurationProperties;
+    private final ConsentRepoConfiguration consentRepoConfiguration;
 
-    public UserServiceClient(RestTemplate restTemplate, ConfigurationPropertiesClient configurationProperties) {
+    public UserServiceClient(RestTemplate restTemplate, ConsentRepoConfiguration consentRepoConfiguration) {
         this.restTemplate = restTemplate;
-        this.configurationProperties = configurationProperties;
+        this.consentRepoConfiguration = consentRepoConfiguration;
     }
 
     public User getUser(String userId) throws ExceptionClient {
@@ -62,9 +62,9 @@ public class UserServiceClient {
     }
 
     private User request(String userId) throws ExceptionClient {
-        String userURL = configurationProperties.getIgFqdnURIAsString() +
+        String userURL = consentRepoConfiguration.getConsentRepoBaseUri() +
                 UrlContext.replaceParameterContextValue(
-                        configurationProperties.getContextsUser().get(GET.name()),
+                        consentRepoConfiguration.getContextsUser().get(GET.name()),
                         Constants.URLParameters.USER_ID,
                         userId
                 );
