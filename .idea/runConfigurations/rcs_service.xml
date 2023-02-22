@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="rcs-service" type="Remote">
-    <module name="securebanking-openbanking-uk-rcs-server" />
+    <module name="secure-api-gateway-ob-uk-rcs-server" />
     <option name="USE_SOCKET_TRANSPORT" value="true" />
     <option name="SERVER_MODE" value="false" />
     <option name="SHMEM_ADDRESS" />
