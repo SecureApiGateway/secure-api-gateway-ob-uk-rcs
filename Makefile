@@ -13,7 +13,7 @@ verify: clean
 
 docker: clean
 	mvn install package dockerfile:push -DskipTests=true -Dtag=${tag} \
-	  -DgcrRepo=${repo} --file ${name}-sample/pom.xml
+	  -DgcrRepo=${repo} --file secure-api-gateway-ob-uk-rcs-sample/pom.xml
 
 helm: clean
 ifndef version
@@ -26,7 +26,7 @@ endif
 
 dev: clean
 	mvn install package -DskipTests=true -Dtag=latest -DgcrRepo=${repo} \
-	  --file ${name}-sample/pom.xml
+	  --file secure-api-gateway-ob-uk-rcs-sample/pom.xml
 
 version:
 	@echo $(tag)
