@@ -22,7 +22,7 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan(basePackages =
         {
                 "com.forgerock.sapi.gateway.common.cors",
-                "com.forgerock.sapi.gateway.ob.uk.rcs.api"
+                "com.forgerock.sapi.gateway.ob.uk.rcs"
         }
 )
 @SpringBootApplication
