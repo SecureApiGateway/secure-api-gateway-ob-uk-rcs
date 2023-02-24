@@ -64,19 +64,15 @@ public class ConsentService implements ConsentServiceInterface {
         log.debug("=> The client id: '{}'", clientId);
 
         JsonObject consentDetails = request(consentRequest.getIntentId(), GET, null);
-        String errorMessage;
         if (consentDetails == null) {
-            errorMessage = String.format("The PISP/AISP '%s' is referencing a consent detailsRequest '%s' that doesn't exist", clientId, intentId);
-            log.error(errorMessage);
-            throw new ExceptionClient(consentRequest, ErrorType.NOT_FOUND, errorMessage);
+            log.error("TPP: {} is trying to access consent: {} that does not exist", clientId, intentId);
+            throw new ExceptionClient(consentRequest, ErrorType.NOT_FOUND, "The consent: " + intentId + " does not exist");
         }
 
-        // Verify the PISP/AISP is the same than the one that created this consent ^
+        // Verify the PISP/AISP is the same as the one that created this consent
         if (!clientId.equals(consentDetails.get("oauth2ClientId").getAsString())) {
-            errorMessage = String.format("The PISP/AISP '%S' created the consent detailsRequest '%S' but it's PISP/AISP '%s' that is trying to get" +
-                    " consent for it.", consentDetails.get("oauth2ClientId"), intentId, clientId);
-            log.error(errorMessage);
-            throw new ExceptionClient(consentRequest, ErrorType.INVALID_REQUEST, errorMessage);
+            log.error("TPP: {} is trying to access consent: {} that it is not authorised to access", clientId, intentId);
+            throw new ExceptionClient(consentRequest, ErrorType.INVALID_REQUEST, "You are not authorised to access consent: " + intentId);
         }
 
         return consentDetails;
