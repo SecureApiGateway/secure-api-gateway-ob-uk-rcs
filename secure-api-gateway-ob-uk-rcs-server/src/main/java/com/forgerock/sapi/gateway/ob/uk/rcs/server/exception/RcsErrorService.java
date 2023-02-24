@@ -111,7 +111,7 @@ public class RcsErrorService {
                     .fromHttpUrl(redirectURL)
                     .fragment("error=" + errorType.getErrorCode() + "&state=" + state +
                             "&error_description=" + String.format(errorDescription) +
-                            "error_uri=" + errorType.getErrorUri(errorType.getInternalCode()))
+                            "&error_uri=" + errorType.getErrorUri(errorType.getInternalCode()))
                     .encode()
                     .build();
 
