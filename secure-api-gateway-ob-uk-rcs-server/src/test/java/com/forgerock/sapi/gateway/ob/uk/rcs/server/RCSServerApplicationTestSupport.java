@@ -19,9 +19,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class RcsApplicationTestSupport {
+public class RCSServerApplicationTestSupport {
 
     public static void main(String[] args) {
-        SpringApplication.run(RcsApplicationTestSupport.class, args);
+        SpringApplication.run(RCSServerApplicationTestSupport.class, args);
     }
 }

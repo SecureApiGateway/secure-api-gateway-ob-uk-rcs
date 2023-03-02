@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rcs.sample;
+package com.forgerock.sapi.gateway.ob.uk.rcs.server;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,9 +26,9 @@ import org.springframework.context.annotation.ComponentScan;
         }
 )
 @SpringBootApplication
-public class RcsApplication {
+public class RCSServerApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(RcsApplication.class, args);
+        SpringApplication.run(RCSServerApplication.class, args);
     }
 }
