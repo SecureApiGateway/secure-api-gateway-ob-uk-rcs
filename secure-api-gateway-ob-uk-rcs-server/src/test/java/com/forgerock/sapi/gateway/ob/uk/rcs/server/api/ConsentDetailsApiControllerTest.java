@@ -18,7 +18,7 @@ package com.forgerock.sapi.gateway.ob.uk.rcs.server.api;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.RedirectionAction;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.*;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.factory.details.ConsentDetailsFactoryProvider;
-import com.forgerock.sapi.gateway.ob.uk.rcs.server.RcsApplicationTestSupport;
+import com.forgerock.sapi.gateway.ob.uk.rcs.server.RCSServerApplicationTestSupport;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.client.rs.AccountService;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccountWithBalance;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
@@ -88,7 +88,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
  */
 @EnableConfigurationProperties
 @ActiveProfiles("test")
-@SpringBootTest(classes = RcsApplicationTestSupport.class, webEnvironment = RANDOM_PORT)
+@SpringBootTest(classes = RCSServerApplicationTestSupport.class, webEnvironment = RANDOM_PORT)
 public class ConsentDetailsApiControllerTest {
     private static final String BASE_URL = "http://localhost:";
     private static final String CONTEXT_DETAILS_URI = "/rcs/api/consent/details";

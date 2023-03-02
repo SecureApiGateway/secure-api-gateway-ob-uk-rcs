@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.api;
 
-import com.forgerock.sapi.gateway.ob.uk.rcs.server.RcsApplicationTestSupport;
+import com.forgerock.sapi.gateway.ob.uk.rcs.server.RCSServerApplicationTestSupport;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.Constants;
@@ -86,7 +86,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
  */
 @EnableConfigurationProperties
 @ActiveProfiles("test")
-@SpringBootTest(classes = RcsApplicationTestSupport.class, webEnvironment = RANDOM_PORT)
+@SpringBootTest(classes = RCSServerApplicationTestSupport.class, webEnvironment = RANDOM_PORT)
 public class ConsentDecisionApiControllerTest {
 
     private static final String BASE_URL = "http://localhost:";

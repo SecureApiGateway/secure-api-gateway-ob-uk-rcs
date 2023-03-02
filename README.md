@@ -27,9 +27,9 @@ This will run any JUnit/Spring integration tests and build the required JAR file
 ### How to run
 
 **Run docker compose**
-> Config server profile properties location from local volume (`securebanking-openbanking-uk-rcs-sample/docker/config`)
+> Config server profile properties location from local volume (`securebanking-openbanking-uk-rcs-server/docker/config`)
 ```shell
-./securebanking-openbanking-uk-rcs-sample/docker/run-docker-compose-local.sh
+./securebanking-openbanking-uk-rcs-server/docker/run-docker-compose-local.sh
 ```
 
 ### Supported APIs
