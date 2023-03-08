@@ -54,8 +54,6 @@ spec:
             successThreshold: 1
             timeoutSeconds: 5
           env:
-          - name: EXPECTED_ORIGIN_ENDS
-            value: {{ .Values.deployment.cors.originEnds }}
           - name: CONSENT_REPO_HOST
             valueFrom:
               configMapKeyRef:

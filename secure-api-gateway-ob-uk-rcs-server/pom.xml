@@ -52,11 +52,6 @@
         <!-- ForgeRock dependencies -->
         <dependency>
             <groupId>com.forgerock.sapi.gateway</groupId>
-            <artifactId>secure-api-gateway-common-cors</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.forgerock.sapi.gateway</groupId>
             <artifactId>secure-api-gateway-ob-uk-rcs-cloud-client</artifactId>
             <version>${project.version}</version>
         </dependency>
