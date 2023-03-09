@@ -71,8 +71,6 @@ spec:
                 key: RS_INTERNAL_SVC
           - name: SERVER_PORT
             value: {{ .Values.deployment.server.port | quote }}
-          - name: SPRING_CLOUD_CONFIG_URI
-            value: "http://securebanking-spring-config-server:8080"
           - name: SPRING_PROFILES_ACTIVE
             value: "docker"
           - name: JAVA_OPTS

@@ -1,15 +1,5 @@
 # spring application
-
-#Spring config
 spring:
-  cloud:
-    config:
-      uri: http://securebanking-config-server:8888
-      failFast: true
-      retry:
-        max-attempts: 10
-        initial-interval: 1000
-        multiplier: 1.5
   application:
     name: securebanking-openbanking-uk-rcs
   profiles:
@@ -21,9 +11,65 @@ management:
       exposure:
         include: health, info, prometheus
 
+api:
+  provider:
+    id: 0 # api provider ID (optional)
+    name: Forgerock Bank simulation config # api provider Name (default value: Forgerock Bank Simulation), used to display the account provider in consent user interface
+    address: Forgerock street, 99, XX1 2YY, Forgeshire, uk # api provider address (Optional)
+
+logging:
+  level:
+    com.forgerock: DEBUG
+
+consent-repo:
+  client:
+    scheme: http
+    host: ${CONSENT_REPO_HOST:ig}
+    port: 80
+    contexts_api_client: # Context to build the URI to make a request against the repository endpoint to obtain the client object by clientId
+      get: /repo/apiclients/@ClientId@ # http verb context
+      put: /repo/apiclients/@ClientId@ # http verb context
+      patch: /repo/apiclients/@ClientId@ # http verb context
+      delete: /repo/apiclients/@ClientId@ # http verb context
+    contexts_user: # Context to build the URI to make a request against the repository endpoint to obtain the user object by userId
+      get: /repo/users/@UserId@ # http verb context
+      put: /repo/users/@UserId@ # http verb context
+      patch: /repo/users/@UserId@ # http verb context
+      delete: /repo/users/@UserId@ # http verb context
+    contexts_repo_consent: # Context to build the URI to make a request against the repository endpoint to obtain the consent object intentId
+      get: /repo/consents/@IntentId@ # http verb context
+      put: /repo/consents/@IntentId@ # http verb context
+      patch: /repo/consents/@IntentId@ # http verb context
+      delete: /repo/consents/@IntentId@ # http verb context
+
+
+# used by RCS to call backoffice RS endpoints
+# @ See: https://github.com/SecureBankingAccessToolkit/securebanking-openbanking-uk-rcs, Class: RsBackofficeConfiguration
+rs:
+  baseUri: http://${rs.internal.svc}:8080
+  backoffice:
+    uris:
+      accounts:
+        findUserById: /backoffice/accounts/search/findByUserId # Context endpoint to find accounts user by userId
+        findByAccountIdentifiers: /backoffice/accounts/search/findByAccountIdentifiers # Context endpoint to find account identifier by userId and account identifiers (name, identification and scheme name)
+      domestic-payments:
+        findUserById: /backoffice/domestic-payments/search/findByUserId # Context endpoint to find payment user by userId
+
 #Swagger
 springfox:
   documentation:
     swagger:
       v2:
         path: /api-docs
+
+# Swagger Documentation Specification properties
+swagger:
+  title: Secure Banking Access Toolkit
+  description: Swagger for consent details and consent decisions (RCS User interfaces)
+  license: open-licence
+  license-url: https://www.openbanking.org.uk/open-licence
+  terms-of-service-url: https://backstage.forgerock.com/knowledge/openbanking/article/a45894685
+  contact-name: ForgeRock RS User interfaces
+  contact-url: https://www.forgerock.com/
+  docket-apis-basePackage: com.forgerock.securebanking.openbanking.uk.rcs.api
+  docket-paths-selector-regex: /.*
