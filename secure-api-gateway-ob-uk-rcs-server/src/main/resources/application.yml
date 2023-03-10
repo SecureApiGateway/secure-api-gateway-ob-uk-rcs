@@ -25,7 +25,7 @@ api:
 consent-repo:
   client:
     scheme: http
-    host: ${CONSENT_REPO_HOST}
+    host: ${consent.repo.host}
     port: 80
     # Context to build the URI to make a request against the repository endpoint to obtain the client object by clientId
     contexts_api_client:
