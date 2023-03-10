@@ -31,7 +31,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = ApiProviderConfiguration.class, initializers = ConfigFileApplicationContextInitializer.class)
-@EnableConfigurationProperties(value = ApiProviderConfiguration.class)
 @ActiveProfiles("test")
 public class ApiProviderConfigurationTest {
 
@@ -40,7 +39,6 @@ public class ApiProviderConfigurationTest {
 
     @Test
     public void haveProperties() {
-        assertThat(apiProviderConfiguration.getName()).isNotNull().isNotEmpty().isNotBlank();
-        assertThat(apiProviderConfiguration.getAddress()).isNotNull().isNotEmpty().isNotBlank();
+        assertThat(apiProviderConfiguration.getName()).isEqualTo("Forgerock Bank Simulator Test");
     }
 }

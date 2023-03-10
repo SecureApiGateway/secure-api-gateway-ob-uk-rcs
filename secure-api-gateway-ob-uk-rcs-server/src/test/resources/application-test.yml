@@ -2,9 +2,7 @@
 # API provider is the organization that exposes the Open Banking API capabilities to be consumed by TPPs (usually a Bank)
 api:
   provider:
-    id: 0 # api provider ID (optional)
-    name: Forgerock Bank simulation config # api provider Name (default value: Forgerock Bank Simulation), used to display the account provider in consent user interface
-    address: Forgerock street, 99, XX1 2YY, Forgeshire, uk # api provider address (Optional)
+    name: Forgerock Bank Simulator Test
 #Swagger
 springfox:
   documentation:
@@ -34,11 +32,7 @@ consent-repo:
       delete: /repo/consents/@IntentId@
 
 rcs:
-#  issuerId: forgerock-rcs
   consent:
-    request:
-      jwt:
-        must-be-validated: false
     response:
       jwt:
         signingKeyId: test-rcs-jwt-signer
@@ -55,8 +49,6 @@ rs:
         findByAccountIdentifiers: /backoffice/accounts/search/findByAccountIdentifiers
       domestic-payments:
         findUserById: /backoffice/domestic-payments/search/findByUserId
-#  internal-port: 8081
-#  base-url: https://rs-simulator:${rs.internal-port}
 
 # Swagger Documentation Specification properties
 swagger:
