@@ -39,6 +39,6 @@ public class ApiProviderConfigurationTest {
 
     @Test
     public void haveProperties() {
-        assertThat(apiProviderConfiguration.getName()).isEqualTo("Forgerock Bank Simulator Test");
+        assertThat(apiProviderConfiguration.getName()).isEqualTo("Forgerock Bank Simulator");
     }
 }

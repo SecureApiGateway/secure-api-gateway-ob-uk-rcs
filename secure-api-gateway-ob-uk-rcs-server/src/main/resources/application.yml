@@ -17,7 +17,8 @@ management:
 # See: com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.ApiProviderConfiguration
 api:
   provider:
-    name: Forgerock Bank simulation config # api provider Name (default value: Forgerock Bank Simulation), used to display the account provider in consent user interface
+    # Name used in ConsentDetails, this gets displayed in the Consent UI
+    name: Forgerock Bank Simulator
 
 # Configuration for calling the Consent Repository
 # See: com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.configuration.ConsentRepoConfiguration
