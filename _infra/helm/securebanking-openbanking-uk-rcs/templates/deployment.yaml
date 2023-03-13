@@ -59,11 +59,6 @@ spec:
               configMapKeyRef:
                 name: securebanking-platform-config
                 key: IG_INTERNAL_SVC
-          - name: IDENTITY_PLATFORM_FQDN
-            valueFrom:
-               configMapKeyRef:
-                 name: securebanking-platform-config
-                 key: IDENTITY_PLATFORM_FQDN
           - name: RS_INTERNAL_SVC
             valueFrom:
               configMapKeyRef:

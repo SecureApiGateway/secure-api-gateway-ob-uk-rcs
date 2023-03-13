@@ -15,17 +15,23 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration;
 
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
 
 @Configuration
-@ConfigurationProperties(prefix = "api.provider")
-@Data
 public class ApiProviderConfiguration {
-    private String id;
-    @Value("${name:Forgerock Bank Simulation}")
-    private String name;
-    private String address;
+
+    private final String name;
+
+    public ApiProviderConfiguration(@Value("${api.provider.name}") String name) {
+        if (StringUtils.isEmpty(name)) {
+            throw new IllegalArgumentException("api.provider.name property must be configured");
+        }
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

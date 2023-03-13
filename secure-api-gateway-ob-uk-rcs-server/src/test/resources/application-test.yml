@@ -1,71 +1,14 @@
-# General API provider information
-# API provider is the organization that exposes the Open Banking API capabilities to be consumed by TPPs (usually a Bank)
-api:
-  provider:
-    id: 0 # api provider ID (optional)
-    name: Forgerock Bank simulation config # api provider Name (default value: Forgerock Bank Simulation), used to display the account provider in consent user interface
-    address: Forgerock street, 99, XX1 2YY, Forgeshire, uk # api provider address (Optional)
-#Swagger
-springfox:
-  documentation:
-    swagger:
-      v2:
-        path: /api-docs
-
-consent-repo:
-  client:
-    scheme: http
-    host: ${CONSENT_REPO_HOST:ig}
-    port: 80
-    contexts_api_client:
-      get: /repo/apiclients/@ClientId@
-      put: /repo/apiclients/@ClientId@
-      patch: /repo/apiclients/@ClientId@
-      delete: /repo/apiclients/@ClientId@
-    contexts_user:
-      get: /repo/users/@UserId@
-      put: /repo/users/@UserId@
-      patch: /repo/users/@UserId@
-      delete: /repo/users/@UserId@
-    contexts_repo_consent:
-      get: /repo/consents/@IntentId@
-      put: /repo/consents/@IntentId@
-      patch: /repo/consents/@IntentId@
-      delete: /repo/consents/@IntentId@
+# Spring config for "test" profile
+# This config extends/overrides config in the default profile (file: src/main/resources/application.yml)
+rs:
+  internal:
+    svc: localhost
 
 rcs:
-#  issuerId: forgerock-rcs
   consent:
-    request:
-      jwt:
-        must-be-validated: false
     response:
       jwt:
         signingKeyId: test-rcs-jwt-signer
         privateKeyPath: src/test/resources/test-jwt-signing-key.pem
         issuer: secure-open-banking-rcs
         signingAlgorithm: PS256
-
-rs:
-  baseUri: http://${rs.internal.svc:localhost}:8080
-  backoffice:
-    uris:
-      accounts:
-        findUserById: /backoffice/accounts/search/findByUserId
-        findByAccountIdentifiers: /backoffice/accounts/search/findByAccountIdentifiers
-      domestic-payments:
-        findUserById: /backoffice/domestic-payments/search/findByUserId
-#  internal-port: 8081
-#  base-url: https://rs-simulator:${rs.internal-port}
-
-# Swagger Documentation Specification properties
-swagger:
-  title: Secure API Gateway
-  description: Swagger for Read/Write Open Banking API Specification (UK) (https://openbankinguk.github.io/read-write-api-site3)
-  license: open-licence
-  license-url: https://www.openbanking.org.uk/open-licence
-  terms-of-service-url: https://backstage.forgerock.com/knowledge/openbanking/article/a45894685
-  contact-name: ForgeRock RS Simulator
-  contact-url: https://www.forgerock.com/
-  docket-apis-basePackage: com.forgerock.sapi.gateway.ob.uk.rcs.api
-  docket-paths-selector-regex: /.*
