@@ -1,8 +1,6 @@
-consent-repo:
-  client:
-    scheme: http
-    host: ${CONSENT_REPO_HOST:ig}
-    port: 80
+consent:
+  repo:
+    uri: http://ig:80
     contexts_api_client:
       get: /repo/apiclients/@ClientId@
       put: /repo/apiclients/@ClientId@
