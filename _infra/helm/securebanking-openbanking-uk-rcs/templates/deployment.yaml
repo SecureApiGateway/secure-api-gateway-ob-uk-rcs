@@ -54,16 +54,16 @@ spec:
             successThreshold: 1
             timeoutSeconds: 5
           env:
-          - name: CONSENT_REPO_HOST
+          - name: CONSENT_REPO_URI
             valueFrom:
               configMapKeyRef:
                 name: securebanking-platform-config
-                key: IG_INTERNAL_SVC
-          - name: RS_INTERNAL_SVC
+                key: RCS_CONSENT_REPO_URI
+          - name: RS_API_URI
             valueFrom:
               configMapKeyRef:
                 name: securebanking-platform-config
-                key: RS_INTERNAL_SVC
+                key: RS_API_URI
           - name: SERVER_PORT
             value: {{ .Values.deployment.server.port | quote }}
           - name: SPRING_PROFILES_ACTIVE

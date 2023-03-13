@@ -23,7 +23,7 @@ import org.springframework.util.LinkedCaseInsensitiveMap;
 import java.util.Map;
 
 @Configuration
-@ConfigurationProperties(prefix = "rs.backoffice.uris")
+@ConfigurationProperties(prefix = "rs.api.backoffice.uris")
 @Data
 public class RsBackofficeConfiguration {
     private Map<String, String> accounts = new LinkedCaseInsensitiveMap<>();

@@ -17,6 +17,7 @@ package com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.configuration;
 
 import lombok.Data;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.LinkedCaseInsensitiveMap;
@@ -24,15 +25,13 @@ import org.springframework.util.LinkedCaseInsensitiveMap;
 import java.util.Map;
 
 @Configuration
-@ConfigurationProperties(prefix = "consent-repo.client")
+@ConfigurationProperties(prefix = "consent.repo")
 @Data
 public class ConsentRepoConfiguration {
 
-    private String host;
+    @Value("${consent.repo.uri}")
+    private String baseUri;
 
-    private int port;
-
-    private String scheme;
     /*
      * Spring maps the properties, the keys from file will be the map keys
      * @see: application-test.yml
@@ -45,6 +44,6 @@ public class ConsentRepoConfiguration {
     private Map<String, String> contextsUser = new LinkedCaseInsensitiveMap<>();
 
     public String getConsentRepoBaseUri() {
-        return new StringBuilder(128).append(scheme).append("://").append(host).append(':').append(port).toString();
+        return baseUri;
     }
 }

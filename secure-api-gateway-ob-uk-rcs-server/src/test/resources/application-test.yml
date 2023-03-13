@@ -1,8 +1,8 @@
 # Spring config for "test" profile
 # This config extends/overrides config in the default profile (file: src/main/resources/application.yml)
 rs:
-  internal:
-    svc: localhost
+  api:
+    uri: http://localhost:8080
 
 rcs:
   consent:
