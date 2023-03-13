@@ -59,8 +59,6 @@ public class ConsentRepoConfigurationTest {
         assertThat(consentRepoConfiguration.getContextsRepoConsent()).isNotNull();
         assertThat(consentRepoConfiguration.getContextsApiClient()).isNotNull();
         assertThat(consentRepoConfiguration.getContextsUser()).isNotNull();
-        assertThat(consentRepoConfiguration.getScheme()).isNotNull();
-        assertThat(consentRepoConfiguration.getScheme()).isEqualTo("http");
     }
 
     @Test

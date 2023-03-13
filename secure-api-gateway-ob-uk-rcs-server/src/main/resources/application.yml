@@ -22,11 +22,8 @@ api:
 
 # Configuration for calling the Consent Repository
 # See: com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.configuration.ConsentRepoConfiguration
-consent-repo:
-  client:
-    scheme: http
-    host: ${consent.repo.host}
-    port: 80
+consent:
+  repo:
     # Context to build the URI to make a request against the repository endpoint to obtain the client object by clientId
     contexts_api_client:
       get: /repo/apiclients/@ClientId@
@@ -50,17 +47,17 @@ consent-repo:
 # Configuration for calling the RS backoffice API
 # See: com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.RsBackofficeConfiguration
 rs:
-  baseUri: http://${rs.internal.svc}:8080
-  backoffice:
-    uris:
-      accounts:
-        # Context endpoint to find accounts user by userId
-        findUserById: /backoffice/accounts/search/findByUserId
-        # Context endpoint to find account identifier by userId and account identifiers (name, identification and scheme name)
-        findByAccountIdentifiers: /backoffice/accounts/search/findByAccountIdentifiers
-      domestic-payments:
-        # Context endpoint to find payment user by userId
-        findUserById: /backoffice/domestic-payments/search/findByUserId
+  api:
+    backoffice:
+      uris:
+        accounts:
+          # Context endpoint to find accounts user by userId
+          findUserById: /backoffice/accounts/search/findByUserId
+          # Context endpoint to find account identifier by userId and account identifiers (name, identification and scheme name)
+          findByAccountIdentifiers: /backoffice/accounts/search/findByAccountIdentifiers
+        domestic-payments:
+          # Context endpoint to find payment user by userId
+          findUserById: /backoffice/domestic-payments/search/findByUserId
 
 #
 # Deployment Specific configuration
@@ -70,14 +67,14 @@ rs:
 # Consent Repo Configuration
 #consent:
 #  repo:
-#    # hostname for the consent repo API endpoints
-#    host:
+#    # Connection string to the Consent Repo base URI
+#    uri:
 #
 # Resource Server Configuration
 #rs:
-#  internal:
-#    # Name of the internal k8s svc used to access the rs
-#    svc:
+#  api:
+#    # Connection string to the RS API base URI
+#    uri:
 #
 # RCS Consent signing configuration
 # See: com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.RcsApplicationConfiguration.rcsJwtSigner

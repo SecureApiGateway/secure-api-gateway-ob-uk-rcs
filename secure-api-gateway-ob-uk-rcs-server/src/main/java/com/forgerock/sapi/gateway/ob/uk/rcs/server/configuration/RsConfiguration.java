@@ -15,16 +15,19 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration;
 
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
-import java.net.URI;
-
 @Configuration
-@Data
 public class RsConfiguration {
 
-    @Value("${rs.baseUri}")
-    private String baseUri;
+    private final String baseUri;
+
+    public RsConfiguration(@Value("${rs.api.uri}") String baseUri) {
+        this.baseUri = baseUri;
+    }
+
+    public String getBaseUri() {
+        return baseUri;
+    }
 }

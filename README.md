@@ -36,8 +36,8 @@ In this section we will discuss the config that is deployment specific, this con
 
 | Property                                  | Description                                                         |
 |-------------------------------------------|---------------------------------------------------------------------|
-| consent.repo.host                         | The host that is running the Consent Repo                           |
-| rs.internal.svc                           | The internal service address of the Resource Server (RS)            |
+| consent.repo.uri                          | Base URI of the Consent Repo API                                    |
+| rs.api.uri                                | Base URI of the RS API                                              |
 | rcs.consent.response.jwt.signingKeyId     | kid of the key used to sign JWTs produced by the application        |
 | rcs.consent.response.jwt.privateKeyPath   | Path to the RSA private key PEM file that is used to sign the JWTs  |
 | rcs.consent.response.jwt.issuer           | Value to set as the `iss` claim in JWTs produced by the application |
