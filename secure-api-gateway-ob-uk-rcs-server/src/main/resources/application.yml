@@ -1,6 +1,37 @@
-spring:
-  application:
-    name: securebanking-openbanking-uk-rcs
+#
+# Deployment Specific configuration
+#
+# The following section is a template of the mandatory configuration that needs to be supplied in order to start the
+# application, this config is deployment specific.
+#
+# Consent Repo Configuration
+#consent:
+#  repo:
+#    # Connection string to the Consent Repo base URI
+#    uri:
+#
+# Resource Server Configuration
+#rs:
+#  api:
+#    # Connection string to the RS API base URI
+#    uri:
+#
+# RCS Consent signing configuration
+# See: com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.RcsApplicationConfiguration.rcsJwtSigner
+#
+#rcs:
+#  consent:
+#    response:
+#      jwt:
+#        # kid value to use in the header of JWS produced by this app
+#        signingKeyId:
+#        # path to the private key, this is expected to be a PEM file
+#        privateKeyPath:
+#        # iss value to specify in the claims of JWS produced by this app
+#        issuer:
+#        # Algo used to sign the JWS
+#        signingAlgorithm: PS256
+#
 
 logging:
   level:
@@ -18,7 +49,7 @@ management:
 api:
   provider:
     # Name used in ConsentDetails, this gets displayed in the Consent UI
-    name: Forgerock Bank Simulator
+    name: Test Bank
 
 # Configuration for calling the Consent Repository
 # See: com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.configuration.ConsentRepoConfiguration
@@ -58,36 +89,3 @@ rs:
         domestic-payments:
           # Context endpoint to find payment user by userId
           findUserById: /backoffice/domestic-payments/search/findByUserId
-
-#
-# Deployment Specific configuration
-# The following section contains the mandatory configuration that is deployment specific.
-#
-#
-# Consent Repo Configuration
-#consent:
-#  repo:
-#    # Connection string to the Consent Repo base URI
-#    uri:
-#
-# Resource Server Configuration
-#rs:
-#  api:
-#    # Connection string to the RS API base URI
-#    uri:
-#
-# RCS Consent signing configuration
-# See: com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.RcsApplicationConfiguration.rcsJwtSigner
-#
-#rcs:
-#  consent:
-#    response:
-#      jwt:
-#        # kid value to use in the header of JWS produced by this app
-#        signingKeyId:
-#        # path to the private key, this is expected to be a PEM file
-#        privateKeyPath:
-#        # iss value to specify in the claims of JWS produced by this app
-#        issuer:
-#        # Algo used to sign the JWS
-#        signingAlgorithm: PS256
