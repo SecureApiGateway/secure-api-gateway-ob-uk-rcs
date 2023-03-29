@@ -53,7 +53,7 @@ public class FilePaymentConsentDetailsFactory implements ConsentDetailsFactory<F
 
                 if (JsonUtilValidation.isNotNull(data.get(INITIATION))) {
                     JsonObject initiation = data.getAsJsonObject(INITIATION);
-                    details.setInitiation(decodeDataInitiation(initiation));
+                    details.setFilePayment(decodeDataInitiation(initiation));
 
                     if (JsonUtilValidation.isNotNull(data.get(CHARGES))) {
                         details.setCharges(decodeCharges(data.getAsJsonArray(CHARGES)));

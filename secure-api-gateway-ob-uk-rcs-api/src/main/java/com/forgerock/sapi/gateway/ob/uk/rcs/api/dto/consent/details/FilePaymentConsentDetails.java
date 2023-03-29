@@ -36,7 +36,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class FilePaymentConsentDetails extends PaymentsConsentDetails {
 
-    private FRWriteFileDataInitiation initiation;
+    private FRWriteFileDataInitiation filePayment;
     private FRAmount charges;
     private DateTime expiredDate;
     private String fileReference;
@@ -48,7 +48,7 @@ public class FilePaymentConsentDetails extends PaymentsConsentDetails {
 
     @Override
     public FRAccountIdentifier getDebtorAccount() {
-        return initiation.getDebtorAccount();
+        return filePayment.getDebtorAccount();
     }
 
     @Override
