@@ -15,9 +15,10 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.api.factory.details;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalScheduledDataInitiation.FRWriteInternationalScheduledDataInitiationBuilder;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.InternationalScheduledPaymentConsentDetails;
+import com.forgerock.sapi.gateway.ob.uk.rcs.api.factory.details.decoder.FRAccountIdentifierDecoder;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.json.utils.JsonUtilValidation;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRExchangeRateInformation;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalScheduledDataInitiation;
@@ -32,6 +33,7 @@ import java.math.BigDecimal;
 
 import static com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.Members.*;
 import static com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.OB_INTENT_OBJECT;
+import static com.forgerock.sapi.gateway.ob.uk.rcs.api.json.utils.JsonUtilValidation.isNotNull;
 import static com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services.ConsentServiceInterface.log;
 import static java.util.Objects.requireNonNull;
 
@@ -40,6 +42,12 @@ import static java.util.Objects.requireNonNull;
  */
 @Component
 public class InternationalScheduledPaymentConsentDetailsFactory implements ConsentDetailsFactory<InternationalScheduledPaymentConsentDetails> {
+
+    private final FRAccountIdentifierDecoder accountIdentifierDecoder;
+
+    public InternationalScheduledPaymentConsentDetailsFactory(FRAccountIdentifierDecoder accountIdentifierDecoder) {
+        this.accountIdentifierDecoder = accountIdentifierDecoder;
+    }
 
     @Override
     public InternationalScheduledPaymentConsentDetails decode(JsonObject json) {
@@ -111,24 +119,14 @@ public class InternationalScheduledPaymentConsentDetailsFactory implements Conse
     private FRWriteInternationalScheduledDataInitiation decodeDataInitiation(JsonObject initiation) {
         log.debug("{}.{}.{}: {}", OB_INTENT_OBJECT, DATA, INITIATION, initiation);
 
-        if (JsonUtilValidation.isNotNull(initiation.get(DEBTOR_ACCOUNT))) {
-            JsonObject debtorAccount = initiation.getAsJsonObject(DEBTOR_ACCOUNT);
-            return FRWriteInternationalScheduledDataInitiation.builder()
-                    .debtorAccount(
-                            FRAccountIdentifier.builder()
-                                    .identification(debtorAccount.get(IDENTIFICATION).getAsString())
-                                    .name(debtorAccount.get(NAME).getAsString())
-                                    .schemeName(debtorAccount.get(SCHEME_NAME).getAsString())
-                                    .secondaryIdentification(
-                                            JsonUtilValidation.isNotNull(debtorAccount.get(SECONDARY_IDENTIFICATION)) ?
-                                                    debtorAccount.get(SECONDARY_IDENTIFICATION).getAsString() :
-                                                    null
-                                    )
-                                    .build()
-                    )
-                    .build();
+        final FRWriteInternationalScheduledDataInitiationBuilder initiationBuilder = FRWriteInternationalScheduledDataInitiation.builder();
+        if(isNotNull(initiation.get(DEBTOR_ACCOUNT))) {
+            initiationBuilder.debtorAccount(accountIdentifierDecoder.decode(initiation.getAsJsonObject(DEBTOR_ACCOUNT)));
         }
-        return FRWriteInternationalScheduledDataInitiation.builder().build();
+        if (JsonUtilValidation.isNotNull(initiation.get(CREDITOR_ACCOUNT))) {
+            initiationBuilder.creditorAccount(accountIdentifierDecoder.decode(initiation.getAsJsonObject(CREDITOR_ACCOUNT)));
+        }
+        return initiationBuilder.build();
     }
 
     private FRAmount decodeInstructedAmount(JsonObject instructedAmount) {

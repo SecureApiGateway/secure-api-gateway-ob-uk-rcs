@@ -16,8 +16,8 @@
 package com.forgerock.sapi.gateway.ob.uk.rcs.api.factory.details;
 
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticStandingOrderConsentDetails;
+import com.forgerock.sapi.gateway.ob.uk.rcs.api.factory.details.decoder.FRAccountIdentifierDecoder;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.json.utils.JsonUtilValidation;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticStandingOrderDataInitiation;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.IntentType;
@@ -31,6 +31,7 @@ import org.springframework.stereotype.Component;
 
 import static com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.Members.*;
 import static com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.OB_INTENT_OBJECT;
+import static com.forgerock.sapi.gateway.ob.uk.rcs.api.json.utils.JsonUtilValidation.isNotNull;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -39,6 +40,12 @@ import static java.util.Objects.requireNonNull;
 @Component
 @Slf4j
 public class DomesticStandingOrderConsentDetailsFactory implements ConsentDetailsFactory<DomesticStandingOrderConsentDetails> {
+
+    private final FRAccountIdentifierDecoder accountIdentifierDecoder;
+
+    public DomesticStandingOrderConsentDetailsFactory(FRAccountIdentifierDecoder accountIdentifierDecoder) {
+        this.accountIdentifierDecoder = accountIdentifierDecoder;
+    }
 
     @Override
     public DomesticStandingOrderConsentDetails decode(JsonObject json) {
@@ -97,20 +104,11 @@ public class DomesticStandingOrderConsentDetailsFactory implements ConsentDetail
         log.debug("{}.{}.{}: {}", OB_INTENT_OBJECT, DATA, INITIATION, initiation);
 
         FRWriteDomesticStandingOrderDataInitiation domesticStandingOrderDataInitiation = new FRWriteDomesticStandingOrderDataInitiation();
-        if (JsonUtilValidation.isNotNull(initiation.get(DEBTOR_ACCOUNT))) {
-            JsonObject debtorAccount = initiation.getAsJsonObject(DEBTOR_ACCOUNT);
-            domesticStandingOrderDataInitiation.setDebtorAccount(
-                    FRAccountIdentifier.builder()
-                            .identification(debtorAccount.get(IDENTIFICATION).getAsString())
-                            .name(debtorAccount.get(NAME).getAsString())
-                            .schemeName(debtorAccount.get(SCHEME_NAME).getAsString())
-                            .secondaryIdentification(
-                                    JsonUtilValidation.isNotNull(debtorAccount.get(SECONDARY_IDENTIFICATION)) ?
-                                            debtorAccount.get(SECONDARY_IDENTIFICATION).getAsString() :
-                                            null
-                            )
-                            .build()
-            );
+        if(isNotNull(initiation.get(DEBTOR_ACCOUNT))) {
+            domesticStandingOrderDataInitiation.setDebtorAccount(accountIdentifierDecoder.decode(initiation.getAsJsonObject(DEBTOR_ACCOUNT)));
+        }
+        if (JsonUtilValidation.isNotNull(initiation.get(CREDITOR_ACCOUNT))) {
+            domesticStandingOrderDataInitiation.setCreditorAccount(accountIdentifierDecoder.decode(initiation.getAsJsonObject(CREDITOR_ACCOUNT)));
         }
         if (JsonUtilValidation.isNotNull(initiation.get(FINAL_PAYMENT_DATETIME))) {
             domesticStandingOrderDataInitiation.setFinalPaymentDateTime(
