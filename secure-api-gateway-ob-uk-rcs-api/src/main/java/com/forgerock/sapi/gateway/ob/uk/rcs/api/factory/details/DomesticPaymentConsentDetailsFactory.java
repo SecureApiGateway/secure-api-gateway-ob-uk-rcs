@@ -15,9 +15,11 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.api.factory.details;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticDataInitiation;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticDataInitiation.FRWriteDomesticDataInitiationBuilder;
+import com.forgerock.sapi.gateway.ob.uk.rcs.api.factory.details.decoder.FRAccountIdentifierDecoder;
+import com.forgerock.sapi.gateway.ob.uk.rcs.api.json.utils.JsonUtilValidation;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.IntentType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticPaymentConsentDetails;
 import com.google.gson.JsonArray;
@@ -37,6 +39,12 @@ import static java.util.Objects.requireNonNull;
 @Component
 @Slf4j
 public class DomesticPaymentConsentDetailsFactory implements ConsentDetailsFactory<DomesticPaymentConsentDetails> {
+
+    private final FRAccountIdentifierDecoder accountIdentifierDecoder;
+
+    public DomesticPaymentConsentDetailsFactory(FRAccountIdentifierDecoder accountIdentifierDecoder) {
+        this.accountIdentifierDecoder = accountIdentifierDecoder;
+    }
 
     @Override
     public DomesticPaymentConsentDetails decode(JsonObject json) {
@@ -91,24 +99,14 @@ public class DomesticPaymentConsentDetailsFactory implements ConsentDetailsFacto
     private FRWriteDomesticDataInitiation decodeDataInitiation(JsonObject initiation){
         log.debug("{}.{}.{}: {}", OB_INTENT_OBJECT, DATA, INITIATION, initiation);
 
+        final FRWriteDomesticDataInitiationBuilder initiationBuilder = FRWriteDomesticDataInitiation.builder();
         if(isNotNull(initiation.get(DEBTOR_ACCOUNT))) {
-            JsonObject debtorAccount = initiation.getAsJsonObject(DEBTOR_ACCOUNT);
-            return FRWriteDomesticDataInitiation.builder()
-                    .debtorAccount(
-                            FRAccountIdentifier.builder()
-                                    .identification(debtorAccount.get(IDENTIFICATION).getAsString())
-                                    .name(debtorAccount.get(NAME).getAsString())
-                                    .schemeName(debtorAccount.get(SCHEME_NAME).getAsString())
-                                    .secondaryIdentification(
-                                            isNotNull(debtorAccount.get(SECONDARY_IDENTIFICATION)) ?
-                                                    debtorAccount.get(SECONDARY_IDENTIFICATION).getAsString() :
-                                                    null
-                                    )
-                                    .build()
-                    )
-                    .build();
+            initiationBuilder.debtorAccount(accountIdentifierDecoder.decode(initiation.getAsJsonObject(DEBTOR_ACCOUNT)));
         }
-        return FRWriteDomesticDataInitiation.builder().build();
+        if (JsonUtilValidation.isNotNull(initiation.get(CREDITOR_ACCOUNT))) {
+            initiationBuilder.creditorAccount(accountIdentifierDecoder.decode(initiation.getAsJsonObject(CREDITOR_ACCOUNT)));
+        }
+        return initiationBuilder.build();
     }
     private FRAmount decodeCharges(JsonArray chargesArray, String currency) {
         FRAmount charges = new FRAmount();

@@ -15,9 +15,10 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.api.factory.details;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticScheduledDataInitiation.FRWriteDomesticScheduledDataInitiationBuilder;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticScheduledPaymentConsentDetails;
+import com.forgerock.sapi.gateway.ob.uk.rcs.api.factory.details.decoder.FRAccountIdentifierDecoder;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.json.utils.JsonUtilValidation;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticScheduledDataInitiation;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.IntentType;
@@ -30,6 +31,7 @@ import org.springframework.stereotype.Component;
 
 import static com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.Members.*;
 import static com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.OB_INTENT_OBJECT;
+import static com.forgerock.sapi.gateway.ob.uk.rcs.api.json.utils.JsonUtilValidation.isNotNull;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -38,6 +40,12 @@ import static java.util.Objects.requireNonNull;
 @Component
 @Slf4j
 public class DomesticScheduledPaymentConsentDetailsFactory implements ConsentDetailsFactory<DomesticScheduledPaymentConsentDetails> {
+
+    private final FRAccountIdentifierDecoder accountIdentifierDecoder;
+
+    public DomesticScheduledPaymentConsentDetailsFactory(FRAccountIdentifierDecoder accountIdentifierDecoder) {
+        this.accountIdentifierDecoder = accountIdentifierDecoder;
+    }
 
     @Override
     public DomesticScheduledPaymentConsentDetails decode(JsonObject json) {
@@ -94,24 +102,14 @@ public class DomesticScheduledPaymentConsentDetailsFactory implements ConsentDet
     private FRWriteDomesticScheduledDataInitiation decodeDataInitiation(JsonObject initiation) {
         log.debug("{}.{}.{}: {}", OB_INTENT_OBJECT, DATA, INITIATION, initiation);
 
-        if (JsonUtilValidation.isNotNull(initiation.get(DEBTOR_ACCOUNT))) {
-            JsonObject debtorAccount = initiation.getAsJsonObject(DEBTOR_ACCOUNT);
-            return FRWriteDomesticScheduledDataInitiation.builder()
-                    .debtorAccount(
-                            FRAccountIdentifier.builder()
-                                    .identification(debtorAccount.get(IDENTIFICATION).getAsString())
-                                    .name(debtorAccount.get(NAME).getAsString())
-                                    .schemeName(debtorAccount.get(SCHEME_NAME).getAsString())
-                                    .secondaryIdentification(
-                                            JsonUtilValidation.isNotNull(debtorAccount.get(SECONDARY_IDENTIFICATION)) ?
-                                                    debtorAccount.get(SECONDARY_IDENTIFICATION).getAsString() :
-                                                    null
-                                    )
-                                    .build()
-                    )
-                    .build();
+        final FRWriteDomesticScheduledDataInitiationBuilder initiationBuilder = FRWriteDomesticScheduledDataInitiation.builder();
+        if(isNotNull(initiation.get(DEBTOR_ACCOUNT))) {
+            initiationBuilder.debtorAccount(accountIdentifierDecoder.decode(initiation.getAsJsonObject(DEBTOR_ACCOUNT)));
         }
-        return FRWriteDomesticScheduledDataInitiation.builder().build();
+        if (JsonUtilValidation.isNotNull(initiation.get(CREDITOR_ACCOUNT))) {
+            initiationBuilder.creditorAccount(accountIdentifierDecoder.decode(initiation.getAsJsonObject(CREDITOR_ACCOUNT)));
+        }
+        return initiationBuilder.build();
     }
 
     private FRAmount decodeCharges(JsonArray chargesArray, String currency) {

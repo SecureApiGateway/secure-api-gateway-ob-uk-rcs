@@ -16,8 +16,8 @@
 package com.forgerock.sapi.gateway.ob.uk.rcs.api.factory.details;
 
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticVrpPaymentConsentDetails;
+import com.forgerock.sapi.gateway.ob.uk.rcs.api.factory.details.decoder.FRAccountIdentifierDecoder;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.json.utils.JsonUtilValidation;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRRemittanceInformation;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.vrp.FRWriteDomesticVrpDataInitiation;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.IntentType;
@@ -46,6 +46,12 @@ import static java.util.Objects.requireNonNull;
 @Slf4j
 @Component
 public class DomesticVrpPaymentConsentDetailsFactory implements ConsentDetailsFactory<DomesticVrpPaymentConsentDetails> {
+
+    private final FRAccountIdentifierDecoder accountIdentifierDecoder;
+
+    public DomesticVrpPaymentConsentDetailsFactory(FRAccountIdentifierDecoder accountIdentifierDecoder) {
+        this.accountIdentifierDecoder = accountIdentifierDecoder;
+    }
 
     @Override
     public DomesticVrpPaymentConsentDetails decode(JsonObject json) {
@@ -83,34 +89,10 @@ public class DomesticVrpPaymentConsentDetailsFactory implements ConsentDetailsFa
         log.debug("{}.{}.{}: {}", OB_INTENT_OBJECT, DATA, INITIATION, initiation);
         FRWriteDomesticVrpDataInitiation vrpDataInitiation = new FRWriteDomesticVrpDataInitiation();
         if (JsonUtilValidation.isNotNull(initiation.get(DEBTOR_ACCOUNT))) {
-            JsonObject debtorAccount = initiation.getAsJsonObject(DEBTOR_ACCOUNT);
-            vrpDataInitiation.setDebtorAccount(
-                    FRAccountIdentifier.builder()
-                            .identification(debtorAccount.get(IDENTIFICATION).getAsString())
-                            .name(debtorAccount.get(NAME).getAsString())
-                            .schemeName(debtorAccount.get(SCHEME_NAME).getAsString())
-                            .secondaryIdentification(
-                                    JsonUtilValidation.isNotNull(debtorAccount.get(SECONDARY_IDENTIFICATION)) ?
-                                            debtorAccount.get(SECONDARY_IDENTIFICATION).getAsString() :
-                                            null
-                            )
-                            .build()
-            );
+            vrpDataInitiation.setDebtorAccount(accountIdentifierDecoder.decode(initiation.getAsJsonObject(DEBTOR_ACCOUNT)));
         }
         if (JsonUtilValidation.isNotNull(initiation.get(CREDITOR_ACCOUNT))) {
-            JsonObject creditorAccount = initiation.getAsJsonObject(CREDITOR_ACCOUNT);
-            vrpDataInitiation.setCreditorAccount(
-                    FRAccountIdentifier.builder()
-                            .identification(creditorAccount.get(IDENTIFICATION).getAsString())
-                            .name(creditorAccount.get(NAME).getAsString())
-                            .schemeName(creditorAccount.get(SCHEME_NAME).getAsString())
-                            .secondaryIdentification(
-                                    JsonUtilValidation.isNotNull(creditorAccount.get(SECONDARY_IDENTIFICATION)) ?
-                                            creditorAccount.get(SECONDARY_IDENTIFICATION).getAsString() :
-                                            null
-                            )
-                            .build()
-            );
+            vrpDataInitiation.setCreditorAccount(accountIdentifierDecoder.decode(initiation.getAsJsonObject(CREDITOR_ACCOUNT)));
         }
 
         if (JsonUtilValidation.isNotNull(initiation.get(REMITTANCE_INFORMATION))) {

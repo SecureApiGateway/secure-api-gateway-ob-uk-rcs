@@ -15,9 +15,10 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.api.factory.details;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalDataInitiation.FRWriteInternationalDataInitiationBuilder;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.InternationalPaymentConsentDetails;
+import com.forgerock.sapi.gateway.ob.uk.rcs.api.factory.details.decoder.FRAccountIdentifierDecoder;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.json.utils.JsonUtilValidation;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRExchangeRateInformation;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalDataInitiation;
@@ -33,6 +34,7 @@ import java.math.BigDecimal;
 
 import static com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.Members.*;
 import static com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.ConsentDetailsConstants.Intent.OB_INTENT_OBJECT;
+import static com.forgerock.sapi.gateway.ob.uk.rcs.api.json.utils.JsonUtilValidation.isNotNull;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -41,6 +43,12 @@ import static java.util.Objects.requireNonNull;
 @Component
 @Slf4j
 public class InternationalPaymentConsentDetailsFactory implements ConsentDetailsFactory<InternationalPaymentConsentDetails> {
+
+    private final FRAccountIdentifierDecoder accountIdentifierDecoder;
+
+    public InternationalPaymentConsentDetailsFactory(FRAccountIdentifierDecoder accountIdentifierDecoder) {
+        this.accountIdentifierDecoder = accountIdentifierDecoder;
+    }
 
     @Override
     public InternationalPaymentConsentDetails decode(JsonObject json) {
@@ -105,25 +113,14 @@ public class InternationalPaymentConsentDetailsFactory implements ConsentDetails
     private FRWriteInternationalDataInitiation decodeDataInitiation(JsonObject initiation) {
         log.debug("{}.{}.{}: {}", OB_INTENT_OBJECT, DATA, INITIATION, initiation);
 
-        if (JsonUtilValidation.isNotNull(initiation.get(DEBTOR_ACCOUNT))) {
-            JsonObject debtorAccount = initiation.getAsJsonObject(DEBTOR_ACCOUNT);
-            return FRWriteInternationalDataInitiation.builder()
-                    .debtorAccount(
-                            FRAccountIdentifier.builder()
-                                    .identification(debtorAccount.get(IDENTIFICATION).getAsString())
-                                    .name(debtorAccount.get(NAME).getAsString())
-                                    .schemeName(debtorAccount.get(SCHEME_NAME).getAsString())
-                                    .secondaryIdentification(
-                                            JsonUtilValidation.isNotNull(debtorAccount.get(SECONDARY_IDENTIFICATION)) ?
-                                                    debtorAccount.get(SECONDARY_IDENTIFICATION).getAsString() :
-                                                    null
-                                    )
-                                    .build()
-                    )
-                    .build();
-
+        final FRWriteInternationalDataInitiationBuilder initiationBuilder = FRWriteInternationalDataInitiation.builder();
+        if(isNotNull(initiation.get(DEBTOR_ACCOUNT))) {
+            initiationBuilder.debtorAccount(accountIdentifierDecoder.decode(initiation.getAsJsonObject(DEBTOR_ACCOUNT)));
         }
-        return FRWriteInternationalDataInitiation.builder().build();
+        if (JsonUtilValidation.isNotNull(initiation.get(CREDITOR_ACCOUNT))) {
+            initiationBuilder.creditorAccount(accountIdentifierDecoder.decode(initiation.getAsJsonObject(CREDITOR_ACCOUNT)));
+        }
+        return initiationBuilder.build();
     }
 
     private FRAmount decodeInstructedAmount(JsonObject instructedAmount) {

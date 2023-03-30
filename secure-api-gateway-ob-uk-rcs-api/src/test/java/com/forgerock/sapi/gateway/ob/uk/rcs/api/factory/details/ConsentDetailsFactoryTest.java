@@ -15,6 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.api.factory.details;
 
+import com.forgerock.sapi.gateway.ob.uk.rcs.api.factory.details.decoder.FRAccountIdentifierDecoder;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.IntentType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.ConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.ConsentDetailsConstants;
@@ -57,7 +58,8 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
         InternationalPaymentConsentDetailsFactory.class,
         InternationalScheduledPaymentConsentDetailsFactory.class,
         InternationalStandingOrderConsentDetailsFactory.class,
-        FilePaymentConsentDetailsFactory.class
+        FilePaymentConsentDetailsFactory.class,
+        FRAccountIdentifierDecoder.class
 })
 public class ConsentDetailsFactoryTest {
 
