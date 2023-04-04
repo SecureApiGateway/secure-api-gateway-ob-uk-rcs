@@ -57,12 +57,12 @@ spec:
           - name: CONSENT_REPO_URI
             valueFrom:
               configMapKeyRef:
-                name: securebanking-platform-config
+                name: deployment-config
                 key: CONSENT_REPO_URI
           - name: RS_API_URI
             valueFrom:
               configMapKeyRef:
-                name: securebanking-platform-config
+                name: deployment-config
                 key: RS_API_URI
           - name: SERVER_PORT
             value: {{ .Values.deployment.server.port | quote }}
@@ -75,12 +75,12 @@ spec:
           - name: RCS_CONSENT_RESPONSE_JWT_SIGNINGKEYID
             valueFrom:
               configMapKeyRef:
-                name: securebanking-platform-config
+                name: deployment-config
                 key: RCS_CONSENT_RESPONSE_JWT_SIGNINGKEYID
           - name: RCS_CONSENT_RESPONSE_JWT_ISSUER
             valueFrom:
               configMapKeyRef:
-                name: securebanking-platform-config
+                name: deployment-config
                 key: RCS_CONSENT_RESPONSE_JWT_ISSUER
           resources:
             {{- toYaml .Values.deployment.resources | nindent 12 }}
