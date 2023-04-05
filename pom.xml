@@ -36,11 +36,11 @@
     <parent>
         <groupId>com.forgerock.sapi.gateway</groupId>
         <artifactId>secure-api-gateway-parent</artifactId>
-        <version>0.9.1-SNAPSHOT</version>
+        <version>0.9.1</version>
     </parent>
 
     <properties>
-        <uk.bom.version>0.9.1-SNAPSHOT</uk.bom.version>
+        <uk.bom.version>0.9.1</uk.bom.version>
         <gson.version>2.10.1</gson.version>
         <mockito-inline.version>5.2.0</mockito-inline.version>
     </properties>
