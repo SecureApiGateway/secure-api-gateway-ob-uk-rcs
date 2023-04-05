@@ -66,6 +66,16 @@ jobs:
           docker tag eu.gcr.io/${{ secrets.GCR_DEV_REPO }}/securebanking/${{ env.SERVICE_NAME }}:${{ env.GIT_SHA_SHORT }} eu.gcr.io/${{ secrets.GCR_DEV_REPO }}/securebanking/${{ env.SERVICE_NAME }}:latest
           docker push --all-tags eu.gcr.io/${{ secrets.GCR_DEV_REPO }}/securebanking/${{ env.SERVICE_NAME }}
 
+      - name: 'run functional tests'
+        uses: codefresh-io/codefresh-pipeline-runner@master
+        with:
+          args: '-v SERVICE_NAME=remote-consent-server'
+        env:
+          PIPELINE_NAME: 'ForgeCloud/sbat-infra/service-build'
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
+          TRIGGER_NAME: github-actions-trigger-rs
+        id: run-pipeline
+
       - uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_ACCESS_TOKEN }}
