@@ -1,3 +1,4 @@
+---
 apiVersion: {{ .Values.deployment.apiVersion }}
 kind: Deployment
 metadata:
@@ -7,10 +8,12 @@ metadata:
 spec:
   replicas: {{ .Values.deployment.replicas }}
   strategy:
+    type: {{ .Values.deployment.strategyType}}
+    {{ if eq .Values.deployment.strategyType "RollingUpdate" }}
     rollingUpdate:
       maxSurge: {{ .Values.deployment.rollingUpdate.maxSurge }}
       maxUnavailable: {{ .Values.deployment.rollingUpdate.maxUnavailable }}
-    type: RollingUpdate
+    {{ end }}
   selector:
     matchLabels:
       app: {{ .Chart.Name }}
@@ -23,36 +26,32 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}
-          {{- if .Values.deployment.imageOverride.enabled }}
-          image: "{{ .Values.deployment.imageOverride.repo }}:{{ .Values.deployment.imageOverride.tag }}"
-          {{- else}}
-          image: "eu.gcr.io/sbat-gcr-release/securebanking/${{ .Chart.Name }}:{{ .Chart.AppVersion }}"
-          {{- end}}
-          imagePullPolicy: {{ .Values.deployment.imagePullPolicy }}
+          image: "{{ .Values.deployment.image.repo }}:{{ default .Chart.AppVersion .Values.deployment.image.tag }}"
+          imagePullPolicy: {{ .Values.deployment.image.imagePullPolicy }}
           volumeMounts:
             - name: rcs-signing
               mountPath: /app/secrets
               readOnly: true
           ports:
             - name: http-server
-              containerPort: {{ .Values.deployment.server.port }}
+              containerPort: {{ .Values.deployment.containerPort }}
           readinessProbe:
             httpGet:
               path: /actuator/health
-              port: {{ .Values.deployment.server.port }}
-            periodSeconds: 5
-            failureThreshold: 3
-            successThreshold: 1
-            timeoutSeconds: 5
+              port: {{ .Values.deployment.containerPort }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+            successThreshold: {{ .Values.readinessProbe.successThreshold }}
+            timeoutSeconds: {{ .Values.readinessProbe. timeoutSeconds}}
           livenessProbe:
             httpGet:
               path: /actuator/health
-              port: {{ .Values.deployment.server.port }}
-            initialDelaySeconds: 120
-            periodSeconds: 5
-            failureThreshold: 5
-            successThreshold: 1
-            timeoutSeconds: 5
+              port: {{ .Values.deployment.containerPort }}
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+            successThreshold: {{ .Values.livenessProbe.successThreshold }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
           env:
           - name: CONSENT_REPO_URI
             valueFrom:
@@ -65,7 +64,7 @@ spec:
                 name: deployment-config
                 key: RS_API_URI
           - name: SERVER_PORT
-            value: {{ .Values.deployment.server.port | quote }}
+            value: {{ .Values.deployment.containerPort | quote }}
           - name: SPRING_PROFILES_ACTIVE
             value: "docker"
           - name: JAVA_OPTS

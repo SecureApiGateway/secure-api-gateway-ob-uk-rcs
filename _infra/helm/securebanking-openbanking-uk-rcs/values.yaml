@@ -1,34 +1,34 @@
 deployment:
   apiVersion: apps/v1
+  containerPort: 8080
+  image:
+    # repo:
+    # tag:
+    imagePullPolicy: Always
+  java:
+    opts: -XX:+UseG1GC -XX:+UseContainerSupport -XX:MaxRAMPercentage=50 -agentlib:jdwp=transport=dt_socket,address=*:9091,server=y,suspend=n
+  livenessProbe:
+    initialDelaySeconds: 120
+    periodSeconds: 5
+    failureThreshold: 5
+    successThreshold: 1
+    timeoutSeconds: 5
+  readinessProbe:
+    periodSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+    timeoutSeconds: 5
   replicas: 1
-
+  resources: {}
   rollingUpdate:
     maxSurge: 50%
     maxUnavailable: 25%
+  strategyType: RollingUpdate
 
-  imagePullPolicy: Always
-
-  # Deploy a different image to the intended release (useful for development)
-  imageOverride:
-    enabled: true
-    repo: eu.gcr.io/sbat-gcr-develop/securebanking/securebanking-openbanking-uk-rcs
-    tag: latest
-
-  server:
-    port: 8080
-
-  java:
-    opts: -XX:+UseG1GC -XX:+UseContainerSupport -XX:MaxRAMPercentage=50 -agentlib:jdwp=transport=dt_socket,address=*:9091,server=y,suspend=n
-
-  resources:
-    requests:
-      cpu: 0.5
-      memory: 512Mi
-    limits:
-      cpu: 0.5
-      memory: 512Mi
-  
 service:
   apiVersion: v1
+  port: 8080
+  protocol: TCP
+  targetPort: 80
   type: ClusterIP
 
