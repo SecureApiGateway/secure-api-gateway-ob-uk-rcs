@@ -1,7 +1,11 @@
 # Secure API Gateway - Remote Consent Service (RCS)
 
-## Helm Charts
+## Prerequisites
 
+- Kubernetes v1.23 +
+- Helm 3.0.0 +
+
+## Helm Charts
 ### Deployment
 The deployment of RCS is a deployment and service. It should only be installed as part of the secure-api-gateway umbarella chart and not standalone.  The deployment will require a docker image which needs to be built via the Makefile before trying to deploy to kubernetes 
 
@@ -125,12 +129,6 @@ spec:
             secretName: rcs-signing
             optional: false
 ```
-
-## Prerequisites
-
-- Kubernetes v1.23 +
-- Helm 3.0.0 +
-
 ## Env Config
 | Key | Default | Description | Source |
 |-----|---------|-------------|--------|
@@ -151,13 +149,3 @@ spec:
 | deployment.image.tag | string | {} | Tag to deploy - Value should exist in values.yaml overlay in deployment repo |
 | deployment.image.imagePullPolicy | string | Always | Policy for pulling images
 | deployment.java.opts | string | -XX:+UseG1GC -XX:+UseContainerSupport -XX:MaxRAMPercentage=50 -agentlib:jdwp=transport=dt_socket,address=*:9091,server=y,suspend=n | Additional Java config
-
-## Resources
-
-There are resource requests and limits set for RCS. These values are a suggestion and can be overwritten in the seperate 'deployments' repo values.yaml file.
-Requests 
-* CPU: 0.25
-* Memory: 256Mi
-Limits
-* CPU 0.5
-* Memory: 512Mi
