@@ -7,7 +7,7 @@
 
 ## Helm Charts
 ### Deployment
-The deployment of RCS is a deployment and service. It should only be installed as part of the secure-api-gateway umbarella chart and not standalone.  The deployment will require a docker image which needs to be built via the Makefile before trying to deploy to kubernetes 
+The deployment of RCS is a deployment and service. It should only be installed as part of the secure-api-gateway umbarella chart and not standalone.  The deployment will require a docker image which needs to be built via the [Makefile](https://github.com/SecureApiGateway/secure-api-gateway-ob-uk-rcs/blob/master/Makefile) before trying to deploy to kubernetes 
 
 NOTE: There is no repo or image specified in the Values.yaml - This needs to be done in a seperate 'deployments' repo using an values.yaml overlay - No other values are required to be overwritten in the overlay but can be if needs be.
 
