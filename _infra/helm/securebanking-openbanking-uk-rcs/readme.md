@@ -5,7 +5,7 @@
 - Kubernetes v1.23 +
 - Helm 3.0.0 +
 
-jfrog_auth_username & jfrog_auth_password refer to the [maven repository](https://maven.forgerock.org/) credentials which as a customer would have been supplied to you
+`jfrog_auth_username` & `jfrog_auth_password` refer to the [maven repository](https://maven.forgerock.org/) credentials which as a customer would have been supplied to you
 
 ```console
   helm repo add forgerock-helm https://maven.forgerock.org/artifactory/forgerock-helm-virtual/ --username [jfrog_auth_username]  --password [jfrog_auth_password]
@@ -17,10 +17,10 @@ jfrog_auth_username & jfrog_auth_password refer to the [maven repository](https:
 ### Deployment
 The deployment of RCS is a deployment and service. It should only be installed as part of the secure-api-gateway umbarella chart and not standalone.  However, to deploy the secure-api-gateway, it requires a docker image to be built via the [Makefile](https://github.com/SecureApiGateway/secure-api-gateway-ob-uk-rcs/blob/master/Makefile). Only once this has been done for all the components can the [steps to deploy](https://github.com/SecureApiGateway/secure-api-gateway-releases/secure-api-gateway/readme.md) be performed  
 
-NOTE: There is no repo or image specified in the Values.yaml - This needs to be done in a seperate 'deployments' repo using an values.yaml overlay - No other values are required to be overwritten in the overlay but can be if needs be.
+NOTE: There is no repo or image specified in the `Values.yaml` - This needs to be done in a seperate 'deployments' repo using an values.yaml overlay - No other values are required to be overwritten in the overlay but can be if needs be.
 
 ### Example Manifest
-This is an example manifest using the values.yaml file provided, there is no overlay values in this generated manifest hence why there is no repo URL in spec.template.spec.containers.0.image
+This is an example manifest using the values.yaml file provided, there is no overlay values in this generated manifest hence why there is no repo URL in `spec.template.spec.containers.0.image`
 
 ```yaml
 ---
