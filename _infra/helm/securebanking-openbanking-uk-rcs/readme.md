@@ -163,7 +163,7 @@ spec:
 | deployment.livenessProbe.successThreshold | integer | 1 | How many times the prob must succeed before declaring the pod healthy |
 | deployment.livenessProbe.timeoutSeconds | integer | 5 | Amount of time the probe will try hit the endpoint before declaring unsuccessful |
 | deployment.readinessProbe.periodSeconds | integer | 5 | Time to wait until liveness probe beings |
-| deployment.readinessProbe.failureThreshold | integer | How many times the probe can fail before declaring the pod unhealthy |3 |
+| deployment.readinessProbe.failureThreshold | integer |3 | How many times the probe can fail before declaring the pod unhealthy |
 | deployment.readinessProbe.successThreshold | integer | 1 | How many times the prob must succeed before declaring the pod healthy |
 | deployment.readinessProbe.timeoutSeconds | integer | 5 | Amount of time the probe will try hit the endpoint before declaring unsuccessful |
 | deployment.resources.limits.cpu | integer | 0.5 | Max amount of CPU the pod can consume |
