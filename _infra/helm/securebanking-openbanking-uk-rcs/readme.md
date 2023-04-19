@@ -6,23 +6,24 @@
 - Helm 3.0.0 +
 
 To add the forgerock helm artifactory repository to your local machine to consume helm charts use the following
+
 ```console
   helm repo add forgerock-helm https://maven.forgerock.org/artifactory/forgerock-helm-virtual/ --username [backstage_username]  --password [backstage_password]
   helm repo update
-
 ```
+
 NOTE: You must have a valid [subscription](https://backstage.forgerock.com/knowledge/kb/article/a57648047#XAYQfS) to aquire the `backstage_username` and `backstage_password` values.
 
 ## Helm Charts
 ### Deployment
-RCS should only be installed as part of the [secure-api-gateway umbarella chart](https://github.com/SecureApiGateway/secure-api-gateway-releases/secure-api-gateway) and not standalone from this repositry.  
+RCS should only be installed as part of the [secure-api-gateway umbarella chart](https://github.com/SecureApiGateway/secure-api-gateway-releases/tree/master/secure-api-gateway) and not standalone from this repositry.  
 
 However, as part of the deployment of the secure-api-gateway, you must build the java artifacts and built the docker image via the [Makefile](https://github.com/SecureApiGateway/secure-api-gateway-ob-uk-rcs/blob/master/Makefile). 
 
-Only once this has been done for all the components can the [steps to deploy](https://github.com/SecureApiGateway/secure-api-gateway-releases/secure-api-gateway/readme.md) be performed to deploy the secure-api-gateway
+Only once this has been done for all the components can the [steps to deploy](https://github.com/SecureApiGateway/secure-api-gateway-releases/tree/master/secure-api-gateway/readme.md) be performed to deploy the secure-api-gateway
 
 ### Example Manifest
-This is an example manifest using the values.yaml file provided, there is no overlay values in this generated manifest hence why there is no repo URL in `spec.template.spec.containers.0.image`
+This is an example manifest using the `values.yaml` file provided, there is no overlay values in this generated manifest hence why there is no repo URL in `spec.template.spec.containers.0.image`
 
 ```yaml
 ---
@@ -139,7 +140,9 @@ spec:
             secretName: rcs-signing
             optional: false
 ```
-## Env Config
+## Environment Variables
+
+These are the environment variables declared in the `deployment.yaml`
 | Key | Default | Description | Source |
 |-----|---------|-------------|--------|
 | CONSENT_REPO_URI | http://ig:80 | URI of IG | deployment-config |
@@ -151,6 +154,7 @@ spec:
 | RCS_CONSENT_RESPONSE_JWT_ISSUER | secure-open-banking-rcs | What is the JWT responce issuer | deployment-config |
 
 ## Values
+These are the values that are consumed in the `deployment.yaml` and `service.yaml`
 | Key | Type | Description | Default |
 |-----|------|-------------|---------|
 | deployment.apiVersion| string | Version of the Kubernetes API to use | apps/v1 |
@@ -181,4 +185,14 @@ spec:
 | service.targetPort | integer | Host Machine port that traffic is diverted too | 80 | 
 | service.type | string | Type of service to create | ClusterIP |
 
-NOTE: There is no `deployment.image.repo` or `deployment.image.tag` specified in the `Values.yaml` - This needs to be done in a seperate 'deployments' repo using an values.yaml overlay. You may overwrite any of the other values if required. 
+NOTE: There is no `deployment.image.repo` or `deployment.image.tag` specified in the `Values.yaml` - This needs to be done in a seperate 'deployments' repo using an additional `values.yaml` overlay. You may overwrite any of the other values in this additonal file if required.
+
+Example of the RCS section of the additonal `values.yaml` file 
+```yaml
+remote-consent-service:
+  deployment:  
+    image:
+      repo: [REPO_URL]
+      # By default the AppVersion will be used so that users don't have to change this value, however you can override this by uncommenting the line and providing a valid verison.
+      # tag: 1.0.1
+```
