@@ -33,13 +33,14 @@ deployment:
   # See https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ 
   # Resource Requests and Limits
   resources:
-    requests:
-      cpu: 0.25
-      memory: 256Mi
     limits:
       cpu: 0.5
       memory: 512Mi
-  # See https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#proportional-scaling
+    requests:
+      cpu: 0.25
+      memory: 256Mi
+
+  # See https://kubernetes.io/docs/tasks/manage-daemon/update-daemon-set/
   # Allows you to have multiple versions of the deployment in the same cluster, kubernetes will create new pods and scale down old when performing an upgrade 
   # Depending on the values set below. Other strategyTypes are: Recreate | Blue/ Green (or Red / Black) deployments | Canary | Dark deployments
   rollingUpdate:

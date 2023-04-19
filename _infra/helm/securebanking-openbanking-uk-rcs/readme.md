@@ -5,9 +5,17 @@
 - Kubernetes v1.23 +
 - Helm 3.0.0 +
 
+jfrog_auth_username & jfrog_auth_password refer to the [maven repository](https://maven.forgerock.org/) credentials which as a customer would have been supplied to you
+
+```console
+  helm repo add forgerock-helm https://maven.forgerock.org/artifactory/forgerock-helm-virtual/ --username [jfrog_auth_username]  --password [jfrog_auth_password]
+  helm repo update
+
+```
+
 ## Helm Charts
 ### Deployment
-The deployment of RCS is a deployment and service. It should only be installed as part of the secure-api-gateway umbarella chart and not standalone.  The deployment will require a docker image which needs to be built via the [Makefile](https://github.com/SecureApiGateway/secure-api-gateway-ob-uk-rcs/blob/master/Makefile) before trying to deploy to kubernetes 
+The deployment of RCS is a deployment and service. It should only be installed as part of the secure-api-gateway umbarella chart and not standalone.  However, to deploy the secure-api-gateway, it requires a docker image to be built via the [Makefile](https://github.com/SecureApiGateway/secure-api-gateway-ob-uk-rcs/blob/master/Makefile). Only once this has been done for all the components can the [steps to deploy](https://github.com/SecureApiGateway/secure-api-gateway-releases/secure-api-gateway/readme.md) be performed  
 
 NOTE: There is no repo or image specified in the Values.yaml - This needs to be done in a seperate 'deployments' repo using an values.yaml overlay - No other values are required to be overwritten in the overlay but can be if needs be.
 
@@ -149,3 +157,24 @@ spec:
 | deployment.image.tag | string | {} | Tag to deploy - Value should exist in values.yaml overlay in deployment repo |
 | deployment.image.imagePullPolicy | string | Always | Policy for pulling images
 | deployment.java.opts | string | -XX:+UseG1GC -XX:+UseContainerSupport -XX:MaxRAMPercentage=50 -agentlib:jdwp=transport=dt_socket,address=*:9091,server=y,suspend=n | Additional Java config
+| deployment.livenessProbe.initialDelaySeconds | integer | 120 |
+| deployment.livenessProbe.periodSeconds | integer | 5 | Time to wait until liveness probe beings |
+| deployment.livenessProbe.failureThreshold | integer | 5 | How many times the probe can fail before declaring the pod unhealthy |
+| deployment.livenessProbe.successThreshold | integer | 1 | How many times the prob must succeed before declaring the pod healthy |
+| deployment.livenessProbe.timeoutSeconds | integer | 5 | Amount of time the probe will try hit the endpoint before declaring unsuccessful |
+| deployment.readinessProbe.periodSeconds | integer | 5 | Time to wait until liveness probe beings |
+| deployment.readinessProbe.failureThreshold | integer | How many times the probe can fail before declaring the pod unhealthy |3 |
+| deployment.readinessProbe.successThreshold | integer | 1 | How many times the prob must succeed before declaring the pod healthy |
+| deployment.readinessProbe.timeoutSeconds | integer | 5 | Amount of time the probe will try hit the endpoint before declaring unsuccessful |
+| deployment.resources.limits.cpu | integer | 0.5 | Max amount of CPU the pod can consume |
+| deployment.resources.limits.memory | string | 512Mi | Max amount of memory the pod can consume |
+| deployment.resources.requests.cpu | integer | 0.25 | Minimum requested CPU required to run the pod |
+| deployment.resources.requests.memory | string | 256Mi | Minimum requested memory required to run the pod |
+| deployment.rollingUpdate.maxSurge | string | 50% | The maximum number of pods that can be scheduled above the desired number of pods |
+| deployment.rollingUpdate.maxUnavailable | string | 25% | The maximum number of pods that can be unavailable during the update |
+| deployment.starategyType | string | RollingUpdate | Type of deployment |
+| service.apiVersion | string | v1 | Version of the Kubernetes API to use |
+| service.port | integer | 8080 | Container port exposed by a pod or deployment |
+| service.protocol | string | TCP | Protocol the service will use |
+| service.targetPort | integer | 80 | Host Machine port that traffic is diverted too |
+| service.type | string | ClusterIP | Type of service to create |
