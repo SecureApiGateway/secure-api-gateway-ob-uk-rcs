@@ -1,5 +1,7 @@
 # Secure API Gateway - Remote Consent Service (RCS)
 
+See [README](https://github.com/SecureApiGateway/secure-api-gateway-ob-uk-rcs/blob/master/README.md) for information on RCS
+
 ## Prerequisites
 
 - Kubernetes v1.23 +
@@ -148,7 +150,8 @@ These are the environment variables declared in the `deployment.yaml`;
 | CONSENT_REPO_URI | http://ig:80 | URI of IG | deployment-config |
 |RS_API_URI | http://test-facility-bank:8080 | URI of Test Facility Bank | deployment-config |
 | SERVER_PORT | 8080 | What port does the container use |deployment.containerPort |
-| SPRING_PROFILES_ACTIVE | docker |What spring provile to use | Hardcoded | 
+| SPRING_PROFILES_ACTIVE | docker | What spring provile to use | Hardcoded |
+| JAVA_OPTS | -XX:+UseG1GC -XX:+UseContainerSupport -XX:MaxRAMPercentage=50 -agentlib:jdwp=transport=dt_socket,address=*:9090,server=y,suspend=n | Additional Java config | deployment.java.opts | 
 | RCS_CONSENT_RESPONSE_JWT_PRIVATEKEYPATH | /app/secrets/rcs-signing.key | Where to find the private signing key | Hardcoded |
 | RCS_CONSENT_RESPONSE_JWT_SIGNINGKEYID | rcs-jwt-signer | What is the signing key ID | deployment-config |
 | RCS_CONSENT_RESPONSE_JWT_ISSUER | secure-open-banking-rcs | What is the JWT responce issuer | deployment-config |
