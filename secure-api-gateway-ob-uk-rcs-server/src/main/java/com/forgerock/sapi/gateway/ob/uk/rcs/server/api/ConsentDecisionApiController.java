@@ -16,15 +16,13 @@
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.sapi.gateway.ob.uk.rcs.api.ConsentDecisionApi;
-import com.forgerock.sapi.gateway.ob.uk.rcs.server.exception.InvalidConsentException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.Constants;
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.IntentType;
+import com.forgerock.sapi.gateway.ob.uk.rcs.api.ConsentDecisionApi;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.RedirectionAction;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.decision.ConsentDecisionDeserialized;
-import com.forgerock.sapi.gateway.ob.uk.rcs.server.jwt.RcsJwtSigner;
+import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.Constants;
+import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.IntentType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ExceptionClient;
@@ -32,11 +30,12 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.ConsentClientDec
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.ConsentClientDecisionRequestData;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services.ConsentServiceClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.utils.jwt.JwtUtil;
+import com.forgerock.sapi.gateway.ob.uk.rcs.server.exception.InvalidConsentException;
+import com.forgerock.sapi.gateway.ob.uk.rcs.server.jwt.RcsJwtSigner;
 import com.google.gson.JsonObject;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,12 +44,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import java.text.ParseException;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType.RCS_CONSENT_DECISION_EMPTY;
-import static com.forgerock.sapi.gateway.ob.uk.rcs.server.util.ConsentDecisionDeserializer.deserializeConsentDecision;
 import static com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorType.INTERNAL_SERVER_ERROR;
 import static com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorType.JWT_INVALID;
+import static com.forgerock.sapi.gateway.ob.uk.rcs.server.util.ConsentDecisionDeserializer.deserializeConsentDecision;
 
 @Controller
 @Slf4j
@@ -63,7 +63,7 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
     private final String rcsJwtIssuer;
 
     public ConsentDecisionApiController(ObjectMapper objectMapper, ConsentServiceClient consentServiceClient,
-            RcsJwtSigner jwtSigner, @Value("${rcs.consent.response.jwt.issuer}") String rcsJwtIssuer) {
+                                        RcsJwtSigner jwtSigner, @Value("${rcs.consent.response.jwt.issuer}") String rcsJwtIssuer) {
         this.objectMapper = objectMapper;
         this.consentServiceClient = consentServiceClient;
         this.jwtSigner = jwtSigner;
@@ -102,12 +102,12 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
                         .accountIds(consentDecisionDeserialized.getAccountIds())
                         .clientId(clientId)
                         .consentJwt(consentDecisionDeserialized.getConsentJwt())
+                        .accountId(
+                                Objects.nonNull(consentDecisionDeserialized.getDebtorAccount()) ?
+                                        consentDecisionDeserialized.getDebtorAccount().getAccountId() :
+                                        null
+                        )
                         .data(ConsentClientDecisionRequestData.builder()
-                                .debtorAccount(
-                                        consentDecisionDeserialized.getDebtorAccount() != null ?
-                                                consentDecisionDeserialized.getDebtorAccount() :
-                                                null
-                                )
                                 .status(consentDecisionDeserialized.getDecision())
                                 .build())
                         .intentId(intentId)
@@ -171,7 +171,7 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
             final String errorMessage = "Failed to sign consent decision response JWT";
             log.error(errorMessage, e);
             throw new InvalidConsentException(consentDecisionDeserialized.getConsentJwt(), INTERNAL_SERVER_ERROR,
-                                              OBRIErrorType.RCS_CONSENT_RESPONSE_FAILURE, errorMessage, null, null);
+                    OBRIErrorType.RCS_CONSENT_RESPONSE_FAILURE, errorMessage, null, null);
         }
     }
 
