@@ -49,7 +49,7 @@ public class ConsentClientDecisionRequest {
     private JWTClaimsSet jwtClaimsSet;
 
     private List<String> accountIds;
-
+    private String accountId;
     private ConsentClientDecisionRequestData data;
     private String resourceOwnerUsername;
 }

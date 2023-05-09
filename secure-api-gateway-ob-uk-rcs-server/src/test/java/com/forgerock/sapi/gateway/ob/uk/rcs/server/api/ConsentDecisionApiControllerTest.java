@@ -58,10 +58,9 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.test.support.ConsentDecisionRequestTestDataFactory.*;
 import static com.forgerock.sapi.gateway.ob.uk.rcs.server.util.Constants.*;
 import static com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.test.support.AccountAccessConsentDetailsTestFactory.aValidAccountConsentDetails;
-import static com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.test.support.ConsentDecisionRequestTestDataFactory.aValidAccountConsentClientDecisionRequest;
-import static com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.test.support.ConsentDecisionRequestTestDataFactory.aValidDomesticPaymentConsentClientDecisionRequest;
 import static com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.test.support.DomesticPaymentConsentDetailsTestFactory.aValidDomesticPaymentConsentDetails;
 import static com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.test.support.DomesticScheduledPaymentConsentDetailsTestFactory.aValidDomesticScheduledPaymentConsentDetails;
 import static com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.test.support.DomesticStandingOrderConsentDetailsTestFactory.aValidDomesticStandingOrderConsentDetails;
@@ -154,50 +153,95 @@ public class ConsentDecisionApiControllerTest {
         return Stream.of(
                 arguments(
                         "DOMESTIC PAYMENT",
-                        aValidDomesticPaymentConsentClientDecisionRequest(DOMESTIC_PAYMENT_INTENT_ID),
+                        aValidPaymentConsentClientDecisionRequest(DOMESTIC_PAYMENT_INTENT_ID),
                         aValidDomesticPaymentConsentDetails(DOMESTIC_PAYMENT_INTENT_ID)
                 ),
                 arguments(
                         "DOMESTIC SCHEDULED",
-                        aValidDomesticPaymentConsentClientDecisionRequest(DOMESTIC_SCHEDULED_PAYMENT_INTENT_ID),
+                        aValidPaymentConsentClientDecisionRequest(DOMESTIC_SCHEDULED_PAYMENT_INTENT_ID),
                         aValidDomesticScheduledPaymentConsentDetails(DOMESTIC_SCHEDULED_PAYMENT_INTENT_ID)
                 ),
                 arguments(
                         "DOMESTIC STANDING ORDER",
-                        aValidDomesticPaymentConsentClientDecisionRequest(DOMESTIC_STANDING_ORDER_INTENT_ID),
+                        aValidPaymentConsentClientDecisionRequest(DOMESTIC_STANDING_ORDER_INTENT_ID),
                         aValidDomesticStandingOrderConsentDetails(DOMESTIC_STANDING_ORDER_INTENT_ID)
                 ),
                 arguments(
                         "INTERNATIONAL PAYMENT",
-                        aValidDomesticPaymentConsentClientDecisionRequest(INTERNATIONAL_PAYMENT_INTENT_ID),
+                        aValidPaymentConsentClientDecisionRequest(INTERNATIONAL_PAYMENT_INTENT_ID),
                         aValidInternationalPaymentConsentDetails(INTERNATIONAL_PAYMENT_INTENT_ID)
                 ),
                 arguments(
                         "INTERNATIONAL SCHEDULED",
-                        aValidDomesticPaymentConsentClientDecisionRequest(INTERNATIONAL_SCHEDULED_PAYMENT_INTENT_ID),
+                        aValidPaymentConsentClientDecisionRequest(INTERNATIONAL_SCHEDULED_PAYMENT_INTENT_ID),
                         aValidInternationalScheduledPaymentConsentDetails(INTERNATIONAL_SCHEDULED_PAYMENT_INTENT_ID)
                 ),
                 arguments(
                         "INTERNATIONAL STANDING ORDER",
-                        aValidDomesticPaymentConsentClientDecisionRequest(INTERNATIONAL_STANDING_ORDER_INTENT_ID),
+                        aValidPaymentConsentClientDecisionRequest(INTERNATIONAL_STANDING_ORDER_INTENT_ID),
                         aValidInternationalStandingOrderConsentDetails(INTERNATIONAL_STANDING_ORDER_INTENT_ID)
                 ),
                 arguments(
                         "FILE PAYMENT",
-                        aValidDomesticPaymentConsentClientDecisionRequest(FILE_PAYMENT_INTENT_ID),
+                        aValidPaymentConsentClientDecisionRequest(FILE_PAYMENT_INTENT_ID),
                         aValidFilePaymentConsentDetails(FILE_PAYMENT_INTENT_ID)
                 ),
                 arguments(
                         "VRP PAYMENT",
-                        aValidDomesticPaymentConsentClientDecisionRequest(DOMESTIC_VRP_PAYMENT_INTENT_ID),
+                        aValidPaymentConsentClientDecisionRequest(DOMESTIC_VRP_PAYMENT_INTENT_ID),
                         aValidDomesticVrpPaymentConsentDetails(DOMESTIC_VRP_PAYMENT_INTENT_ID)
                 )
         );
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "{0}")
     @MethodSource("validArgumentsForPayments")
-    public void ShouldGetPaymentRedirectAction(
+    public void ShouldGetPaymentRedirectActionDebtorAccountProvidedFalse(
+            String testIdName,
+            ConsentClientDecisionRequest consentClientDecisionRequest,
+            JsonObject jsonObjectConsentDetails
+    ) throws ExceptionClient {
+        // Given
+        given(consentServiceClient.updateConsent(consentClientDecisionRequest)).willReturn(jsonObjectConsentDetails);
+        String jwt = JwtTestHelper.consentRequestJwt(
+                consentClientDecisionRequest.getClientId(),
+                consentClientDecisionRequest.getIntentId(),
+                consentClientDecisionRequest.getResourceOwnerUsername()
+        );
+
+        String consentDetailURL = BASE_URL + port + CONTEXT_DETAILS_URI;
+
+        FRAccountIdentifier accountIdentifier = new FRAccountIdentifier();
+        accountIdentifier.setIdentification("76064512389965");
+        accountIdentifier.setName("John");
+        accountIdentifier.setSchemeName("UK.OBIE.SortCodeAccountNumber");
+        FRFinancialAccount financialAccount = new FRFinancialAccount();
+        financialAccount.setAccounts(List.of(accountIdentifier));
+        financialAccount.setAccountId("30ff5da7-7d0f-43fe-974c-7b34717cbeec");
+
+        ConsentDecisionDeserialized consentDecisionRequest = ConsentDecisionDeserialized.builder()
+                .consentJwt(jwt)
+                .decision(Constants.ConsentDecisionStatus.AUTHORISED)
+                .debtorAccount(financialAccount)
+                .build();
+        HttpEntity<String> request = new HttpEntity(consentDecisionRequest, headers());
+
+        // when
+        ResponseEntity<RedirectionAction> response = restTemplate.postForEntity(consentDetailURL, request, RedirectionAction.class);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(OK);
+        assertThat(response.getBody()).isNotNull();
+        final String consentJwt = response.getBody().getConsentJwt();
+        assertThat(consentJwt).isNotEmpty();
+        verifyConsentResponseJwt(consentJwt);
+
+        assertThat(response.getBody().getRedirectUri()).isNotEmpty();
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("validArgumentsForPayments")
+    public void ShouldGetPaymentRedirectActionDebtorAccountProvidedTrue(
             String testIdName,
             ConsentClientDecisionRequest consentClientDecisionRequest,
             JsonObject jsonObjectConsentDetails
@@ -243,7 +287,7 @@ public class ConsentDecisionApiControllerTest {
     @Test
     public void ShouldRedirectActionWrongIntentError() {
         // Given
-        ConsentClientDecisionRequest consentClientDecisionRequest = aValidDomesticPaymentConsentClientDecisionRequest("WRONG_INTENT_ID");
+        ConsentClientDecisionRequest consentClientDecisionRequest = aValidPaymentConsentClientDecisionRequest("WRONG_INTENT_ID");
         String jwt = JwtTestHelper.consentRequestJwt(
                 consentClientDecisionRequest.getClientId(),
                 consentClientDecisionRequest.getIntentId(),
