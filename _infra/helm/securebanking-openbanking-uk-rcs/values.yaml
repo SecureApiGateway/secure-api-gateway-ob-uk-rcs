@@ -55,7 +55,7 @@ service:
   # Protocol the service will use
   protocol: TCP
   # Host Machine port that traffic is diverted too - in this case the nodes
-  targetPort: 80
+  targetPort: 8080
   # See - https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
   # Type of service to create. Other types are: NodePort | LoadBalancer | ExternalName
   type: ClusterIP
