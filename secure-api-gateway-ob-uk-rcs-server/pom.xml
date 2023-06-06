@@ -63,6 +63,17 @@
 
         <dependency>
             <groupId>com.forgerock.sapi.gateway</groupId>
+            <artifactId>secure-api-gateway-ob-uk-rcs-consent-store-repo</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.forgerock.sapi.gateway</groupId>
+            <artifactId>secure-api-gateway-ob-uk-rcs-consent-store-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.forgerock.sapi.gateway</groupId>
             <artifactId>secure-api-gateway-ob-uk-common-shared</artifactId>
         </dependency>
         <dependency>

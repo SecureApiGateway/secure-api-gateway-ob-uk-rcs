@@ -11,7 +11,10 @@ deployment:
     # tag:
     # We want to pull the image down each time we do a deployment, required if using 'latest' tag
     imagePullPolicy: Always
-  # Additonal Java config - Needs further explanation 
+  mongodb:
+    # Full name of the mongodb deployment
+    host: mongodb
+  # Additonal Java config - Needs further explanation
   java:
     opts: -XX:+UseG1GC -XX:+UseContainerSupport -XX:MaxRAMPercentage=50 -agentlib:jdwp=transport=dt_socket,address=*:9091,server=y,suspend=n
   # See https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/ for further info on Liveness and Readiness Probes

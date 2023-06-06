@@ -13,26 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rcs.server;
+package com.forgerock.sapi.gateway.rcs.consent.store.repo;
 
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.api.ConsentStoreApiConfiguration;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.ConsentStoreConfiguration;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DefaultDomesticPaymentConsentService;
 
-@ComponentScan(basePackages =
-        {
-                "com.forgerock.sapi.gateway.ob.uk.rcs"
-        }
-)
-@SpringBootApplication
-@Import({ConsentStoreConfiguration.class, ConsentStoreApiConfiguration.class})
-public class RCSServerApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(RCSServerApplication.class, args);
-    }
+@SpringBootApplication(scanBasePackageClasses = DefaultDomesticPaymentConsentService.class)
+@Import(ConsentStoreConfiguration.class)
+public class TestApp {
 }

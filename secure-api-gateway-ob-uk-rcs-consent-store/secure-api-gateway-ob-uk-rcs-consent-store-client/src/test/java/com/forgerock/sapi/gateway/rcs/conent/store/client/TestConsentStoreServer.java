@@ -13,26 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rcs.server;
+package com.forgerock.sapi.gateway.rcs.conent.store.client;
 
-import org.springframework.boot.SpringApplication;
+import javax.annotation.PostConstruct;
+
+import org.joda.time.DateTimeZone;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.web.client.RestTemplate;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.api.ConsentStoreApiConfiguration;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.ConsentStoreConfiguration;
 
-@ComponentScan(basePackages =
-        {
-                "com.forgerock.sapi.gateway.ob.uk.rcs"
-        }
-)
+/**
+ * Test Application which starts the Consent Store REST API
+ */
 @SpringBootApplication
 @Import({ConsentStoreConfiguration.class, ConsentStoreApiConfiguration.class})
-public class RCSServerApplication {
+public class TestConsentStoreServer {
 
-    public static void main(String[] args) {
-        SpringApplication.run(RCSServerApplication.class, args);
+    @Bean
+    public RestTemplate restTemplate(RestTemplateBuilder builder) {
+        return builder.build();
     }
+
+    @PostConstruct
+    void postConstruct() {
+        // FIXME
+        DateTimeZone.setDefault(DateTimeZone.UTC);
+    }
+
 }
