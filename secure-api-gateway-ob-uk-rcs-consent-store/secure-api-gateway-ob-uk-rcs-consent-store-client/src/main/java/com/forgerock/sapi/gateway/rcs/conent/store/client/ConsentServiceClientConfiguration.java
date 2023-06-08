@@ -16,9 +16,11 @@
 package com.forgerock.sapi.gateway.rcs.conent.store.client;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@ComponentScan(basePackageClasses = ConsentServiceClientConfiguration.class)
 public class ConsentServiceClientConfiguration {
 
     @Value("${rcs.consent.store.api.baseUrl}")

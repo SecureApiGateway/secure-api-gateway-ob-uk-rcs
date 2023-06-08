@@ -18,6 +18,7 @@ package com.forgerock.sapi.gateway.rcs.conent.store.datamodel;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.joda.time.DateTime;
 import org.springframework.validation.annotation.Validated;
 
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
@@ -39,6 +40,10 @@ public class BaseConsent<T> {
     private String status;
     @NotNull
     private String apiClientId;
+    @NotNull
+    private DateTime creationDateTime;
+    @NotNull
+    private DateTime statusUpdateDateTime;
 
     private String resourceOwnerId;
 
@@ -98,6 +103,22 @@ public class BaseConsent<T> {
         this.resourceOwnerId = resourceOwnerId;
     }
 
+    public DateTime getCreationDateTime() {
+        return creationDateTime;
+    }
+
+    public void setCreationDateTime(DateTime creationDateTime) {
+        this.creationDateTime = creationDateTime;
+    }
+
+    public DateTime getStatusUpdateDateTime() {
+        return statusUpdateDateTime;
+    }
+
+    public void setStatusUpdateDateTime(DateTime statusUpdateDateTime) {
+        this.statusUpdateDateTime = statusUpdateDateTime;
+    }
+
     @Override
     public String toString() {
         return "BaseConsent{" +
@@ -107,6 +128,8 @@ public class BaseConsent<T> {
                 ", requestVersion=" + requestVersion +
                 ", status='" + status + '\'' +
                 ", apiClientId='" + apiClientId + '\'' +
+                ", creationDateTime=" + creationDateTime +
+                ", statusUpdateDateTime=" + statusUpdateDateTime +
                 ", resourceOwnerId='" + resourceOwnerId + '\'' +
                 '}';
     }

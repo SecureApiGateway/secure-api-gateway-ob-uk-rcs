@@ -98,6 +98,8 @@ public class DomesticPaymentConsentApiController implements DomesticPaymentConse
         dto.setIdempotencyKey(entity.getIdempotencyKey());
         dto.setIdempotencyKeyExpiration(entity.getIdempotencyKeyExpiration());
         dto.setCharges(entity.getCharges());
+        dto.setCreationDateTime(entity.getCreationDateTime());
+        dto.setStatusUpdateDateTime(entity.getStatusUpdatedDateTime());
         return dto;
     }
 }
