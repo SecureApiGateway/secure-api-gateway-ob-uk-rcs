@@ -28,7 +28,7 @@ public class BaseConsentEntity<T> {
     @Id
     private String id;
     @Version
-    private int version;
+    private int entityVersion;
     private T requestObj;
     private String requestType;
     private OBVersion requestVersion;
@@ -109,8 +109,8 @@ public class BaseConsentEntity<T> {
         return statusUpdatedDateTime;
     }
 
-    public int getVersion() {
-        return version;
+    public int getEntityVersion() {
+        return entityVersion;
     }
 
     @Override

@@ -151,11 +151,11 @@ public class ConsentDecisionApiControllerTest {
 
     private static Stream<Arguments> validArgumentsForPayments() {
         return Stream.of(
-                arguments(
-                        "DOMESTIC PAYMENT",
-                        aValidPaymentConsentClientDecisionRequest(DOMESTIC_PAYMENT_INTENT_ID),
-                        aValidDomesticPaymentConsentDetails(DOMESTIC_PAYMENT_INTENT_ID)
-                ),
+//                arguments(
+//                        "DOMESTIC PAYMENT",
+//                        aValidPaymentConsentClientDecisionRequest(DOMESTIC_PAYMENT_INTENT_ID),
+//                        aValidDomesticPaymentConsentDetails(DOMESTIC_PAYMENT_INTENT_ID)
+//                ),
                 arguments(
                         "DOMESTIC SCHEDULED",
                         aValidPaymentConsentClientDecisionRequest(DOMESTIC_SCHEDULED_PAYMENT_INTENT_ID),

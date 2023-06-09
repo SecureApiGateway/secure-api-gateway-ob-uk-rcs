@@ -141,8 +141,9 @@ public abstract class BaseConsentServiceTest<T extends BaseConsentEntity<?>, A e
         assertThat(rejectedConsent.getResourceOwnerId()).isEqualTo(TEST_RESOURCE_OWNER);
         assertThat(rejectedConsent.getStatusUpdatedDateTime()).isGreaterThan(persistedConsent.getStatusUpdatedDateTime())
                 .isLessThan(DateTime.now());
+        assertThat(rejectedConsent.getEntityVersion()).isEqualTo(persistedConsent.getEntityVersion() + 1);
 
-        final RecursiveComparisonConfiguration recursiveComparisonConfiguration = RecursiveComparisonConfiguration.builder().withIgnoredFields("status", "resourceOwnerId", "statusUpdatedDateTime").build();
+        final RecursiveComparisonConfiguration recursiveComparisonConfiguration = RecursiveComparisonConfiguration.builder().withIgnoredFields("status", "resourceOwnerId", "statusUpdatedDateTime", "version").build();
         assertThat(rejectedConsent).usingRecursiveComparison(recursiveComparisonConfiguration).isEqualTo(persistedConsent);
     }
 

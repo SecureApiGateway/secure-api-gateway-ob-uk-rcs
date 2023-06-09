@@ -32,6 +32,8 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services.ConsentService
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.utils.jwt.JwtUtil;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.exception.InvalidConsentException;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.jwt.RcsJwtSigner;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticPaymentAuthoriseConsentArgs;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticPaymentConsentService;
 import com.google.gson.JsonObject;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -62,12 +64,17 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
     private final RcsJwtSigner jwtSigner;
     private final String rcsJwtIssuer;
 
+    private final DomesticPaymentConsentService domesticPaymentConsentService;
+
     public ConsentDecisionApiController(ObjectMapper objectMapper, ConsentServiceClient consentServiceClient,
-                                        RcsJwtSigner jwtSigner, @Value("${rcs.consent.response.jwt.issuer}") String rcsJwtIssuer) {
+                                        RcsJwtSigner jwtSigner,
+                                        @Value("${rcs.consent.response.jwt.issuer}") String rcsJwtIssuer,
+                                        DomesticPaymentConsentService domesticPaymentConsentService) {
         this.objectMapper = objectMapper;
         this.consentServiceClient = consentServiceClient;
         this.jwtSigner = jwtSigner;
         this.rcsJwtIssuer = rcsJwtIssuer;
+        this.domesticPaymentConsentService = domesticPaymentConsentService;
     }
 
     @Override
@@ -86,8 +93,8 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
 
         log.debug("decision deserialised \n {}", consentDecisionDeserialized);
         try {
-            boolean decision = Constants.ConsentDecisionStatus.AUTHORISED.equals(consentDecisionDeserialized.getDecision());
-            log.debug("The decision is '{}'", decision);
+            boolean authorised = Constants.ConsentDecisionStatus.AUTHORISED.equals(consentDecisionDeserialized.getDecision());
+            log.debug("The authorised is '{}'", authorised);
             SignedJWT signedJWT = JwtUtil.getSignedJWT(consentDecisionDeserialized.getConsentJwt());
             String intentId = JwtUtil.getIdTokenClaim(signedJWT, Constants.Claims.INTENT_ID);
             log.debug("Intent Id from the requested claims '{}'", intentId);
@@ -118,10 +125,23 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
                         )
                         .build();
                 log.debug("consentClientDecisionRequest \n {}", consentClientDecisionRequest);
-                JsonObject consentUpdated = consentServiceClient.updateConsent(consentClientDecisionRequest);
-                log.debug("Consent updated '{}", consentUpdated);
 
-                JWTClaimsSet jwtClaimsSetGenerated = generateJWTResponse(decision, consentClientDecisionRequest);
+                if (intentType == IntentType.PAYMENT_DOMESTIC_CONSENT) {
+                    log.debug("Updating consent: {} in RCS Consent Store", intentId);
+                    if (authorised) {
+                        final DomesticPaymentAuthoriseConsentArgs authoriseConsentArgs = new DomesticPaymentAuthoriseConsentArgs(intentId, clientId, resourceOwner, consentDecisionDeserialized.getDebtorAccount().getAccountId());
+                        domesticPaymentConsentService.authoriseConsent(authoriseConsentArgs);
+                    } else {
+                        domesticPaymentConsentService.rejectConsent(intentId, clientId, resourceOwner);
+                    }
+
+                } else {
+                    log.debug("Updating consent: {}  in idm", intentId);
+                    JsonObject consentUpdated = consentServiceClient.updateConsent(consentClientDecisionRequest);
+                    log.debug("Consent updated '{}", consentUpdated);
+                }
+
+                JWTClaimsSet jwtClaimsSetGenerated = generateJWTResponse(authorised, consentClientDecisionRequest);
                 log.debug("JWT claims generated '{}'", jwtClaimsSetGenerated.toJSONObject());
                 String consentSignedJwt = jwtSigner.createSignedJwt(jwtClaimsSetGenerated);
                 log.debug("consentSignedJwt '{}'", consentSignedJwt);

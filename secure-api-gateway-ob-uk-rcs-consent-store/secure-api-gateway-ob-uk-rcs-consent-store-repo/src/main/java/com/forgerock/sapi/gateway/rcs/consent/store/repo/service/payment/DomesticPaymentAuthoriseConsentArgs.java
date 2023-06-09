@@ -25,7 +25,7 @@ public class DomesticPaymentAuthoriseConsentArgs extends AuthoriseConsentArgs<Do
     @NotNull
     private final String authorisedDebtorAccountId;
 
-    public DomesticPaymentAuthoriseConsentArgs(String consentId, String resourceOwnerId, String apiClientId, String authorisedDebtorAccountId) {
+    public DomesticPaymentAuthoriseConsentArgs(String consentId, String apiClientId, String resourceOwnerId, String authorisedDebtorAccountId) {
         super(consentId, resourceOwnerId, apiClientId);
         this.authorisedDebtorAccountId = authorisedDebtorAccountId;
     }

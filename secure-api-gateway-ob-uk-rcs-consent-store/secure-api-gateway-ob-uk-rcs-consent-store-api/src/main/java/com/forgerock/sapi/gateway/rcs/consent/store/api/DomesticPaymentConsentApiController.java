@@ -71,7 +71,7 @@ public class DomesticPaymentConsentApiController implements DomesticPaymentConse
     @Override
     public ResponseEntity<DomesticPaymentConsent> authoriseConsent(String consentId, AuthoriseDomesticPaymentConsentRequest request, String apiClientId) {
         // TODO cleanup
-        final DomesticPaymentAuthoriseConsentArgs domesticPaymentAuthoriseConsentArgs = new DomesticPaymentAuthoriseConsentArgs(consentId, request.getResourceOwnerId(), apiClientId, request.getAuthorisedDebtorAccountId());
+        final DomesticPaymentAuthoriseConsentArgs domesticPaymentAuthoriseConsentArgs = new DomesticPaymentAuthoriseConsentArgs(consentId, apiClientId, request.getResourceOwnerId(), request.getAuthorisedDebtorAccountId());
         return ResponseEntity.ok(convertEntityToDto(consentService.authoriseConsent(domesticPaymentAuthoriseConsentArgs)));
     }
 

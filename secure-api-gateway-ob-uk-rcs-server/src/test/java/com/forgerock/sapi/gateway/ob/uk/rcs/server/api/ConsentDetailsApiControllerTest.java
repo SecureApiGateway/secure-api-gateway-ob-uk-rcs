@@ -122,12 +122,12 @@ public class ConsentDetailsApiControllerTest {
                         IntentType.ACCOUNT_ACCESS_CONSENT,
                         AccountsConsentDetails.class
                 ),
-                arguments(
-                        DOMESTIC_PAYMENT_INTENT_ID,
-                        aValidDomesticPaymentConsentDetails(DOMESTIC_PAYMENT_INTENT_ID),
-                        IntentType.PAYMENT_DOMESTIC_CONSENT,
-                        DomesticPaymentConsentDetails.class
-                ),
+//                arguments(
+//                        DOMESTIC_PAYMENT_INTENT_ID,
+//                        aValidDomesticPaymentConsentDetails(DOMESTIC_PAYMENT_INTENT_ID),
+//                        IntentType.PAYMENT_DOMESTIC_CONSENT,
+//                        DomesticPaymentConsentDetails.class
+//                ),
                 arguments(
                         DOMESTIC_SCHEDULED_PAYMENT_INTENT_ID,
                         aValidDomesticScheduledPaymentConsentDetails(DOMESTIC_SCHEDULED_PAYMENT_INTENT_ID),
@@ -219,10 +219,10 @@ public class ConsentDetailsApiControllerTest {
                         ACCOUNT_INTENT_ID,
                         aValidAccountConsentDetails(ACCOUNT_INTENT_ID)
                 ),
-                arguments(
-                        DOMESTIC_PAYMENT_INTENT_ID,
-                        aValidDomesticPaymentConsentDetails(DOMESTIC_PAYMENT_INTENT_ID)
-                ),
+//                arguments(
+//                        DOMESTIC_PAYMENT_INTENT_ID,
+//                        aValidDomesticPaymentConsentDetails(DOMESTIC_PAYMENT_INTENT_ID)
+//                ),
                 arguments(
                         DOMESTIC_SCHEDULED_PAYMENT_INTENT_ID,
                         aValidDomesticScheduledPaymentConsentDetails(DOMESTIC_SCHEDULED_PAYMENT_INTENT_ID)

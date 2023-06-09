@@ -73,7 +73,7 @@ class DefaultDomesticPaymentConsentServiceTest extends BaseConsentServiceTest<Do
 
     @Override
     protected DomesticPaymentAuthoriseConsentArgs getAuthoriseConsentArgs(String consentId, String resourceOwnerId, String apiClientId) {
-        return new DomesticPaymentAuthoriseConsentArgs(consentId, resourceOwnerId, apiClientId, "debtor-acc-444");
+        return new DomesticPaymentAuthoriseConsentArgs(consentId, apiClientId, resourceOwnerId, "debtor-acc-444");
     }
 
     @Override
