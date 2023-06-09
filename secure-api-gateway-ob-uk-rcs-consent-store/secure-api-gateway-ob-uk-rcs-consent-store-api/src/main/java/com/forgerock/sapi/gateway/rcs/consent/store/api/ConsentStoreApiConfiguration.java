@@ -15,10 +15,24 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.api;
 
+import java.util.function.Supplier;
+
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ComponentScan(basePackageClasses = ConsentStoreApiConfiguration.class)
 public class ConsentStoreApiConfiguration {
+
+    // Default to 24hours
+    @Value("${consent.idempotency.expiration.seconds:86400}")
+    private int idempotencyExpirationDuration;
+
+    @Bean
+    public Supplier<DateTime> getIdempotencyExpirationSupplier() {
+        return () -> DateTime.now().plusSeconds(idempotencyExpirationDuration);
+    }
 }

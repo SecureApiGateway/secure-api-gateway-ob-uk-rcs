@@ -143,7 +143,7 @@ public abstract class BaseConsentServiceTest<T extends BaseConsentEntity<?>, A e
                 .isLessThan(DateTime.now());
         assertThat(rejectedConsent.getEntityVersion()).isEqualTo(persistedConsent.getEntityVersion() + 1);
 
-        final RecursiveComparisonConfiguration recursiveComparisonConfiguration = RecursiveComparisonConfiguration.builder().withIgnoredFields("status", "resourceOwnerId", "statusUpdatedDateTime", "version").build();
+        final RecursiveComparisonConfiguration recursiveComparisonConfiguration = RecursiveComparisonConfiguration.builder().withIgnoredFields("status", "resourceOwnerId", "statusUpdatedDateTime", "entityVersion").build();
         assertThat(rejectedConsent).usingRecursiveComparison(recursiveComparisonConfiguration).isEqualTo(persistedConsent);
     }
 

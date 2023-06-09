@@ -20,7 +20,6 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.joda.time.DateTime;
 import org.springframework.validation.annotation.Validated;
 
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
@@ -38,9 +37,6 @@ public class CreateDomesticPaymentConsentRequest {
 
     @NotNull
     private String idempotencyKey;
-
-    @NotNull
-    private DateTime idempotencyKeyExpiration;
 
     @Valid
     private List<OBWriteDomesticConsentResponse5DataCharges> charges;
@@ -67,14 +63,6 @@ public class CreateDomesticPaymentConsentRequest {
 
     public void setIdempotencyKey(String idempotencyKey) {
         this.idempotencyKey = idempotencyKey;
-    }
-
-    public DateTime getIdempotencyKeyExpiration() {
-        return idempotencyKeyExpiration;
-    }
-
-    public void setIdempotencyKeyExpiration(DateTime idempotencyKeyExpiration) {
-        this.idempotencyKeyExpiration = idempotencyKeyExpiration;
     }
 
     public List<OBWriteDomesticConsentResponse5DataCharges> getCharges() {

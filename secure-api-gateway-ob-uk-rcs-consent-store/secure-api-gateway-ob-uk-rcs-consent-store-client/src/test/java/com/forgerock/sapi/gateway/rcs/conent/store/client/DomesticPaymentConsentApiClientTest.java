@@ -16,13 +16,12 @@
 package com.forgerock.sapi.gateway.rcs.conent.store.client;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 import java.util.List;
 import java.util.UUID;
 
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -133,7 +132,6 @@ class DomesticPaymentConsentApiClientTest {
     private static CreateDomesticPaymentConsentRequest buildCreateConsentRequest() {
         final CreateDomesticPaymentConsentRequest createConsentRequest = new CreateDomesticPaymentConsentRequest();
         createConsentRequest.setIdempotencyKey(UUID.randomUUID().toString());
-        createConsentRequest.setIdempotencyKeyExpiration(DateTime.now().plusDays(1));
         createConsentRequest.setApiClientId("test-client-1");
         createConsentRequest.setConsentRequest(OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4());
         createConsentRequest.setCharges(List.of(new OBWriteDomesticConsentResponse5DataCharges().type("fee").chargeBearer(OBChargeBearerType1Code.BORNEBYCREDITOR).amount(new OBActiveOrHistoricCurrencyAndAmount().amount("1.25").currency("GBP"))));

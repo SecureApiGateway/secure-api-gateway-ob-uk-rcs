@@ -35,12 +35,10 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException;
 
-import lombok.extern.slf4j.Slf4j;
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 
 @ControllerAdvice(basePackageClasses = ConsentStoreApiConfiguration.class)
-@Slf4j
 public class ConsentStoreApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = ConsentStoreException.class)

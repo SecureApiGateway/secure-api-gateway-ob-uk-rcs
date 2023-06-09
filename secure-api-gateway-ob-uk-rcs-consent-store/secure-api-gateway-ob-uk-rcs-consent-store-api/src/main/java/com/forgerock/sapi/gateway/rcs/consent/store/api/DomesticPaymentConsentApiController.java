@@ -15,6 +15,9 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.api;
 
+import java.util.function.Supplier;
+
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +34,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.Domestic
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticPaymentAuthoriseConsentArgs;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticPaymentConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
+import com.google.common.annotations.VisibleForTesting;
 
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
 
@@ -42,9 +46,18 @@ public class DomesticPaymentConsentApiController implements DomesticPaymentConse
 
     private final DomesticPaymentConsentService consentService;
 
+    private Supplier<DateTime> idempotencyKeyExpirationSupplier;
+
     @Autowired
-    public DomesticPaymentConsentApiController(DomesticPaymentConsentService consentService) {
+    public DomesticPaymentConsentApiController(DomesticPaymentConsentService consentService,
+                                               Supplier<DateTime> idempotencyKeyExpirationSupplier) {
         this.consentService = consentService;
+        this.idempotencyKeyExpirationSupplier = idempotencyKeyExpirationSupplier;
+    }
+
+    @VisibleForTesting
+    public void setIdempotencyKeyExpirationSupplier(Supplier<DateTime> idempotencyKeyExpirationSupplier) {
+        this.idempotencyKeyExpirationSupplier = idempotencyKeyExpirationSupplier;
     }
 
     @Override
@@ -57,7 +70,7 @@ public class DomesticPaymentConsentApiController implements DomesticPaymentConse
         domesticPaymentConsent.setStatus(StatusEnum.AWAITINGAUTHORISATION.toString());
         domesticPaymentConsent.setCharges(request.getCharges());
         domesticPaymentConsent.setIdempotencyKey(request.getIdempotencyKey());
-        domesticPaymentConsent.setIdempotencyKeyExpiration(request.getIdempotencyKeyExpiration());
+        domesticPaymentConsent.setIdempotencyKeyExpiration(idempotencyKeyExpirationSupplier.get());
         final DomesticPaymentConsentEntity persistedEntity = consentService.createConsent(domesticPaymentConsent);
 
         return new ResponseEntity<>(convertEntityToDto(persistedEntity), HttpStatus.CREATED);

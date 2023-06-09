@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.api;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 import java.util.Map;
@@ -23,7 +23,6 @@ import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -109,7 +108,6 @@ class DomesticPaymentConsentEntityApiTest {
         createDomesticPaymentConsentRequest.setConsentRequest(paymentConsent);
         createDomesticPaymentConsentRequest.setApiClientId(apiClientId);
         createDomesticPaymentConsentRequest.setIdempotencyKey(idempotencyKey);
-        createDomesticPaymentConsentRequest.setIdempotencyKeyExpiration(DateTime.now().plusDays(1));
 
         return createConsent(createDomesticPaymentConsentRequest);
     }
@@ -139,7 +137,6 @@ class DomesticPaymentConsentEntityApiTest {
         createDomesticPaymentConsentRequest.setConsentRequest(paymentConsent);
         createDomesticPaymentConsentRequest.setApiClientId(apiClientId);
         createDomesticPaymentConsentRequest.setIdempotencyKey(idempotencyKey);
-        createDomesticPaymentConsentRequest.setIdempotencyKeyExpiration(DateTime.now().plusDays(1));
 
         final DomesticPaymentConsent firstConsent = createConsent(createDomesticPaymentConsentRequest);
         for (int i = 0 ; i < 5; i++) {
@@ -154,13 +151,11 @@ class DomesticPaymentConsentEntityApiTest {
         client1CreateRequest.setConsentRequest(OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4());
         client1CreateRequest.setApiClientId("client-1");
         client1CreateRequest.setIdempotencyKey(idempotencyKey);
-        client1CreateRequest.setIdempotencyKeyExpiration(DateTime.now().plusDays(1));
 
         final CreateDomesticPaymentConsentRequest client2CreateRequest = new CreateDomesticPaymentConsentRequest();
         client2CreateRequest.setConsentRequest(OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4());
         client2CreateRequest.setApiClientId("client-2");
         client2CreateRequest.setIdempotencyKey(idempotencyKey);
-        client2CreateRequest.setIdempotencyKeyExpiration(DateTime.now().plusDays(1));
 
         final DomesticPaymentConsent client1Consent = createConsent(client1CreateRequest);
         final DomesticPaymentConsent client2Consent = createConsent(client2CreateRequest);

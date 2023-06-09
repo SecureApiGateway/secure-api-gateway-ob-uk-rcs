@@ -36,6 +36,7 @@ public class RestDomesticPaymentConsentApiClient implements DomesticPaymentConse
     private final RestTemplate restTemplate;
 
     public RestDomesticPaymentConsentApiClient(ConsentServiceClientConfiguration consentServiceClientConfiguration, RestTemplate restTemplate) {
+        // TODO Make version configurable
         this.consentServiceBaseUrl = consentServiceClientConfiguration.getBaseUrl() + "/v3.1.10/domestic-payment-consents";
         this.restTemplate = restTemplate;
     }
