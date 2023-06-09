@@ -19,6 +19,7 @@ import org.joda.time.DateTime;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.annotation.Version;
 
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
@@ -26,6 +27,8 @@ public class BaseConsentEntity<T> {
 
     @Id
     private String id;
+    @Version
+    private int version;
     private T requestObj;
     private String requestType;
     private OBVersion requestVersion;
@@ -36,7 +39,7 @@ public class BaseConsentEntity<T> {
     @CreatedDate
     private DateTime creationDateTime;
 
-    @LastModifiedDate // TODO Review
+    @LastModifiedDate
     private DateTime statusUpdatedDateTime;
 
     public BaseConsentEntity() {
@@ -104,6 +107,10 @@ public class BaseConsentEntity<T> {
 
     public DateTime getStatusUpdatedDateTime() {
         return statusUpdatedDateTime;
+    }
+
+    public int getVersion() {
+        return version;
     }
 
     @Override

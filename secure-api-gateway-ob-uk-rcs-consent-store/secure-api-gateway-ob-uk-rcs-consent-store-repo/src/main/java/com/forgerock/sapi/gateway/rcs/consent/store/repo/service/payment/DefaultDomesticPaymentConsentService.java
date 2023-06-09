@@ -26,6 +26,7 @@ import org.springframework.util.MultiValueMap;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticPaymentConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.DomesticPaymentConsentRepository;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentService;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
 
@@ -37,7 +38,7 @@ public class DefaultDomesticPaymentConsentService extends BaseConsentService<Dom
     private final DomesticPaymentConsentRepository repo;
 
     public DefaultDomesticPaymentConsentService(DomesticPaymentConsentRepository repo) {
-        super(repo, StatusEnum.AUTHORISED.toString(), StatusEnum.REJECTED.toString(), StatusEnum.REJECTED.toString());
+        super(repo, IntentType.PAYMENT_DOMESTIC_CONSENT::generateIntentId, StatusEnum.AUTHORISED.toString(), StatusEnum.REJECTED.toString(), StatusEnum.REJECTED.toString());
         validStateTransitions  = new LinkedMultiValueMap<>();
         validStateTransitions.addAll(StatusEnum.AWAITINGAUTHORISATION.toString(), List.of(StatusEnum.AUTHORISED.toString(), StatusEnum.REJECTED.toString()));
         validStateTransitions.addAll(StatusEnum.AUTHORISED.toString(), List.of(StatusEnum.CONSUMED.toString(), StatusEnum.REJECTED.toString()));

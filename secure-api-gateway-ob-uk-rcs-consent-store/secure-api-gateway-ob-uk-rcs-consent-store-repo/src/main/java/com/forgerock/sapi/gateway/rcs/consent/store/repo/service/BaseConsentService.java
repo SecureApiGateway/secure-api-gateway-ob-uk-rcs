@@ -17,6 +17,7 @@ package com.forgerock.sapi.gateway.rcs.consent.store.repo.service;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
@@ -27,12 +28,17 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreE
 public abstract class BaseConsentService<T extends BaseConsentEntity<?>, A extends AuthoriseConsentArgs<T>> implements ConsentService<T, A> {
 
     protected final MongoRepository<T, String> repo;
+
+    private final Supplier<String> idGenerator;
     private final String authorisedConsentStatus;
     private final String rejectedConsentStatus;
     private final String revokedConsentStatus;
 
-    public BaseConsentService(MongoRepository<T, String> repo, String authorisedConsentStatus, String rejectedConsentStatus, String revokedConsentStatus) {
+    public BaseConsentService(MongoRepository<T, String> repo, Supplier<String> idGenerator, String authorisedConsentStatus,
+                              String rejectedConsentStatus, String revokedConsentStatus) {
+
         this.repo = Objects.requireNonNull(repo, "repo must be provided");
+        this.idGenerator = Objects.requireNonNull(idGenerator, "idGenerator must be provided");
         this.authorisedConsentStatus = Objects.requireNonNull(authorisedConsentStatus, "authorisedConsentStatus must be provided");
         this.rejectedConsentStatus = Objects.requireNonNull(rejectedConsentStatus, "rejectedConsentStatus must be provided");
         this.revokedConsentStatus = Objects.requireNonNull(revokedConsentStatus, "revokedConsentStatus must be provided");
@@ -40,6 +46,11 @@ public abstract class BaseConsentService<T extends BaseConsentEntity<?>, A exten
 
     @Override
     public T createConsent(T consent) {
+        if (consent.getId() != null) {
+            throw new IllegalStateException("Cannot create consent, object already has an id: " + consent.getId());
+        }
+        consent.setId(idGenerator.get());
+
         return repo.insert(consent);
     }
 

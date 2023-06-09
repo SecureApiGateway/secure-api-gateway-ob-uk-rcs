@@ -18,10 +18,7 @@ package com.forgerock.sapi.gateway.rcs.consent.store.repo;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DefaultDomesticPaymentConsentService;
-
-
-@SpringBootApplication(scanBasePackageClasses = DefaultDomesticPaymentConsentService.class)
+@SpringBootApplication
 @Import(ConsentStoreConfiguration.class)
 public class TestApp {
 }
