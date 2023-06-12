@@ -30,8 +30,7 @@ public class TestApp {
 
     @PostConstruct
     void postConstruct() {
-        // FIXME
+        // This is needed to make data generated in the unit tests UTC, which makes equality checking easier as Mongo will return data in UTC (and DateTime.equals using different timezones is false)
         DateTimeZone.setDefault(DateTimeZone.UTC);
     }
-
 }

@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -47,6 +48,9 @@ import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.RSAKey;
+
+import uk.org.openbanking.jackson.DateTimeDeserializer;
+import uk.org.openbanking.jackson.DateTimeSerializer;
 
 @Configuration
 public class RcsApplicationConfiguration {
@@ -87,6 +91,8 @@ public class RcsApplicationConfiguration {
             jacksonObjectMapperBuilder.featuresToEnable(MapperFeature.USE_BASE_TYPE_AS_DEFAULT_IMPL);
             jacksonObjectMapperBuilder.modules(new JodaModule());
             jacksonObjectMapperBuilder.dateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZ"));
+            jacksonObjectMapperBuilder.deserializerByType(DateTime.class, new DateTimeDeserializer());
+            jacksonObjectMapperBuilder.serializerByType(DateTime.class, new DateTimeSerializer(DateTime.class));
         };
     }
 
