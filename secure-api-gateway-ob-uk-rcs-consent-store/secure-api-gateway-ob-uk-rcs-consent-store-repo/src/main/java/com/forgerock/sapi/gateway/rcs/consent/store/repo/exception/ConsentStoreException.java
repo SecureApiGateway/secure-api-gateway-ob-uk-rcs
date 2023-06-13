@@ -18,7 +18,7 @@ package com.forgerock.sapi.gateway.rcs.consent.store.repo.exception;
 public class ConsentStoreException extends RuntimeException {
 
     public enum ErrorType {
-        NOT_AUTHORISED,
+        INVALID_PERMISSIONS,
         NOT_FOUND,
         BAD_REQUEST,
         INVALID_STATE_TRANSITION

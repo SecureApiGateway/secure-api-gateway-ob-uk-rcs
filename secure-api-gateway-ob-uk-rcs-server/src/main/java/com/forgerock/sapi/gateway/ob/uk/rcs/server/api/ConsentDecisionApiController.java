@@ -92,7 +92,7 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
         log.debug("decision deserialised \n {}", consentDecisionDeserialized);
         try {
             boolean authorised = Constants.ConsentDecisionStatus.AUTHORISED.equals(consentDecisionDeserialized.getDecision());
-            log.debug("The authorised is '{}'", authorised);
+            log.debug("The resource owner has authorised the consent: '{}'", authorised);
             SignedJWT signedJWT = JwtUtil.getSignedJWT(consentDecisionDeserialized.getConsentJwt());
             String intentId = JwtUtil.getIdTokenClaim(signedJWT, Constants.Claims.INTENT_ID);
             log.debug("Intent Id from the requested claims '{}'", intentId);

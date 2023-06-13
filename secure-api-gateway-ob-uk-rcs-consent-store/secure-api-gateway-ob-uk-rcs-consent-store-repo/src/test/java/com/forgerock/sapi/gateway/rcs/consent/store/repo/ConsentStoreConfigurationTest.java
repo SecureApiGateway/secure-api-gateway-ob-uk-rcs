@@ -28,7 +28,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(properties = {"consent.store.enabled.intentTypes= [\"PAYMENT_DOMESTIC_CONSENT\", \"ACCOUNT_ACCESS_CONSENT\"]"})
+@SpringBootTest(properties = {"consent.store.enabled.intentTypes= PAYMENT_DOMESTIC_CONSENT, ACCOUNT_ACCESS_CONSENT"})
 class ConsentStoreConfigurationTest {
 
     @Autowired

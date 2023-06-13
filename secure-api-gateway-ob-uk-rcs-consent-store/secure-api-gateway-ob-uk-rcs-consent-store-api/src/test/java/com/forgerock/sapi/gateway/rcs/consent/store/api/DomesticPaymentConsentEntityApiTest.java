@@ -18,7 +18,6 @@ package com.forgerock.sapi.gateway.rcs.consent.store.api;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-import java.util.Map;
 import java.util.UUID;
 
 import javax.annotation.PostConstruct;
@@ -81,9 +80,14 @@ class DomesticPaymentConsentEntityApiTest {
     @Test
     public void failToCreateConsentRequestMissingRequiredFields() {
         final CreateDomesticPaymentConsentRequest invalidRequest = new CreateDomesticPaymentConsentRequest();
-        final ResponseEntity<Map> createConsentResponse = makePostRequest(invalidRequest, Map.class);
+        final ResponseEntity<OBErrorResponse1> createConsentResponse = makePostRequest(invalidRequest, OBErrorResponse1.class);
+        final OBErrorResponse1 errorResponse = createConsentResponse.getBody();
         assertThat(createConsentResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        // TODO validate error response data
+        assertThat(errorResponse.getCode()).isEqualTo("OBRI.Argument.Invalid");
+        assertThat(errorResponse.getErrors()).isNotEmpty().
+                contains(new OBError1().errorCode("UK.OBIE.Field.Invalid")
+                                       .message("The field received is invalid. Reason 'must not be null'")
+                                       .path("apiClientId"));
     }
 
     @Test
@@ -167,17 +171,9 @@ class DomesticPaymentConsentEntityApiTest {
     @Test
     public void failToGetConsentForDifferentApiClient() {
         final DomesticPaymentConsent client1Consent = createConsent("client-1");
-        final ResponseEntity<OBErrorResponse1> getConsentResponseEntity = makeGetRequest(client1Consent.getId(), "client-2", OBErrorResponse1.class);
-        assertThat(getConsentResponseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-
-        final OBErrorResponse1 errorResponse = getConsentResponseEntity.getBody();
-        assertThat(errorResponse.getCode()).isEqualTo("OBRI.Consent.Store.Error");
-        assertThat(errorResponse.getId()).isNotNull(); // TODO test with x-fapi-interaction-id
-        assertThat(errorResponse.getMessage()).isEqualTo(HttpStatus.UNAUTHORIZED.name());
-        assertThat(errorResponse.getErrors()).hasSize(1);
-        final OBError1 obError = errorResponse.getErrors().get(0);
-        assertThat(obError.getErrorCode()).isEqualTo("NOT_AUTHORISED");
-        assertThat(obError.getMessage()).isEqualTo("NOT_AUTHORISED for consentId: " + client1Consent.getId());
+        final ResponseEntity<OBErrorResponse1> getConsentResponseEntity = makeGetRequest(client1Consent.getId(),
+                                                                               "client-2", OBErrorResponse1.class);
+        validateInvalidPermissionsErrorResponse(client1Consent.getId(), getConsentResponseEntity);
     }
 
     @Test
@@ -206,13 +202,32 @@ class DomesticPaymentConsentEntityApiTest {
     }
 
     @Test
-    public void failToAuthoriseConsentMissingRequiredFields() {
+    public void failToAuthoriseConsentCreatedByDifferentApiClient() {
+        final String apiClientId = "client-1";
+        final String resourceOwnerId = "psu4test";
+        final String debtorAccountId = "acc-123456";
+        final DomesticPaymentConsent consent = createConsent(apiClientId);
 
+        final AuthoriseDomesticPaymentConsentRequest authoriseReq = new AuthoriseDomesticPaymentConsentRequest();
+        authoriseReq.setConsentId(consent.getId());
+        authoriseReq.setApiClientId("another-client");
+        authoriseReq.setResourceOwnerId(resourceOwnerId);
+        authoriseReq.setAuthorisedDebtorAccountId(debtorAccountId);
+
+        final ResponseEntity<OBErrorResponse1> authoriseConsentResponse = authoriseConsent(authoriseReq, OBErrorResponse1.class);
+        validateInvalidPermissionsErrorResponse(consent.getId(), authoriseConsentResponse);
     }
 
-    @Test
-    public void failToAuthoriseConsentCreatedByDifferentApiClient() {
-
+    private static void validateInvalidPermissionsErrorResponse(String consentId, ResponseEntity<OBErrorResponse1> authoriseConsentResponse) {
+        assertThat(authoriseConsentResponse.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        final OBErrorResponse1 errorResponse = authoriseConsentResponse.getBody();
+        assertThat(errorResponse.getCode()).isEqualTo("OBRI.Consent.Store.Error");
+        assertThat(errorResponse.getId()).isNotNull(); // TODO test with x-fapi-interaction-id
+        assertThat(errorResponse.getMessage()).isEqualTo(HttpStatus.FORBIDDEN.name());
+        assertThat(errorResponse.getErrors()).hasSize(1);
+        final OBError1 obError = errorResponse.getErrors().get(0);
+        assertThat(obError.getErrorCode()).isEqualTo("INVALID_PERMISSIONS");
+        assertThat(obError.getMessage()).isEqualTo("INVALID_PERMISSIONS for consentId: " + consentId);
     }
 
     @Test
@@ -234,7 +249,17 @@ class DomesticPaymentConsentEntityApiTest {
 
     @Test
     public void failToRejectConsentCreatedByDifferentApiClient() {
+        final String apiClientId = "client-1";
+        final String resourceOwnerId = "psu4test";
+        final DomesticPaymentConsent consent = createConsent(apiClientId);
 
+        final RejectDomesticPaymentConsentRequest rejectRequest = new RejectDomesticPaymentConsentRequest();
+        rejectRequest.setConsentId(consent.getId());
+        rejectRequest.setResourceOwnerId(resourceOwnerId);
+        rejectRequest.setApiClientId("another-client-id");
+
+        final ResponseEntity<OBErrorResponse1> rejectResponse = rejectConsent(rejectRequest, OBErrorResponse1.class);
+        validateInvalidPermissionsErrorResponse(consent.getId(), rejectResponse);
     }
 
     @Test
@@ -263,7 +288,25 @@ class DomesticPaymentConsentEntityApiTest {
 
     @Test
     public void failToConsumeConsentCreatedByDifferentApiClient() {
+        final String apiClientId = "client-1";
+        final String resourceOwnerId = "psu4test";
+        final String debtorAccountId = "acc-123456";
+        final DomesticPaymentConsent consent = createConsent(apiClientId);
 
+        final AuthoriseDomesticPaymentConsentRequest authoriseReq = new AuthoriseDomesticPaymentConsentRequest();
+        authoriseReq.setConsentId(consent.getId());
+        authoriseReq.setApiClientId(consent.getApiClientId());
+        authoriseReq.setResourceOwnerId(resourceOwnerId);
+        authoriseReq.setAuthorisedDebtorAccountId(debtorAccountId);
+
+        authoriseConsent(authoriseReq, DomesticPaymentConsent.class);
+
+        final ConsumeDomesticPaymentConsentRequest consumeRequest = new ConsumeDomesticPaymentConsentRequest();
+        consumeRequest.setConsentId(consent.getId());
+        consumeRequest.setApiClientId("another-api-client");
+
+        final ResponseEntity<OBErrorResponse1> consumeResponse = consumeConsent(consumeRequest, OBErrorResponse1.class);
+        validateInvalidPermissionsErrorResponse(consent.getId(), consumeResponse);
     }
 
     private HttpHeaders createHeaders(String apiClientId) {

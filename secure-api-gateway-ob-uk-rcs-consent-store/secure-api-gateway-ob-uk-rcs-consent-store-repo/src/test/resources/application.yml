@@ -2,4 +2,4 @@
 consent:
   store:
     enabled:
-      intentTypes: []
+      intentTypes:

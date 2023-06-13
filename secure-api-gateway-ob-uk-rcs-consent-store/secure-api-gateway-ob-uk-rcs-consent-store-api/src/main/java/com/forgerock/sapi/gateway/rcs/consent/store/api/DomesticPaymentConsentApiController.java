@@ -62,6 +62,7 @@ public class DomesticPaymentConsentApiController implements DomesticPaymentConse
 
     @Override
     public ResponseEntity<DomesticPaymentConsent> createConsent(CreateDomesticPaymentConsentRequest request, String apiClientId) {
+        logger.info("Attempting to createConsent: {}, for apiClientId: {}", request, apiClientId);
         final DomesticPaymentConsentEntity domesticPaymentConsent = new DomesticPaymentConsentEntity();
         domesticPaymentConsent.setRequestType(request.getConsentRequest().getClass().getSimpleName());
         domesticPaymentConsent.setRequestVersion(OBVersion.v3_1_10);
@@ -72,17 +73,20 @@ public class DomesticPaymentConsentApiController implements DomesticPaymentConse
         domesticPaymentConsent.setIdempotencyKey(request.getIdempotencyKey());
         domesticPaymentConsent.setIdempotencyKeyExpiration(idempotencyKeyExpirationSupplier.get());
         final DomesticPaymentConsentEntity persistedEntity = consentService.createConsent(domesticPaymentConsent);
+        logger.info("Consent created with id: {}", persistedEntity.getId());
 
         return new ResponseEntity<>(convertEntityToDto(persistedEntity), HttpStatus.CREATED);
     }
 
     @Override
     public ResponseEntity<DomesticPaymentConsent> getConsent(String consentId, String apiClientId) {
+        logger.info("Attempting to getConsent - id: {}, for apiClientId: {}", consentId, apiClientId);
         return ResponseEntity.ok(convertEntityToDto(consentService.getConsent(consentId, apiClientId)));
     }
 
     @Override
     public ResponseEntity<DomesticPaymentConsent> authoriseConsent(String consentId, AuthoriseDomesticPaymentConsentRequest request, String apiClientId) {
+        logger.info("Attempting to authoriseConsent - id: {}, request: {}, apiClientId: {}", consentId, request, apiClientId);
         // TODO cleanup
         final DomesticPaymentAuthoriseConsentArgs domesticPaymentAuthoriseConsentArgs = new DomesticPaymentAuthoriseConsentArgs(consentId, apiClientId, request.getResourceOwnerId(), request.getAuthorisedDebtorAccountId());
         return ResponseEntity.ok(convertEntityToDto(consentService.authoriseConsent(domesticPaymentAuthoriseConsentArgs)));
@@ -90,11 +94,13 @@ public class DomesticPaymentConsentApiController implements DomesticPaymentConse
 
     @Override
     public ResponseEntity<DomesticPaymentConsent> rejectConsent(String consentId, RejectDomesticPaymentConsentRequest request, String apiClientId) {
+        logger.info("Attempting to rejectConsent - id: {}, request: {}, apiClientId: {}", consentId, request, apiClientId);
         return ResponseEntity.ok(convertEntityToDto(consentService.rejectConsent(consentId, apiClientId, request.getResourceOwnerId())));
     }
 
     @Override
     public ResponseEntity<DomesticPaymentConsent> consumeConsent(String consentId, ConsumeDomesticPaymentConsentRequest request, String apiClientId) {
+        logger.info("Attempting to consumeConsent - id: {}, request: {}, apiClientId: {}", consentId, request, apiClientId);
         return ResponseEntity.ok(convertEntityToDto(consentService.consumeConsent(consentId, apiClientId)));
     }
 

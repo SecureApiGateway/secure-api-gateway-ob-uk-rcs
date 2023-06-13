@@ -78,8 +78,8 @@ consent:
   # RCS Consent Store config
   store:
     enabled:
-      # Controls which intentTypes will use the new Consent Store
-      intentTypes: []
+      # Controls which intentTypes will use the new Consent Store (format: comma separated list)
+      intentTypes:
 
 
 # Configuration for calling the RS backoffice API

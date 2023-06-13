@@ -94,7 +94,7 @@ public abstract class BaseConsentServiceTest<T extends BaseConsentEntity<?>, A e
         final T persistedConsent = consentService.createConsent(getValidConsentEntity());
 
         final ConsentStoreException consentStoreException = Assertions.assertThrows(ConsentStoreException.class, () -> consentService.getConsent(persistedConsent.getId(), "different-api-client-id"));
-        assertThat(consentStoreException.getErrorType()).isEqualTo(ErrorType.NOT_AUTHORISED);
+        assertThat(consentStoreException.getErrorType()).isEqualTo(ErrorType.INVALID_PERMISSIONS);
     }
 
     @Test

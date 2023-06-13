@@ -45,7 +45,7 @@ public class ConsentStoreApiExceptionHandler extends ResponseEntityExceptionHand
     public ResponseEntity<Object> handleConsentStoreException(ConsentStoreException ex, WebRequest request) {
 
         final HttpStatus httpStatus = switch (ex.getErrorType()) {
-            case NOT_AUTHORISED -> HttpStatus.UNAUTHORIZED;
+            case INVALID_PERMISSIONS -> HttpStatus.FORBIDDEN;
             case NOT_FOUND -> HttpStatus.NOT_FOUND;
             default -> HttpStatus.BAD_REQUEST;
         };

@@ -62,7 +62,7 @@ public abstract class BaseConsentService<T extends BaseConsentEntity<?>, A exten
         }
         final T consent = findResult.get();
         if (!Objects.equals(consent.getApiClientId(), apiClientId)) {
-            throw new ConsentStoreException(ErrorType.NOT_AUTHORISED, consentId);
+            throw new ConsentStoreException(ErrorType.INVALID_PERMISSIONS, consentId);
         }
         return consent;
     }

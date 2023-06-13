@@ -21,7 +21,7 @@ import uk.org.openbanking.datamodel.error.OBError1;
 public class ConsentStoreClientException extends RuntimeException {
 
     public enum ErrorType {
-        NOT_AUTHORISED,
+        INVALID_PERMISSIONS,
         NOT_FOUND,
         BAD_REQUEST,
         INVALID_STATE_TRANSITION,
