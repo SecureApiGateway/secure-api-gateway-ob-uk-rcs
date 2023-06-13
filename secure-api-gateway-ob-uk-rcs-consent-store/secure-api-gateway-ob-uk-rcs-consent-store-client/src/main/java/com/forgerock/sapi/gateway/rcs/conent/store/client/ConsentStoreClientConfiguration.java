@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+import com.google.common.annotations.VisibleForTesting;
+
 @Configuration
 @ComponentScan(basePackageClasses = ConsentStoreClientConfiguration.class)
 public class ConsentStoreClientConfiguration {
@@ -30,7 +32,8 @@ public class ConsentStoreClientConfiguration {
         return baseUrl;
     }
 
-    public void setBaseUrl(String baseUrl) {
+    @VisibleForTesting
+    void setBaseUrl(String baseUrl) {
         this.baseUrl = baseUrl;
     }
 }

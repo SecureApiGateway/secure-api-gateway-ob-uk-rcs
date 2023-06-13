@@ -21,6 +21,9 @@ import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.Cr
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.DomesticPaymentConsent;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.RejectDomesticPaymentConsentRequest;
 
+/**
+ * Client for interacting with com.forgerock.sapi.gateway.rcs.consent.store.api.DomesticPaymentConsentApi
+ */
 public interface DomesticPaymentConsentStoreClient {
 
     DomesticPaymentConsent createConsent(CreateDomesticPaymentConsentRequest createConsentRequest) throws ConsentStoreClientException;

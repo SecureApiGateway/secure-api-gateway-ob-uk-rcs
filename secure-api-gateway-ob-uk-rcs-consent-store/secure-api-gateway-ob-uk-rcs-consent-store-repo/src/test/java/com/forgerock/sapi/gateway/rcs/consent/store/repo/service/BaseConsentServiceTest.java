@@ -17,6 +17,8 @@ package com.forgerock.sapi.gateway.rcs.consent.store.repo.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import javax.validation.ConstraintViolationException;
+
 import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.Assertions;
@@ -86,7 +88,10 @@ public abstract class BaseConsentServiceTest<T extends BaseConsentEntity<?>, A e
         final T consentObj = getValidConsentEntity();
         consentObj.setApiClientId(null); // remove mandatory field value
 
-        consentService.createConsent(consentObj);
+        final ConstraintViolationException constraintViolationException = Assertions.assertThrows(ConstraintViolationException.class,
+                () -> consentService.createConsent(consentObj));
+        assertThat(constraintViolationException.getConstraintViolations()).hasSize(1);
+        assertThat(constraintViolationException.getMessage()).isEqualTo("createConsent.arg0.apiClientId: must not be null");
     }
 
     @Test

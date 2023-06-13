@@ -22,22 +22,43 @@ import javax.validation.constraints.NotNull;
 
 import org.joda.time.DateTime;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.validation.annotation.Validated;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.BaseConsentEntity;
 
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5DataCharges;
 
+/**
+ * OBIE Domestic Payment Consent: https://openbankinguk.github.io/read-write-api-site3/v3.1.10/resources-and-data-models/pisp/domestic-payment-consents.html
+ */
 @Document("DomesticPaymentConsent")
+@Validated
 public class DomesticPaymentConsentEntity extends BaseConsentEntity<OBWriteDomesticConsent4> {
 
+    /**
+     * Key supplied by the ApiClient when creating the Consent, to enable the request to be made idempotent
+     */
     @NotNull
     private String idempotencyKey;
 
+    /**
+     * Time at which the use of the idempotencyKey expires, and the ApiClient is then able to reuse it with a different
+     * Consent Request
+     */
     @NotNull
     private DateTime idempotencyKeyExpiration;
+
+    /**
+     * Id of the DebtorAccount that the Resource Owner has authorised that the payment can be taken from
+     *
+     * This field is set as part of Consent Authorisation, therefore may be null in other states.
+     */
     private String authorisedDebtorAccountId;
 
+    /**
+     * Optional - charges applied to the payment transaction
+     */
     @Valid
     private List<OBWriteDomesticConsentResponse5DataCharges> charges;
 

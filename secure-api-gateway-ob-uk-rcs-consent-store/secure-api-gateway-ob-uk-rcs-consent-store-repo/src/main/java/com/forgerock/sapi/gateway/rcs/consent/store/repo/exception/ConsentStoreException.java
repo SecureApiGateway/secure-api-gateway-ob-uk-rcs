@@ -28,16 +28,12 @@ public class ConsentStoreException extends RuntimeException {
 
     private final String consentId;
 
-    // TODO cleanup
-    public ConsentStoreException(ErrorType errorType) {
-        this(errorType, null, null);
-    }
 
     public ConsentStoreException(ErrorType errorType, String consentId) {
         this(errorType, consentId, null);
     }
 
-    // TODO cleanup
+    // TODO review error message
     public ConsentStoreException(ErrorType errorType, String consentId, Throwable cause) {
         super(errorType.name() + (consentId != null ? " for consentId: " + consentId : ""), cause);
         this.errorType = errorType;

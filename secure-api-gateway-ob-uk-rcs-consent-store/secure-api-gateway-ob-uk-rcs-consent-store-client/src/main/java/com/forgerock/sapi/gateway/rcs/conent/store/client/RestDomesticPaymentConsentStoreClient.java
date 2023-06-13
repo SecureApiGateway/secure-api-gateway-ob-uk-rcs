@@ -27,6 +27,9 @@ import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.Cr
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.DomesticPaymentConsent;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.RejectDomesticPaymentConsentRequest;
 
+/**
+ * Implementation of the DomesticPaymentConsentStoreClient which makes REST calls over HTTP
+ */
 @Component
 public class RestDomesticPaymentConsentStoreClient extends BaseRestConsentStoreClient implements DomesticPaymentConsentStoreClient {
 

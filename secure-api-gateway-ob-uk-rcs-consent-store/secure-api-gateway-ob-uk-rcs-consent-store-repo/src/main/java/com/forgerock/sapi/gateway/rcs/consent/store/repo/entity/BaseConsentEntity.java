@@ -15,30 +15,73 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.repo.entity;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import org.joda.time.DateTime;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Version;
+import org.springframework.validation.annotation.Validated;
 
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
+/**
+ * Base class containing fields common to all OBIE Consents.
+ *
+ * @param <T> type of the OBIE Request object
+ */
+@Validated
 public class BaseConsentEntity<T> {
 
     @Id
     private String id;
     @Version
     private int entityVersion;
+
+    /**
+     * OBIE data-model Consent Request object e.g. {@link uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4}
+     */
+    @NotNull
+    @Valid
     private T requestObj;
+    /**
+     * OBIE type name of the requestObj e.g. OBWriteDomesticConsent4
+     */
+    @NotNull
     private String requestType;
+    /**
+     * Version of OBIE API used to create this consent
+     */
+    @NotNull
     private OBVersion requestVersion;
+    /**
+     * Current status of the Consent
+     */
+    @NotNull
     private String status;
+    /**
+     * Id of the OAuth2.0 ApiClient which was used to create this Consent
+     */
+    @NotNull
     private String apiClientId;
+    /**
+     * Id of the Resource Owner (PSU) who has either Authorised or Rejected this Consent.
+     * Note: this field is allowed to be null when the Consent is in the initial Awaiting Authorisation state.
+     */
     private String resourceOwnerId;
 
+    /**
+     * Time at which the Consent was persisted
+     */
     @CreatedDate
     private DateTime creationDateTime;
 
+    /**
+     * Time at which the Consent was last modified, once a Consent has been created then modifications are only
+     * permitted as part of status transitions.
+     */
     @LastModifiedDate
     private DateTime statusUpdatedDateTime;
 
