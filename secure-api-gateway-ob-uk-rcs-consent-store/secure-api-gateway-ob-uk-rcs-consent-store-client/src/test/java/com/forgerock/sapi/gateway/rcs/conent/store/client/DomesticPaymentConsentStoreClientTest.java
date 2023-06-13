@@ -27,12 +27,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.forgerock.sapi.gateway.rcs.conent.store.client.ConsentStoreClientException.ErrorType;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.AuthoriseDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.ConsumeDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.CreateDomesticPaymentConsentRequest;
@@ -48,21 +49,24 @@ import uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFact
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"rcs.consent.store.api.baseUrl= 'ignored'"})
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
-class DomesticPaymentConsentApiClientTest {
+class DomesticPaymentConsentStoreClientTest {
 
     @LocalServerPort
     private int port;
 
     @Autowired
-    private RestTemplate restTemplate;
+    private RestTemplateBuilder restTemplateBuilder;
 
-    private RestDomesticPaymentConsentApiClient apiClient;
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    private RestDomesticPaymentConsentStoreClient apiClient;
 
     @BeforeEach
     public void beforeEach() {
-        final ConsentServiceClientConfiguration clientConfiguration = new ConsentServiceClientConfiguration();
+        final ConsentStoreClientConfiguration clientConfiguration = new ConsentStoreClientConfiguration();
         clientConfiguration.setBaseUrl("http://localhost:"+port+"/consent/store");
-        apiClient = new RestDomesticPaymentConsentApiClient(clientConfiguration, restTemplate);
+        apiClient = new RestDomesticPaymentConsentStoreClient(clientConfiguration, restTemplateBuilder, objectMapper);
     }
 
 
@@ -77,14 +81,19 @@ class DomesticPaymentConsentApiClientTest {
 
     @Test
     void failsToCreateConsentWhenFieldIsMissing() {
-        final CreateDomesticPaymentConsentRequest requestMissingIdempotencyFields = new CreateDomesticPaymentConsentRequest();
-        requestMissingIdempotencyFields.setApiClientId("test-client-1");
-        requestMissingIdempotencyFields.setConsentRequest(OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4());
-        requestMissingIdempotencyFields.setCharges(List.of(new OBWriteDomesticConsentResponse5DataCharges().type("fee").chargeBearer(OBChargeBearerType1Code.BORNEBYCREDITOR).amount(new OBActiveOrHistoricCurrencyAndAmount().amount("1.25").currency("GBP"))));
+        final CreateDomesticPaymentConsentRequest requestMissingIdempotencyField = new CreateDomesticPaymentConsentRequest();
+        requestMissingIdempotencyField.setApiClientId("test-client-1");
+        requestMissingIdempotencyField.setConsentRequest(OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4());
+        requestMissingIdempotencyField.setCharges(List.of(new OBWriteDomesticConsentResponse5DataCharges().type("fee").chargeBearer(OBChargeBearerType1Code.BORNEBYCREDITOR).amount(new OBActiveOrHistoricCurrencyAndAmount().amount("1.25").currency("GBP"))));
 
-        final HttpClientErrorException httpClientErrorException = assertThrows(HttpClientErrorException.class,
-                () -> apiClient.createConsent(requestMissingIdempotencyFields));
-        // TODO better error handling
+        // TODO validate contents of the exception
+        final ConsentStoreClientException clientException = assertThrows(ConsentStoreClientException.class,
+                () -> apiClient.createConsent(requestMissingIdempotencyField));
+        assertThat(clientException.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
+        assertThat(clientException.getObError1()).isNotNull();
+        assertThat(clientException.getObError1().getErrorCode()).isEqualTo("UK.OBIE.Field.Invalid");
+        assertThat(clientException.getObError1().getMessage()).isEqualTo("The field received is invalid. Reason 'must not be null'");
+        assertThat(clientException.getObError1().getPath()).isEqualTo("idempotencyKey");
     }
 
     @Test

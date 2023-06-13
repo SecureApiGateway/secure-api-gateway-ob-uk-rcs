@@ -19,10 +19,7 @@ import javax.annotation.PostConstruct;
 
 import org.joda.time.DateTimeZone;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.web.client.RestTemplate;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.api.ConsentStoreApiConfiguration;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.ConsentStoreConfiguration;
@@ -33,11 +30,6 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.ConsentStoreConfigurati
 @SpringBootApplication
 @Import({ConsentStoreConfiguration.class, ConsentStoreApiConfiguration.class})
 public class TestConsentStoreServer {
-
-    @Bean
-    public RestTemplate restTemplate(RestTemplateBuilder builder) {
-        return builder.build();
-    }
 
     @PostConstruct
     void postConstruct() {

@@ -21,14 +21,16 @@ import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.Cr
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.DomesticPaymentConsent;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.RejectDomesticPaymentConsentRequest;
 
-public interface DomesticPaymentConsentApiClient {
-    DomesticPaymentConsent createConsent(CreateDomesticPaymentConsentRequest createConsentRequest);
+public interface DomesticPaymentConsentStoreClient {
 
-    DomesticPaymentConsent getConsent(String consentId, String apiClientId);
+    DomesticPaymentConsent createConsent(CreateDomesticPaymentConsentRequest createConsentRequest) throws ConsentStoreClientException;
 
-    DomesticPaymentConsent authoriseConsent(AuthoriseDomesticPaymentConsentRequest authoriseDomesticPaymentConsentRequest);
+    DomesticPaymentConsent getConsent(String consentId, String apiClientId) throws ConsentStoreClientException;
 
-    DomesticPaymentConsent rejectConsent(RejectDomesticPaymentConsentRequest rejectDomesticPaymentConsentRequest);
+    DomesticPaymentConsent authoriseConsent(AuthoriseDomesticPaymentConsentRequest authoriseDomesticPaymentConsentRequest) throws ConsentStoreClientException;
 
-    DomesticPaymentConsent consumeConsent(ConsumeDomesticPaymentConsentRequest consumeDomesticPaymentConsentRequest);
+    DomesticPaymentConsent rejectConsent(RejectDomesticPaymentConsentRequest rejectDomesticPaymentConsentRequest) throws ConsentStoreClientException;
+
+    DomesticPaymentConsent consumeConsent(ConsumeDomesticPaymentConsentRequest consumeDomesticPaymentConsentRequest) throws ConsentStoreClientException;
+
 }

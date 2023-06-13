@@ -56,7 +56,7 @@ public class DomesticPaymentConsentApiController implements DomesticPaymentConse
     }
 
     @VisibleForTesting
-    public void setIdempotencyKeyExpirationSupplier(Supplier<DateTime> idempotencyKeyExpirationSupplier) {
+    void setIdempotencyKeyExpirationSupplier(Supplier<DateTime> idempotencyKeyExpirationSupplier) {
         this.idempotencyKeyExpirationSupplier = idempotencyKeyExpirationSupplier;
     }
 

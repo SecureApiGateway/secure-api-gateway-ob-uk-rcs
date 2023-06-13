@@ -20,8 +20,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ComponentScan(basePackageClasses = ConsentServiceClientConfiguration.class)
-public class ConsentServiceClientConfiguration {
+@ComponentScan(basePackageClasses = ConsentStoreClientConfiguration.class)
+public class ConsentStoreClientConfiguration {
 
     @Value("${rcs.consent.store.api.baseUrl}")
     private String baseUrl;
