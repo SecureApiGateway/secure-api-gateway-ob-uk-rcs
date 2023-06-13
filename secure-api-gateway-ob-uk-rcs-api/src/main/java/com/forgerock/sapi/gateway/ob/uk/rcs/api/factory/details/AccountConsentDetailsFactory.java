@@ -18,7 +18,7 @@ package com.forgerock.sapi.gateway.ob.uk.rcs.api.factory.details;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.AccountsConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.json.utils.JsonUtilValidation;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.IntentType;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

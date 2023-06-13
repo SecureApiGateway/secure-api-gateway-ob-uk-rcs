@@ -16,23 +16,15 @@
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConsentConverter;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticDataInitiation;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.ConsentDetailsApi;
-import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticPaymentConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.ApiProviderConfiguration;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.exception.InvalidConsentException;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccountWithBalance;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.Constants;
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.IntentType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.ConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.PaymentsConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.factory.details.ConsentDetailsFactory;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.factory.details.ConsentDetailsFactoryProvider;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticPaymentConsentEntity;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticPaymentConsentService;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import com.forgerock.sapi.gateway.uk.common.shared.claim.Claims;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.client.rs.AccountService;
@@ -48,18 +40,12 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.utils.jwt.JwtUtil;
 import com.google.gson.JsonObject;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.extern.slf4j.Slf4j;
-import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4Data;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5DataCharges;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
-import java.math.BigDecimal;
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorType.INVALID_REQUEST;
 
@@ -75,8 +61,8 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
     private final AccountService accountService;
     private final ApiProviderConfiguration apiProviderConfiguration;
     private final ConsentDetailsFactoryProvider consentDetailsFactoryProvider;
-
-    private final DomesticPaymentConsentService domesticPaymentConsentService;
+    private final DebtorAccountService debtorAccountService;
+    private final ConsentStoreDetailsService consentStoreDetailsService;
 
     public ConsentDetailsApiController(ConsentServiceClient consentServiceClient,
                                        ApiClientServiceClient apiClientService,
@@ -85,8 +71,7 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                                        ObjectMapper objectMapper,
                                        ApiProviderConfiguration apiProviderConfiguration,
                                        ConsentDetailsFactoryProvider consentDetailsFactoryProvider,
-                                       DomesticPaymentConsentService domesticPaymentConsentService
-    ) {
+                                       DebtorAccountService debtorAccountService, ConsentStoreDetailsService consentStoreDetailsService) {
         this.consentServiceClient = consentServiceClient;
         this.apiClientService = apiClientService;
         this.userServiceClient = userServiceClient;
@@ -94,7 +79,8 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
         this.objectMapper = objectMapper;
         this.apiProviderConfiguration = apiProviderConfiguration;
         this.consentDetailsFactoryProvider = consentDetailsFactoryProvider;
-        this.domesticPaymentConsentService = domesticPaymentConsentService;
+        this.debtorAccountService = debtorAccountService;
+        this.consentStoreDetailsService = consentStoreDetailsService;
     }
 
     @Override
@@ -119,8 +105,8 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
             IntentType intentType = IntentType.identify(intentId);
             if (Objects.nonNull(intentType)) {
                 final ConsentDetails details;
-                if (intentType == IntentType.PAYMENT_DOMESTIC_CONSENT) {
-                    details = getConsentDetailsFromConsentStore(intentId, consentClientRequest);
+                if (consentStoreDetailsService.isIntentTypeSupported(intentType)) {
+                    details = consentStoreDetailsService.getDetailsFromConsentStore(intentType, intentId, consentClientRequest);
                 } else {
 
                     log.debug("Intent type: '{}' with ID '{}'", intentType, intentId);
@@ -147,7 +133,7 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                     // DebtorAccount is optional, but the PISP could provide the account identifier details for the PSU
                     // The accounts displayed in the RCS ui needs to be The debtor account if is provided in the consent otherwise the user accounts
                     if ((details instanceof PaymentsConsentDetails) && Objects.nonNull(((PaymentsConsentDetails) details).getDebtorAccount())) {
-                        setDebtorAccountWithBalance((PaymentsConsentDetails) details, consentRequestJws, intentId);
+                        debtorAccountService.setDebtorAccountWithBalance((PaymentsConsentDetails) details, consentRequestJws, intentId);
                     } else {
                         details.setAccounts(accountService.getAccountsWithBalance(details.getUserId()));
                     }
@@ -168,80 +154,6 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                     OBRIErrorType.REQUEST_BINDING_FAILED, errorMessage,
                     e.getErrorClient().getClientId(),
                     e.getErrorClient().getIntentId());
-        }
-    }
-
-    private ConsentDetails getConsentDetailsFromConsentStore(String intentId, ConsentClientDetailsRequest consentClientRequest) throws ExceptionClient {
-        final String clientId = consentClientRequest.getClientId();
-        log.info("Fetching Data from RCS Consent Service - consentId: {}, clientId: {}");
-        final DomesticPaymentConsentEntity consent = domesticPaymentConsentService.getConsent(intentId, clientId);
-        log.info("Got consent: {}", consent);
-
-        DomesticPaymentConsentDetails details = new DomesticPaymentConsentDetails();
-        details.setConsentId(consent.getId());
-        details.setUsername(consentClientRequest.getUser().getUserName());
-        details.setUserId(consentClientRequest.getUser().getId());
-        details.setClientId(clientId);
-        details.setServiceProviderName(apiProviderConfiguration.getName());
-
-        // TODO create function that converts List<OBActiveOrHistoricCurrencyAndAmount> into a single FRAmount
-        final List<OBWriteDomesticConsentResponse5DataCharges> charges = consent.getCharges();
-        String chargeCurrency = null;
-        BigDecimal totalCharge = BigDecimal.ZERO;
-        for (OBWriteDomesticConsentResponse5DataCharges charge : charges) {
-            final OBActiveOrHistoricCurrencyAndAmount amount = charge.getAmount();
-            if (chargeCurrency == null) {
-                chargeCurrency = amount.getCurrency();
-            } else if (!chargeCurrency.equals(amount.getCurrency())) {
-                throw new IllegalStateException("Charges for consent: " + consent.getId() + " contain more than 1 currency, all charges must be in the same currency");
-            }
-            totalCharge.add(new BigDecimal(amount.getAmount()));
-        }
-        details.setCharges(new FRAmount(totalCharge.toPlainString(), chargeCurrency));
-
-        final OBWriteDomesticConsent4Data obConsentRequestData = consent.getRequestObj().getData();
-        final FRWriteDomesticDataInitiation initiation = FRWriteDomesticConsentConverter.toFRWriteDomesticDataInitiation(obConsentRequestData.getInitiation());
-        details.setInitiation(initiation);
-        details.setInstructedAmount(initiation.getInstructedAmount());
-
-        if ((details instanceof PaymentsConsentDetails) && Objects.nonNull(((PaymentsConsentDetails) details).getDebtorAccount())) {
-            setDebtorAccountWithBalance(details, consentClientRequest.getConsentRequestJwtString(), intentId);
-        } else {
-            details.setAccounts(accountService.getAccountsWithBalance(details.getUserId()));
-        }
-
-        ApiClient apiClient = apiClientService.getApiClient(consentClientRequest.getClientId());
-        log.debug("ApiClient controller: " + apiClient);
-        details.setLogo(apiClient.getLogoUri());
-        details.setClientName(apiClient.getName());
-
-        log.info("Built consentDetails: {}", details);
-
-        return details;
-    }
-
-    /*
-        DebtorAccount is optional, but the PISP could provide the account identification details for the PSU.
-        If the account identifier match with an existing one for that psu then we update the debtor account with the proper accountId
-        and set the debtor account with balance as accounts to be display in the consent UI
-     */
-    private void setDebtorAccountWithBalance(PaymentsConsentDetails details, String consentRequestJws, String intentId) {
-        FRAccountIdentifier debtorAccount = details.getDebtorAccount();
-        if (Objects.nonNull(debtorAccount)) {
-            FRAccountWithBalance accountWithBalance = accountService.getAccountWithBalanceByIdentifiers(
-                    details.getUserId(), debtorAccount.getName(), debtorAccount.getIdentification(), debtorAccount.getSchemeName()
-            );
-            if (Objects.nonNull(accountWithBalance)) {
-                debtorAccount.setAccountId(accountWithBalance.getAccount().getAccountId());
-                details.setAccounts(List.of(accountWithBalance));
-            } else {
-                String message = String.format("Invalid debtor account provide in the consent for the intent ID: '%s', the debtor account provided in the consent doesn't exist", intentId);
-                log.error(message);
-                throw new InvalidConsentException(consentRequestJws, ErrorType.ACCOUNT_SELECTION_REQUIRED,
-                        OBRIErrorType.REQUEST_BINDING_FAILED, message,
-                        details.getClientId(),
-                        intentId);
-            }
         }
     }
 

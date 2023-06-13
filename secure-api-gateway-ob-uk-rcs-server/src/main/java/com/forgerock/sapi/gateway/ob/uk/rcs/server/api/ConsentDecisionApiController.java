@@ -22,7 +22,6 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.api.ConsentDecisionApi;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.RedirectionAction;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.decision.ConsentDecisionDeserialized;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.Constants;
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.IntentType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ExceptionClient;
@@ -32,8 +31,7 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services.ConsentService
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.utils.jwt.JwtUtil;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.exception.InvalidConsentException;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.jwt.RcsJwtSigner;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticPaymentAuthoriseConsentArgs;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticPaymentConsentService;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import com.google.gson.JsonObject;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -64,17 +62,17 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
     private final RcsJwtSigner jwtSigner;
     private final String rcsJwtIssuer;
 
-    private final DomesticPaymentConsentService domesticPaymentConsentService;
+    private final ConsentStoreDecisionService consentStoreDecisionService;
 
     public ConsentDecisionApiController(ObjectMapper objectMapper, ConsentServiceClient consentServiceClient,
                                         RcsJwtSigner jwtSigner,
                                         @Value("${rcs.consent.response.jwt.issuer}") String rcsJwtIssuer,
-                                        DomesticPaymentConsentService domesticPaymentConsentService) {
+                                        ConsentStoreDecisionService consentStoreDecisionService) {
         this.objectMapper = objectMapper;
         this.consentServiceClient = consentServiceClient;
         this.jwtSigner = jwtSigner;
         this.rcsJwtIssuer = rcsJwtIssuer;
-        this.domesticPaymentConsentService = domesticPaymentConsentService;
+        this.consentStoreDecisionService = consentStoreDecisionService;
     }
 
     @Override
@@ -126,15 +124,14 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
                         .build();
                 log.debug("consentClientDecisionRequest \n {}", consentClientDecisionRequest);
 
-                if (intentType == IntentType.PAYMENT_DOMESTIC_CONSENT) {
+                if (consentStoreDecisionService.isIntentTypeSupported(intentType)) {
                     log.debug("Updating consent: {} in RCS Consent Store", intentId);
                     if (authorised) {
-                        final DomesticPaymentAuthoriseConsentArgs authoriseConsentArgs = new DomesticPaymentAuthoriseConsentArgs(intentId, clientId, resourceOwner, consentDecisionDeserialized.getDebtorAccount().getAccountId());
-                        domesticPaymentConsentService.authoriseConsent(authoriseConsentArgs);
+                        consentStoreDecisionService.authoriseConsent(intentType, intentId, clientId, resourceOwner,
+                                                                     consentDecisionDeserialized.getDebtorAccount().getAccountId());
                     } else {
-                        domesticPaymentConsentService.rejectConsent(intentId, clientId, resourceOwner);
+                        consentStoreDecisionService.rejectConsent(intentType, intentId, clientId, resourceOwner);
                     }
-
                 } else {
                     log.debug("Updating consent: {}  in idm", intentId);
                     JsonObject consentUpdated = consentServiceClient.updateConsent(consentClientDecisionRequest);

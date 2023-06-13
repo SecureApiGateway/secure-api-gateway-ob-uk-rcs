@@ -15,16 +15,32 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.repo;
 
+import java.util.EnumSet;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.DomesticPaymentConsentRepository;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 @Configuration
 @ComponentScan(basePackageClasses = ConsentStoreConfiguration.class)
 @EnableMongoRepositories(basePackageClasses = DomesticPaymentConsentRepository.class)
 @EnableMongoAuditing
 public class ConsentStoreConfiguration {
+
+    /**
+     * Control which IntentTypes use this module via config
+     */
+    @Value("${consent.store.enabled.intentTypes}")
+    private EnumSet<IntentType> enabledIntentTypes;
+
+    @Bean
+    public EnumSet<IntentType> getEnabledIntentTypes() {
+        return enabledIntentTypes;
+    }
 }

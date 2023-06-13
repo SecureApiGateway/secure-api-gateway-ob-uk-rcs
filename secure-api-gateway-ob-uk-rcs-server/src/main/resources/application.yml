@@ -54,6 +54,7 @@ api:
 # Configuration for calling the Consent Repository
 # See: com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.configuration.ConsentRepoConfiguration
 consent:
+  # IDM Consent Repo
   repo:
     # Context to build the URI to make a request against the repository endpoint to obtain the client object by clientId
     contexts_api_client:
@@ -73,6 +74,12 @@ consent:
       put: /repo/consents/@IntentId@
       patch: /repo/consents/@IntentId@
       delete: /repo/consents/@IntentId@
+
+  # RCS Consent Store config
+  store:
+    enabled:
+      # Controls which intentTypes will use the new Consent Store
+      intentTypes: []
 
 
 # Configuration for calling the RS backoffice API

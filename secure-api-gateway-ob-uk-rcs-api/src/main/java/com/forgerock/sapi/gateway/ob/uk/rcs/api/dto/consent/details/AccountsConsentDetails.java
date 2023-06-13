@@ -16,7 +16,8 @@
 package com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.IntentType;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -45,7 +45,6 @@ import uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFact
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@ActiveProfiles("test")
 class DefaultDomesticPaymentConsentServiceTest extends BaseConsentServiceTest<DomesticPaymentConsentEntity, DomesticPaymentAuthoriseConsentArgs> {
 
     @Autowired

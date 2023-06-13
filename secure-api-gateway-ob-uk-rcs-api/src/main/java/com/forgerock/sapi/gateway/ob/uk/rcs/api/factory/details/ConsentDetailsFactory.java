@@ -15,8 +15,8 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.api.factory.details;
 
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.IntentType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.ConsentDetails;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import com.google.gson.JsonObject;
 import org.springframework.stereotype.Component;
 

@@ -22,7 +22,6 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.server.RCSServerApplicationTestSuppo
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.client.rs.AccountService;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccountWithBalance;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.IntentType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ExceptionClient;
@@ -34,6 +33,7 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services.ConsentService
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services.UserServiceClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.test.support.ApiClientTestDataFactory;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.testsupport.JwtTestHelper;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import com.google.gson.*;
 import org.assertj.core.api.Assertions;
 import org.joda.time.DateTime;
