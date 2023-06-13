@@ -17,6 +17,10 @@ package com.forgerock.sapi.gateway.rcs.consent.store.repo;
 
 import java.util.EnumSet;
 
+import javax.annotation.PostConstruct;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -33,11 +37,18 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 @EnableMongoAuditing
 public class ConsentStoreConfiguration {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     /**
      * Control which IntentTypes use this module via config
      */
     @Value("${consent.store.enabled.intentTypes}")
     private EnumSet<IntentType> enabledIntentTypes;
+
+    @PostConstruct
+    public void logEnabledIntentTypes() {
+        logger.info("IntentTypes configured to use the Consent Store Module: {}", enabledIntentTypes);
+    }
 
     @Bean
     public EnumSet<IntentType> getEnabledIntentTypes() {
