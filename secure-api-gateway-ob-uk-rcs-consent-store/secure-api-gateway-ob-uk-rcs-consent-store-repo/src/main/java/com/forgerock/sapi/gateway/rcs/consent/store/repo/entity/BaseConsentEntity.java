@@ -46,26 +46,31 @@ public class BaseConsentEntity<T> {
     @NotNull
     @Valid
     private T requestObj;
+
     /**
      * OBIE type name of the requestObj e.g. OBWriteDomesticConsent4
      */
     @NotNull
     private String requestType;
+
     /**
      * Version of OBIE API used to create this consent
      */
     @NotNull
     private OBVersion requestVersion;
+
     /**
      * Current status of the Consent
      */
     @NotNull
     private String status;
+
     /**
      * Id of the OAuth2.0 ApiClient which was used to create this Consent
      */
     @NotNull
     private String apiClientId;
+
     /**
      * Id of the Resource Owner (PSU) who has either Authorised or Rejected this Consent.
      * Note: this field is allowed to be null when the Consent is in the initial Awaiting Authorisation state.
@@ -160,11 +165,12 @@ public class BaseConsentEntity<T> {
     public String toString() {
         return "BaseConsentEntity{" +
                 "id='" + id + '\'' +
+                ", entityVersion=" + entityVersion +
                 ", requestObj=" + requestObj +
                 ", requestType='" + requestType + '\'' +
                 ", requestVersion=" + requestVersion +
                 ", status='" + status + '\'' +
-                ", tppId='" + apiClientId + '\'' +
+                ", apiClientId='" + apiClientId + '\'' +
                 ", resourceOwnerId='" + resourceOwnerId + '\'' +
                 ", creationDateTime=" + creationDateTime +
                 ", statusUpdatedDateTime=" + statusUpdatedDateTime +

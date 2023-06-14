@@ -13,34 +13,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic;
+package com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10;
 
 import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.joda.time.DateTime;
 import org.springframework.validation.annotation.Validated;
-
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.BaseConsent;
 
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5DataCharges;
 
 @Validated
-public class DomesticPaymentConsent extends BaseConsent<OBWriteDomesticConsent4> {
+public class CreateDomesticPaymentConsentRequest {
+
+    @NotNull
+    private String apiClientId;
+
+    @NotNull
+    @Valid
+    private OBWriteDomesticConsent4 consentRequest;
 
     @NotNull
     private String idempotencyKey;
 
-    @NotNull
-    private DateTime idempotencyKeyExpiration;
-
-    private String authorisedDebtorAccountId;
-
     @Valid
     private List<OBWriteDomesticConsentResponse5DataCharges> charges;
+
+    public String getApiClientId() {
+        return apiClientId;
+    }
+
+    public void setApiClientId(String apiClientId) {
+        this.apiClientId = apiClientId;
+    }
+
+    public OBWriteDomesticConsent4 getConsentRequest() {
+        return consentRequest;
+    }
+
+    public void setConsentRequest(OBWriteDomesticConsent4 consentRequest) {
+        this.consentRequest = consentRequest;
+    }
 
     public String getIdempotencyKey() {
         return idempotencyKey;
@@ -48,22 +63,6 @@ public class DomesticPaymentConsent extends BaseConsent<OBWriteDomesticConsent4>
 
     public void setIdempotencyKey(String idempotencyKey) {
         this.idempotencyKey = idempotencyKey;
-    }
-
-    public DateTime getIdempotencyKeyExpiration() {
-        return idempotencyKeyExpiration;
-    }
-
-    public void setIdempotencyKeyExpiration(DateTime idempotencyKeyExpiration) {
-        this.idempotencyKeyExpiration = idempotencyKeyExpiration;
-    }
-
-    public String getAuthorisedDebtorAccountId() {
-        return authorisedDebtorAccountId;
-    }
-
-    public void setAuthorisedDebtorAccountId(String authorisedDebtorAccountId) {
-        this.authorisedDebtorAccountId = authorisedDebtorAccountId;
     }
 
     public List<OBWriteDomesticConsentResponse5DataCharges> getCharges() {

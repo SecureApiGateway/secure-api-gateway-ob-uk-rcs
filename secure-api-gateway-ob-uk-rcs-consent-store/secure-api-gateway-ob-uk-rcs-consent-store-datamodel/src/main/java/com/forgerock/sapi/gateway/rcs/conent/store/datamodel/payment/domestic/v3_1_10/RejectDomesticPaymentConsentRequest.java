@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic;
+package com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10;
 
 import javax.validation.constraints.NotNull;
 
 import org.springframework.validation.annotation.Validated;
 
 @Validated
-public class AuthoriseDomesticPaymentConsentRequest {
+public class RejectDomesticPaymentConsentRequest {
 
     @NotNull
     private String apiClientId;
@@ -31,10 +31,7 @@ public class AuthoriseDomesticPaymentConsentRequest {
     @NotNull
     private String resourceOwnerId;
 
-    @NotNull
-    private String authorisedDebtorAccountId;
-
-    public AuthoriseDomesticPaymentConsentRequest() {
+    public RejectDomesticPaymentConsentRequest(){
     }
 
     public String getConsentId() {
@@ -51,14 +48,6 @@ public class AuthoriseDomesticPaymentConsentRequest {
 
     public void setResourceOwnerId(String resourceOwnerId) {
         this.resourceOwnerId = resourceOwnerId;
-    }
-
-    public String getAuthorisedDebtorAccountId() {
-        return authorisedDebtorAccountId;
-    }
-
-    public void setAuthorisedDebtorAccountId(String authorisedDebtorAccountId) {
-        this.authorisedDebtorAccountId = authorisedDebtorAccountId;
     }
 
     public String getApiClientId() {

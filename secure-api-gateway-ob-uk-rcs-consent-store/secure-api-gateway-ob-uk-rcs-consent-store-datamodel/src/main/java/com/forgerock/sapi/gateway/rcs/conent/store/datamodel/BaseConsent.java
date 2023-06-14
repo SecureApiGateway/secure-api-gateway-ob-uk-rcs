@@ -23,9 +23,13 @@ import org.springframework.validation.annotation.Validated;
 
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-
+/**
+ * Base class representing a Consent DTO
+ *
+ * @param <T> The OBIE schema type of the Consent Request Object
+ */
 @Validated
-public class BaseConsent<T> {
+public abstract class BaseConsent<T> {
 
     @NotNull
     private String id;
