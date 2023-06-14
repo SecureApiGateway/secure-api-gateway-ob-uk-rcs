@@ -137,5 +137,6 @@ class DefaultDomesticPaymentConsentServiceTest extends BaseConsentServiceTest<Do
         final ConsentStoreException consentStoreException = Assertions.assertThrows(ConsentStoreException.class, () -> service.consumeConsent(persistedConsent.getId(), persistedConsent.getApiClientId()));
         assertThat(consentStoreException.getConsentId()).isEqualTo(persistedConsent.getId());
         assertThat(consentStoreException.getErrorType()).isEqualTo(ErrorType.INVALID_STATE_TRANSITION);
+        assertThat(consentStoreException.getMessage()).contains("cannot transition from consentStatus: AwaitingAuthorisation to status: Consumed");
     }
 }

@@ -86,8 +86,8 @@ public abstract class BaseConsentService<T extends BaseConsentEntity<?>, A exten
 
     protected void validateStateTransition(T consent, String targetStatus) {
         if (!isStateTransitionAllowed(consent.getStatus(), targetStatus)) {
-            // TODO improve error msg to include statuses
-            throw new ConsentStoreException(ErrorType.INVALID_STATE_TRANSITION, consent.getId());
+            throw new ConsentStoreException(ErrorType.INVALID_STATE_TRANSITION, consent.getId(),
+                    "cannot transition from consentStatus: " + consent.getStatus() + " to status: " + targetStatus);
         }
     }
 

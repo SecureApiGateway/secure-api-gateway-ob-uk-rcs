@@ -87,7 +87,6 @@ class DomesticPaymentConsentStoreClientTest {
         requestMissingIdempotencyField.setConsentRequest(OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4());
         requestMissingIdempotencyField.setCharges(List.of(new OBWriteDomesticConsentResponse5DataCharges().type("fee").chargeBearer(OBChargeBearerType1Code.BORNEBYCREDITOR).amount(new OBActiveOrHistoricCurrencyAndAmount().amount("1.25").currency("GBP"))));
 
-        // TODO validate contents of the exception
         final ConsentStoreClientException clientException = assertThrows(ConsentStoreClientException.class,
                 () -> apiClient.createConsent(requestMissingIdempotencyField));
         assertThat(clientException.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
