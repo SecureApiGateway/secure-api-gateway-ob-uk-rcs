@@ -49,7 +49,7 @@ public class RestDomesticPaymentConsentStoreClient extends BaseRestConsentStoreC
     public RestDomesticPaymentConsentStoreClient(ConsentStoreClientConfiguration consentStoreClientConfiguration, RestTemplateBuilder restTemplateBuilder,
                                                  ObjectMapper objectMapper, OBVersion obVersion) {
         super(restTemplateBuilder, objectMapper);
-        this.consentServiceBaseUrl = consentStoreClientConfiguration.getBaseUrl() + "/" + obVersion.getCanonicalVersion() + "/domestic-payment-consents";
+        this.consentServiceBaseUrl = consentStoreClientConfiguration.getBaseUrl() + "/v" + obVersion.getCanonicalVersion() + "/domestic-payment-consents";
     }
 
     @Override
