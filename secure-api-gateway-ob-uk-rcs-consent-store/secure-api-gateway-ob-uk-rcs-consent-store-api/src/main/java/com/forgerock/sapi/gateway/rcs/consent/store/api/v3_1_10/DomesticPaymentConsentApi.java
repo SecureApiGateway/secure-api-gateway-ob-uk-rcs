@@ -67,7 +67,7 @@ public interface DomesticPaymentConsentApi {
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
     ResponseEntity<DomesticPaymentConsent> getConsent(@PathVariable(value = "consentId") String consentId,
-            @RequestHeader(value = "x-api-client-id") String apiClientId);
+                                                      @RequestHeader(value = "x-api-client-id") String apiClientId);
 
 
     @ApiOperation(value = "Authorise Domestic Payment Consent")
@@ -80,10 +80,10 @@ public interface DomesticPaymentConsentApi {
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
     ResponseEntity<DomesticPaymentConsent> authoriseConsent(@PathVariable(value = "consentId") String consentId,
-            @ApiParam(value = "Authorise Consent Request", required = true)
-            @Valid
-            @RequestBody AuthoriseDomesticPaymentConsentRequest request,
-            @RequestHeader(value = "x-api-client-id") String apiClientId);
+                                                            @ApiParam(value = "Authorise Consent Request", required = true)
+                                                            @Valid
+                                                            @RequestBody AuthoriseDomesticPaymentConsentRequest request,
+                                                            @RequestHeader(value = "x-api-client-id") String apiClientId);
 
 
     @ApiOperation(value = "Reject Domestic Payment Consent")
@@ -96,10 +96,10 @@ public interface DomesticPaymentConsentApi {
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
     ResponseEntity<DomesticPaymentConsent> rejectConsent(@PathVariable(value = "consentId") String consentId,
-            @ApiParam(value = "Reject Consent Request", required = true)
-            @Valid
-            @RequestBody RejectDomesticPaymentConsentRequest request,
-            @RequestHeader(value = "x-api-client-id") String apiClientId);
+                                                         @ApiParam(value = "Reject Consent Request", required = true)
+                                                         @Valid
+                                                         @RequestBody RejectDomesticPaymentConsentRequest request,
+                                                         @RequestHeader(value = "x-api-client-id") String apiClientId);
 
 
 
@@ -113,9 +113,9 @@ public interface DomesticPaymentConsentApi {
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
     ResponseEntity<DomesticPaymentConsent> consumeConsent(@PathVariable(value = "consentId") String consentId,
-            @ApiParam(value = "Consume Consent Request", required = true)
-            @Valid
-            @RequestBody ConsumeDomesticPaymentConsentRequest request,
-            @RequestHeader(value = "x-api-client-id") String apiClientId);
+                                                          @ApiParam(value = "Consume Consent Request", required = true)
+                                                          @Valid
+                                                          @RequestBody ConsumeDomesticPaymentConsentRequest request,
+                                                          @RequestHeader(value = "x-api-client-id") String apiClientId);
 
 }
