@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.api;
+package com.forgerock.sapi.gateway.rcs.consent.store.api.v3_1_10;
 
 import java.util.function.Supplier;
 
@@ -38,9 +38,14 @@ import com.google.common.annotations.VisibleForTesting;
 
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
 
+/**
+ * Implementation of DomesticPaymentConsentApi for OBIE version 3.1.10
+ *
+ * Note: the obVersion field is pluggable, so if there are no changes to the OBIE schema in later versions, then
+ * these controllers can extend this and configure the
+ */
 @Controller
 public class DomesticPaymentConsentApiController implements DomesticPaymentConsentApi {
-
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -48,11 +53,20 @@ public class DomesticPaymentConsentApiController implements DomesticPaymentConse
 
     private Supplier<DateTime> idempotencyKeyExpirationSupplier;
 
+    private final OBVersion obVersion;
+
     @Autowired
     public DomesticPaymentConsentApiController(DomesticPaymentConsentService consentService,
-                                               Supplier<DateTime> idempotencyKeyExpirationSupplier) {
+                                              Supplier<DateTime> idempotencyKeyExpirationSupplier) {
+        this(consentService, idempotencyKeyExpirationSupplier, OBVersion.v3_1_10);
+    }
+
+    public DomesticPaymentConsentApiController(DomesticPaymentConsentService consentService,
+                                               Supplier<DateTime> idempotencyKeyExpirationSupplier,
+                                               OBVersion obVersion) {
         this.consentService = consentService;
         this.idempotencyKeyExpirationSupplier = idempotencyKeyExpirationSupplier;
+        this.obVersion = obVersion;
     }
 
     @VisibleForTesting
@@ -65,7 +79,7 @@ public class DomesticPaymentConsentApiController implements DomesticPaymentConse
         logger.info("Attempting to createConsent: {}, for apiClientId: {}", request, apiClientId);
         final DomesticPaymentConsentEntity domesticPaymentConsent = new DomesticPaymentConsentEntity();
         domesticPaymentConsent.setRequestType(request.getConsentRequest().getClass().getSimpleName());
-        domesticPaymentConsent.setRequestVersion(OBVersion.v3_1_10);
+        domesticPaymentConsent.setRequestVersion(obVersion);
         domesticPaymentConsent.setApiClientId(request.getApiClientId());
         domesticPaymentConsent.setRequestObj(request.getConsentRequest());
         domesticPaymentConsent.setStatus(StatusEnum.AWAITINGAUTHORISATION.toString());
@@ -87,8 +101,8 @@ public class DomesticPaymentConsentApiController implements DomesticPaymentConse
     @Override
     public ResponseEntity<DomesticPaymentConsent> authoriseConsent(String consentId, AuthoriseDomesticPaymentConsentRequest request, String apiClientId) {
         logger.info("Attempting to authoriseConsent - id: {}, request: {}, apiClientId: {}", consentId, request, apiClientId);
-        // TODO cleanup
-        final DomesticPaymentAuthoriseConsentArgs domesticPaymentAuthoriseConsentArgs = new DomesticPaymentAuthoriseConsentArgs(consentId, apiClientId, request.getResourceOwnerId(), request.getAuthorisedDebtorAccountId());
+        final DomesticPaymentAuthoriseConsentArgs domesticPaymentAuthoriseConsentArgs = new DomesticPaymentAuthoriseConsentArgs(consentId, apiClientId,
+                                                                                                                                request.getResourceOwnerId(), request.getAuthorisedDebtorAccountId());
         return ResponseEntity.ok(convertEntityToDto(consentService.authoriseConsent(domesticPaymentAuthoriseConsentArgs)));
     }
 

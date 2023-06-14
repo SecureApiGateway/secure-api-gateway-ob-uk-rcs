@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.conent.store.client;
+package com.forgerock.sapi.gateway.rcs.conent.store.client.v3_1_10;
 
+import com.forgerock.sapi.gateway.rcs.conent.store.client.ConsentStoreClientException;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.AuthoriseDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.ConsumeDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.CreateDomesticPaymentConsentRequest;
@@ -22,7 +23,7 @@ import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.Do
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.RejectDomesticPaymentConsentRequest;
 
 /**
- * Client for interacting with com.forgerock.sapi.gateway.rcs.consent.store.api.DomesticPaymentConsentApi
+ * Client for interacting with com.forgerock.sapi.gateway.rcs.consent.store.api.v3_1_10.DomesticPaymentConsentApi
  */
 public interface DomesticPaymentConsentStoreClient {
 

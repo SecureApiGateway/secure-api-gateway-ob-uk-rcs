@@ -13,19 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.conent.store.client;
+package com.forgerock.sapi.gateway.rcs.conent.store.client.v3_1_10;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.forgerock.sapi.gateway.rcs.conent.store.client.BaseRestConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.conent.store.client.ConsentStoreClientConfiguration;
+import com.forgerock.sapi.gateway.rcs.conent.store.client.ConsentStoreClientException;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.AuthoriseDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.ConsumeDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.CreateDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.DomesticPaymentConsent;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.RejectDomesticPaymentConsentRequest;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 /**
  * Implementation of the DomesticPaymentConsentStoreClient which makes REST calls over HTTP
@@ -35,10 +40,16 @@ public class RestDomesticPaymentConsentStoreClient extends BaseRestConsentStoreC
 
     private final String consentServiceBaseUrl;
 
-    public RestDomesticPaymentConsentStoreClient(ConsentStoreClientConfiguration consentStoreClientConfiguration, RestTemplateBuilder restTemplateBuilder, ObjectMapper objectMapper) {
+    @Autowired
+    public RestDomesticPaymentConsentStoreClient(ConsentStoreClientConfiguration consentStoreClientConfiguration, RestTemplateBuilder restTemplateBuilder,
+                                                 ObjectMapper objectMapper) {
+        this(consentStoreClientConfiguration, restTemplateBuilder, objectMapper, OBVersion.v3_1_10);
+    }
+
+    public RestDomesticPaymentConsentStoreClient(ConsentStoreClientConfiguration consentStoreClientConfiguration, RestTemplateBuilder restTemplateBuilder,
+                                                 ObjectMapper objectMapper, OBVersion obVersion) {
         super(restTemplateBuilder, objectMapper);
-        // TODO Make version configurable
-        this.consentServiceBaseUrl = consentStoreClientConfiguration.getBaseUrl() + "/v3.1.10/domestic-payment-consents";
+        this.consentServiceBaseUrl = consentStoreClientConfiguration.getBaseUrl() + "/" + obVersion.getCanonicalVersion() + "/domestic-payment-consents";
     }
 
     @Override

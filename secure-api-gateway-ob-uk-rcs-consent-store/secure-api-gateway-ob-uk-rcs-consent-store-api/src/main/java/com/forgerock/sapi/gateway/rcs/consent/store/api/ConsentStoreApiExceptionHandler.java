@@ -38,8 +38,15 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreE
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 
+/**
+ * Exception handler for the Consent Store API, responsible for converting ConsentStoreExceptions into HTTP responses.
+ *
+ * Note: this handler is only applied to controllers within this package / sub-packages
+ */
 @ControllerAdvice(basePackageClasses = ConsentStoreApiConfiguration.class)
 public class ConsentStoreApiExceptionHandler extends ResponseEntityExceptionHandler {
+
+    public static final String CONSENT_STORE_EXCEPTION_OB_ERROR_CODE = "OBRI.Consent.Store.Error";
 
     @ExceptionHandler(value = ConsentStoreException.class)
     public ResponseEntity<Object> handleConsentStoreException(ConsentStoreException ex, WebRequest request) {
@@ -55,13 +62,15 @@ public class ConsentStoreApiExceptionHandler extends ResponseEntityExceptionHand
 
         return ResponseEntity.status(httpStatus).body(
                 new OBErrorResponse1()
-                        .code("OBRI.Consent.Store.Error")
+                        .code(CONSENT_STORE_EXCEPTION_OB_ERROR_CODE)
                         .id(errorResponseId)
                         .message(httpStatus.name())
                         .errors(List.of(new OBError1().errorCode(ex.getErrorType().name()).message(ex.getMessage()))));
     }
 
-    // TODO cribbed from the global handler...
+    // TODO FIXME this is copied from com.forgerock.sapi.gateway.ob.uk.rcs.server.exception.GlobalExceptionHandler
+    // This has been copied here so that when unit testing this module, the exception handling behaviour is consistent with the actual server
+    // When this code is deployed with the RCS, then if we did not handle this exception here, it would bubble up to the GlobalExceptionHandler
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                                                                 HttpHeaders headers,
@@ -87,6 +96,7 @@ public class ConsentStoreApiExceptionHandler extends ResponseEntityExceptionHand
                                                                   errors), request);
     }
 
+    // TODO FIXME this is copied from com.forgerock.sapi.gateway.ob.uk.rcs.server.exception.GlobalExceptionHandler
     @ExceptionHandler(value = OBErrorResponseException.class)
     public ResponseEntity<Object> handleOBErrorResponse(OBErrorResponseException ex, WebRequest request) {
 
