@@ -25,15 +25,15 @@ import com.google.common.annotations.VisibleForTesting;
 @ComponentScan(basePackageClasses = ConsentStoreClientConfiguration.class)
 public class ConsentStoreClientConfiguration {
 
-    @Value("${rcs.consent.store.api.baseUrl}")
-    private String baseUrl;
+    @Value("${rcs.consent.store.api.baseUri}")
+    private String baseUri;
 
-    public String getBaseUrl() {
-        return baseUrl;
+    public String getBaseUri() {
+        return baseUri;
     }
 
     @VisibleForTesting
-    void setBaseUrl(String baseUrl) {
-        this.baseUrl = baseUrl;
+    void setBaseUri(String baseUri) {
+        this.baseUri = baseUri;
     }
 }

@@ -48,7 +48,7 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5DataCharges;
 import uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory;
 
-@SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"rcs.consent.store.api.baseUrl= 'ignored'"})
+@SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"rcs.consent.store.api.baseUri= 'ignored'"})
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 class DomesticPaymentConsentStoreClientTest {
@@ -67,7 +67,7 @@ class DomesticPaymentConsentStoreClientTest {
     @BeforeEach
     public void beforeEach() {
         final ConsentStoreClientConfiguration clientConfiguration = new ConsentStoreClientConfiguration();
-        clientConfiguration.setBaseUrl("http://localhost:"+port+"/consent/store");
+        clientConfiguration.setBaseUri("http://localhost:"+port+"/consent/store");
         apiClient = new RestDomesticPaymentConsentStoreClient(clientConfiguration, restTemplateBuilder, objectMapper);
     }
 
