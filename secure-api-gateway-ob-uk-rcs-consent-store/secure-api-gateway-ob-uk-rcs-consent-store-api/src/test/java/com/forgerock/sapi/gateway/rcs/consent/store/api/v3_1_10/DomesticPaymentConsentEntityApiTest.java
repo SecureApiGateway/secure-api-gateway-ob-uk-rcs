@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.api;
+package com.forgerock.sapi.gateway.rcs.consent.store.api.v3_1_10;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -22,6 +22,7 @@ import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
+import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -43,6 +44,7 @@ import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.CreateDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.RejectDomesticPaymentConsentRequest;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
@@ -53,7 +55,7 @@ import uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFact
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
-class DomesticPaymentConsentEntityApiTest {
+public class DomesticPaymentConsentEntityApiTest {
 
     @LocalServerPort
     private int port;
@@ -121,14 +123,27 @@ class DomesticPaymentConsentEntityApiTest {
         assertThat(consentResponseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
         final DomesticPaymentConsent consent = consentResponseEntity.getBody();
+        validateCreateConsentAgainstCreateRequest(createDomesticPaymentConsentRequest, consent);
+
+        return consent;
+    }
+
+    // TODO cleanup - create a validation class, this logic is reused in the client tests
+    public static void validateCreateConsentAgainstCreateRequest(CreateDomesticPaymentConsentRequest createDomesticPaymentConsentRequest, DomesticPaymentConsent consent) {
         assertThat(consent.getId()).isNotEmpty();
         assertThat(consent.getStatus()).isEqualTo(StatusEnum.AWAITINGAUTHORISATION.toString());
         assertThat(consent.getApiClientId()).isEqualTo(createDomesticPaymentConsentRequest.getApiClientId());
         assertThat(consent.getRequestObj()).isEqualTo(createDomesticPaymentConsentRequest.getConsentRequest());
+        assertThat(consent.getRequestType()).isEqualTo("OBWriteDomesticConsent4");
+        assertThat(consent.getRequestVersion()).isEqualTo(OBVersion.v3_1_10);
+        assertThat(consent.getCharges()).isEqualTo(createDomesticPaymentConsentRequest.getCharges());
+        assertThat(consent.getIdempotencyKey()).isEqualTo(createDomesticPaymentConsentRequest.getIdempotencyKey());
+        assertThat(consent.getAuthorisedDebtorAccountId()).isNull();
 
-        // TODO more validation
-
-        return consent;
+        final DateTime now = DateTime.now();
+        assertThat(consent.getIdempotencyKeyExpiration()).isGreaterThan(now);
+        assertThat(consent.getCreationDateTime()).isLessThan(now);
+        assertThat(consent.getStatusUpdateDateTime()).isEqualTo(consent.getCreationDateTime());
     }
 
     @Test
@@ -196,9 +211,23 @@ class DomesticPaymentConsentEntityApiTest {
         assertThat(authorisedConsent.getStatus()).isEqualTo(StatusEnum.AUTHORISED.toString());
         assertThat(authorisedConsent.getResourceOwnerId()).isEqualTo(resourceOwnerId);
         assertThat(authorisedConsent.getAuthorisedDebtorAccountId()).isEqualTo(debtorAccountId);
+        validateUpdatedConsentAgainstOriginal(authorisedConsent, consent);
+    }
 
-        // TODO more validation
-
+    /**
+     * Validates fields in an updatedConsent vs an original consent.
+     *
+     * This checks that fields that should never change when a consent is updated do never change, and verifies that
+     * the statusUpdateDateTime increases vs the original.
+     */
+    public static void validateUpdatedConsentAgainstOriginal(DomesticPaymentConsent updatedConsent, DomesticPaymentConsent consent) {
+        assertThat(updatedConsent.getId()).isEqualTo(consent.getId());
+        assertThat(updatedConsent.getApiClientId()).isEqualTo(consent.getApiClientId());
+        assertThat(updatedConsent.getRequestObj()).isEqualTo(consent.getRequestObj());
+        assertThat(updatedConsent.getRequestVersion()).isEqualTo(consent.getRequestVersion());
+        assertThat(updatedConsent.getRequestType()).isEqualTo(consent.getRequestType());
+        assertThat(updatedConsent.getCreationDateTime()).isEqualTo(consent.getCreationDateTime());
+        assertThat(updatedConsent.getStatusUpdateDateTime()).isLessThan(DateTime.now()).isGreaterThan(consent.getStatusUpdateDateTime());
     }
 
     @Test
@@ -243,8 +272,12 @@ class DomesticPaymentConsentEntityApiTest {
 
         final ResponseEntity<DomesticPaymentConsent> rejectResponse = rejectConsent(rejectRequest, DomesticPaymentConsent.class);
         assertThat(rejectResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(rejectResponse.getBody().getStatus()).isEqualTo(StatusEnum.REJECTED.toString());
-        // TODO more validations
+
+        final DomesticPaymentConsent rejectedConsent = rejectResponse.getBody();
+        assertThat(rejectedConsent.getStatus()).isEqualTo(StatusEnum.REJECTED.toString());
+        assertThat(rejectedConsent.getAuthorisedDebtorAccountId()).isNull();
+        assertThat(rejectedConsent.getResourceOwnerId()).isEqualTo(resourceOwnerId);
+        validateUpdatedConsentAgainstOriginal(rejectedConsent, consent);
     }
 
     @Test
@@ -275,7 +308,8 @@ class DomesticPaymentConsentEntityApiTest {
         authoriseReq.setResourceOwnerId(resourceOwnerId);
         authoriseReq.setAuthorisedDebtorAccountId(debtorAccountId);
 
-        authoriseConsent(authoriseReq, DomesticPaymentConsent.class);
+        final ResponseEntity<DomesticPaymentConsent> authorisedConsentResponse = authoriseConsent(authoriseReq, DomesticPaymentConsent.class);
+        final DomesticPaymentConsent authorisedConsent = authorisedConsentResponse.getBody();
 
         final ConsumeDomesticPaymentConsentRequest consumeRequest = new ConsumeDomesticPaymentConsentRequest();
         consumeRequest.setConsentId(consent.getId());
@@ -283,7 +317,17 @@ class DomesticPaymentConsentEntityApiTest {
 
         final ResponseEntity<DomesticPaymentConsent> consumeResponse = consumeConsent(consumeRequest, DomesticPaymentConsent.class);
         assertThat(consumeResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(consumeResponse.getBody().getStatus()).isEqualTo(StatusEnum.CONSUMED.toString());
+
+        final DomesticPaymentConsent consumedConsent = consumeResponse.getBody();
+        assertThat(consumedConsent.getStatus()).isEqualTo(StatusEnum.CONSUMED.toString());
+        validateUpdatedConsentAgainstOriginal(consumedConsent, consent);
+        validateConsumedConsentAgainstAuthorised(consumedConsent, authorisedConsent);
+    }
+
+    public static void validateConsumedConsentAgainstAuthorised(DomesticPaymentConsent consumedConsent, DomesticPaymentConsent authorisedConsent) {
+        assertThat(consumedConsent.getStatusUpdateDateTime()).isGreaterThan(authorisedConsent.getStatusUpdateDateTime());
+        assertThat(consumedConsent.getAuthorisedDebtorAccountId()).isEqualTo(authorisedConsent.getAuthorisedDebtorAccountId());
+        assertThat(consumedConsent.getResourceOwnerId()).isEqualTo(authorisedConsent.getResourceOwnerId());
     }
 
     @Test

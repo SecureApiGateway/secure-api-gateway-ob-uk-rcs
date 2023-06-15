@@ -94,6 +94,13 @@
             <scope>test</scope>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.forgerock.sapi.gateway</groupId>
+            <artifactId>secure-api-gateway-ob-uk-rcs-consent-store-api</artifactId>
+            <type>test-jar</type>
+            <scope>test</scope>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
     
 </project>
