@@ -15,6 +15,11 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.api.v3_1_10;
 
+import static com.forgerock.sapi.gateway.rcs.consent.store.api.v3_1_10.ApiTestUtils.createConsentStoreApiRequiredHeaders;
+import static com.forgerock.sapi.gateway.rcs.consent.store.api.v3_1_10.DomesticPaymentConsentValidationHelpers.validateAuthorisedConsent;
+import static com.forgerock.sapi.gateway.rcs.consent.store.api.v3_1_10.DomesticPaymentConsentValidationHelpers.validateConsumedConsent;
+import static com.forgerock.sapi.gateway.rcs.consent.store.api.v3_1_10.DomesticPaymentConsentValidationHelpers.validateCreateConsentAgainstCreateRequest;
+import static com.forgerock.sapi.gateway.rcs.consent.store.api.v3_1_10.DomesticPaymentConsentValidationHelpers.validateRejectedConsent;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
@@ -22,7 +27,6 @@ import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -32,7 +36,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,18 +47,16 @@ import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.CreateDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.RejectDomesticPaymentConsentRequest;
-import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
 import uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
-public class DomesticPaymentConsentEntityApiTest {
+public class DomesticPaymentConsentApiControllerTest {
 
     @LocalServerPort
     private int port;
@@ -123,27 +124,9 @@ public class DomesticPaymentConsentEntityApiTest {
         assertThat(consentResponseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
         final DomesticPaymentConsent consent = consentResponseEntity.getBody();
-        validateCreateConsentAgainstCreateRequest(createDomesticPaymentConsentRequest, consent);
+        validateCreateConsentAgainstCreateRequest(consent, createDomesticPaymentConsentRequest);
 
         return consent;
-    }
-
-    // TODO cleanup - create a validation class, this logic is reused in the client tests
-    public static void validateCreateConsentAgainstCreateRequest(CreateDomesticPaymentConsentRequest createDomesticPaymentConsentRequest, DomesticPaymentConsent consent) {
-        assertThat(consent.getId()).isNotEmpty();
-        assertThat(consent.getStatus()).isEqualTo(StatusEnum.AWAITINGAUTHORISATION.toString());
-        assertThat(consent.getApiClientId()).isEqualTo(createDomesticPaymentConsentRequest.getApiClientId());
-        assertThat(consent.getRequestObj()).isEqualTo(createDomesticPaymentConsentRequest.getConsentRequest());
-        assertThat(consent.getRequestType()).isEqualTo("OBWriteDomesticConsent4");
-        assertThat(consent.getRequestVersion()).isEqualTo(OBVersion.v3_1_10);
-        assertThat(consent.getCharges()).isEqualTo(createDomesticPaymentConsentRequest.getCharges());
-        assertThat(consent.getIdempotencyKey()).isEqualTo(createDomesticPaymentConsentRequest.getIdempotencyKey());
-        assertThat(consent.getAuthorisedDebtorAccountId()).isNull();
-
-        final DateTime now = DateTime.now();
-        assertThat(consent.getIdempotencyKeyExpiration()).isGreaterThan(now);
-        assertThat(consent.getCreationDateTime()).isLessThan(now);
-        assertThat(consent.getStatusUpdateDateTime()).isEqualTo(consent.getCreationDateTime());
     }
 
     @Test
@@ -208,26 +191,7 @@ public class DomesticPaymentConsentEntityApiTest {
         assertThat(authoriseConsentResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         final DomesticPaymentConsent authorisedConsent = authoriseConsentResponse.getBody();
-        assertThat(authorisedConsent.getStatus()).isEqualTo(StatusEnum.AUTHORISED.toString());
-        assertThat(authorisedConsent.getResourceOwnerId()).isEqualTo(resourceOwnerId);
-        assertThat(authorisedConsent.getAuthorisedDebtorAccountId()).isEqualTo(debtorAccountId);
-        validateUpdatedConsentAgainstOriginal(authorisedConsent, consent);
-    }
-
-    /**
-     * Validates fields in an updatedConsent vs an original consent.
-     *
-     * This checks that fields that should never change when a consent is updated do never change, and verifies that
-     * the statusUpdateDateTime increases vs the original.
-     */
-    public static void validateUpdatedConsentAgainstOriginal(DomesticPaymentConsent updatedConsent, DomesticPaymentConsent consent) {
-        assertThat(updatedConsent.getId()).isEqualTo(consent.getId());
-        assertThat(updatedConsent.getApiClientId()).isEqualTo(consent.getApiClientId());
-        assertThat(updatedConsent.getRequestObj()).isEqualTo(consent.getRequestObj());
-        assertThat(updatedConsent.getRequestVersion()).isEqualTo(consent.getRequestVersion());
-        assertThat(updatedConsent.getRequestType()).isEqualTo(consent.getRequestType());
-        assertThat(updatedConsent.getCreationDateTime()).isEqualTo(consent.getCreationDateTime());
-        assertThat(updatedConsent.getStatusUpdateDateTime()).isLessThan(DateTime.now()).isGreaterThan(consent.getStatusUpdateDateTime());
+        validateAuthorisedConsent(authorisedConsent, authoriseReq, consent);
     }
 
     @Test
@@ -274,10 +238,7 @@ public class DomesticPaymentConsentEntityApiTest {
         assertThat(rejectResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         final DomesticPaymentConsent rejectedConsent = rejectResponse.getBody();
-        assertThat(rejectedConsent.getStatus()).isEqualTo(StatusEnum.REJECTED.toString());
-        assertThat(rejectedConsent.getAuthorisedDebtorAccountId()).isNull();
-        assertThat(rejectedConsent.getResourceOwnerId()).isEqualTo(resourceOwnerId);
-        validateUpdatedConsentAgainstOriginal(rejectedConsent, consent);
+        validateRejectedConsent(rejectedConsent, rejectRequest, consent);
     }
 
     @Test
@@ -319,15 +280,7 @@ public class DomesticPaymentConsentEntityApiTest {
         assertThat(consumeResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         final DomesticPaymentConsent consumedConsent = consumeResponse.getBody();
-        assertThat(consumedConsent.getStatus()).isEqualTo(StatusEnum.CONSUMED.toString());
-        validateUpdatedConsentAgainstOriginal(consumedConsent, consent);
-        validateConsumedConsentAgainstAuthorised(consumedConsent, authorisedConsent);
-    }
-
-    public static void validateConsumedConsentAgainstAuthorised(DomesticPaymentConsent consumedConsent, DomesticPaymentConsent authorisedConsent) {
-        assertThat(consumedConsent.getStatusUpdateDateTime()).isGreaterThan(authorisedConsent.getStatusUpdateDateTime());
-        assertThat(consumedConsent.getAuthorisedDebtorAccountId()).isEqualTo(authorisedConsent.getAuthorisedDebtorAccountId());
-        assertThat(consumedConsent.getResourceOwnerId()).isEqualTo(authorisedConsent.getResourceOwnerId());
+        validateConsumedConsent(consumedConsent, authorisedConsent);
     }
 
     @Test
@@ -353,40 +306,34 @@ public class DomesticPaymentConsentEntityApiTest {
         validateInvalidPermissionsErrorResponse(consent.getId(), consumeResponse);
     }
 
-    private HttpHeaders createHeaders(String apiClientId) {
-        final HttpHeaders headers = new HttpHeaders();
-        headers.add("x-api-client-id", apiClientId);
-        return headers;
-    }
-
     private <T> ResponseEntity<T> makeGetRequest(String consentId, String apiClientId, Class<T> responseClass) {
         return restTemplate.exchange(apiBaseUrl + "/" + consentId,
                                     HttpMethod.GET,
-                                    new HttpEntity<>(createHeaders(apiClientId)),
+                                    new HttpEntity<>(createConsentStoreApiRequiredHeaders(apiClientId)),
                                     responseClass);
     }
 
     private <T> ResponseEntity<T> makePostRequest(CreateDomesticPaymentConsentRequest createConsentRequest, Class<T> responseClass) {
         return restTemplate.exchange(apiBaseUrl, HttpMethod.POST,
-                                     new HttpEntity<>(createConsentRequest, createHeaders(createConsentRequest.getApiClientId())),
+                                     new HttpEntity<>(createConsentRequest, createConsentStoreApiRequiredHeaders(createConsentRequest.getApiClientId())),
                                      responseClass);
     }
 
     private <T> ResponseEntity<T> authoriseConsent(AuthoriseDomesticPaymentConsentRequest authoriseReq, Class<T> responseClass) {
         return restTemplate.exchange(apiBaseUrl + "/" + authoriseReq.getConsentId() + "/authorise" , HttpMethod.POST,
-                                     new HttpEntity<>(authoriseReq, createHeaders(authoriseReq.getApiClientId())),
+                                     new HttpEntity<>(authoriseReq, createConsentStoreApiRequiredHeaders(authoriseReq.getApiClientId())),
                                      responseClass);
     }
 
     private <T> ResponseEntity<T> rejectConsent(RejectDomesticPaymentConsentRequest rejectRequest, Class<T> responseClass) {
         return restTemplate.exchange(apiBaseUrl + "/" + rejectRequest.getConsentId() + "/reject" , HttpMethod.POST,
-                new HttpEntity<>(rejectRequest, createHeaders(rejectRequest.getApiClientId())),
+                new HttpEntity<>(rejectRequest, createConsentStoreApiRequiredHeaders(rejectRequest.getApiClientId())),
                 responseClass);
     }
 
     private <T> ResponseEntity<T> consumeConsent(ConsumeDomesticPaymentConsentRequest consumeRequest, Class<T> responseClass) {
         return restTemplate.exchange(apiBaseUrl + "/" + consumeRequest.getConsentId() + "/consume" , HttpMethod.POST,
-                new HttpEntity<>(consumeRequest, createHeaders(consumeRequest.getApiClientId())),
+                new HttpEntity<>(consumeRequest, createConsentStoreApiRequiredHeaders(consumeRequest.getApiClientId())),
                 responseClass);
     }
 

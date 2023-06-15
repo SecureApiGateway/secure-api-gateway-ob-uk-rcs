@@ -15,6 +15,10 @@
  */
 package com.forgerock.sapi.gateway.rcs.conent.store.client;
 
+import static com.forgerock.sapi.gateway.rcs.consent.store.api.v3_1_10.DomesticPaymentConsentValidationHelpers.validateAuthorisedConsent;
+import static com.forgerock.sapi.gateway.rcs.consent.store.api.v3_1_10.DomesticPaymentConsentValidationHelpers.validateConsumedConsent;
+import static com.forgerock.sapi.gateway.rcs.consent.store.api.v3_1_10.DomesticPaymentConsentValidationHelpers.validateCreateConsentAgainstCreateRequest;
+import static com.forgerock.sapi.gateway.rcs.consent.store.api.v3_1_10.DomesticPaymentConsentValidationHelpers.validateRejectedConsent;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -40,7 +44,6 @@ import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.CreateDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.RejectDomesticPaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.api.v3_1_10.DomesticPaymentConsentEntityApiTest;
 
 import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.common.OBChargeBearerType1Code;
@@ -76,7 +79,7 @@ class DomesticPaymentConsentStoreClientTest {
         final CreateDomesticPaymentConsentRequest createConsentRequest = buildCreateConsentRequest();
         final DomesticPaymentConsent consent = apiClient.createConsent(createConsentRequest);
 
-        DomesticPaymentConsentEntityApiTest.validateCreateConsentAgainstCreateRequest(createConsentRequest, consent);
+        validateCreateConsentAgainstCreateRequest(consent, createConsentRequest);
     }
 
     @Test
@@ -102,8 +105,8 @@ class DomesticPaymentConsentStoreClientTest {
 
         final AuthoriseDomesticPaymentConsentRequest authRequest = buildAuthoriseConsentRequest(consent, "psu4test", "acc-12345");
         final DomesticPaymentConsent authResponse = apiClient.authoriseConsent(authRequest);
-        assertThat(authResponse.getStatus()).isEqualTo(StatusEnum.AUTHORISED.toString());
-        DomesticPaymentConsentEntityApiTest.validateUpdatedConsentAgainstOriginal(authResponse, consent);
+
+        validateAuthorisedConsent(authResponse, authRequest, consent);
     }
 
     @Test
@@ -113,8 +116,7 @@ class DomesticPaymentConsentStoreClientTest {
 
         final RejectDomesticPaymentConsentRequest rejectRequest = buildRejectRequest(consent, "joe.bloggs");
         final DomesticPaymentConsent rejectedConsent = apiClient.rejectConsent(rejectRequest);
-        assertThat(rejectedConsent.getStatus()).isEqualTo(StatusEnum.REJECTED.toString());
-        DomesticPaymentConsentEntityApiTest.validateUpdatedConsentAgainstOriginal(rejectedConsent, consent);
+        validateRejectedConsent(rejectedConsent, rejectRequest, consent);
     }
 
     @Test
@@ -128,8 +130,8 @@ class DomesticPaymentConsentStoreClientTest {
 
         final DomesticPaymentConsent consumedConsent = apiClient.consumeConsent(buildConsumeRequest(consent));
         assertThat(consumedConsent.getStatus()).isEqualTo(StatusEnum.CONSUMED.toString());
-        DomesticPaymentConsentEntityApiTest.validateUpdatedConsentAgainstOriginal(consumedConsent, consent);
-        DomesticPaymentConsentEntityApiTest.validateConsumedConsentAgainstAuthorised(consumedConsent, authResponse);
+
+        validateConsumedConsent(consumedConsent, authResponse);
     }
 
     @Test
