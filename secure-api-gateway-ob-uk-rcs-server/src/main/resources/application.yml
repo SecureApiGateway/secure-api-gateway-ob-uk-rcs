@@ -81,6 +81,10 @@ consent:
       # Controls which intentTypes will use the new Consent Store (format: comma separated list)
       intentTypes:
 
+spring:
+  data:
+    mongodb:
+      database: consent
 
 # Configuration for calling the RS backoffice API
 # See: com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.RsBackofficeConfiguration
