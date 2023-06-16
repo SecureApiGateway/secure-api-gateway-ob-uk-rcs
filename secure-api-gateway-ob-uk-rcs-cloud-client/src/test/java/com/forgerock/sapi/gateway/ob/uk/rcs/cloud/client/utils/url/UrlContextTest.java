@@ -16,9 +16,10 @@
 package com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.utils.url;
 
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.Constants;
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.IntentType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ExceptionClient;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
@@ -36,7 +37,7 @@ public class UrlContextTest {
         // Given
         String partTestContext = "/repo/context/";
         String testContext = partTestContext + Constants.URLParameters.INTENT_ID;
-        String intentId = IntentType.PAYMENT_DOMESTIC_CONSENT.getIntentIdPrefix() + UUID.randomUUID();
+        String intentId = IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId();
 
         // When
         String replaced = UrlContext.replaceParameterContextIntentId(testContext, intentId);

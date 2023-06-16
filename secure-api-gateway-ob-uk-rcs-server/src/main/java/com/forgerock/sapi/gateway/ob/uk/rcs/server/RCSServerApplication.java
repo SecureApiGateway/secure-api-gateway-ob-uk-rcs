@@ -18,6 +18,10 @@ package com.forgerock.sapi.gateway.ob.uk.rcs.server;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
+
+import com.forgerock.sapi.gateway.rcs.consent.store.api.ConsentStoreApiConfiguration;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.ConsentStoreConfiguration;
 
 @ComponentScan(basePackages =
         {
@@ -25,6 +29,7 @@ import org.springframework.context.annotation.ComponentScan;
         }
 )
 @SpringBootApplication
+@Import({ConsentStoreConfiguration.class, ConsentStoreApiConfiguration.class})
 public class RCSServerApplication {
 
     public static void main(String[] args) {

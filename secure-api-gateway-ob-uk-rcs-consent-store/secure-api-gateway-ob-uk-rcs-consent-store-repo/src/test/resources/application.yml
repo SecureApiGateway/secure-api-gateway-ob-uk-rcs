@@ -1,0 +1,5 @@
+# Configuration to enable no intentTypes, individual tests can override this configuration via test level property source
+consent:
+  store:
+    enabled:
+      intentTypes:

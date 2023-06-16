@@ -17,8 +17,13 @@ package com.forgerock.sapi.gateway.ob.uk.rcs.server;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Import;
+
+import com.forgerock.sapi.gateway.rcs.consent.store.api.ConsentStoreApiConfiguration;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.ConsentStoreConfiguration;
 
 @SpringBootApplication
+@Import({ConsentStoreConfiguration.class, ConsentStoreApiConfiguration.class})
 public class RCSServerApplicationTestSupport {
 
     public static void main(String[] args) {

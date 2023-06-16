@@ -53,6 +53,8 @@ spec:
             successThreshold: {{ .Values.deployment.livenessProbe.successThreshold }}
             timeoutSeconds: {{ .Values.deployment.livenessProbe.timeoutSeconds }}
           env:
+          - name: SPRING_DATA_MONGODB_HOST
+            value: {{ .Values.deployment.mongodb.host }}
           - name: CONSENT_REPO_URI
             valueFrom:
               configMapKeyRef:

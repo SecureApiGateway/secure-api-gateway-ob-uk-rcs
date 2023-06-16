@@ -19,7 +19,8 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccountWithBalance;
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.IntentType;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;

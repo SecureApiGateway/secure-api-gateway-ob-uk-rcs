@@ -20,7 +20,7 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.api.factory.details.decoder.FRAccoun
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.json.utils.JsonUtilValidation;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRRemittanceInformation;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.vrp.FRWriteDomesticVrpDataInitiation;
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.IntentType;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;

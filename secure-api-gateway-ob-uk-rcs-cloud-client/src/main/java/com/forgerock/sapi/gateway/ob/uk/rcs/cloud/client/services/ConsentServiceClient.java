@@ -15,11 +15,11 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services;
 
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.IntentType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ExceptionClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.ConsentClientDecisionRequest;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.ConsentClientDetailsRequest;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

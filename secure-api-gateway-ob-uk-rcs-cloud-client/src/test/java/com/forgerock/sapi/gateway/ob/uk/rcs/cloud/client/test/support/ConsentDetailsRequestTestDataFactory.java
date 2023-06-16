@@ -15,9 +15,9 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.test.support;
 
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.IntentType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.ConsentClientDetailsRequest;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.User;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import com.nimbusds.jwt.SignedJWT;
 
 import java.text.ParseException;
@@ -32,7 +32,7 @@ public class ConsentDetailsRequestTestDataFactory {
     public static ConsentClientDetailsRequest aValidConsentDetailsRequest(IntentType intentType) {
         try {
             return ConsentClientDetailsRequest.builder()
-                    .intentId(intentType.getIntentIdPrefix() + randomUUID())
+                    .intentId(intentType.generateIntentId())
                     .consentRequestJwt(SignedJWT.parse("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
                             "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ." +
                             "SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"))

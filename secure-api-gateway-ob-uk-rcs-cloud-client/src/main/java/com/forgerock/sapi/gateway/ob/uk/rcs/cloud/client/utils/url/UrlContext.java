@@ -16,10 +16,11 @@
 package com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.utils.url;
 
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.Constants;
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.IntentType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ExceptionClient;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
+
 import lombok.extern.slf4j.Slf4j;
 
 import static java.util.Objects.requireNonNull;

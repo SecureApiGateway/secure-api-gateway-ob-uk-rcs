@@ -15,7 +15,6 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services;
 
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.IntentType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.configuration.ConsentRepoConfiguration;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorType;
@@ -23,6 +22,7 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ExceptionCli
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.ConsentClientDecisionRequest;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.ConsentClientDetailsRequest;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.utils.url.UrlContext;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.extern.slf4j.Slf4j;

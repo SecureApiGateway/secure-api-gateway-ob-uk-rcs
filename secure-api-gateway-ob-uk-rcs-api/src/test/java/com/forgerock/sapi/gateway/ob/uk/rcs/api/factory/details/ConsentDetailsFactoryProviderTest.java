@@ -16,7 +16,8 @@
 package com.forgerock.sapi.gateway.ob.uk.rcs.api.factory.details;
 
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.factory.details.decoder.FRAccountIdentifierDecoder;
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.IntentType;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
+
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

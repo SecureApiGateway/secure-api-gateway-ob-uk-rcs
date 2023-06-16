@@ -16,9 +16,9 @@
 package com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.test.support;
 
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.Constants;
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.IntentType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.ConsentClientDecisionRequest;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.ConsentClientDecisionRequestData;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import com.nimbusds.jwt.JWTClaimsSet;
 
 import java.util.List;
