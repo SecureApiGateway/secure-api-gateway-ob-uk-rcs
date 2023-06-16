@@ -33,10 +33,12 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services.ConsentService
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services.UserServiceClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.test.support.ApiClientTestDataFactory;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.testsupport.JwtTestHelper;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.ConsentStoreEnabledIntentTypes;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import com.google.gson.*;
 import org.assertj.core.api.Assertions;
 import org.joda.time.DateTime;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -84,12 +86,19 @@ import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 /**
- * Spring Boot Test for {@link ConsentDetailsApiController} Domestic payment consent details case
+ * Spring Boot Test for {@link ConsentDetailsApiController} Domestic payment consent details case.
+ *
+ * These tests have been implemented assuming that the ConsentDetailsApiController is configured to call the IDM Consent Store.
+ * Tests which utilise the RCS Consent Store are implemented in {@link ConsentDetailsApiControllerRcsConsentStoreTest}
+ *
+ * Individual tests should guard against using the wrong Consent Store by adding a JUnit assumption:
+ * Assumptions.assumeFalse(consentStoreEnabledIntentTypes.isIntentTypeSupported(intentType));
+ *
  */
 @EnableConfigurationProperties
 @ActiveProfiles("test")
 @SpringBootTest(classes = RCSServerApplicationTestSupport.class, webEnvironment = RANDOM_PORT)
-public class ConsentDetailsApiControllerTest {
+public class ConsentDetailsApiControllerIdmConsentStoreTest {
     private static final String BASE_URL = "http://localhost:";
     private static final String CONTEXT_DETAILS_URI = "/rcs/api/consent/details";
     private final Gson gson = new GsonBuilder().registerTypeAdapter(DateTime.class, new JsonDeserializer<DateTime>() {
@@ -113,6 +122,9 @@ public class ConsentDetailsApiControllerTest {
     private ConsentDetailsFactoryProvider consentDetailsFactoryProvider;
     @Autowired
     private TestRestTemplate restTemplate;
+
+    @Autowired
+    private ConsentStoreEnabledIntentTypes consentStoreEnabledIntentTypes;
 
     private static Stream<Arguments> validPositiveArguments() {
         return Stream.of(
@@ -176,6 +188,9 @@ public class ConsentDetailsApiControllerTest {
             IntentType intentType,
             Class<? extends PaymentsConsentDetails> classOf
     ) throws ExceptionClient {
+
+        Assumptions.assumeFalse(consentStoreEnabledIntentTypes.isIntentTypeSupported(intentType));
+
         // given
         ConsentClientDetailsRequest consentDetailsRequest = aValidConsentDetailsRequest(intentId);
         FRAccountWithBalance frAccountWithBalance = aValidFRAccountWithBalance();
@@ -216,39 +231,48 @@ public class ConsentDetailsApiControllerTest {
     private static Stream<Arguments> validNegativeArguments() {
         return Stream.of(
                 arguments(
+                        IntentType.ACCOUNT_ACCESS_CONSENT,
                         ACCOUNT_INTENT_ID,
                         aValidAccountConsentDetails(ACCOUNT_INTENT_ID)
                 ),
                 arguments(
+                        IntentType.PAYMENT_DOMESTIC_CONSENT,
                         DOMESTIC_PAYMENT_INTENT_ID,
                         aValidDomesticPaymentConsentDetails(DOMESTIC_PAYMENT_INTENT_ID)
                 ),
                 arguments(
+                        IntentType.PAYMENT_DOMESTIC_SCHEDULED_CONSENT,
                         DOMESTIC_SCHEDULED_PAYMENT_INTENT_ID,
                         aValidDomesticScheduledPaymentConsentDetails(DOMESTIC_SCHEDULED_PAYMENT_INTENT_ID)
                 ),
                 arguments(
+                        IntentType.PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT,
                         DOMESTIC_STANDING_ORDER_INTENT_ID,
                         aValidDomesticStandingOrderConsentDetails(DOMESTIC_STANDING_ORDER_INTENT_ID)
                 ),
                 arguments(
+                        IntentType.PAYMENT_INTERNATIONAL_CONSENT,
                         INTERNATIONAL_PAYMENT_INTENT_ID,
                         aValidInternationalPaymentConsentDetails(INTERNATIONAL_PAYMENT_INTENT_ID)
                 ),
                 arguments(
+                        IntentType.PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT,
                         INTERNATIONAL_SCHEDULED_PAYMENT_INTENT_ID,
                         aValidInternationalScheduledPaymentConsentDetails(INTERNATIONAL_SCHEDULED_PAYMENT_INTENT_ID)
                 ),
                 arguments(
+                        IntentType.PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT,
                         INTERNATIONAL_STANDING_ORDER_INTENT_ID,
                         aValidInternationalStandingOrderConsentDetails(INTERNATIONAL_STANDING_ORDER_INTENT_ID)
                 ),
                 arguments(
+                        IntentType.PAYMENT_FILE_CONSENT,
                         FILE_PAYMENT_INTENT_ID,
                         aValidFilePaymentConsentDetails(FILE_PAYMENT_INTENT_ID)
                 )
                 ,
                 arguments(
+                        IntentType.DOMESTIC_VRP_PAYMENT_CONSENT,
                         DOMESTIC_VRP_PAYMENT_INTENT_ID,
                         aValidDomesticVrpPaymentConsentDetails(DOMESTIC_VRP_PAYMENT_INTENT_ID)
                 )
@@ -257,10 +281,10 @@ public class ConsentDetailsApiControllerTest {
 
     @ParameterizedTest
     @MethodSource("validNegativeArguments")
-    public void shouldGetRedirectActionWhenUserNotFound(
-            String intentId,
-            JsonObject consentDetails
-    ) throws ExceptionClient {
+    public void shouldGetRedirectActionWhenUserNotFound(IntentType intentType, String intentId, JsonObject consentDetails) throws ExceptionClient {
+
+        Assumptions.assumeFalse(consentStoreEnabledIntentTypes.isIntentTypeSupported(intentType));
+
         // given
         ConsentClientDetailsRequest consentDetailsRequest = aValidConsentDetailsRequest(intentId);
         FRAccountWithBalance frAccountWithBalance = aValidFRAccountWithBalance();
@@ -296,10 +320,10 @@ public class ConsentDetailsApiControllerTest {
 
     @ParameterizedTest
     @MethodSource("validNegativeArguments")
-    public void shouldGetRedirectActionWhenApiClientNotFound(
-            String intentId,
-            JsonObject consentDetails
-    ) throws ExceptionClient {
+    public void shouldGetRedirectActionWhenApiClientNotFound(IntentType intentType, String intentId, JsonObject consentDetails) throws ExceptionClient {
+
+        Assumptions.assumeFalse(consentStoreEnabledIntentTypes.isIntentTypeSupported(intentType));
+
         // given
         ConsentClientDetailsRequest consentDetailsRequest = aValidConsentDetailsRequest(intentId);
         FRAccountWithBalance frAccountWithBalance = aValidFRAccountWithBalance();
@@ -334,7 +358,10 @@ public class ConsentDetailsApiControllerTest {
 
     @ParameterizedTest
     @MethodSource("validNegativeArguments")
-    public void shouldGetRedirectActionWhenConsentNotFound(String intentId) throws ExceptionClient {
+    public void shouldGetRedirectActionWhenConsentNotFound(IntentType intentType, String intentId) throws ExceptionClient {
+
+        Assumptions.assumeFalse(consentStoreEnabledIntentTypes.isIntentTypeSupported(intentType));
+
         // given
         ConsentClientDetailsRequest consentDetailsRequest = aValidConsentDetailsRequest(intentId);
         FRAccountWithBalance frAccountWithBalance = aValidFRAccountWithBalance();
@@ -368,6 +395,9 @@ public class ConsentDetailsApiControllerTest {
 
     @Test
     public void shouldGetDomesticVrpPaymentConsentDetailsSweeping() throws ExceptionClient {
+
+        Assumptions.assumeFalse(consentStoreEnabledIntentTypes.isIntentTypeSupported(IntentType.DOMESTIC_VRP_PAYMENT_CONSENT));
+
         // given
         ConsentClientDetailsRequest consentDetailsRequest = aValidConsentDetailsRequest(IntentType.DOMESTIC_VRP_PAYMENT_CONSENT);
         FRAccountWithBalance frAccountWithBalance = aValidFRAccountWithBalance();
