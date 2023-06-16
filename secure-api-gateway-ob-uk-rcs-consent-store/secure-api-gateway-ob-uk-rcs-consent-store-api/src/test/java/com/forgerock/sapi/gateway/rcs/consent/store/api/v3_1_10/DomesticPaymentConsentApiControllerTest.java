@@ -76,7 +76,7 @@ public class DomesticPaymentConsentApiControllerTest {
 
     @Test
     public void failToGetConsentDoesNotExist() {
-        final ResponseEntity<DomesticPaymentConsent> getResponse = makeGetRequest("unknown-consnt", "client-123", DomesticPaymentConsent.class);
+        final ResponseEntity<DomesticPaymentConsent> getResponse = makeGetRequest("unknown-consent", "client-123", DomesticPaymentConsent.class);
         assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
