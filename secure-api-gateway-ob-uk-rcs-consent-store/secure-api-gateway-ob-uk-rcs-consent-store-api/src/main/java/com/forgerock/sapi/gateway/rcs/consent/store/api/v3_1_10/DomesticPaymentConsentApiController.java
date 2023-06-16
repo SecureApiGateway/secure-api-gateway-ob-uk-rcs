@@ -69,11 +69,6 @@ public class DomesticPaymentConsentApiController implements DomesticPaymentConse
         this.obVersion = obVersion;
     }
 
-    @VisibleForTesting
-    void setIdempotencyKeyExpirationSupplier(Supplier<DateTime> idempotencyKeyExpirationSupplier) {
-        this.idempotencyKeyExpirationSupplier = idempotencyKeyExpirationSupplier;
-    }
-
     @Override
     public ResponseEntity<DomesticPaymentConsent> createConsent(CreateDomesticPaymentConsentRequest request, String apiClientId) {
         logger.info("Attempting to createConsent: {}, for apiClientId: {}", request, apiClientId);
