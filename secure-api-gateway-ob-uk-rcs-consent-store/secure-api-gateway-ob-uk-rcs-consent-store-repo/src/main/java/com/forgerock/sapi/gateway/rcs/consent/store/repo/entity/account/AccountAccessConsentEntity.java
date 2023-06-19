@@ -13,41 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.repo.service;
+package com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.account;
 
-import javax.validation.constraints.NotNull;
+import java.util.List;
 
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.validation.annotation.Validated;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.BaseConsentEntity;
 
+import uk.org.openbanking.datamodel.account.OBReadConsent1;
+
+@Document("AccountAccessConsent")
 @Validated
-public abstract class AuthoriseConsentArgs<T extends BaseConsentEntity> {
+public class AccountAccessConsentEntity extends BaseConsentEntity<OBReadConsent1> {
 
-    @NotNull
-    private final String consentId;
+    private List<String> authorisedAccountIds;
 
-    @NotNull
-    private final String resourceOwnerId;
-
-    @NotNull
-    private final String apiClientId;
-
-    protected AuthoriseConsentArgs(String consentId, String resourceOwnerId, String apiClientId) {
-        this.consentId = consentId;
-        this.resourceOwnerId = resourceOwnerId;
-        this.apiClientId = apiClientId;
+    public void setAuthorisedAccountIds(List<String> authorisedAccountIds) {
+        this.authorisedAccountIds = authorisedAccountIds;
     }
 
-    public String getConsentId() {
-        return consentId;
-    }
-
-    public String getResourceOwnerId() {
-        return resourceOwnerId;
-    }
-
-    public String getApiClientId() {
-        return apiClientId;
+    public List<String> getAuthorisedAccountIds() {
+        return authorisedAccountIds;
     }
 }

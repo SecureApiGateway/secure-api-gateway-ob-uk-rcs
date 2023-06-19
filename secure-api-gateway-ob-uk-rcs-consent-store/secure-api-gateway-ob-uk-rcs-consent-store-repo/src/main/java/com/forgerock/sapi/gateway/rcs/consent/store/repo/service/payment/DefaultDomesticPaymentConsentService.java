@@ -33,15 +33,20 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.
 @Service
 public class DefaultDomesticPaymentConsentService extends BaseConsentService<DomesticPaymentConsentEntity, DomesticPaymentAuthoriseConsentArgs> implements DomesticPaymentConsentService {
 
-    private final MultiValueMap<String, String> validStateTransitions;
+    private static final MultiValueMap<String, String> DOMESTIC_PAYMENT_CONSENT_STATE_TRANSITIONS;
+
+    static {
+        DOMESTIC_PAYMENT_CONSENT_STATE_TRANSITIONS = new LinkedMultiValueMap<>();
+        DOMESTIC_PAYMENT_CONSENT_STATE_TRANSITIONS.addAll(StatusEnum.AWAITINGAUTHORISATION.toString(), List.of(StatusEnum.AUTHORISED.toString(), StatusEnum.REJECTED.toString()));
+        DOMESTIC_PAYMENT_CONSENT_STATE_TRANSITIONS.addAll(StatusEnum.AUTHORISED.toString(), List.of(StatusEnum.CONSUMED.toString(), StatusEnum.REJECTED.toString()));
+    }
 
     private final DomesticPaymentConsentRepository repo;
 
     public DefaultDomesticPaymentConsentService(DomesticPaymentConsentRepository repo) {
-        super(repo, IntentType.PAYMENT_DOMESTIC_CONSENT::generateIntentId, StatusEnum.AUTHORISED.toString(), StatusEnum.REJECTED.toString(), StatusEnum.REJECTED.toString());
-        validStateTransitions  = new LinkedMultiValueMap<>();
-        validStateTransitions.addAll(StatusEnum.AWAITINGAUTHORISATION.toString(), List.of(StatusEnum.AUTHORISED.toString(), StatusEnum.REJECTED.toString()));
-        validStateTransitions.addAll(StatusEnum.AUTHORISED.toString(), List.of(StatusEnum.CONSUMED.toString(), StatusEnum.REJECTED.toString()));
+        super(repo, IntentType.PAYMENT_DOMESTIC_CONSENT::generateIntentId, DOMESTIC_PAYMENT_CONSENT_STATE_TRANSITIONS,
+                StatusEnum.AUTHORISED.toString(), StatusEnum.REJECTED.toString(), StatusEnum.REJECTED.toString());
+
         this.repo = repo;
     }
 
@@ -64,11 +69,5 @@ public class DefaultDomesticPaymentConsentService extends BaseConsentService<Dom
     @Override
     protected void addConsentSpecificAuthorisationData(DomesticPaymentConsentEntity consent, DomesticPaymentAuthoriseConsentArgs authoriseConsentArgs) {
         consent.setAuthorisedDebtorAccountId(authoriseConsentArgs.getAuthorisedDebtorAccountId());
-    }
-
-    @Override
-    protected boolean isStateTransitionAllowed(String currentStatus, String targetStatus) {
-        final List<String> validTransitions = validStateTransitions.get(currentStatus);
-        return validTransitions != null && validTransitions.contains(targetStatus);
     }
 }

@@ -15,11 +15,13 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.repo.service;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.util.MultiValueMap;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.BaseConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException;
@@ -29,16 +31,19 @@ public abstract class BaseConsentService<T extends BaseConsentEntity<?>, A exten
 
     protected final MongoRepository<T, String> repo;
 
+    private final MultiValueMap<String, String> validStateTransitions;
+
     private final Supplier<String> idGenerator;
     private final String authorisedConsentStatus;
     private final String rejectedConsentStatus;
     private final String revokedConsentStatus;
 
-    public BaseConsentService(MongoRepository<T, String> repo, Supplier<String> idGenerator, String authorisedConsentStatus,
-                              String rejectedConsentStatus, String revokedConsentStatus) {
+    public BaseConsentService(MongoRepository<T, String> repo, Supplier<String> idGenerator, MultiValueMap<String, String> validStateTransitions,
+                              String authorisedConsentStatus, String rejectedConsentStatus, String revokedConsentStatus) {
 
         this.repo = Objects.requireNonNull(repo, "repo must be provided");
         this.idGenerator = Objects.requireNonNull(idGenerator, "idGenerator must be provided");
+        this.validStateTransitions = Objects.requireNonNull(validStateTransitions, "validStateTransitions must be provided");
         this.authorisedConsentStatus = Objects.requireNonNull(authorisedConsentStatus, "authorisedConsentStatus must be provided");
         this.rejectedConsentStatus = Objects.requireNonNull(rejectedConsentStatus, "rejectedConsentStatus must be provided");
         this.revokedConsentStatus = Objects.requireNonNull(revokedConsentStatus, "revokedConsentStatus must be provided");
@@ -82,10 +87,9 @@ public abstract class BaseConsentService<T extends BaseConsentEntity<?>, A exten
 
     protected abstract void addConsentSpecificAuthorisationData(T consent, A authoriseConsentArgs);
 
-    protected abstract boolean isStateTransitionAllowed(String currentStatus, String targetStatus);
-
     protected void validateStateTransition(T consent, String targetStatus) {
-        if (!isStateTransitionAllowed(consent.getStatus(), targetStatus)) {
+        final List<String> validTransitions = validStateTransitions.get(consent.getStatus());
+        if (validTransitions == null || !validTransitions.contains(targetStatus)) {
             throw new ConsentStoreException(ErrorType.INVALID_STATE_TRANSITION, consent.getId(),
                     "cannot transition from consentStatus: " + consent.getStatus() + " to status: " + targetStatus);
         }

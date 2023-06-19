@@ -13,27 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment;
+package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account;
 
+import java.util.List;
+
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.validation.annotation.Validated;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticPaymentConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.account.AccountAccessConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.AuthoriseConsentArgs;
 
 @Validated
-public class DomesticPaymentAuthoriseConsentArgs extends AuthoriseConsentArgs<DomesticPaymentConsentEntity> {
+public class AccountAccessAuthoriseConsentArgs extends AuthoriseConsentArgs<AccountAccessConsentEntity> {
 
     @NotNull
-    private final String authorisedDebtorAccountId;
+    @NotEmpty
+    private final List<String> authorisedAccountIds;
 
-    public DomesticPaymentAuthoriseConsentArgs(String consentId, String apiClientId, String resourceOwnerId, String authorisedDebtorAccountId) {
+    public AccountAccessAuthoriseConsentArgs(String consentId, String resourceOwnerId, String apiClientId, List<String> authorisedAccountIds) {
         super(consentId, resourceOwnerId, apiClientId);
-        this.authorisedDebtorAccountId = authorisedDebtorAccountId;
+        this.authorisedAccountIds = authorisedAccountIds;
     }
 
-    public String getAuthorisedDebtorAccountId() {
-        return authorisedDebtorAccountId;
+    public List<String> getAuthorisedAccountIds() {
+        return authorisedAccountIds;
     }
 }
