@@ -18,7 +18,15 @@ package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Path;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -91,5 +99,18 @@ public class DefaultAccountAccessConsentServiceTest extends BaseConsentServiceTe
     protected void validateConsentSpecificAuthorisationFields(AccountAccessConsentEntity authorisedConsent, AccountAccessAuthoriseConsentArgs authorisationArgs) {
         assertThat(authorisationArgs.getAuthorisedAccountIds()).isNotNull().isNotEmpty();
         assertThat(authorisedConsent.getAuthorisedAccountIds()).isEqualTo(authorisationArgs.getAuthorisedAccountIds());
+    }
+
+    @Test
+    void failToAuthoriseConsentNullOrEmptyAccountIds() {
+        final AccountAccessConsentEntity persistedConsent = consentService.createConsent(getValidConsentEntity());
+        final ConstraintViolationException ex = Assertions.assertThrows(ConstraintViolationException.class,
+                () -> consentService.authoriseConsent(new AccountAccessAuthoriseConsentArgs(persistedConsent.getId(), "user-123", persistedConsent.getApiClientId(), null)));
+        assertThat(ex.getConstraintViolations().stream().map(ConstraintViolation::getPropertyPath).map(Path::toString).collect(Collectors.toSet())).isEqualTo(Set.of("authoriseConsent.arg0.authorisedAccountIds"));
+        assertThat(ex.getConstraintViolations().stream().map(ConstraintViolation::getMessage).collect(Collectors.toSet())).isEqualTo(Set.of("must not be null", "must not be empty"));
+
+        final ConstraintViolationException ex2 = Assertions.assertThrows(ConstraintViolationException.class,
+                () -> consentService.authoriseConsent(new AccountAccessAuthoriseConsentArgs(persistedConsent.getId(), "user-123", persistedConsent.getApiClientId(), List.of())));
+        assertThat(ex2.getMessage()).isEqualTo("authoriseConsent.arg0.authorisedAccountIds: must not be empty");
     }
 }
