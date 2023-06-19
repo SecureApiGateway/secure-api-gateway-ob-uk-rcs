@@ -45,16 +45,16 @@ public class ConsentStoreDecisionService {
         }
     }
 
-    public void authoriseConsent(IntentType intentType, String intentId, String clientId, String resourceOwnerId, String authorisedAccountId) {
+    public void authoriseConsent(IntentType intentType, String intentId, String apiClientId, String resourceOwnerId, String authorisedAccountId) {
         checkIntentTypeIsSupported(intentType);
         // TODO dispatch to correct service when we have more impls
-        final DomesticPaymentAuthoriseConsentArgs authoriseConsentArgs = new DomesticPaymentAuthoriseConsentArgs(intentId, clientId, resourceOwnerId, authorisedAccountId);
+        final DomesticPaymentAuthoriseConsentArgs authoriseConsentArgs = new DomesticPaymentAuthoriseConsentArgs(intentId, apiClientId, resourceOwnerId, authorisedAccountId);
         domesticPaymentConsentService.authoriseConsent(authoriseConsentArgs);
     }
 
-    public void rejectConsent(IntentType intentType, String intentId, String clientId, String resourceOwnerId) {
+    public void rejectConsent(IntentType intentType, String intentId, String apiClientId, String resourceOwnerId) {
         checkIntentTypeIsSupported(intentType);
         // TODO dispatch to correct service when we have more impls
-        domesticPaymentConsentService.rejectConsent(intentId, clientId, resourceOwnerId);
+        domesticPaymentConsentService.rejectConsent(intentId, apiClientId, resourceOwnerId);
     }
 }
