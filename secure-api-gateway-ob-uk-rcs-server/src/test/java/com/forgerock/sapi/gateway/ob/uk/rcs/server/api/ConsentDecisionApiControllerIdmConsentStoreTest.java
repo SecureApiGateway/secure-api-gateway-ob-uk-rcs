@@ -26,6 +26,8 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ExceptionClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.ConsentClientDecisionRequest;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services.ConsentServiceClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.ConsentStoreEnabledIntentTypes;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.nimbusds.jose.JOSEException;
@@ -36,6 +38,7 @@ import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jwt.JWTClaimsSet;
 
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -86,7 +89,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @EnableConfigurationProperties
 @ActiveProfiles("test")
 @SpringBootTest(classes = RCSServerApplicationTestSupport.class, webEnvironment = RANDOM_PORT)
-public class ConsentDecisionApiControllerTest {
+public class ConsentDecisionApiControllerIdmConsentStoreTest {
 
     private static final String BASE_URL = "http://localhost:";
     private static final String CONTEXT_DETAILS_URI = "/rcs/api/consent/decision";
@@ -108,14 +111,19 @@ public class ConsentDecisionApiControllerTest {
 
     private JWSVerifier jwsVerifier;
 
-    public ConsentDecisionApiControllerTest(@Value("${rcs.consent.response.jwt.privateKeyPath}") Path privateKeyPath) throws Exception {
+    @Autowired
+    private ConsentStoreEnabledIntentTypes consentStoreEnabledIntentTypes;
+
+    public ConsentDecisionApiControllerIdmConsentStoreTest(@Value("${rcs.consent.response.jwt.privateKeyPath}") Path privateKeyPath) throws Exception {
         final JWK jwk = JWK.parseFromPEMEncodedObjects(Files.readString(privateKeyPath));
         jwsVerifier = new RSASSAVerifier((RSAKey) jwk);
     }
 
     @Test
-    public void ShouldGetAccountsRedirectAction(
-    ) throws ExceptionClient {
+    public void ShouldGetAccountsRedirectAction() throws ExceptionClient {
+
+        Assumptions.assumeFalse(consentStoreEnabledIntentTypes.isIntentTypeSupported(IntentType.ACCOUNT_ACCESS_CONSENT));
+
         // Given
         ConsentClientDecisionRequest consentClientDecisionRequest = aValidAccountConsentClientDecisionRequest(ACCOUNT_INTENT_ID);
         JsonObject jsonObjectConsentDetails = aValidAccountConsentDetails(consentClientDecisionRequest.getIntentId());
@@ -152,42 +160,42 @@ public class ConsentDecisionApiControllerTest {
     private static Stream<Arguments> validArgumentsForPayments() {
         return Stream.of(
                 arguments(
-                        "DOMESTIC PAYMENT",
+                        IntentType.PAYMENT_DOMESTIC_CONSENT,
                         aValidPaymentConsentClientDecisionRequest(DOMESTIC_PAYMENT_INTENT_ID),
                         aValidDomesticPaymentConsentDetails(DOMESTIC_PAYMENT_INTENT_ID)
                 ),
                 arguments(
-                        "DOMESTIC SCHEDULED",
+                        IntentType.PAYMENT_DOMESTIC_SCHEDULED_CONSENT,
                         aValidPaymentConsentClientDecisionRequest(DOMESTIC_SCHEDULED_PAYMENT_INTENT_ID),
                         aValidDomesticScheduledPaymentConsentDetails(DOMESTIC_SCHEDULED_PAYMENT_INTENT_ID)
                 ),
                 arguments(
-                        "DOMESTIC STANDING ORDER",
+                        IntentType.PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT,
                         aValidPaymentConsentClientDecisionRequest(DOMESTIC_STANDING_ORDER_INTENT_ID),
                         aValidDomesticStandingOrderConsentDetails(DOMESTIC_STANDING_ORDER_INTENT_ID)
                 ),
                 arguments(
-                        "INTERNATIONAL PAYMENT",
+                        IntentType.PAYMENT_INTERNATIONAL_CONSENT,
                         aValidPaymentConsentClientDecisionRequest(INTERNATIONAL_PAYMENT_INTENT_ID),
                         aValidInternationalPaymentConsentDetails(INTERNATIONAL_PAYMENT_INTENT_ID)
                 ),
                 arguments(
-                        "INTERNATIONAL SCHEDULED",
+                        IntentType.PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT,
                         aValidPaymentConsentClientDecisionRequest(INTERNATIONAL_SCHEDULED_PAYMENT_INTENT_ID),
                         aValidInternationalScheduledPaymentConsentDetails(INTERNATIONAL_SCHEDULED_PAYMENT_INTENT_ID)
                 ),
                 arguments(
-                        "INTERNATIONAL STANDING ORDER",
+                        IntentType.PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT,
                         aValidPaymentConsentClientDecisionRequest(INTERNATIONAL_STANDING_ORDER_INTENT_ID),
                         aValidInternationalStandingOrderConsentDetails(INTERNATIONAL_STANDING_ORDER_INTENT_ID)
                 ),
                 arguments(
-                        "FILE PAYMENT",
+                        IntentType.PAYMENT_FILE_CONSENT,
                         aValidPaymentConsentClientDecisionRequest(FILE_PAYMENT_INTENT_ID),
                         aValidFilePaymentConsentDetails(FILE_PAYMENT_INTENT_ID)
                 ),
                 arguments(
-                        "VRP PAYMENT",
+                        IntentType.DOMESTIC_VRP_PAYMENT_CONSENT,
                         aValidPaymentConsentClientDecisionRequest(DOMESTIC_VRP_PAYMENT_INTENT_ID),
                         aValidDomesticVrpPaymentConsentDetails(DOMESTIC_VRP_PAYMENT_INTENT_ID)
                 )
@@ -197,10 +205,13 @@ public class ConsentDecisionApiControllerTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("validArgumentsForPayments")
     public void ShouldGetPaymentRedirectActionDebtorAccountProvidedFalse(
-            String testIdName,
+            IntentType intentType,
             ConsentClientDecisionRequest consentClientDecisionRequest,
             JsonObject jsonObjectConsentDetails
     ) throws ExceptionClient {
+
+        Assumptions.assumeFalse(consentStoreEnabledIntentTypes.isIntentTypeSupported(intentType));
+
         // Given
         given(consentServiceClient.updateConsent(consentClientDecisionRequest)).willReturn(jsonObjectConsentDetails);
         String jwt = JwtTestHelper.consentRequestJwt(
@@ -242,10 +253,13 @@ public class ConsentDecisionApiControllerTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("validArgumentsForPayments")
     public void ShouldGetPaymentRedirectActionDebtorAccountProvidedTrue(
-            String testIdName,
+            IntentType intentType,
             ConsentClientDecisionRequest consentClientDecisionRequest,
             JsonObject jsonObjectConsentDetails
     ) throws ExceptionClient {
+
+        Assumptions.assumeFalse(consentStoreEnabledIntentTypes.isIntentTypeSupported(intentType));
+
         // Given
         given(consentServiceClient.updateConsent(consentClientDecisionRequest)).willReturn(jsonObjectConsentDetails);
         String jwt = JwtTestHelper.consentRequestJwt(

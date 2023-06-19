@@ -39,11 +39,15 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.ConsentStoreEnabledInte
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticPaymentConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticPaymentConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
+import com.google.common.annotations.VisibleForTesting;
 
 import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4Data;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5DataCharges;
 
+/**
+ * Service which builds {@link ConsentDetails} objects using data from the RCS Consent Store
+ */
 @Component
 public class ConsentStoreDetailsService {
 
@@ -76,46 +80,34 @@ public class ConsentStoreDetailsService {
         return consentStoreEnabledIntentTypes.isIntentTypeSupported(intentType);
     }
 
-    public ConsentDetails getDetailsFromConsentStore(IntentType intentType, String intentId, ConsentClientDetailsRequest consentClientRequest) throws ExceptionClient {
+    public ConsentDetails getDetailsFromConsentStore(IntentType intentType, ConsentClientDetailsRequest consentClientRequest) throws ExceptionClient {
         if (!isIntentTypeSupported(intentType)) {
             throw new IllegalStateException(intentType + " support not currently implemented in Consent Store module");
         }
         // TODO dispatch based on IntentType
-        return getDomesticPaymentConsentDetails(intentId, consentClientRequest);
+        return getDomesticPaymentConsentDetails(consentClientRequest);
     }
 
-    private DomesticPaymentConsentDetails getDomesticPaymentConsentDetails(String intentId, ConsentClientDetailsRequest consentClientRequest) throws ExceptionClient {
+    private DomesticPaymentConsentDetails getDomesticPaymentConsentDetails(ConsentClientDetailsRequest consentClientRequest) throws ExceptionClient {
         final String clientId = consentClientRequest.getClientId();
+        final String intentId = consentClientRequest.getIntentId();
         logger.info("Fetching Data from RCS Consent Service - consentId: {}, clientId: {}");
         final DomesticPaymentConsentEntity consent = domesticPaymentConsentService.getConsent(intentId, clientId);
         logger.info("Got consent: {}", consent);
 
-        DomesticPaymentConsentDetails details = new DomesticPaymentConsentDetails();
-        details.setConsentId(consent.getId());
-        details.setUsername(consentClientRequest.getUser().getUserName());
-        details.setUserId(consentClientRequest.getUser().getId());
-        details.setClientId(clientId);
-        details.setServiceProviderName(apiProviderConfiguration.getName());
+        final DomesticPaymentConsentDetails details = new DomesticPaymentConsentDetails();
+        populateCommonConsentDetailsFields(details, consentClientRequest);
 
-        // TODO create function that converts List<OBActiveOrHistoricCurrencyAndAmount> into a single FRAmount
-        final List<OBWriteDomesticConsentResponse5DataCharges> charges = consent.getCharges();
-        String chargeCurrency = null;
-        BigDecimal totalCharge = BigDecimal.ZERO;
-        for (OBWriteDomesticConsentResponse5DataCharges charge : charges) {
-            final OBActiveOrHistoricCurrencyAndAmount amount = charge.getAmount();
-            if (chargeCurrency == null) {
-                chargeCurrency = amount.getCurrency();
-            } else if (!chargeCurrency.equals(amount.getCurrency())) {
-                throw new IllegalStateException("Charges for consent: " + consent.getId() + " contain more than 1 currency, all charges must be in the same currency");
-            }
-            totalCharge.add(new BigDecimal(amount.getAmount()));
-        }
-        details.setCharges(new FRAmount(totalCharge.toPlainString(), chargeCurrency));
+        final FRAmount totalChargeAmount = computeTotalChargeAmount(consent.getCharges());
+        details.setCharges(totalChargeAmount);
 
         final OBWriteDomesticConsent4Data obConsentRequestData = consent.getRequestObj().getData();
         final FRWriteDomesticDataInitiation initiation = FRWriteDomesticConsentConverter.toFRWriteDomesticDataInitiation(obConsentRequestData.getInitiation());
         details.setInitiation(initiation);
         details.setInstructedAmount(initiation.getInstructedAmount());
+        if (initiation.getRemittanceInformation() != null) {
+            details.setPaymentReference(initiation.getRemittanceInformation().getReference());
+        }
 
         if ((details instanceof PaymentsConsentDetails) && Objects.nonNull(((PaymentsConsentDetails) details).getDebtorAccount())) {
             debtorAccountService.setDebtorAccountWithBalance(details, consentClientRequest.getConsentRequestJwtString(), intentId);
@@ -123,12 +115,37 @@ public class ConsentStoreDetailsService {
             details.setAccounts(accountService.getAccountsWithBalance(details.getUserId()));
         }
 
+        logger.info("Built consentDetails: {}", details);
+        return details;
+    }
+
+    @VisibleForTesting
+    static FRAmount computeTotalChargeAmount(List<OBWriteDomesticConsentResponse5DataCharges> charges) {
+        String chargeCurrency = null;
+        BigDecimal totalCharge = BigDecimal.ZERO;
+        for (OBWriteDomesticConsentResponse5DataCharges charge : charges) {
+            final OBActiveOrHistoricCurrencyAndAmount amount = charge.getAmount();
+            if (chargeCurrency == null) {
+                chargeCurrency = amount.getCurrency();
+            } else if (!chargeCurrency.equals(amount.getCurrency())) {
+                throw new IllegalStateException("Charges contain more than 1 currency, all charges must be in the same currency");
+            }
+            totalCharge = totalCharge.add(new BigDecimal(amount.getAmount()));
+        }
+        final FRAmount totalChargeAmount = new FRAmount(totalCharge.toPlainString(), chargeCurrency);
+        return totalChargeAmount;
+    }
+
+    private void populateCommonConsentDetailsFields(ConsentDetails details, ConsentClientDetailsRequest consentClientRequest) throws ExceptionClient {
+        details.setConsentId(consentClientRequest.getIntentId());
+        details.setUsername(consentClientRequest.getUser().getUserName());
+        details.setUserId(consentClientRequest.getUser().getId());
+        details.setClientId(consentClientRequest.getClientId());
+        details.setServiceProviderName(apiProviderConfiguration.getName());
+
         ApiClient apiClient = apiClientService.getApiClient(consentClientRequest.getClientId());
         logger.debug("ApiClient controller: " + apiClient);
         details.setLogo(apiClient.getLogoUri());
         details.setClientName(apiClient.getName());
-
-        logger.info("Built consentDetails: {}", details);
-        return details;
     }
 }

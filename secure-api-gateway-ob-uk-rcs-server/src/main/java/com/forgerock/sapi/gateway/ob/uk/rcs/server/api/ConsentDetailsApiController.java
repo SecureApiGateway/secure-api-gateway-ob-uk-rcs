@@ -24,6 +24,7 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.ConsentDetai
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.PaymentsConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.factory.details.ConsentDetailsFactory;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.factory.details.ConsentDetailsFactoryProvider;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import com.forgerock.sapi.gateway.uk.common.shared.claim.Claims;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
@@ -85,6 +86,8 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
 
     @Override
     public ResponseEntity<ConsentDetails> getConsentDetails(String consentRequestJws) throws InvalidConsentException {
+        String intentId = null;
+        String apiClientId = null;
         try {
             SignedJWT signedJWT = JwtUtil.getSignedJWT(consentRequestJws);
             Claims claims = JwtUtil.getClaims(signedJWT);
@@ -96,17 +99,19 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                         "Missing intent Id", null, null);
             }
 
-            String intentId = JwtUtil.getIdTokenClaim(signedJWT, Constants.Claims.INTENT_ID);
+            intentId = JwtUtil.getIdTokenClaim(signedJWT, Constants.Claims.INTENT_ID);
             log.debug("Intent Id from the requested claims '{}'", intentId);
 
             ConsentClientDetailsRequest consentClientRequest = buildConsentClientRequest(signedJWT);
             log.debug("Intent type: '{}' with ID '{}'", IntentType.identify(intentId), intentId);
 
+            apiClientId = consentClientRequest.getClientId();
+
             IntentType intentType = IntentType.identify(intentId);
             if (Objects.nonNull(intentType)) {
                 final ConsentDetails details;
                 if (consentStoreDetailsService.isIntentTypeSupported(intentType)) {
-                    details = consentStoreDetailsService.getDetailsFromConsentStore(intentType, intentId, consentClientRequest);
+                    details = consentStoreDetailsService.getDetailsFromConsentStore(intentType, consentClientRequest);
                 } else {
 
                     log.debug("Intent type: '{}' with ID '{}'", intentType, intentId);
@@ -154,6 +159,10 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                     OBRIErrorType.REQUEST_BINDING_FAILED, errorMessage,
                     e.getErrorClient().getClientId(),
                     e.getErrorClient().getIntentId());
+        } catch (ConsentStoreException cse) {
+            log.error("Failed to get Consent Details due to ConsentStoreException", cse);
+            throw new InvalidConsentException(consentRequestJws, ErrorType.INTERNAL_SERVER_ERROR, OBRIErrorType.REQUEST_BINDING_FAILED,
+                                              "Internal Server Error", apiClientId, intentId);
         }
     }
 
