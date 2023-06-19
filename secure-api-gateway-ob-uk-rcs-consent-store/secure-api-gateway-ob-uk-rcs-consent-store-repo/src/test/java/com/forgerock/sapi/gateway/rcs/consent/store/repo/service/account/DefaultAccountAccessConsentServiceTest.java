@@ -73,7 +73,7 @@ public class DefaultAccountAccessConsentServiceTest extends BaseConsentServiceTe
 
     @Override
     protected AccountAccessAuthoriseConsentArgs getAuthoriseConsentArgs(String consentId, String resourceOwnerId, String apiClientId) {
-        return new AccountAccessAuthoriseConsentArgs(consentId, resourceOwnerId, apiClientId, List.of("acc-1", "acc-2"));
+        return new AccountAccessAuthoriseConsentArgs(consentId, apiClientId, resourceOwnerId, List.of("acc-1", "acc-2"));
     }
 
     @Override
@@ -105,12 +105,12 @@ public class DefaultAccountAccessConsentServiceTest extends BaseConsentServiceTe
     void failToAuthoriseConsentNullOrEmptyAccountIds() {
         final AccountAccessConsentEntity persistedConsent = consentService.createConsent(getValidConsentEntity());
         final ConstraintViolationException ex = Assertions.assertThrows(ConstraintViolationException.class,
-                () -> consentService.authoriseConsent(new AccountAccessAuthoriseConsentArgs(persistedConsent.getId(), "user-123", persistedConsent.getApiClientId(), null)));
+                () -> consentService.authoriseConsent(new AccountAccessAuthoriseConsentArgs(persistedConsent.getId(), persistedConsent.getApiClientId(), "user-123", null)));
         assertThat(ex.getConstraintViolations().stream().map(ConstraintViolation::getPropertyPath).map(Path::toString).collect(Collectors.toSet())).isEqualTo(Set.of("authoriseConsent.arg0.authorisedAccountIds"));
         assertThat(ex.getConstraintViolations().stream().map(ConstraintViolation::getMessage).collect(Collectors.toSet())).isEqualTo(Set.of("must not be null", "must not be empty"));
 
         final ConstraintViolationException ex2 = Assertions.assertThrows(ConstraintViolationException.class,
-                () -> consentService.authoriseConsent(new AccountAccessAuthoriseConsentArgs(persistedConsent.getId(), "user-123", persistedConsent.getApiClientId(), List.of())));
+                () -> consentService.authoriseConsent(new AccountAccessAuthoriseConsentArgs(persistedConsent.getId(), persistedConsent.getApiClientId(), "user-123", List.of())));
         assertThat(ex2.getMessage()).isEqualTo("authoriseConsent.arg0.authorisedAccountIds: must not be empty");
     }
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.api.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic.v3_1_10;
 
 import java.util.function.Supplier;
 
@@ -34,7 +34,6 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.Domestic
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticPaymentAuthoriseConsentArgs;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticPaymentConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
-import com.google.common.annotations.VisibleForTesting;
 
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
 

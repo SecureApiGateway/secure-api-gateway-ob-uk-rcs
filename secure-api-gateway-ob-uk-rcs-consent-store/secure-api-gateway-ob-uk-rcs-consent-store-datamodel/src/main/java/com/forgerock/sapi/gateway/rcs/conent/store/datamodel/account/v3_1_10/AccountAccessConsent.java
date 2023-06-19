@@ -13,13 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10;
+
+import java.util.List;
 
 import org.springframework.validation.annotation.Validated;
 
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.RejectConsentRequest;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.BaseConsent;
+
+import uk.org.openbanking.datamodel.account.OBReadConsent1;
 
 @Validated
-public class RejectDomesticPaymentConsentRequest extends RejectConsentRequest {
-}
+public class AccountAccessConsent extends BaseConsent<OBReadConsent1> {
 
+    private List<String> authorisedAccountIds;
+
+    public void setAuthorisedAccountIds(List<String> authorisedAccountIds) {
+        this.authorisedAccountIds = authorisedAccountIds;
+    }
+
+    public List<String> getAuthorisedAccountIds() {
+        return authorisedAccountIds;
+    }
+
+}

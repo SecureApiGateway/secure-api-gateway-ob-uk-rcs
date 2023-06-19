@@ -13,31 +13,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.conent.store.datamodel;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.validation.annotation.Validated;
 
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.BaseAuthoriseConsentRequest;
-
 @Validated
-public class AuthoriseDomesticPaymentConsentRequest extends BaseAuthoriseConsentRequest {
+public class RejectConsentRequest {
 
     @NotNull
-    @NotBlank
-    private String authorisedDebtorAccountId;
+    private String apiClientId;
 
-    public AuthoriseDomesticPaymentConsentRequest() {
+    @NotNull
+    private String consentId;
+
+    @NotNull
+    private String resourceOwnerId;
+
+    public RejectConsentRequest(){
     }
 
-    public String getAuthorisedDebtorAccountId() {
-        return authorisedDebtorAccountId;
+    public String getConsentId() {
+        return consentId;
     }
 
-    public void setAuthorisedDebtorAccountId(String authorisedDebtorAccountId) {
-        this.authorisedDebtorAccountId = authorisedDebtorAccountId;
+    public void setConsentId(String consentId) {
+        this.consentId = consentId;
     }
 
+    public String getResourceOwnerId() {
+        return resourceOwnerId;
+    }
+
+    public void setResourceOwnerId(String resourceOwnerId) {
+        this.resourceOwnerId = resourceOwnerId;
+    }
+
+    public String getApiClientId() {
+        return apiClientId;
+    }
+
+    public void setApiClientId(String apiClientId) {
+        this.apiClientId = apiClientId;
+    }
 }
+

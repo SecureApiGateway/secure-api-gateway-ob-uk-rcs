@@ -13,13 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10;
+
+import java.util.List;
+
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.validation.annotation.Validated;
 
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.RejectConsentRequest;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.BaseAuthoriseConsentRequest;
 
 @Validated
-public class RejectDomesticPaymentConsentRequest extends RejectConsentRequest {
-}
+public class AuthoriseAccountAccessConsentRequest extends BaseAuthoriseConsentRequest {
 
+    @NotNull
+    @NotEmpty
+    private List<String> authorisedAccountIds;
+
+    public List<String> getAuthorisedAccountIds() {
+        return authorisedAccountIds;
+    }
+
+    public void setAuthorisedAccountIds(List<String> authorisedAccountIds) {
+        this.authorisedAccountIds = authorisedAccountIds;
+    }
+}

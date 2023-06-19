@@ -13,13 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10;
-
-import org.springframework.validation.annotation.Validated;
+package com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10;
 
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.RejectConsentRequest;
 
-@Validated
-public class RejectDomesticPaymentConsentRequest extends RejectConsentRequest {
+public class RejectAccountAccessConsentRequest extends RejectConsentRequest {
 }
-

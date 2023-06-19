@@ -32,7 +32,7 @@ public class AccountAccessAuthoriseConsentArgs extends AuthoriseConsentArgs<Acco
     @NotEmpty
     private final List<String> authorisedAccountIds;
 
-    public AccountAccessAuthoriseConsentArgs(String consentId, String resourceOwnerId, String apiClientId, List<String> authorisedAccountIds) {
+    public AccountAccessAuthoriseConsentArgs(String consentId, String apiClientId, String resourceOwnerId, List<String> authorisedAccountIds) {
         super(consentId, resourceOwnerId, apiClientId);
         this.authorisedAccountIds = authorisedAccountIds;
     }
