@@ -26,7 +26,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticPaymentConsentEntity;
@@ -45,7 +44,7 @@ import uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFact
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-class DefaultDomesticPaymentConsentServiceTest extends BaseConsentServiceTest<DomesticPaymentConsentEntity, DomesticPaymentAuthoriseConsentArgs> {
+public class DefaultDomesticPaymentConsentServiceTest extends BaseConsentServiceTest<DomesticPaymentConsentEntity, DomesticPaymentAuthoriseConsentArgs> {
 
     @Autowired
     private DefaultDomesticPaymentConsentService service;
@@ -89,9 +88,15 @@ class DefaultDomesticPaymentConsentServiceTest extends BaseConsentServiceTest<Do
 
     @Override
     protected DomesticPaymentConsentEntity getValidConsentEntity() {
-        final OBWriteDomesticConsent4 obConsent = OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4();
         final String apiClientId = "test-client-987";
+        return createValidConsentEntity(apiClientId);
+    }
 
+    public static DomesticPaymentConsentEntity createValidConsentEntity(String apiClientId) {
+        return createValidConsentEntity(OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4(), apiClientId);
+    }
+
+    public static DomesticPaymentConsentEntity createValidConsentEntity(OBWriteDomesticConsent4 obConsent, String apiClientId) {
         final DomesticPaymentConsentEntity domesticPaymentConsent = new DomesticPaymentConsentEntity();
         domesticPaymentConsent.setRequestType(obConsent.getClass().getSimpleName());
         domesticPaymentConsent.setRequestVersion(OBVersion.v3_1_10);
@@ -100,7 +105,7 @@ class DefaultDomesticPaymentConsentServiceTest extends BaseConsentServiceTest<Do
         domesticPaymentConsent.setStatus(StatusEnum.AWAITINGAUTHORISATION.toString());
         domesticPaymentConsent.setIdempotencyKey(UUID.randomUUID().toString());
         domesticPaymentConsent.setIdempotencyKeyExpiration(DateTime.now().plusDays(1));
-        domesticPaymentConsent.setCharges(List.of(new OBWriteDomesticConsentResponse5DataCharges().amount(new OBActiveOrHistoricCurrencyAndAmount().currency("GBP").amount("11.23")).chargeBearer(OBChargeBearerType1Code.BORNEBYCREDITOR).type("fee")));
+        domesticPaymentConsent.setCharges(List.of(new OBWriteDomesticConsentResponse5DataCharges().amount(new OBActiveOrHistoricCurrencyAndAmount().currency("GBP").amount("0.25")).chargeBearer(OBChargeBearerType1Code.BORNEBYCREDITOR).type("fee")));
         return domesticPaymentConsent;
     }
 
