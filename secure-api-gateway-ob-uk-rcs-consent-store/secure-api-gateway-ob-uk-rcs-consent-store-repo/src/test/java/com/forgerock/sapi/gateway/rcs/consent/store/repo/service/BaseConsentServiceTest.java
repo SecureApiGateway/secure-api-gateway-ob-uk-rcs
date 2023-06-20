@@ -29,7 +29,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.BaseConsentEntit
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException.ErrorType;
 
-public abstract class BaseConsentServiceTest<T extends BaseConsentEntity<?>, A extends AuthoriseConsentArgs<T>> {
+public abstract class BaseConsentServiceTest<T extends BaseConsentEntity<?>, A extends AuthoriseConsentArgs> {
 
     protected static final String TEST_RESOURCE_OWNER = "test-user-1";
 

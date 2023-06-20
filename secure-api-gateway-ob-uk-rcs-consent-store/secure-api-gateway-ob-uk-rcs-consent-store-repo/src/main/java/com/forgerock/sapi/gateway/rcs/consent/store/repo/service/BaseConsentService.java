@@ -27,7 +27,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.BaseConsentEntit
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException.ErrorType;
 
-public abstract class BaseConsentService<T extends BaseConsentEntity<?>, A extends AuthoriseConsentArgs<T>> implements ConsentService<T, A> {
+public abstract class BaseConsentService<T extends BaseConsentEntity<?>, A extends AuthoriseConsentArgs> implements ConsentService<T, A> {
 
     protected final MongoRepository<T, String> repo;
 

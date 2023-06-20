@@ -19,11 +19,10 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.validation.annotation.Validated;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticPaymentConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.AuthoriseConsentArgs;
 
 @Validated
-public class DomesticPaymentAuthoriseConsentArgs extends AuthoriseConsentArgs<DomesticPaymentConsentEntity> {
+public class DomesticPaymentAuthoriseConsentArgs extends AuthoriseConsentArgs {
 
     @NotNull
     private final String authorisedDebtorAccountId;

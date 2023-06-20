@@ -21,6 +21,8 @@ import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic.
 import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic.v3_1_10.DomesticPaymentConsentValidationHelpers.validateRejectedConsent;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 import java.util.List;
@@ -69,8 +71,8 @@ class DomesticPaymentConsentStoreClientTest {
 
     @BeforeEach
     public void beforeEach() {
-        final ConsentStoreClientConfiguration clientConfiguration = new ConsentStoreClientConfiguration();
-        clientConfiguration.setBaseUri("http://localhost:"+port+"/consent/store");
+        final ConsentStoreClientConfiguration clientConfiguration = mock(ConsentStoreClientConfiguration.class);
+        given(clientConfiguration.getBaseUri()).willReturn("http://localhost:" + port + "/consent/store");
         apiClient = new RestDomesticPaymentConsentStoreClient(clientConfiguration, restTemplateBuilder, objectMapper);
     }
 

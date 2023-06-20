@@ -22,11 +22,10 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.validation.annotation.Validated;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.account.AccountAccessConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.AuthoriseConsentArgs;
 
 @Validated
-public class AccountAccessAuthoriseConsentArgs extends AuthoriseConsentArgs<AccountAccessConsentEntity> {
+public class AccountAccessAuthoriseConsentArgs extends AuthoriseConsentArgs {
 
     @NotNull
     @NotEmpty

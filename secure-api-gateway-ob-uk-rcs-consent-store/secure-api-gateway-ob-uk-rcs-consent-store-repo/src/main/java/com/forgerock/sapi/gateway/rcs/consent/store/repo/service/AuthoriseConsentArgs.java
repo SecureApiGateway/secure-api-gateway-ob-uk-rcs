@@ -19,10 +19,8 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.validation.annotation.Validated;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.BaseConsentEntity;
-
 @Validated
-public abstract class AuthoriseConsentArgs<T extends BaseConsentEntity> {
+public abstract class AuthoriseConsentArgs {
 
     @NotNull
     private final String consentId;
