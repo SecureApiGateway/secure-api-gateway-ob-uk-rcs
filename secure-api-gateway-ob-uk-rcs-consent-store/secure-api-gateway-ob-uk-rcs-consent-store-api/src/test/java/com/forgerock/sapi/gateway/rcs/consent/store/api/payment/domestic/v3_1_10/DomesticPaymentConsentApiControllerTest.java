@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.api.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic.v3_1_10;
 
-import static com.forgerock.sapi.gateway.rcs.consent.store.api.v3_1_10.ApiTestUtils.createConsentStoreApiRequiredHeaders;
-import static com.forgerock.sapi.gateway.rcs.consent.store.api.v3_1_10.DomesticPaymentConsentValidationHelpers.validateAuthorisedConsent;
-import static com.forgerock.sapi.gateway.rcs.consent.store.api.v3_1_10.DomesticPaymentConsentValidationHelpers.validateConsumedConsent;
-import static com.forgerock.sapi.gateway.rcs.consent.store.api.v3_1_10.DomesticPaymentConsentValidationHelpers.validateCreateConsentAgainstCreateRequest;
-import static com.forgerock.sapi.gateway.rcs.consent.store.api.v3_1_10.DomesticPaymentConsentValidationHelpers.validateRejectedConsent;
+import static com.forgerock.sapi.gateway.rcs.consent.store.api.ApiTestUtils.createConsentStoreApiRequiredHeaders;
+import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic.v3_1_10.DomesticPaymentConsentValidationHelpers.validateAuthorisedConsent;
+import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic.v3_1_10.DomesticPaymentConsentValidationHelpers.validateConsumedConsent;
+import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic.v3_1_10.DomesticPaymentConsentValidationHelpers.validateCreateConsentAgainstCreateRequest;
+import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic.v3_1_10.DomesticPaymentConsentValidationHelpers.validateRejectedConsent;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
@@ -47,6 +47,7 @@ import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.CreateDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.RejectDomesticPaymentConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.api.BaseControllerTest;
 
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
@@ -56,15 +57,13 @@ import uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFact
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
-public class DomesticPaymentConsentApiControllerTest {
+public class DomesticPaymentConsentApiControllerTest extends BaseControllerTest {
 
     @LocalServerPort
     private int port;
 
     @Autowired
     private TestRestTemplate restTemplate;
-
-    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private String apiBaseUrl;
 
@@ -76,7 +75,7 @@ public class DomesticPaymentConsentApiControllerTest {
 
     @Test
     public void failToGetConsentDoesNotExist() {
-        final ResponseEntity<DomesticPaymentConsent> getResponse = makeGetRequest("unknown-consent", "client-123", DomesticPaymentConsent.class);
+        final ResponseEntity<OBErrorResponse1> getResponse = makeGetRequest("unknown-consent", "client-123", OBErrorResponse1.class);
         assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 

@@ -1,0 +1,81 @@
+/*
+ * Copyright © 2020-2022 ForgeRock AS (obst@forgerock.com)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.forgerock.sapi.gateway.rcs.consent.store.api.account.v3_1_10;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.joda.time.DateTime;
+
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AuthoriseAccountAccessConsentRequest;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.CreateAccountAccessConsentRequest;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.RejectAccountAccessConsentRequest;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
+
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
+
+/**
+ * Helper methods for validating {@link AccountAccessConsent} objects as part of using the {@link AccountAccessConsentApi}
+ */
+public class AccountAccessConsentValidationHelpers {
+
+    /**
+     * Validates that a created {@link AccountAccessConsent} against the original {@link CreateAccountAccessConsentRequest}
+     */
+    public static void validateCreateConsentAgainstCreateRequest(AccountAccessConsent consent,
+                                                                 CreateAccountAccessConsentRequest createAccountAccessConsentRequest) {
+        assertThat(consent.getId()).isNotEmpty();
+        assertThat(consent.getStatus()).isEqualTo(StatusEnum.AWAITINGAUTHORISATION.toString());
+        assertThat(consent.getApiClientId()).isEqualTo(createAccountAccessConsentRequest.getApiClientId());
+        assertThat(consent.getRequestObj()).isEqualTo(createAccountAccessConsentRequest.getConsentRequest());
+        assertThat(consent.getRequestType()).isEqualTo("OBWriteDomesticConsent4");
+        assertThat(consent.getRequestVersion()).isEqualTo(OBVersion.v3_1_10);
+        assertThat(consent.getResourceOwnerId()).isNull();
+        assertThat(consent.getAuthorisedAccountIds()).isNull();
+
+        assertThat(consent.getCreationDateTime()).isLessThan(DateTime.now());
+        assertThat(consent.getStatusUpdateDateTime()).isEqualTo(consent.getCreationDateTime());
+    }
+
+    public static void validateAuthorisedConsent(AccountAccessConsent authorisedConsent, AuthoriseAccountAccessConsentRequest authoriseReq, AccountAccessConsent originalConsent) {
+        assertThat(authorisedConsent.getStatus()).isEqualTo(StatusEnum.AUTHORISED.toString());
+        assertThat(authorisedConsent.getResourceOwnerId()).isEqualTo(authoriseReq.getResourceOwnerId());
+        assertThat(authorisedConsent.getAuthorisedAccountIds()).isEqualTo(authoriseReq.getAuthorisedAccountIds());
+        validateUpdatedConsentAgainstOriginal(authorisedConsent, originalConsent);
+    }
+
+    public static void validateRejectedConsent(AccountAccessConsent rejectedConsent, RejectAccountAccessConsentRequest rejectReq, AccountAccessConsent originalConsent) {
+        assertThat(rejectedConsent.getStatus()).isEqualTo(StatusEnum.REJECTED.toString());
+        assertThat(rejectedConsent.getResourceOwnerId()).isEqualTo(rejectReq.getResourceOwnerId());
+        validateUpdatedConsentAgainstOriginal(rejectedConsent, originalConsent);
+    }
+
+    /**
+     * Validates fields in an updatedConsent vs an original consent.
+     *
+     * This checks that fields that should never change when a consent is updated do never change, and verifies that
+     * the statusUpdateDateTime increases vs the original.
+     */
+    public static void validateUpdatedConsentAgainstOriginal(AccountAccessConsent updatedConsent, AccountAccessConsent consent) {
+        assertThat(updatedConsent.getId()).isEqualTo(consent.getId());
+        assertThat(updatedConsent.getApiClientId()).isEqualTo(consent.getApiClientId());
+        assertThat(updatedConsent.getRequestObj()).isEqualTo(consent.getRequestObj());
+        assertThat(updatedConsent.getRequestVersion()).isEqualTo(consent.getRequestVersion());
+        assertThat(updatedConsent.getRequestType()).isEqualTo(consent.getRequestType());
+        assertThat(updatedConsent.getCreationDateTime()).isEqualTo(consent.getCreationDateTime());
+        assertThat(updatedConsent.getStatusUpdateDateTime()).isLessThan(DateTime.now()).isGreaterThan(consent.getStatusUpdateDateTime());
+    }
+}

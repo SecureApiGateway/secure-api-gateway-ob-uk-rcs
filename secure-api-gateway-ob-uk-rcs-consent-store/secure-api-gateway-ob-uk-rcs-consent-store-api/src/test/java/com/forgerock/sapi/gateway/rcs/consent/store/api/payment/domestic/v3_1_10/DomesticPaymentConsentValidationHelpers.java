@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.api.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic.v3_1_10;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,6 +46,7 @@ public class DomesticPaymentConsentValidationHelpers {
         assertThat(consent.getRequestVersion()).isEqualTo(OBVersion.v3_1_10);
         assertThat(consent.getCharges()).isEqualTo(createDomesticPaymentConsentRequest.getCharges());
         assertThat(consent.getIdempotencyKey()).isEqualTo(createDomesticPaymentConsentRequest.getIdempotencyKey());
+        assertThat(consent.getResourceOwnerId()).isNull();
         assertThat(consent.getAuthorisedDebtorAccountId()).isNull();
 
         final DateTime now = DateTime.now();
