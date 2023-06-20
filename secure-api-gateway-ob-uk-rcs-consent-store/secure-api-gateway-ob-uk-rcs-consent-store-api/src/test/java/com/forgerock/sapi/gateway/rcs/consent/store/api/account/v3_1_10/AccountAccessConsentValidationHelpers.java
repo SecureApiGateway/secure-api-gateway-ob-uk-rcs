@@ -19,10 +19,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.joda.time.DateTime;
 
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AccountAccessConsent;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AuthoriseAccountAccessConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.CreateAccountAccessConsentRequest;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.RejectAccountAccessConsentRequest;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
@@ -41,7 +41,7 @@ public class AccountAccessConsentValidationHelpers {
         assertThat(consent.getStatus()).isEqualTo(StatusEnum.AWAITINGAUTHORISATION.toString());
         assertThat(consent.getApiClientId()).isEqualTo(createAccountAccessConsentRequest.getApiClientId());
         assertThat(consent.getRequestObj()).isEqualTo(createAccountAccessConsentRequest.getConsentRequest());
-        assertThat(consent.getRequestType()).isEqualTo("OBWriteDomesticConsent4");
+        assertThat(consent.getRequestType()).isEqualTo("OBReadConsent1");
         assertThat(consent.getRequestVersion()).isEqualTo(OBVersion.v3_1_10);
         assertThat(consent.getResourceOwnerId()).isNull();
         assertThat(consent.getAuthorisedAccountIds()).isNull();
@@ -57,7 +57,7 @@ public class AccountAccessConsentValidationHelpers {
         validateUpdatedConsentAgainstOriginal(authorisedConsent, originalConsent);
     }
 
-    public static void validateRejectedConsent(AccountAccessConsent rejectedConsent, RejectAccountAccessConsentRequest rejectReq, AccountAccessConsent originalConsent) {
+    public static void validateRejectedConsent(AccountAccessConsent rejectedConsent, RejectConsentRequest rejectReq, AccountAccessConsent originalConsent) {
         assertThat(rejectedConsent.getStatus()).isEqualTo(StatusEnum.REJECTED.toString());
         assertThat(rejectedConsent.getResourceOwnerId()).isEqualTo(rejectReq.getResourceOwnerId());
         validateUpdatedConsentAgainstOriginal(rejectedConsent, originalConsent);

@@ -98,6 +98,7 @@ public class AccountAccessConsentApiController implements AccountAccessConsentAp
         dto.setStatusUpdateDateTime(entity.getStatusUpdatedDateTime());
         dto.setRequestVersion(entity.getRequestVersion());
         dto.setRequestType(entity.getRequestType());
+        dto.setRequestObj(entity.getRequestObj());
         dto.setResourceOwnerId(entity.getResourceOwnerId());
         return dto;
     }

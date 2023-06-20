@@ -19,11 +19,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.joda.time.DateTime;
 
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.AuthoriseDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.CreateDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.RejectDomesticPaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic.v3_1_10.DomesticPaymentConsentApi;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
@@ -62,7 +61,7 @@ public class DomesticPaymentConsentValidationHelpers {
         validateUpdatedConsentAgainstOriginal(authorisedConsent, originalConsent);
     }
 
-    public static void validateRejectedConsent(DomesticPaymentConsent rejectedConsent, RejectDomesticPaymentConsentRequest rejectReq, DomesticPaymentConsent originalConsent) {
+    public static void validateRejectedConsent(DomesticPaymentConsent rejectedConsent, RejectConsentRequest rejectReq, DomesticPaymentConsent originalConsent) {
         assertThat(rejectedConsent.getStatus()).isEqualTo(StatusEnum.REJECTED.toString());
         assertThat(rejectedConsent.getResourceOwnerId()).isEqualTo(rejectReq.getResourceOwnerId());
         validateUpdatedConsentAgainstOriginal(rejectedConsent, originalConsent);

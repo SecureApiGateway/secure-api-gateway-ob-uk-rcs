@@ -15,34 +15,9 @@
  */
 package com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.BaseCreateConsentRequest;
 
 import uk.org.openbanking.datamodel.account.OBReadConsent1;
 
-public class CreateAccountAccessConsentRequest {
-
-    @NotNull
-    private String apiClientId;
-
-    @NotNull
-    @Valid
-    private OBReadConsent1 consentRequest;
-
-
-    public String getApiClientId() {
-        return apiClientId;
-    }
-
-    public void setApiClientId(String apiClientId) {
-        this.apiClientId = apiClientId;
-    }
-
-    public OBReadConsent1 getConsentRequest() {
-        return consentRequest;
-    }
-
-    public void setConsentRequest(OBReadConsent1 consentRequest) {
-        this.consentRequest = consentRequest;
-    }
+public class CreateAccountAccessConsentRequest extends BaseCreateConsentRequest<OBReadConsent1> {
 }
