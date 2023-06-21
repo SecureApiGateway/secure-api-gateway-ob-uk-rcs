@@ -25,6 +25,8 @@ import org.springframework.stereotype.Component;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.decision.ConsentDecisionDeserialized;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.ConsentStoreEnabledIntentTypes;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException.ErrorType;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.AuthoriseConsentArgs;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessAuthoriseConsentArgs;
@@ -62,7 +64,8 @@ public class ConsentStoreDecisionService {
     }
 
     public boolean isIntentTypeSupported(IntentType intentType) {
-        return consentStoreEnabledIntentTypes.isIntentTypeSupported(intentType);
+        return consentStoreEnabledIntentTypes.isIntentTypeSupported(intentType)
+                && consentServicesAndAuthoriseConsentArgsFactories.containsKey(intentType);
     }
 
     private void checkIntentTypeIsSupported(IntentType intentType) {
@@ -71,13 +74,10 @@ public class ConsentStoreDecisionService {
         }
     }
 
-    public void authoriseConsent(IntentType intentType, String intentId, String apiClientId, String resourceOwnerId, ConsentDecisionDeserialized consentDecision) {
-        checkIntentTypeIsSupported(intentType);
+    public void authoriseConsent(IntentType intentType, String intentId, String apiClientId, String resourceOwnerId,
+                                 ConsentDecisionDeserialized consentDecision) {
 
-        final Pair<ConsentService<?,?>, AuthoriseConsentArgsFactory> consentServiceAndAuthoriseConsentArgsFactory = consentServicesAndAuthoriseConsentArgsFactories.get(intentType);
-        if (consentServiceAndAuthoriseConsentArgsFactory == null) {
-            throw new IllegalStateException(intentType + " is not supported");
-        }
+        final Pair<ConsentService<?, ?>, AuthoriseConsentArgsFactory> consentServiceAndAuthoriseConsentArgsFactory = getConsentServiceAndAuthoriseConsentArgsFactory(intentType);
 
         final ConsentService consentService = consentServiceAndAuthoriseConsentArgsFactory.getFirst();
         final AuthoriseConsentArgsFactory authoriseConsentArgsFactory = consentServiceAndAuthoriseConsentArgsFactory.getSecond();
@@ -85,11 +85,13 @@ public class ConsentStoreDecisionService {
         consentService.authoriseConsent(authoriseConsentArgs);
     }
 
-    private AccountAccessAuthoriseConsentArgs buildAccountAccessAuthoriseConsentArgs(String intentId, String apiClientId, String resourceOwnerId, ConsentDecisionDeserialized consentDecision) {
+    private AccountAccessAuthoriseConsentArgs buildAccountAccessAuthoriseConsentArgs(String intentId, String apiClientId,
+                                                                                     String resourceOwnerId,
+                                                                                     ConsentDecisionDeserialized consentDecision) {
+
         final List<String> authorisedAccountIds = consentDecision.getAccountIds();
         if (authorisedAccountIds == null || authorisedAccountIds.isEmpty()) {
-            // TODO use better exception
-            throw new IllegalStateException("consentDecision is missing authorisedAccountIds");
+            throw new ConsentStoreException(ErrorType.INVALID_CONSENT_DECISION, "consentDecision is missing authorisedAccountIds");
         }
         final AccountAccessAuthoriseConsentArgs authoriseConsentArgs = new AccountAccessAuthoriseConsentArgs(intentId, apiClientId, resourceOwnerId, authorisedAccountIds);
         return authoriseConsentArgs;
@@ -98,21 +100,20 @@ public class ConsentStoreDecisionService {
     private DomesticPaymentAuthoriseConsentArgs buildDomesticPaymentIntentAuthoriseConsentArgs(String intentId, String apiClientId, String resourceOwnerId, ConsentDecisionDeserialized consentDecision) {
         final FRFinancialAccount debtorAccount = consentDecision.getDebtorAccount();
         if (debtorAccount == null || debtorAccount.getAccountId() == null) {
-            // TODO use better exception
-            throw new IllegalStateException("consentDecision is missing debtorAccount details");
+            throw new ConsentStoreException(ErrorType.INVALID_CONSENT_DECISION, "consentDecision is missing authorisedAccountIds");
         }
         final DomesticPaymentAuthoriseConsentArgs authoriseConsentArgs = new DomesticPaymentAuthoriseConsentArgs(intentId, apiClientId, resourceOwnerId, debtorAccount.getAccountId());
         return authoriseConsentArgs;
     }
 
     public void rejectConsent(IntentType intentType, String intentId, String apiClientId, String resourceOwnerId) {
-        checkIntentTypeIsSupported(intentType);
-
-        final Pair<ConsentService<?,?>, AuthoriseConsentArgsFactory>  consentServiceAndAuthoriseConsentArgsFactory = consentServicesAndAuthoriseConsentArgsFactories.get(intentType);
-        if (consentServiceAndAuthoriseConsentArgsFactory == null) {
-            throw new IllegalStateException(intentType + " is not supported");
-        }
+        final Pair<ConsentService<?, ?>, AuthoriseConsentArgsFactory> consentServiceAndAuthoriseConsentArgsFactory = getConsentServiceAndAuthoriseConsentArgsFactory(intentType);
         final ConsentService consentService = consentServiceAndAuthoriseConsentArgsFactory.getFirst();
         consentService.rejectConsent(intentId, apiClientId, resourceOwnerId);
+    }
+
+    private Pair<ConsentService<?, ?>, AuthoriseConsentArgsFactory> getConsentServiceAndAuthoriseConsentArgsFactory(IntentType intentType) {
+        checkIntentTypeIsSupported(intentType);
+        return consentServicesAndAuthoriseConsentArgsFactories.get(intentType);
     }
 }

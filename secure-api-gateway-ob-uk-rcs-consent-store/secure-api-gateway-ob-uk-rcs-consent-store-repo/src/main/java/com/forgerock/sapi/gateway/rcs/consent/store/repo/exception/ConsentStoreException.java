@@ -21,7 +21,8 @@ public class ConsentStoreException extends RuntimeException {
         INVALID_PERMISSIONS,
         NOT_FOUND,
         BAD_REQUEST,
-        INVALID_STATE_TRANSITION
+        INVALID_STATE_TRANSITION,
+        INVALID_CONSENT_DECISION,
     }
 
     private final ErrorType errorType;

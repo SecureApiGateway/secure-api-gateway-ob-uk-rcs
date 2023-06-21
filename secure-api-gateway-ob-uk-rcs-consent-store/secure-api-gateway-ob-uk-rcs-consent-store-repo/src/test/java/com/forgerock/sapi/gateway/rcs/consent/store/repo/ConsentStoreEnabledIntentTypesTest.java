@@ -43,16 +43,4 @@ class ConsentStoreEnabledIntentTypesTest {
             assertFalse(consentStoreEnabledIntentTypes.isIntentTypeSupported(intentType));
         }
     }
-
-    // NOTE: this test will need to be updated over time as the set of implemented types increases
-    @Test
-    public void testThatYouCannotEnableAnIntentTypeThatHasNotBeenImplemented() {
-        // Try to enable FUNDS_CONFIRMATION_CONSENT which are not yet implemented
-        final EnumSet<IntentType> intentsToEnable = EnumSet.of(IntentType.PAYMENT_DOMESTIC_CONSENT, IntentType.FUNDS_CONFIRMATION_CONSENT);
-        final ConsentStoreEnabledIntentTypes consentStoreEnabledIntentTypes = new ConsentStoreEnabledIntentTypes(intentsToEnable);
-
-        assertTrue(consentStoreEnabledIntentTypes.isIntentTypeSupported(IntentType.PAYMENT_DOMESTIC_CONSENT));
-        assertFalse(consentStoreEnabledIntentTypes.isIntentTypeSupported(IntentType.FUNDS_CONFIRMATION_CONSENT)); // Not implemented so cannot be enabled
-    }
-
 }
