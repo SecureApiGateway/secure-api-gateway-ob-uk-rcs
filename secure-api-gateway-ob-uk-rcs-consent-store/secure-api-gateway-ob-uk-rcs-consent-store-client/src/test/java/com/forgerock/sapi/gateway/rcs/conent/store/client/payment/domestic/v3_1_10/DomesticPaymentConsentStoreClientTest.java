@@ -15,14 +15,13 @@
  */
 package com.forgerock.sapi.gateway.rcs.conent.store.client.payment.domestic.v3_1_10;
 
+import static com.forgerock.sapi.gateway.rcs.conent.store.client.TestConsentStoreClientConfigurationFactory.createConsentStoreClientConfiguration;
 import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic.v3_1_10.DomesticPaymentConsentValidationHelpers.validateAuthorisedConsent;
 import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic.v3_1_10.DomesticPaymentConsentValidationHelpers.validateConsumedConsent;
 import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic.v3_1_10.DomesticPaymentConsentValidationHelpers.validateCreateConsentAgainstCreateRequest;
 import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic.v3_1_10.DomesticPaymentConsentValidationHelpers.validateRejectedConsent;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 import java.util.List;
@@ -39,7 +38,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.sapi.gateway.rcs.conent.store.client.ConsentStoreClientConfiguration;
 import com.forgerock.sapi.gateway.rcs.conent.store.client.ConsentStoreClientException;
 import com.forgerock.sapi.gateway.rcs.conent.store.client.ConsentStoreClientException.ErrorType;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.RejectConsentRequest;
@@ -72,9 +70,7 @@ class DomesticPaymentConsentStoreClientTest {
 
     @BeforeEach
     public void beforeEach() {
-        final ConsentStoreClientConfiguration clientConfiguration = mock(ConsentStoreClientConfiguration.class);
-        given(clientConfiguration.getBaseUri()).willReturn("http://localhost:" + port + "/consent/store");
-        apiClient = new RestDomesticPaymentConsentStoreClient(clientConfiguration, restTemplateBuilder, objectMapper);
+        apiClient = new RestDomesticPaymentConsentStoreClient(createConsentStoreClientConfiguration(port), restTemplateBuilder, objectMapper);
     }
 
     @Test

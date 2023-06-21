@@ -31,11 +31,27 @@ public abstract class BaseConsentService<T extends BaseConsentEntity<?>, A exten
 
     protected final MongoRepository<T, String> repo;
 
+    /**
+     * Map of the valid state transitions.
+     *
+     * The key is the current Status of the Consent, and the values are the valid Status values that the Consent
+     * is allowed to transition to.
+     */
     private final MultiValueMap<String, String> validStateTransitions;
 
     private final Supplier<String> idGenerator;
+
+    /**
+     * Status when the Consent has been Authorised by the Resource Owner
+     */
     private final String authorisedConsentStatus;
+    /**
+     * Status when the Resource Owner rejects the Consent
+     */
     private final String rejectedConsentStatus;
+    /**
+     * Status when the Resource Owner revokes a Authorisation previously given for a Consent
+     */
     private final String revokedConsentStatus;
 
     public BaseConsentService(MongoRepository<T, String> repo, Supplier<String> idGenerator, MultiValueMap<String, String> validStateTransitions,
