@@ -21,6 +21,9 @@ import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.Acc
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AuthoriseAccountAccessConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.CreateAccountAccessConsentRequest;
 
+/**
+ * Client for interacting with com.forgerock.sapi.gateway.rcs.consent.store.api.account.v3_1_10.AccountAccessConsentApi
+ */
 public interface AccountAccessConsentStoreClient {
 
     AccountAccessConsent createConsent(CreateAccountAccessConsentRequest createConsentRequest) throws ConsentStoreClientException;
