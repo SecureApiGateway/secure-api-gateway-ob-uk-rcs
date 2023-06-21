@@ -25,10 +25,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AccountAccessConsent;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AuthoriseAccountAccessConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.CreateAccountAccessConsentRequest;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.RejectAccountAccessConsentRequest;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -123,7 +123,7 @@ public interface AccountAccessConsentApi {
     ResponseEntity<AccountAccessConsent> rejectConsent(@PathVariable(value = "consentId") String consentId,
             @ApiParam(value = "Reject Consent Request", required = true)
             @Valid
-            @RequestBody RejectAccountAccessConsentRequest request,
+            @RequestBody RejectConsentRequest request,
             @RequestHeader(value = "x-api-client-id") String apiClientId);
 
 }

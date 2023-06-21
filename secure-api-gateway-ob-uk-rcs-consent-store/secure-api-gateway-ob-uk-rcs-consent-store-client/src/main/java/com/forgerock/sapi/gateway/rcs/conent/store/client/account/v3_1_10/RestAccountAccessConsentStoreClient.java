@@ -15,6 +15,8 @@
  */
 package com.forgerock.sapi.gateway.rcs.conent.store.client.account.v3_1_10;
 
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
@@ -25,10 +27,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.sapi.gateway.rcs.conent.store.client.BaseRestConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.conent.store.client.ConsentStoreClientConfiguration;
 import com.forgerock.sapi.gateway.rcs.conent.store.client.ConsentStoreClientException;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AccountAccessConsent;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AuthoriseAccountAccessConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.CreateAccountAccessConsentRequest;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.RejectAccountAccessConsentRequest;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 @Component
@@ -47,6 +49,7 @@ public class RestAccountAccessConsentStoreClient extends BaseRestConsentStoreCli
                                                RestTemplateBuilder restTemplateBuilder, ObjectMapper objectMapper,
                                                OBVersion obVersion) {
         super(restTemplateBuilder, objectMapper);
+        Objects.requireNonNull(consentStoreClientConfiguration, "consentStoreClientConfiguration must be provided");
         this.consentServiceBaseUrl = consentStoreClientConfiguration.getBaseUri() + "/v" + obVersion.getCanonicalVersion() + "/account-access-consents";
     }
 
@@ -71,9 +74,9 @@ public class RestAccountAccessConsentStoreClient extends BaseRestConsentStoreCli
     }
 
     @Override
-    public AccountAccessConsent rejectConsent(RejectAccountAccessConsentRequest rejectRequest) throws ConsentStoreClientException {
+    public AccountAccessConsent rejectConsent(RejectConsentRequest rejectRequest) throws ConsentStoreClientException {
         final String url = consentServiceBaseUrl + "/" + rejectRequest.getConsentId() + "/reject";
-        final HttpEntity<RejectAccountAccessConsentRequest> requestEntity = new HttpEntity<>(rejectRequest, createHeaders(rejectRequest.getApiClientId()));
+        final HttpEntity<RejectConsentRequest> requestEntity = new HttpEntity<>(rejectRequest, createHeaders(rejectRequest.getApiClientId()));
         return doRestCall(url, HttpMethod.POST, requestEntity, AccountAccessConsent.class);
     }
 }

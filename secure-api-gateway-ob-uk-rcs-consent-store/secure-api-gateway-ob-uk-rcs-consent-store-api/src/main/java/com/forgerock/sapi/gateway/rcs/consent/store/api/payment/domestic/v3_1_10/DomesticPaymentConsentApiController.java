@@ -15,6 +15,7 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic.v3_1_10;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import org.joda.time.DateTime;
@@ -25,11 +26,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.AuthoriseDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.ConsumeDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.CreateDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.RejectDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticPaymentConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticPaymentAuthoriseConsentArgs;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticPaymentConsentService;
@@ -50,7 +51,7 @@ public class DomesticPaymentConsentApiController implements DomesticPaymentConse
 
     private final DomesticPaymentConsentService consentService;
 
-    private Supplier<DateTime> idempotencyKeyExpirationSupplier;
+    private final Supplier<DateTime> idempotencyKeyExpirationSupplier;
 
     private final OBVersion obVersion;
 
@@ -63,9 +64,9 @@ public class DomesticPaymentConsentApiController implements DomesticPaymentConse
     public DomesticPaymentConsentApiController(DomesticPaymentConsentService consentService,
                                                Supplier<DateTime> idempotencyKeyExpirationSupplier,
                                                OBVersion obVersion) {
-        this.consentService = consentService;
-        this.idempotencyKeyExpirationSupplier = idempotencyKeyExpirationSupplier;
-        this.obVersion = obVersion;
+        this.consentService = Objects.requireNonNull(consentService, "consentService must be provided");
+        this.idempotencyKeyExpirationSupplier = Objects.requireNonNull(idempotencyKeyExpirationSupplier, "idempotencyKeyExpirationSupplier must be provided");
+        this.obVersion = Objects.requireNonNull(obVersion, "obVersion must be provided");
     }
 
     @Override
@@ -101,7 +102,7 @@ public class DomesticPaymentConsentApiController implements DomesticPaymentConse
     }
 
     @Override
-    public ResponseEntity<DomesticPaymentConsent> rejectConsent(String consentId, RejectDomesticPaymentConsentRequest request, String apiClientId) {
+    public ResponseEntity<DomesticPaymentConsent> rejectConsent(String consentId, RejectConsentRequest request, String apiClientId) {
         logger.info("Attempting to rejectConsent - id: {}, request: {}, apiClientId: {}", consentId, request, apiClientId);
         return ResponseEntity.ok(convertEntityToDto(consentService.rejectConsent(consentId, apiClientId, request.getResourceOwnerId())));
     }

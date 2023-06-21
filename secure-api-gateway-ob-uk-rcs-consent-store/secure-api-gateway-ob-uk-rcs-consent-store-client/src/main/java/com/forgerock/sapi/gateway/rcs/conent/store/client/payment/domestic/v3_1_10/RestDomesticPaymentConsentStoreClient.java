@@ -25,11 +25,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.sapi.gateway.rcs.conent.store.client.BaseRestConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.conent.store.client.ConsentStoreClientConfiguration;
 import com.forgerock.sapi.gateway.rcs.conent.store.client.ConsentStoreClientException;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.AuthoriseDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.ConsumeDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.CreateDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.RejectDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 /**
@@ -73,9 +73,9 @@ public class RestDomesticPaymentConsentStoreClient extends BaseRestConsentStoreC
     }
 
     @Override
-    public DomesticPaymentConsent rejectConsent(RejectDomesticPaymentConsentRequest rejectRequest) throws ConsentStoreClientException {
+    public DomesticPaymentConsent rejectConsent(RejectConsentRequest rejectRequest) throws ConsentStoreClientException {
         final String url = consentServiceBaseUrl + "/" + rejectRequest.getConsentId() + "/reject";
-        final HttpEntity<RejectDomesticPaymentConsentRequest> requestEntity = new HttpEntity<>(rejectRequest, createHeaders(rejectRequest.getApiClientId()));
+        final HttpEntity<RejectConsentRequest> requestEntity = new HttpEntity<>(rejectRequest, createHeaders(rejectRequest.getApiClientId()));
         return doRestCall(url, HttpMethod.POST, requestEntity, DomesticPaymentConsent.class);
     }
 

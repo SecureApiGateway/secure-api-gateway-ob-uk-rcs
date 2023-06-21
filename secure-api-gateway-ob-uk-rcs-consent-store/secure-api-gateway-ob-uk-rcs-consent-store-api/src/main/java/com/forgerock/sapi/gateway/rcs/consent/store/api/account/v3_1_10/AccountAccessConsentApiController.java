@@ -15,6 +15,8 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.api.account.v3_1_10;
 
+import java.util.Objects;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +24,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AccountAccessConsent;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AuthoriseAccountAccessConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.CreateAccountAccessConsentRequest;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.RejectAccountAccessConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.account.AccountAccessConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessAuthoriseConsentArgs;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessConsentService;
@@ -48,8 +50,8 @@ public class AccountAccessConsentApiController implements AccountAccessConsentAp
     }
 
     public AccountAccessConsentApiController(AccountAccessConsentService consentService, OBVersion obVersion) {
-        this.consentService = consentService;
-        this.obVersion = obVersion;
+        this.consentService = Objects.requireNonNull(consentService, "consentService must be provided");
+        this.obVersion = Objects.requireNonNull(obVersion, "obVersion must be provided");
     }
 
     @Override
@@ -83,7 +85,7 @@ public class AccountAccessConsentApiController implements AccountAccessConsentAp
     }
 
     @Override
-    public ResponseEntity<AccountAccessConsent> rejectConsent(String consentId, RejectAccountAccessConsentRequest request, String apiClientId) {
+    public ResponseEntity<AccountAccessConsent> rejectConsent(String consentId, RejectConsentRequest request, String apiClientId) {
         logger.info("Attempting to rejectConsent - id: {}, request: {}, apiClientId: {}", consentId, request, apiClientId);
         return ResponseEntity.ok(convertEntityToDto(consentService.rejectConsent(consentId, apiClientId, request.getResourceOwnerId())));
     }

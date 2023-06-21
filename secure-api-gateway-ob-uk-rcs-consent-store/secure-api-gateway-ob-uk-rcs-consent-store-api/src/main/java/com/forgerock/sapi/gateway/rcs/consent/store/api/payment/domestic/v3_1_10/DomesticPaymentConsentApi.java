@@ -25,11 +25,11 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.AuthoriseDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.ConsumeDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.CreateDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.RejectDomesticPaymentConsentRequest;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -123,7 +123,7 @@ public interface DomesticPaymentConsentApi {
     ResponseEntity<DomesticPaymentConsent> rejectConsent(@PathVariable(value = "consentId") String consentId,
                                                          @ApiParam(value = "Reject Consent Request", required = true)
                                                          @Valid
-                                                         @RequestBody RejectDomesticPaymentConsentRequest request,
+                                                         @RequestBody RejectConsentRequest request,
                                                          @RequestHeader(value = "x-api-client-id") String apiClientId);
 
 

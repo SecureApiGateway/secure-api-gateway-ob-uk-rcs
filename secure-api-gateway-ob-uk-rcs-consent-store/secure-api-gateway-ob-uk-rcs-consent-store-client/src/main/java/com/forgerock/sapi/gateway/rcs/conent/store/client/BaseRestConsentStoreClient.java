@@ -16,6 +16,7 @@
 package com.forgerock.sapi.gateway.rcs.conent.store.client;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,8 +47,8 @@ public abstract class BaseRestConsentStoreClient {
 
 
     public BaseRestConsentStoreClient(RestTemplateBuilder restTemplateBuilder, ObjectMapper objectMapper) {
-        this.restTemplate = restTemplateBuilder.build();
-        this.objectMapper = objectMapper;
+        this.restTemplate = Objects.requireNonNull(restTemplateBuilder,  "restTemplateBuilder must be provided").build();
+        this.objectMapper = Objects.requireNonNull(objectMapper, "objectMapper must be provided");
     }
 
     protected HttpHeaders createHeaders(String apiClientId) {

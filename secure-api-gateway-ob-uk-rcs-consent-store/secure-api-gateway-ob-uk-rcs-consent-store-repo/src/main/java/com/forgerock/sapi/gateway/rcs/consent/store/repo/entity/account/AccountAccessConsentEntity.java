@@ -24,6 +24,9 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.BaseConsentEntit
 
 import uk.org.openbanking.datamodel.account.OBReadConsent1;
 
+/**
+ * OBIE Account Access Consent: https://openbankinguk.github.io/read-write-api-site3/v3.1.10/resources-and-data-models/aisp/account-access-consents.html
+ */
 @Document("AccountAccessConsent")
 @Validated
 public class AccountAccessConsentEntity extends BaseConsentEntity<OBReadConsent1> {
