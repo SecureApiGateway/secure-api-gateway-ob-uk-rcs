@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rcs.server.api;
+package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -33,6 +33,7 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ExceptionCli
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.ApiClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.ConsentClientDetailsRequest;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services.ApiClientServiceClient;
+import com.forgerock.sapi.gateway.ob.uk.rcs.server.api.DebtorAccountService;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.client.rs.AccountService;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.ApiProviderConfiguration;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.ConsentStoreEnabledIntentTypes;
@@ -91,7 +92,7 @@ public class ConsentStoreDetailsService {
     private DomesticPaymentConsentDetails getDomesticPaymentConsentDetails(ConsentClientDetailsRequest consentClientRequest) throws ExceptionClient {
         final String clientId = consentClientRequest.getClientId();
         final String intentId = consentClientRequest.getIntentId();
-        logger.info("Fetching Data from RCS Consent Service - consentId: {}, clientId: {}");
+        logger.info("Fetching Data from RCS Consent Service - consentId: {}, clientId: {}", intentId, clientId);
         final DomesticPaymentConsentEntity consent = domesticPaymentConsentService.getConsent(intentId, clientId);
         logger.info("Got consent: {}", consent);
 

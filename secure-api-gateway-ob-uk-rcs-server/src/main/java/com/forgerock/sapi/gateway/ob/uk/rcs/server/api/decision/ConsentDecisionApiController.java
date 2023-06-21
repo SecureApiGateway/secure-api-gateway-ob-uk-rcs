@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rcs.server.api;
+package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
@@ -128,7 +128,7 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
                     log.debug("Updating consent: {} in RCS Consent Store", intentId);
                     if (authorised) {
                         consentStoreDecisionService.authoriseConsent(intentType, intentId, clientId, resourceOwner,
-                                                                     consentDecisionDeserialized.getDebtorAccount().getAccountId());
+                                                                     consentDecisionDeserialized);
                     } else {
                         consentStoreDecisionService.rejectConsent(intentType, intentId, clientId, resourceOwner);
                     }

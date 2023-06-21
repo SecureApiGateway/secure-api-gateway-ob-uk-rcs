@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rcs.server.api;
+package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details;
 
 import static com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.test.support.ConsentDetailsRequestTestDataFactory.aValidConsentDetailsRequest;
 import static com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.test.support.UserTestDataFactory.aValidUser;

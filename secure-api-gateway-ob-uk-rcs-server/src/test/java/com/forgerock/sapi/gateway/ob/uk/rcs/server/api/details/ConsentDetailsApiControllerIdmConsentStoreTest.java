@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rcs.server.api;
+package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details;
 
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.RedirectionAction;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.*;
@@ -72,8 +72,8 @@ import static com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.test.support.Int
 import static com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.test.support.InternationalScheduledPaymentConsentDetailsTestFactory.aValidInternationalScheduledPaymentConsentDetails;
 import static com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.test.support.InternationalStandingOrderConsentDetailsTestFactory.aValidInternationalStandingOrderConsentDetails;
 import static com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.test.support.UserTestDataFactory.aValidUser;
-import static com.forgerock.sapi.gateway.ob.uk.rcs.server.api.ConsentDetailsTestValidations.validateDomesticScheduledConsentDetailsResponse;
-import static com.forgerock.sapi.gateway.ob.uk.rcs.server.api.ConsentDetailsTestValidations.validateDomesticStandingOrderConsentDetailsResponse;
+import static com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.ConsentDetailsTestValidations.validateDomesticScheduledConsentDetailsResponse;
+import static com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.ConsentDetailsTestValidations.validateDomesticStandingOrderConsentDetailsResponse;
 import static com.forgerock.sapi.gateway.ob.uk.rcs.server.util.Constants.*;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;

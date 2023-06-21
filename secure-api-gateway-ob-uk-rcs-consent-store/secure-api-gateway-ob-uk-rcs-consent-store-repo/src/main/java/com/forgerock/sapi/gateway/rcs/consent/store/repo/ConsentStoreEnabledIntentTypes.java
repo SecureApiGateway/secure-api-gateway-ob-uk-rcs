@@ -38,7 +38,8 @@ public class ConsentStoreEnabledIntentTypes {
     /**
      * IntentTypes which this module has implemented support for
      */
-    private final EnumSet<IntentType> implementedIntentTypes = EnumSet.of(IntentType.PAYMENT_DOMESTIC_CONSENT);
+    private final EnumSet<IntentType> implementedIntentTypes = EnumSet.of(IntentType.PAYMENT_DOMESTIC_CONSENT,
+                                                                          IntentType.ACCOUNT_ACCESS_CONSENT);
 
     public ConsentStoreEnabledIntentTypes(EnumSet<IntentType> consentStoreEnabledIntentTypes) {
         this.consentStoreEnabledIntentTypes = consentStoreEnabledIntentTypes;

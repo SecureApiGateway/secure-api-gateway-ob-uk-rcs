@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rcs.server.api;
+package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.ConsentDetailsApi;
+import com.forgerock.sapi.gateway.ob.uk.rcs.server.api.DebtorAccountService;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.ApiProviderConfiguration;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.exception.InvalidConsentException;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.Constants;
