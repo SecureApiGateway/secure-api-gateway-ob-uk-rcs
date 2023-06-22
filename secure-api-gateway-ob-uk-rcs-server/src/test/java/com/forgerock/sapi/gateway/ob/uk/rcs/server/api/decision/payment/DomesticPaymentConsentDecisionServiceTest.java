@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision;
+package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.payment;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
@@ -30,6 +30,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.decision.ConsentDecisionDeserialized;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.Constants;
+import com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.payment.DomesticPaymentConsentDecisionService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException.ErrorType;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticPaymentAuthoriseConsentArgs;
@@ -37,6 +38,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.Domesti
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 @ExtendWith(MockitoExtension.class)
+public
 class DomesticPaymentConsentDecisionServiceTest {
 
     private static final String TEST_AUTHORISED_DEBTOR_ACC_ID = "debtor-acc-1";

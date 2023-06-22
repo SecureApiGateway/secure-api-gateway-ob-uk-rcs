@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision;
+package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.account;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
@@ -31,6 +31,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.decision.ConsentDecisionDeserialized;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.Constants;
+import com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.account.AccountAccessConsentDecisionService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException.ErrorType;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessAuthoriseConsentArgs;
@@ -38,6 +39,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.Account
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 @ExtendWith(MockitoExtension.class)
+public
 class AccountAccessConsentDecisionServiceTest {
 
     private static final List<String> TEST_AUTHORISED_ACCOUNT_ACCESS_IDS = List.of("acc-1", "acc-2");
