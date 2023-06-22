@@ -77,7 +77,7 @@ public class ConsentDetailsApiControllerRcsConsentStoreTest {
     private UserServiceClient userServiceClient;
 
     @MockBean
-    private ConsentStoreDetailsService consentStoreDetailsService;
+    private ConsentStoreDetailsServiceRegistry consentStoreDetailsServiceRegistry;
 
     @Autowired
     private ConsentStoreEnabledIntentTypes consentStoreEnabledIntentTypes;
@@ -109,10 +109,10 @@ public class ConsentDetailsApiControllerRcsConsentStoreTest {
         User user = aValidUser();
         consentDetailsRequest.setUser(user);
         given(userServiceClient.getUser(anyString())).willReturn(user);
-        given(consentStoreDetailsService.isIntentTypeSupported(eq(intentType))).willReturn(Boolean.TRUE);
+        given(consentStoreDetailsServiceRegistry.isIntentTypeSupported(eq(intentType))).willReturn(Boolean.TRUE);
 
         final ArgumentCaptor<ConsentClientDetailsRequest> consentDetailsArgCaptor = ArgumentCaptor.forClass(ConsentClientDetailsRequest.class);
-        given(consentStoreDetailsService.getDetailsFromConsentStore(eq(intentType), consentDetailsArgCaptor.capture())).willReturn(testConsentDetails);
+        given(consentStoreDetailsServiceRegistry.getDetailsFromConsentStore(eq(intentType), consentDetailsArgCaptor.capture())).willReturn(testConsentDetails);
 
         String jwtRequest = JwtTestHelper.consentRequestJwt(
                 consentDetailsRequest.getClientId(),

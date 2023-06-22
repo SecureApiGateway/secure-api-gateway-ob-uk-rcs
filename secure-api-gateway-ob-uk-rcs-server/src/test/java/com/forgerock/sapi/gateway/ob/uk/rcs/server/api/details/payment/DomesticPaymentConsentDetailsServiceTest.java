@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details;
+package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.payment;
 
 import static com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DefaultDomesticPaymentConsentServiceTest.createValidConsentEntity;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.BDDMockito.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -51,7 +49,6 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services.ApiClientServi
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.api.DebtorAccountService;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.client.rs.AccountService;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.ApiProviderConfiguration;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.ConsentStoreEnabledIntentTypes;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticPaymentConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticPaymentConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
@@ -60,11 +57,9 @@ import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5DataCharges;
 
 @ExtendWith(MockitoExtension.class)
-class ConsentStoreDetailsServiceTest {
+class DomesticPaymentConsentDetailsServiceTest {
 
     private static final String TEST_API_PROVIDER = "Test Api Provider";
-    @Mock
-    private ConsentStoreEnabledIntentTypes consentStoreEnabledIntentTypes;
 
     @Mock
     private DomesticPaymentConsentService domesticPaymentConsentService;
@@ -82,15 +77,15 @@ class ConsentStoreDetailsServiceTest {
     private DebtorAccountService debtorAccountService;
 
     @InjectMocks
-    private ConsentStoreDetailsService consentStoreDetailsService;
+    private DomesticPaymentConsentDetailsService consentDetailsService;
+
     private final User testUser;
 
     private final List<FRAccountWithBalance> testUserBankAccounts;
 
     private final ApiClient testApiClient;
 
-
-    public ConsentStoreDetailsServiceTest() {
+    public DomesticPaymentConsentDetailsServiceTest() {
         testUser = new User();
         testUser.setId("test-user-1");
         testUser.setUserName("testUser");
@@ -102,28 +97,43 @@ class ConsentStoreDetailsServiceTest {
         testUserBankAccounts = List.of(FRAccountWithBalanceTestDataFactory.aValidFRAccountWithBalance());
     }
 
-    @Test
-    void testIsIntentTypeSupportedAllIntentTypesDisabled() {
-        for (IntentType intentType : IntentType.values()) {
-            assertFalse(consentStoreDetailsService.isIntentTypeSupported(intentType));
-        }
+    private static Stream<Arguments> chargeParameters() {
+        return Stream.of(
+                Arguments.of(List.of("0.01", "0.02", "0.2"), "0.23"),
+                Arguments.of(List.of("0"), "0"),
+                Arguments.of(List.of("0.25"), "0.25")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("chargeParameters")
+    void testCalculateCharges(List<String> chargeAmounts, String expectedTotal) {
+        final List<OBWriteDomesticConsentResponse5DataCharges> charges = chargeAmounts.stream().map(charge -> {
+            final OBWriteDomesticConsentResponse5DataCharges obCharge = new OBWriteDomesticConsentResponse5DataCharges();
+            obCharge.setAmount(new OBActiveOrHistoricCurrencyAndAmount().amount(charge).currency("GBP"));
+            return obCharge;
+        }).collect(Collectors.toList());
+
+        assertThat(DomesticPaymentConsentDetailsService.computeTotalChargeAmount(charges)).isEqualTo(new FRAmount(expectedTotal, "GBP"));
     }
 
     @Test
-    void testGetDetailsFailsIfIntentTypeDisabled() {
-        final IllegalStateException ex = assertThrows(IllegalStateException.class, () ->
-                consentStoreDetailsService.getDetailsFromConsentStore(IntentType.ACCOUNT_ACCESS_CONSENT,
-                        new ConsentClientDetailsRequest(null, null, null, null)));
+    void testCalculateChargesMismatchCcy() {
+        final List<OBWriteDomesticConsentResponse5DataCharges> charges = List.of(
+                new OBWriteDomesticConsentResponse5DataCharges().amount(new OBActiveOrHistoricCurrencyAndAmount().amount("0.01").currency("GBP")),
+                new OBWriteDomesticConsentResponse5DataCharges().amount(new OBActiveOrHistoricCurrencyAndAmount().amount("0.2").currency("EUR"))
+        );
 
-        assertEquals("ACCOUNT_ACCESS_CONSENT support not currently implemented in Consent Store module", ex.getMessage());
+        final IllegalStateException ex = assertThrows(IllegalStateException.class, () -> DomesticPaymentConsentDetailsService.computeTotalChargeAmount(charges));
+        assertThat(ex.getMessage()).isEqualTo("Charges contain more than 1 currency, all charges must be in the same currency");
     }
+
 
     @Test
     void testGetDomesticPaymentDetails() throws ExceptionClient {
         given(apiClientServiceClient.getApiClient(eq(testApiClient.getId()))).willReturn(testApiClient);
         given(accountService.getAccountsWithBalance(testUser.getId())).willReturn(testUserBankAccounts);
         given(apiProviderConfiguration.getName()).willReturn(TEST_API_PROVIDER);
-        given(consentStoreEnabledIntentTypes.isIntentTypeSupported(eq(IntentType.PAYMENT_DOMESTIC_CONSENT))).willReturn(Boolean.TRUE);
 
         final String intentId = IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId();
 
@@ -131,7 +141,7 @@ class ConsentStoreDetailsServiceTest {
         consentEntity.setId(intentId);
         given(domesticPaymentConsentService.getConsent(intentId, testApiClient.getId())).willReturn(consentEntity);
 
-        final ConsentDetails consentDetails = consentStoreDetailsService.getDetailsFromConsentStore(IntentType.PAYMENT_DOMESTIC_CONSENT,
+        final ConsentDetails consentDetails = consentDetailsService.getDetailsFromConsentStore(
                 new ConsentClientDetailsRequest(intentId, null, testUser, testApiClient.getId()));
 
         assertThat(consentDetails).isInstanceOf(DomesticPaymentConsentDetails.class);
@@ -153,35 +163,4 @@ class ConsentStoreDetailsServiceTest {
         verifyNoInteractions(debtorAccountService);
     }
 
-
-    private static Stream<Arguments> chargeParameters() {
-        return Stream.of(
-                Arguments.of(List.of("0.01", "0.02", "0.2"), "0.23"),
-                Arguments.of(List.of("0"), "0"),
-                Arguments.of(List.of("0.25"), "0.25")
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource("chargeParameters")
-    void testCalculateCharges(List<String> chargeAmounts, String expectedTotal) {
-        final List<OBWriteDomesticConsentResponse5DataCharges> charges = chargeAmounts.stream().map(charge -> {
-            final OBWriteDomesticConsentResponse5DataCharges obCharge = new OBWriteDomesticConsentResponse5DataCharges();
-            obCharge.setAmount(new OBActiveOrHistoricCurrencyAndAmount().amount(charge).currency("GBP"));
-            return obCharge;
-        }).collect(Collectors.toList());
-
-        assertThat(ConsentStoreDetailsService.computeTotalChargeAmount(charges)).isEqualTo(new FRAmount(expectedTotal, "GBP"));
-    }
-
-    @Test
-    void testCalculateChargesMismatchCcy() {
-        final List<OBWriteDomesticConsentResponse5DataCharges> charges = List.of(
-                new OBWriteDomesticConsentResponse5DataCharges().amount(new OBActiveOrHistoricCurrencyAndAmount().amount("0.01").currency("GBP")),
-                new OBWriteDomesticConsentResponse5DataCharges().amount(new OBActiveOrHistoricCurrencyAndAmount().amount("0.2").currency("EUR"))
-        );
-
-        final IllegalStateException ex = assertThrows(IllegalStateException.class, () -> ConsentStoreDetailsService.computeTotalChargeAmount(charges));
-        assertThat(ex.getMessage()).isEqualTo("Charges contain more than 1 currency, all charges must be in the same currency");
-    }
 }

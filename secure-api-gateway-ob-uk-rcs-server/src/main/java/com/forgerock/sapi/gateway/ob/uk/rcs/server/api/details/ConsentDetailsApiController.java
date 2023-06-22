@@ -64,7 +64,7 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
     private final ApiProviderConfiguration apiProviderConfiguration;
     private final ConsentDetailsFactoryProvider consentDetailsFactoryProvider;
     private final DebtorAccountService debtorAccountService;
-    private final ConsentStoreDetailsService consentStoreDetailsService;
+    private final ConsentStoreDetailsServiceRegistry consentStoreDetailsServiceRegistry;
 
     public ConsentDetailsApiController(ConsentServiceClient consentServiceClient,
                                        ApiClientServiceClient apiClientService,
@@ -73,7 +73,7 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                                        ObjectMapper objectMapper,
                                        ApiProviderConfiguration apiProviderConfiguration,
                                        ConsentDetailsFactoryProvider consentDetailsFactoryProvider,
-                                       DebtorAccountService debtorAccountService, ConsentStoreDetailsService consentStoreDetailsService) {
+                                       DebtorAccountService debtorAccountService, ConsentStoreDetailsServiceRegistry consentStoreDetailsServiceRegistry) {
         this.consentServiceClient = consentServiceClient;
         this.apiClientService = apiClientService;
         this.userServiceClient = userServiceClient;
@@ -82,7 +82,7 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
         this.apiProviderConfiguration = apiProviderConfiguration;
         this.consentDetailsFactoryProvider = consentDetailsFactoryProvider;
         this.debtorAccountService = debtorAccountService;
-        this.consentStoreDetailsService = consentStoreDetailsService;
+        this.consentStoreDetailsServiceRegistry = consentStoreDetailsServiceRegistry;
     }
 
     @Override
@@ -111,8 +111,8 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
             IntentType intentType = IntentType.identify(intentId);
             if (Objects.nonNull(intentType)) {
                 final ConsentDetails details;
-                if (consentStoreDetailsService.isIntentTypeSupported(intentType)) {
-                    details = consentStoreDetailsService.getDetailsFromConsentStore(intentType, consentClientRequest);
+                if (consentStoreDetailsServiceRegistry.isIntentTypeSupported(intentType)) {
+                    details = consentStoreDetailsServiceRegistry.getDetailsFromConsentStore(intentType, consentClientRequest);
                 } else {
 
                     log.debug("Intent type: '{}' with ID '{}'", intentType, intentId);
