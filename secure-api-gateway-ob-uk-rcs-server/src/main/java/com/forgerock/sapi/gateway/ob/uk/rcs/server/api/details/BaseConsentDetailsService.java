@@ -16,6 +16,7 @@
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,16 +33,19 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 public abstract class BaseConsentDetailsService<T extends BaseConsentEntity, D extends ConsentDetails> implements ConsentStoreDetailsService {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final IntentType supportedIntentType;
 
     protected final ConsentService<T, ?> consentService;
+
+    private final Supplier<D> consentDetailsObjSupplier;
     private final ApiProviderConfiguration apiProviderConfiguration;
     private final ApiClientServiceClient apiClientService;
 
-    public BaseConsentDetailsService(IntentType supportedIntentType, ConsentService<T, ?> consentService, ApiProviderConfiguration apiProviderConfiguration, ApiClientServiceClient apiClientService) {
+    public BaseConsentDetailsService(IntentType supportedIntentType, Supplier<D> consentDetailsObjSupplier, ConsentService<T, ?> consentService, ApiProviderConfiguration apiProviderConfiguration, ApiClientServiceClient apiClientService) {
         this.supportedIntentType = Objects.requireNonNull(supportedIntentType, "supportedIntentType must be provided");
+        this.consentDetailsObjSupplier = Objects.requireNonNull(consentDetailsObjSupplier, "consentDetailsObjSupplier must be provided");
         this.consentService = Objects.requireNonNull(consentService, "consentService must be provided");
         this.apiProviderConfiguration = Objects.requireNonNull(apiProviderConfiguration, "apiProviderConfiguration must be provided");
         this.apiClientService = Objects.requireNonNull(apiClientService, "apiClientService must be provided");
@@ -51,17 +55,13 @@ public abstract class BaseConsentDetailsService<T extends BaseConsentEntity, D e
     public ConsentDetails getDetailsFromConsentStore(ConsentClientDetailsRequest consentClientRequest) throws ExceptionClient {
         final T consent = getConsent(consentClientRequest);
 
-        final D consentDetails = createConsentDetailsObject();
+        final D consentDetails = consentDetailsObjSupplier.get();
         populateCommonConsentDetailsFields(consentDetails, consentClientRequest);
         addIntentTypeSpecificData(consentDetails, consent, consentClientRequest);
 
         return consentDetails;
     }
 
-    /**
-     * @return any initialized ConsentDetails object
-     */
-    protected abstract D createConsentDetailsObject();
 
     protected abstract void addIntentTypeSpecificData(D consentDetails, T consent, ConsentClientDetailsRequest consentClientDetailsRequest);
 

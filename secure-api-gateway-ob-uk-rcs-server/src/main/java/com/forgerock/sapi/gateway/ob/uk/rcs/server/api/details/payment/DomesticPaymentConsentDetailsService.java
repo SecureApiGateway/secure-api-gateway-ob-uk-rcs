@@ -21,17 +21,20 @@ import java.util.Objects;
 
 import org.springframework.stereotype.Component;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccountWithBalance;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticDataInitiation;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticPaymentConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.ConsentClientDetailsRequest;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services.ApiClientServiceClient;
-import com.forgerock.sapi.gateway.ob.uk.rcs.server.api.DebtorAccountService;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.BaseConsentDetailsService;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.client.rs.AccountService;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.ApiProviderConfiguration;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticPaymentConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException.ErrorType;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import com.google.common.annotations.VisibleForTesting;
@@ -43,21 +46,15 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5DataC
 @Component
 public class DomesticPaymentConsentDetailsService extends BaseConsentDetailsService<DomesticPaymentConsentEntity, DomesticPaymentConsentDetails> {
 
-    private final DebtorAccountService debtorAccountService;
     private final AccountService accountService;
 
     public DomesticPaymentConsentDetailsService(ConsentService<DomesticPaymentConsentEntity, ?> consentService,
             ApiProviderConfiguration apiProviderConfiguration, ApiClientServiceClient apiClientService,
-            DebtorAccountService debtorAccountService, AccountService accountService) {
+            AccountService accountService) {
 
-        super(IntentType.PAYMENT_DOMESTIC_CONSENT, consentService, apiProviderConfiguration, apiClientService);
-        this.debtorAccountService = debtorAccountService;
+        super(IntentType.PAYMENT_DOMESTIC_CONSENT, DomesticPaymentConsentDetails::new, consentService,
+                apiProviderConfiguration, apiClientService);
         this.accountService = accountService;
-    }
-
-    @Override
-    protected DomesticPaymentConsentDetails createConsentDetailsObject() {
-        return new DomesticPaymentConsentDetails();
     }
 
     @Override
@@ -74,8 +71,22 @@ public class DomesticPaymentConsentDetailsService extends BaseConsentDetailsServ
             consentDetails.setPaymentReference(initiation.getRemittanceInformation().getReference());
         }
 
-        if (Objects.nonNull(consentDetails.getDebtorAccount())) {
-            debtorAccountService.setDebtorAccountWithBalance(consentDetails, consentClientDetailsRequest.getConsentRequestJwtString(), consentDetails.getConsentId());
+        final FRAccountIdentifier debtorAccount = consentDetails.getDebtorAccount();
+        if (Objects.nonNull(debtorAccount)) {
+            FRAccountWithBalance accountWithBalance = accountService.getAccountWithBalanceByIdentifiers(
+                    consentDetails.getUserId(), debtorAccount.getName(), debtorAccount.getIdentification(), debtorAccount.getSchemeName());
+
+            if (Objects.nonNull(accountWithBalance)) {
+                debtorAccount.setAccountId(accountWithBalance.getAccount().getAccountId());
+                consentDetails.setAccounts(List.of(accountWithBalance));
+            } else {
+                logger.warn("Failed to set debtorAccount details for consentId: {}, " +
+                        "no account found for userId: {}, name:{}, identification: {}, schemeName: {}",
+                        consentDetails.getConsentId(), consentDetails.getUserId(), debtorAccount.getName(),
+                        debtorAccount.getIdentification(), debtorAccount.getSchemeName());
+               throw new ConsentStoreException(ErrorType.NOT_FOUND, consentDetails.getConsentId(), "DebtorAccount not found for user");
+            }
+
         } else {
             consentDetails.setAccounts(accountService.getAccountsWithBalance(consentDetails.getUserId()));
         }

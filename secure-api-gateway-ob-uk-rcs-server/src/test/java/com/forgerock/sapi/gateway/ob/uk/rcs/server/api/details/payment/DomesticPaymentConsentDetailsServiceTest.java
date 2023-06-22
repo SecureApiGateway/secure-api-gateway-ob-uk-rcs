@@ -20,7 +20,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,11 +32,13 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccountWithBalance;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticDataInitiation;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.account.FRAccountWithBalanceTestDataFactory;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.ConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticPaymentConsentDetails;
@@ -46,14 +47,15 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.ApiClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.ConsentClientDetailsRequest;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.User;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services.ApiClientServiceClient;
-import com.forgerock.sapi.gateway.ob.uk.rcs.server.api.DebtorAccountService;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.client.rs.AccountService;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.ApiProviderConfiguration;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticPaymentConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticPaymentConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
+import com.nimbusds.jwt.SignedJWT;
 
 import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
+import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationDebtorAccount;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5DataCharges;
 
 @ExtendWith(MockitoExtension.class)
@@ -73,9 +75,6 @@ class DomesticPaymentConsentDetailsServiceTest {
     @Mock
     private ApiProviderConfiguration apiProviderConfiguration;
 
-    @Mock
-    private DebtorAccountService debtorAccountService;
-
     @InjectMocks
     private DomesticPaymentConsentDetailsService consentDetailsService;
 
@@ -94,7 +93,7 @@ class DomesticPaymentConsentDetailsServiceTest {
         testApiClient.setId("acme-tpp-1");
         testApiClient.setName("ACME Corp");
 
-        testUserBankAccounts = List.of(FRAccountWithBalanceTestDataFactory.aValidFRAccountWithBalance());
+        testUserBankAccounts = List.of(FRAccountWithBalanceTestDataFactory.aValidFRAccountWithBalance(), FRAccountWithBalanceTestDataFactory.aValidFRAccountWithBalance());
     }
 
     private static Stream<Arguments> chargeParameters() {
@@ -159,8 +158,47 @@ class DomesticPaymentConsentDetailsServiceTest {
         assertThat(domesticPaymentConsentDetails.getUserId()).isEqualTo(testUser.getId());
 
         assertThat(domesticPaymentConsentDetails.getDebtorAccount()).isNull();
+    }
 
-        verifyNoInteractions(debtorAccountService);
+    @Test
+    public void testGetDomesticPaymentDetailsWithDebtorAccount() throws ExceptionClient {
+        final OBWriteDomestic2DataInitiationDebtorAccount debtorAccount = new OBWriteDomestic2DataInitiationDebtorAccount().name("Test Account").identification("account-id-123").schemeName("accountId");
+        given(apiClientServiceClient.getApiClient(eq(testApiClient.getId()))).willReturn(testApiClient);
+        final FRAccountWithBalance accountWithBalance = FRAccountWithBalanceTestDataFactory.aValidFRAccountWithBalance();
+        given(accountService.getAccountWithBalanceByIdentifiers(eq(testUser.getId()), eq(debtorAccount.getName()),
+                eq(debtorAccount.getIdentification()), eq(debtorAccount.getSchemeName()))).willReturn(accountWithBalance);
+        given(apiProviderConfiguration.getName()).willReturn(TEST_API_PROVIDER);
+
+        final String intentId = IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId();
+
+        final DomesticPaymentConsentEntity consentEntity = createValidConsentEntity(testApiClient.getId());
+
+        consentEntity.getRequestObj().getData().getInitiation().setDebtorAccount(debtorAccount);
+        consentEntity.setId(intentId);
+        given(domesticPaymentConsentService.getConsent(intentId, testApiClient.getId())).willReturn(consentEntity);
+
+        final ConsentDetails consentDetails = consentDetailsService.getDetailsFromConsentStore(
+                new ConsentClientDetailsRequest(intentId, Mockito.mock(SignedJWT.class), testUser, testApiClient.getId()));
+
+        assertThat(consentDetails).isInstanceOf(DomesticPaymentConsentDetails.class);
+        DomesticPaymentConsentDetails domesticPaymentConsentDetails = (DomesticPaymentConsentDetails) consentDetails;
+        assertThat(domesticPaymentConsentDetails.getConsentId()).isEqualTo(intentId);
+        assertThat(domesticPaymentConsentDetails.getClientName()).isEqualTo(testApiClient.getName());
+        assertThat(domesticPaymentConsentDetails.getPaymentReference()).isEqualTo("FRESCO-037");
+        assertThat(domesticPaymentConsentDetails.getCharges()).isEqualTo(new FRAmount("0.25", "GBP"));
+        assertThat(domesticPaymentConsentDetails.getInstructedAmount()).isEqualTo(new FRAmount("10.01", "GBP"));
+
+        final FRWriteDomesticDataInitiation initiation = FRWriteDomesticConsentConverter.toFRWriteDomesticDataInitiation(consentEntity.getRequestObj().getData().getInitiation());
+        initiation.getDebtorAccount().setAccountId(accountWithBalance.getAccount().getAccountId());
+
+        assertThat(domesticPaymentConsentDetails.getInitiation()).isEqualTo(initiation);
+        assertThat(domesticPaymentConsentDetails.getUsername()).isEqualTo(testUser.getUserName());
+        assertThat(domesticPaymentConsentDetails.getAccounts()).isEqualTo(List.of(accountWithBalance));
+        assertThat(domesticPaymentConsentDetails.getLogo()).isEqualTo(testApiClient.getLogoUri());
+        assertThat(domesticPaymentConsentDetails.getServiceProviderName()).isEqualTo(TEST_API_PROVIDER);
+        assertThat(domesticPaymentConsentDetails.getUserId()).isEqualTo(testUser.getId());
+
+        assertThat(domesticPaymentConsentDetails.getDebtorAccount()).isNotNull();
     }
 
 }

@@ -15,21 +15,25 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details;
 
+import static com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorType.INVALID_REQUEST;
+
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccountWithBalance;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.ConsentDetailsApi;
-import com.forgerock.sapi.gateway.ob.uk.rcs.server.api.DebtorAccountService;
-import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.ApiProviderConfiguration;
-import com.forgerock.sapi.gateway.ob.uk.rcs.server.exception.InvalidConsentException;
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.Constants;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.ConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.PaymentsConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.factory.details.ConsentDetailsFactory;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.factory.details.ConsentDetailsFactoryProvider;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException;
-import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
-import com.forgerock.sapi.gateway.uk.common.shared.claim.Claims;
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
-import com.forgerock.sapi.gateway.ob.uk.rcs.server.client.rs.AccountService;
+import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.Constants;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ExceptionClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.ApiClient;
@@ -39,17 +43,16 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services.ApiClientServi
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services.ConsentServiceClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services.UserServiceClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.utils.jwt.JwtUtil;
+import com.forgerock.sapi.gateway.ob.uk.rcs.server.client.rs.AccountService;
+import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.ApiProviderConfiguration;
+import com.forgerock.sapi.gateway.ob.uk.rcs.server.exception.InvalidConsentException;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
+import com.forgerock.sapi.gateway.uk.common.shared.claim.Claims;
 import com.google.gson.JsonObject;
 import com.nimbusds.jwt.SignedJWT;
+
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-
-import java.util.Objects;
-
-import static com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorType.INVALID_REQUEST;
 
 @Controller
 @Slf4j
@@ -63,7 +66,6 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
     private final AccountService accountService;
     private final ApiProviderConfiguration apiProviderConfiguration;
     private final ConsentDetailsFactoryProvider consentDetailsFactoryProvider;
-    private final DebtorAccountService debtorAccountService;
     private final ConsentStoreDetailsServiceRegistry consentStoreDetailsServiceRegistry;
 
     public ConsentDetailsApiController(ConsentServiceClient consentServiceClient,
@@ -73,7 +75,7 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                                        ObjectMapper objectMapper,
                                        ApiProviderConfiguration apiProviderConfiguration,
                                        ConsentDetailsFactoryProvider consentDetailsFactoryProvider,
-                                       DebtorAccountService debtorAccountService, ConsentStoreDetailsServiceRegistry consentStoreDetailsServiceRegistry) {
+                                       ConsentStoreDetailsServiceRegistry consentStoreDetailsServiceRegistry) {
         this.consentServiceClient = consentServiceClient;
         this.apiClientService = apiClientService;
         this.userServiceClient = userServiceClient;
@@ -81,7 +83,6 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
         this.objectMapper = objectMapper;
         this.apiProviderConfiguration = apiProviderConfiguration;
         this.consentDetailsFactoryProvider = consentDetailsFactoryProvider;
-        this.debtorAccountService = debtorAccountService;
         this.consentStoreDetailsServiceRegistry = consentStoreDetailsServiceRegistry;
     }
 
@@ -139,7 +140,7 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                     // DebtorAccount is optional, but the PISP could provide the account identifier details for the PSU
                     // The accounts displayed in the RCS ui needs to be The debtor account if is provided in the consent otherwise the user accounts
                     if ((details instanceof PaymentsConsentDetails) && Objects.nonNull(((PaymentsConsentDetails) details).getDebtorAccount())) {
-                        debtorAccountService.setDebtorAccountWithBalance((PaymentsConsentDetails) details, consentRequestJws, intentId);
+                        setDebtorAccountWithBalance((PaymentsConsentDetails) details, consentRequestJws, intentId);
                     } else {
                         details.setAccounts(accountService.getAccountsWithBalance(details.getUserId()));
                     }
@@ -183,5 +184,25 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                 .user(user)
                 .clientId(clientId)
                 .build();
+    }
+
+    public void setDebtorAccountWithBalance(PaymentsConsentDetails details, String consentRequestJws, String intentId) {
+        FRAccountIdentifier debtorAccount = details.getDebtorAccount();
+        if (Objects.nonNull(debtorAccount)) {
+            FRAccountWithBalance accountWithBalance = accountService.getAccountWithBalanceByIdentifiers(
+                    details.getUserId(), debtorAccount.getName(), debtorAccount.getIdentification(), debtorAccount.getSchemeName()
+            );
+            if (Objects.nonNull(accountWithBalance)) {
+                debtorAccount.setAccountId(accountWithBalance.getAccount().getAccountId());
+                details.setAccounts(List.of(accountWithBalance));
+            } else {
+                String message = String.format("Invalid debtor account provide in the consent for the intent ID: '%s', the debtor account provided in the consent doesn't exist", intentId);
+                log.error(message);
+                throw new InvalidConsentException(consentRequestJws, ErrorType.ACCOUNT_SELECTION_REQUIRED,
+                        OBRIErrorType.REQUEST_BINDING_FAILED, message,
+                        details.getClientId(),
+                        intentId);
+            }
+        }
     }
 }

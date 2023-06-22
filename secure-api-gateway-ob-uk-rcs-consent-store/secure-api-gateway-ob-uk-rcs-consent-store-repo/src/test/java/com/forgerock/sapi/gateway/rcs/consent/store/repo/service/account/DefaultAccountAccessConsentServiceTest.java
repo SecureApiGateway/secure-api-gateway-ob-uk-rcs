@@ -25,6 +25,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Path;
 
+import org.joda.time.DateTime;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -57,14 +58,19 @@ public class DefaultAccountAccessConsentServiceTest extends BaseConsentServiceTe
 
     @Override
     protected AccountAccessConsentEntity getValidConsentEntity() {
+        return createValidConsentEntity("test-api-client-1");
+    }
+
+    public static AccountAccessConsentEntity createValidConsentEntity(String apiClientId) {
         final AccountAccessConsentEntity accountAccessConsentEntity = new AccountAccessConsentEntity();
-        accountAccessConsentEntity.setApiClientId("test-api-client-1");
-        accountAccessConsentEntity.setStatus(getNewConsentStatus());
+        accountAccessConsentEntity.setApiClientId(apiClientId);
+        accountAccessConsentEntity.setStatus(OBExternalRequestStatus1Code.AWAITINGAUTHORISATION.toString());
         accountAccessConsentEntity.setRequestType(OBReadConsent1.class.getSimpleName());
         accountAccessConsentEntity.setRequestVersion(OBVersion.v3_1_10);
 
         final OBReadConsent1 obReadConsent = new OBReadConsent1();
-        obReadConsent.setData(new OBReadData1().permissions(List.of(OBExternalPermissions1Code.READACCOUNTSBASIC)));
+        obReadConsent.setData(new OBReadData1().permissions(List.of(OBExternalPermissions1Code.READACCOUNTSBASIC))
+                                               .expirationDateTime(DateTime.now().plusDays(30)));
         obReadConsent.setRisk(new OBRisk2());
         accountAccessConsentEntity.setRequestObj(obReadConsent);
 
