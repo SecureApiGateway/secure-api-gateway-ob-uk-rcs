@@ -62,17 +62,17 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
     private final RcsJwtSigner jwtSigner;
     private final String rcsJwtIssuer;
 
-    private final ConsentStoreDecisionService consentStoreDecisionService;
+    private final ConsentStoreDecisionServiceRegistry consentStoreDecisionServiceRegistry;
 
     public ConsentDecisionApiController(ObjectMapper objectMapper, ConsentServiceClient consentServiceClient,
                                         RcsJwtSigner jwtSigner,
                                         @Value("${rcs.consent.response.jwt.issuer}") String rcsJwtIssuer,
-                                        ConsentStoreDecisionService consentStoreDecisionService) {
+                                        ConsentStoreDecisionServiceRegistry consentStoreDecisionServiceRegistry) {
         this.objectMapper = objectMapper;
         this.consentServiceClient = consentServiceClient;
         this.jwtSigner = jwtSigner;
         this.rcsJwtIssuer = rcsJwtIssuer;
-        this.consentStoreDecisionService = consentStoreDecisionService;
+        this.consentStoreDecisionServiceRegistry = consentStoreDecisionServiceRegistry;
     }
 
     @Override
@@ -124,13 +124,13 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
                         .build();
                 log.debug("consentClientDecisionRequest \n {}", consentClientDecisionRequest);
 
-                if (consentStoreDecisionService.isIntentTypeSupported(intentType)) {
+                if (consentStoreDecisionServiceRegistry.isIntentTypeSupported(intentType)) {
                     log.debug("Updating consent: {} in RCS Consent Store", intentId);
                     if (authorised) {
-                        consentStoreDecisionService.authoriseConsent(intentType, intentId, clientId, resourceOwner,
+                        consentStoreDecisionServiceRegistry.authoriseConsent(intentType, intentId, clientId, resourceOwner,
                                                                      consentDecisionDeserialized);
                     } else {
-                        consentStoreDecisionService.rejectConsent(intentType, intentId, clientId, resourceOwner);
+                        consentStoreDecisionServiceRegistry.rejectConsent(intentType, intentId, clientId, resourceOwner);
                     }
                 } else {
                     log.debug("Updating consent: {}  in idm", intentId);
