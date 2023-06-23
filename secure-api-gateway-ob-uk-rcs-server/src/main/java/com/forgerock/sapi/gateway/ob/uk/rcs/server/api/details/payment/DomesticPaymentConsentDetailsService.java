@@ -24,7 +24,8 @@ import org.springframework.stereotype.Component;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccountWithBalance;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticConsentData;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticDataInitiation;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticPaymentConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.ConsentClientDetailsRequest;
@@ -38,10 +39,6 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreE
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import com.google.common.annotations.VisibleForTesting;
-
-import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4Data;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5DataCharges;
 
 @Component
 public class DomesticPaymentConsentDetailsService extends BaseConsentDetailsService<DomesticPaymentConsentEntity, DomesticPaymentConsentDetails> {
@@ -63,8 +60,8 @@ public class DomesticPaymentConsentDetailsService extends BaseConsentDetailsServ
         final FRAmount totalChargeAmount = computeTotalChargeAmount(consent.getCharges());
         consentDetails.setCharges(totalChargeAmount);
 
-        final OBWriteDomesticConsent4Data obConsentRequestData = consent.getRequestObj().getData();
-        final FRWriteDomesticDataInitiation initiation = FRWriteDomesticConsentConverter.toFRWriteDomesticDataInitiation(obConsentRequestData.getInitiation());
+        final FRWriteDomesticConsentData obConsentRequestData = consent.getRequestObj().getData();
+        final FRWriteDomesticDataInitiation initiation = obConsentRequestData.getInitiation();
         consentDetails.setInitiation(initiation);
         consentDetails.setInstructedAmount(initiation.getInstructedAmount());
         if (initiation.getRemittanceInformation() != null) {
@@ -93,11 +90,11 @@ public class DomesticPaymentConsentDetailsService extends BaseConsentDetailsServ
     }
 
     @VisibleForTesting
-    static FRAmount computeTotalChargeAmount(List<OBWriteDomesticConsentResponse5DataCharges> charges) {
+    static FRAmount computeTotalChargeAmount(List<FRCharge> charges) {
         String chargeCurrency = null;
         BigDecimal totalCharge = BigDecimal.ZERO;
-        for (OBWriteDomesticConsentResponse5DataCharges charge : charges) {
-            final OBActiveOrHistoricCurrencyAndAmount amount = charge.getAmount();
+        for (FRCharge charge : charges) {
+            final FRAmount amount = charge.getAmount();
             if (chargeCurrency == null) {
                 chargeCurrency = amount.getCurrency();
             } else if (!chargeCurrency.equals(amount.getCurrency())) {

@@ -37,8 +37,6 @@ public abstract class BaseConsent<T> {
     @Valid
     private T requestObj;
     @NotNull
-    private String requestType;
-    @NotNull
     private OBVersion requestVersion;
     @NotNull
     private String status;
@@ -65,14 +63,6 @@ public abstract class BaseConsent<T> {
 
     public void setRequestObj(T requestObj) {
         this.requestObj = requestObj;
-    }
-
-    public String getRequestType() {
-        return requestType;
-    }
-
-    public void setRequestType(String requestType) {
-        this.requestType = requestType;
     }
 
     public OBVersion getRequestVersion() {
@@ -128,7 +118,6 @@ public abstract class BaseConsent<T> {
         return "BaseConsent{" +
                 "id='" + id + '\'' +
                 ", requestObj=" + requestObj +
-                ", requestType='" + requestType + '\'' +
                 ", requestVersion=" + requestVersion +
                 ", status='" + status + '\'' +
                 ", apiClientId='" + apiClientId + '\'' +

@@ -65,7 +65,6 @@ public class DefaultAccountAccessConsentServiceTest extends BaseConsentServiceTe
         final AccountAccessConsentEntity accountAccessConsentEntity = new AccountAccessConsentEntity();
         accountAccessConsentEntity.setApiClientId(apiClientId);
         accountAccessConsentEntity.setStatus(OBExternalRequestStatus1Code.AWAITINGAUTHORISATION.toString());
-        accountAccessConsentEntity.setRequestType(OBReadConsent1.class.getSimpleName());
         accountAccessConsentEntity.setRequestVersion(OBVersion.v3_1_10);
 
         final OBReadConsent1 obReadConsent = new OBReadConsent1();

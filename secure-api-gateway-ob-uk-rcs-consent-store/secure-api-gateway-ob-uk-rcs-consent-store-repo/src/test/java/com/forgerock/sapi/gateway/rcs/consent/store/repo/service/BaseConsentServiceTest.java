@@ -70,7 +70,6 @@ public abstract class BaseConsentServiceTest<T extends BaseConsentEntity<?>, A e
 
         assertThat(persistedConsent.getStatus()).isEqualTo(getNewConsentStatus());
 
-        assertThat(persistedConsent.getRequestType()).isEqualTo(consentObj.getRequestType());
         assertThat(persistedConsent.getRequestVersion()).isEqualTo(consentObj.getRequestVersion());
         assertThat(persistedConsent.getApiClientId()).isEqualTo(consentObj.getApiClientId());
 
@@ -126,7 +125,6 @@ public abstract class BaseConsentServiceTest<T extends BaseConsentEntity<?>, A e
         assertThat(authorisedConsent.getCreationDateTime()).isEqualTo(persistedConsent.getCreationDateTime());
         assertThat(authorisedConsent.getApiClientId()).isEqualTo(persistedConsent.getApiClientId());
         assertThat(authorisedConsent.getId()).isEqualTo(persistedConsent.getId());
-        assertThat(authorisedConsent.getRequestType()).isEqualTo(persistedConsent.getRequestType());
         assertThat(authorisedConsent.getRequestVersion()).isEqualTo(persistedConsent.getRequestVersion());
         assertThat(authorisedConsent.getRequestObj()).isEqualTo(persistedConsent.getRequestObj());
         validateConsentSpecificFields(persistedConsent, authorisedConsent);

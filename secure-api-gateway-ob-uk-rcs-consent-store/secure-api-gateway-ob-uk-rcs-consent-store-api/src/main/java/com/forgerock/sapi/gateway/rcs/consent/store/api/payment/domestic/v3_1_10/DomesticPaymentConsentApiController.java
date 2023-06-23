@@ -73,7 +73,6 @@ public class DomesticPaymentConsentApiController implements DomesticPaymentConse
     public ResponseEntity<DomesticPaymentConsent> createConsent(CreateDomesticPaymentConsentRequest request, String apiClientId) {
         logger.info("Attempting to createConsent: {}, for apiClientId: {}", request, apiClientId);
         final DomesticPaymentConsentEntity domesticPaymentConsent = new DomesticPaymentConsentEntity();
-        domesticPaymentConsent.setRequestType(request.getConsentRequest().getClass().getSimpleName());
         domesticPaymentConsent.setRequestVersion(obVersion);
         domesticPaymentConsent.setApiClientId(request.getApiClientId());
         domesticPaymentConsent.setRequestObj(request.getConsentRequest());
@@ -118,7 +117,6 @@ public class DomesticPaymentConsentApiController implements DomesticPaymentConse
         dto.setId(entity.getId());
         dto.setStatus(entity.getStatus());
         dto.setRequestObj(entity.getRequestObj());
-        dto.setRequestType(entity.getRequestType());
         dto.setRequestVersion(entity.getRequestVersion());
         dto.setApiClientId(entity.getApiClientId());
         dto.setResourceOwnerId(entity.getResourceOwnerId());

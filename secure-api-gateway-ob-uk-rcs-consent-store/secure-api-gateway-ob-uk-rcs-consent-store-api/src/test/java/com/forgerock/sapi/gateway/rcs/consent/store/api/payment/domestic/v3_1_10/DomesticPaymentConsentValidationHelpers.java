@@ -41,7 +41,6 @@ public class DomesticPaymentConsentValidationHelpers {
         assertThat(consent.getStatus()).isEqualTo(StatusEnum.AWAITINGAUTHORISATION.toString());
         assertThat(consent.getApiClientId()).isEqualTo(createDomesticPaymentConsentRequest.getApiClientId());
         assertThat(consent.getRequestObj()).isEqualTo(createDomesticPaymentConsentRequest.getConsentRequest());
-        assertThat(consent.getRequestType()).isEqualTo("OBWriteDomesticConsent4");
         assertThat(consent.getRequestVersion()).isEqualTo(OBVersion.v3_1_10);
         assertThat(consent.getCharges()).isEqualTo(createDomesticPaymentConsentRequest.getCharges());
         assertThat(consent.getIdempotencyKey()).isEqualTo(createDomesticPaymentConsentRequest.getIdempotencyKey());
@@ -78,7 +77,6 @@ public class DomesticPaymentConsentValidationHelpers {
         assertThat(updatedConsent.getApiClientId()).isEqualTo(consent.getApiClientId());
         assertThat(updatedConsent.getRequestObj()).isEqualTo(consent.getRequestObj());
         assertThat(updatedConsent.getRequestVersion()).isEqualTo(consent.getRequestVersion());
-        assertThat(updatedConsent.getRequestType()).isEqualTo(consent.getRequestType());
         assertThat(updatedConsent.getCreationDateTime()).isEqualTo(consent.getCreationDateTime());
         assertThat(updatedConsent.getStatusUpdateDateTime()).isLessThan(DateTime.now()).isGreaterThan(consent.getStatusUpdateDateTime());
     }

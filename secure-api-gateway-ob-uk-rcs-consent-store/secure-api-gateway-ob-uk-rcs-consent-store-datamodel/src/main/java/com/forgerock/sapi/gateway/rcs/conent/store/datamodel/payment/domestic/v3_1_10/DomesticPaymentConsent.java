@@ -23,16 +23,15 @@ import javax.validation.constraints.NotNull;
 import org.joda.time.DateTime;
 import org.springframework.validation.annotation.Validated;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticConsent;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.BaseConsent;
-
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5DataCharges;
 
 /**
  * OBIE Domestic Payment Consent: https://openbankinguk.github.io/read-write-api-site3/v3.1.10/resources-and-data-models/pisp/domestic-payment-consents.html
  */
 @Validated
-public class DomesticPaymentConsent extends BaseConsent<OBWriteDomesticConsent4> {
+public class DomesticPaymentConsent extends BaseConsent<FRWriteDomesticConsent> {
 
     @NotNull
     private String idempotencyKey;
@@ -43,7 +42,7 @@ public class DomesticPaymentConsent extends BaseConsent<OBWriteDomesticConsent4>
     private String authorisedDebtorAccountId;
 
     @Valid
-    private List<OBWriteDomesticConsentResponse5DataCharges> charges;
+    private List<FRCharge> charges;
 
     public String getIdempotencyKey() {
         return idempotencyKey;
@@ -69,11 +68,11 @@ public class DomesticPaymentConsent extends BaseConsent<OBWriteDomesticConsent4>
         this.authorisedDebtorAccountId = authorisedDebtorAccountId;
     }
 
-    public List<OBWriteDomesticConsentResponse5DataCharges> getCharges() {
+    public List<FRCharge> getCharges() {
         return charges;
     }
 
-    public void setCharges(List<OBWriteDomesticConsentResponse5DataCharges> charges) {
+    public void setCharges(List<FRCharge> charges) {
         this.charges = charges;
     }
 }

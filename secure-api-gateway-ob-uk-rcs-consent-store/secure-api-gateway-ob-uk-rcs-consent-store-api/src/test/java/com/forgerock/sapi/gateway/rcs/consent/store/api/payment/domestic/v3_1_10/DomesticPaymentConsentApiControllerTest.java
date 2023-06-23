@@ -27,6 +27,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConsentConverter;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.AuthoriseDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.ConsumeDomesticPaymentConsentRequest;
@@ -60,7 +61,7 @@ public class DomesticPaymentConsentApiControllerTest extends BaseControllerTest<
     private static CreateDomesticPaymentConsentRequest buildCreateDomesticPaymentConsentRequest(String apiClientId, String idempotencyKey) {
         final CreateDomesticPaymentConsentRequest createDomesticPaymentConsentRequest = new CreateDomesticPaymentConsentRequest();
         final OBWriteDomesticConsent4 paymentConsent = OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4();
-        createDomesticPaymentConsentRequest.setConsentRequest(paymentConsent);
+        createDomesticPaymentConsentRequest.setConsentRequest(FRWriteDomesticConsentConverter.toFRWriteDomesticConsent(paymentConsent));
         createDomesticPaymentConsentRequest.setApiClientId(apiClientId);
         createDomesticPaymentConsentRequest.setIdempotencyKey(idempotencyKey);
         return createDomesticPaymentConsentRequest;
@@ -108,12 +109,12 @@ public class DomesticPaymentConsentApiControllerTest extends BaseControllerTest<
     public void testSameIdempotentKeyCanBeUsedByDifferentClients() {
         final String idempotencyKey = UUID.randomUUID().toString();
         final CreateDomesticPaymentConsentRequest client1CreateRequest = new CreateDomesticPaymentConsentRequest();
-        client1CreateRequest.setConsentRequest(OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4());
+        client1CreateRequest.setConsentRequest(FRWriteDomesticConsentConverter.toFRWriteDomesticConsent(OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4()));
         client1CreateRequest.setApiClientId("client-1");
         client1CreateRequest.setIdempotencyKey(idempotencyKey);
 
         final CreateDomesticPaymentConsentRequest client2CreateRequest = new CreateDomesticPaymentConsentRequest();
-        client2CreateRequest.setConsentRequest(OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4());
+        client2CreateRequest.setConsentRequest(FRWriteDomesticConsentConverter.toFRWriteDomesticConsent(OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4()));
         client2CreateRequest.setApiClientId("client-2");
         client2CreateRequest.setIdempotencyKey(idempotencyKey);
 
