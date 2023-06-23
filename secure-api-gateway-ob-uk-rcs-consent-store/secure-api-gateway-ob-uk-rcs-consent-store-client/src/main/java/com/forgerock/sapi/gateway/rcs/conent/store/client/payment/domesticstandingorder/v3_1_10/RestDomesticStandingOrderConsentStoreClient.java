@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.conent.store.client.payment.domesticscheduled.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.conent.store.client.payment.domesticstandingorder.v3_1_10;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -28,62 +28,62 @@ import com.forgerock.sapi.gateway.rcs.conent.store.client.ConsentStoreClientExce
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.AuthorisePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.ConsumePaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domesticscheduled.v3_1_10.CreateDomesticScheduledPaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domesticscheduled.v3_1_10.DomesticScheduledPaymentConsent;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domesticstandingorder.v3_1_10.CreateDomesticStandingOrderConsentRequest;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domesticstandingorder.v3_1_10.DomesticStandingOrderConsent;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 /**
- * Implementation of the DomesticScheduledPaymentConsentStoreClient which makes REST calls over HTTP
+ * Implementation of the DomesticStandingOrderConsentStoreClient which makes REST calls over HTTP
  */
 @Component
-public class RestDomesticScheduledPaymentConsentStoreClient extends BaseRestConsentStoreClient implements DomesticScheduledPaymentConsentStoreClient {
+public class RestDomesticStandingOrderConsentStoreClient extends BaseRestConsentStoreClient implements DomesticStandingOrderConsentStoreClient {
 
     private final String consentServiceBaseUrl;
 
     @Autowired
-    public RestDomesticScheduledPaymentConsentStoreClient(ConsentStoreClientConfiguration consentStoreClientConfiguration, RestTemplateBuilder restTemplateBuilder,
+    public RestDomesticStandingOrderConsentStoreClient(ConsentStoreClientConfiguration consentStoreClientConfiguration, RestTemplateBuilder restTemplateBuilder,
                                                           ObjectMapper objectMapper) {
         this(consentStoreClientConfiguration, restTemplateBuilder, objectMapper, OBVersion.v3_1_10);
     }
 
-    public RestDomesticScheduledPaymentConsentStoreClient(ConsentStoreClientConfiguration consentStoreClientConfiguration, RestTemplateBuilder restTemplateBuilder,
+    public RestDomesticStandingOrderConsentStoreClient(ConsentStoreClientConfiguration consentStoreClientConfiguration, RestTemplateBuilder restTemplateBuilder,
                                                           ObjectMapper objectMapper, OBVersion obVersion) {
         super(restTemplateBuilder, objectMapper);
-        this.consentServiceBaseUrl = consentStoreClientConfiguration.getBaseUri() + "/v" + obVersion.getCanonicalVersion() + "/domestic-scheduled-payment-consents";
+        this.consentServiceBaseUrl = consentStoreClientConfiguration.getBaseUri() + "/v" + obVersion.getCanonicalVersion() + "/domestic-standing-order-consents";
     }
 
     @Override
-    public DomesticScheduledPaymentConsent createConsent(CreateDomesticScheduledPaymentConsentRequest createConsentRequest) throws ConsentStoreClientException {
-        final HttpEntity<CreateDomesticScheduledPaymentConsentRequest> requestEntity = new HttpEntity<>(createConsentRequest, createHeaders(createConsentRequest.getApiClientId()));
-        return doRestCall(consentServiceBaseUrl, HttpMethod.POST, requestEntity, DomesticScheduledPaymentConsent.class);
+    public DomesticStandingOrderConsent createConsent(CreateDomesticStandingOrderConsentRequest createConsentRequest) throws ConsentStoreClientException {
+        final HttpEntity<CreateDomesticStandingOrderConsentRequest> requestEntity = new HttpEntity<>(createConsentRequest, createHeaders(createConsentRequest.getApiClientId()));
+        return doRestCall(consentServiceBaseUrl, HttpMethod.POST, requestEntity, DomesticStandingOrderConsent.class);
     }
 
     @Override
-    public DomesticScheduledPaymentConsent getConsent(String consentId, String apiClientId) throws ConsentStoreClientException {
+    public DomesticStandingOrderConsent getConsent(String consentId, String apiClientId) throws ConsentStoreClientException {
         final String url = consentServiceBaseUrl + "/" + consentId;
         final HttpEntity<Object> requestEntity = new HttpEntity<>(createHeaders(apiClientId));
-        return doRestCall(url, HttpMethod.GET, requestEntity, DomesticScheduledPaymentConsent.class);
+        return doRestCall(url, HttpMethod.GET, requestEntity, DomesticStandingOrderConsent.class);
     }
 
     @Override
-    public DomesticScheduledPaymentConsent authoriseConsent(AuthorisePaymentConsentRequest authRequest) throws ConsentStoreClientException {
+    public DomesticStandingOrderConsent authoriseConsent(AuthorisePaymentConsentRequest authRequest) throws ConsentStoreClientException {
         final String url = consentServiceBaseUrl + "/" + authRequest.getConsentId() + "/authorise";
         final HttpEntity<AuthorisePaymentConsentRequest> requestEntity = new HttpEntity<>(authRequest, createHeaders(authRequest.getApiClientId()));
-        return doRestCall(url, HttpMethod.POST, requestEntity, DomesticScheduledPaymentConsent.class);
+        return doRestCall(url, HttpMethod.POST, requestEntity, DomesticStandingOrderConsent.class);
     }
 
     @Override
-    public DomesticScheduledPaymentConsent rejectConsent(RejectConsentRequest rejectRequest) throws ConsentStoreClientException {
+    public DomesticStandingOrderConsent rejectConsent(RejectConsentRequest rejectRequest) throws ConsentStoreClientException {
         final String url = consentServiceBaseUrl + "/" + rejectRequest.getConsentId() + "/reject";
         final HttpEntity<RejectConsentRequest> requestEntity = new HttpEntity<>(rejectRequest, createHeaders(rejectRequest.getApiClientId()));
-        return doRestCall(url, HttpMethod.POST, requestEntity, DomesticScheduledPaymentConsent.class);
+        return doRestCall(url, HttpMethod.POST, requestEntity, DomesticStandingOrderConsent.class);
     }
 
     @Override
-    public DomesticScheduledPaymentConsent consumeConsent(ConsumePaymentConsentRequest consumeRequest) throws ConsentStoreClientException {
+    public DomesticStandingOrderConsent consumeConsent(ConsumePaymentConsentRequest consumeRequest) throws ConsentStoreClientException {
         final String url = consentServiceBaseUrl + "/" + consumeRequest.getConsentId() + "/consume";
         final HttpEntity<ConsumePaymentConsentRequest> requestEntity = new HttpEntity<>(consumeRequest, createHeaders(consumeRequest.getApiClientId()));
-        return doRestCall(url, HttpMethod.POST, requestEntity, DomesticScheduledPaymentConsent.class);
+        return doRestCall(url, HttpMethod.POST, requestEntity, DomesticStandingOrderConsent.class);
     }
 
 }

@@ -112,7 +112,6 @@ public class BaseConsentEntity<T> {
         this.requestObj = requestObj;
     }
 
-
     public void setRequestVersion(OBVersion requestVersion) {
         this.requestVersion = requestVersion;
     }

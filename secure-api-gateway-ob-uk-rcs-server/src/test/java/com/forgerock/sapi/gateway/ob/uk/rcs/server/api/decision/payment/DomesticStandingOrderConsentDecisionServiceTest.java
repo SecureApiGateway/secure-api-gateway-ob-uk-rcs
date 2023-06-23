@@ -20,28 +20,28 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticPaymentConsentEntity;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticPaymentConsentService;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticStandingOrderConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticStandingOrderConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentConsentService;
 
 @ExtendWith(MockitoExtension.class)
-public class DomesticPaymentConsentDecisionServiceTest extends BasePaymentConsentDecisionServiceTest<DomesticPaymentConsentEntity> {
+public class DomesticStandingOrderConsentDecisionServiceTest extends BasePaymentConsentDecisionServiceTest<DomesticStandingOrderConsentEntity> {
 
     @Mock
-    private DomesticPaymentConsentService domesticPaymentConsentService;
+    private DomesticStandingOrderConsentService domesticStandingOrderService;
 
     @InjectMocks
-    private DomesticPaymentConsentDecisionService domesticPaymentConsentDecisionService;
+    private DomesticStandingOrderConsentDecisionService domesticStandingOrderDecisionService;
 
 
     @Override
-    protected PaymentConsentService<DomesticPaymentConsentEntity, PaymentAuthoriseConsentArgs> getPaymentConsentService() {
-        return domesticPaymentConsentService;
+    protected PaymentConsentService<DomesticStandingOrderConsentEntity, PaymentAuthoriseConsentArgs> getPaymentConsentService() {
+        return domesticStandingOrderService;
     }
 
     @Override
-    protected BasePaymentConsentDecisionService<DomesticPaymentConsentEntity> getConsentDecisionService() {
-        return domesticPaymentConsentDecisionService;
+    protected BasePaymentConsentDecisionService<DomesticStandingOrderConsentEntity> getConsentDecisionService() {
+        return domesticStandingOrderDecisionService;
     }
 }
