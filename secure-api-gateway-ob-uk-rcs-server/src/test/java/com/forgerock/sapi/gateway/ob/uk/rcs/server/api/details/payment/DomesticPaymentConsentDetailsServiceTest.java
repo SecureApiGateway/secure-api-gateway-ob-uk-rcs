@@ -37,7 +37,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccountWithBalance;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRChargeBearerType;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRAccountIdentifierConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticDataInitiation;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.account.FRAccountWithBalanceTestDataFactory;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.ConsentDetails;
@@ -54,9 +56,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.Domesti
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import com.nimbusds.jwt.SignedJWT;
 
-import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationDebtorAccount;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5DataCharges;
 
 @ExtendWith(MockitoExtension.class)
 class DomesticPaymentConsentDetailsServiceTest {
@@ -107,20 +107,29 @@ class DomesticPaymentConsentDetailsServiceTest {
     @ParameterizedTest
     @MethodSource("chargeParameters")
     void testCalculateCharges(List<String> chargeAmounts, String expectedTotal) {
-        final List<OBWriteDomesticConsentResponse5DataCharges> charges = chargeAmounts.stream().map(charge -> {
-            final OBWriteDomesticConsentResponse5DataCharges obCharge = new OBWriteDomesticConsentResponse5DataCharges();
-            obCharge.setAmount(new OBActiveOrHistoricCurrencyAndAmount().amount(charge).currency("GBP"));
-            return obCharge;
-        }).collect(Collectors.toList());
+        final List<FRCharge> charges = chargeAmounts.stream().map(charge -> FRCharge.builder()
+                                                                                    .chargeBearer(FRChargeBearerType.BORNEBYDEBTOR)
+                                                                                    .type("fee")
+                                                                                    .amount(new FRAmount(charge, "GBP"))
+                                                                                    .build())
+                                                             .collect(Collectors.toList());
 
         assertThat(DomesticPaymentConsentDetailsService.computeTotalChargeAmount(charges)).isEqualTo(new FRAmount(expectedTotal, "GBP"));
     }
 
     @Test
     void testCalculateChargesMismatchCcy() {
-        final List<OBWriteDomesticConsentResponse5DataCharges> charges = List.of(
-                new OBWriteDomesticConsentResponse5DataCharges().amount(new OBActiveOrHistoricCurrencyAndAmount().amount("0.01").currency("GBP")),
-                new OBWriteDomesticConsentResponse5DataCharges().amount(new OBActiveOrHistoricCurrencyAndAmount().amount("0.2").currency("EUR"))
+        final List<FRCharge> charges = List.of(
+                FRCharge.builder()
+                        .chargeBearer(FRChargeBearerType.BORNEBYDEBTOR)
+                        .type("fee")
+                        .amount(new FRAmount("0.23", "EUR"))
+                        .build(),
+                FRCharge.builder()
+                        .chargeBearer(FRChargeBearerType.BORNEBYDEBTOR)
+                        .type("fee")
+                        .amount(new FRAmount("0.02", "GBP"))
+                        .build()
         );
 
         final IllegalStateException ex = assertThrows(IllegalStateException.class, () -> DomesticPaymentConsentDetailsService.computeTotalChargeAmount(charges));
@@ -150,7 +159,7 @@ class DomesticPaymentConsentDetailsServiceTest {
         assertThat(domesticPaymentConsentDetails.getPaymentReference()).isEqualTo("FRESCO-037");
         assertThat(domesticPaymentConsentDetails.getCharges()).isEqualTo(new FRAmount("0.25", "GBP"));
         assertThat(domesticPaymentConsentDetails.getInstructedAmount()).isEqualTo(new FRAmount("10.01", "GBP"));
-        assertThat(domesticPaymentConsentDetails.getInitiation()).isEqualTo(FRWriteDomesticConsentConverter.toFRWriteDomesticDataInitiation(consentEntity.getRequestObj().getData().getInitiation()));
+        assertThat(domesticPaymentConsentDetails.getInitiation()).isEqualTo(consentEntity.getRequestObj().getData().getInitiation());
         assertThat(domesticPaymentConsentDetails.getUsername()).isEqualTo(testUser.getUserName());
         assertThat(domesticPaymentConsentDetails.getAccounts()).isEqualTo(testUserBankAccounts);
         assertThat(domesticPaymentConsentDetails.getLogo()).isEqualTo(testApiClient.getLogoUri());
@@ -173,7 +182,7 @@ class DomesticPaymentConsentDetailsServiceTest {
 
         final DomesticPaymentConsentEntity consentEntity = createValidConsentEntity(testApiClient.getId());
 
-        consentEntity.getRequestObj().getData().getInitiation().setDebtorAccount(debtorAccount);
+        consentEntity.getRequestObj().getData().getInitiation().setDebtorAccount(FRAccountIdentifierConverter.toFRAccountIdentifier(debtorAccount));
         consentEntity.setId(intentId);
         given(domesticPaymentConsentService.getConsent(intentId, testApiClient.getId())).willReturn(consentEntity);
 
@@ -188,7 +197,7 @@ class DomesticPaymentConsentDetailsServiceTest {
         assertThat(domesticPaymentConsentDetails.getCharges()).isEqualTo(new FRAmount("0.25", "GBP"));
         assertThat(domesticPaymentConsentDetails.getInstructedAmount()).isEqualTo(new FRAmount("10.01", "GBP"));
 
-        final FRWriteDomesticDataInitiation initiation = FRWriteDomesticConsentConverter.toFRWriteDomesticDataInitiation(consentEntity.getRequestObj().getData().getInitiation());
+        final FRWriteDomesticDataInitiation initiation = consentEntity.getRequestObj().getData().getInitiation();
         initiation.getDebtorAccount().setAccountId(accountWithBalance.getAccount().getAccountId());
 
         assertThat(domesticPaymentConsentDetails.getInitiation()).isEqualTo(initiation);

@@ -38,6 +38,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRChargeBearerType;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConsentConverter;
 import com.forgerock.sapi.gateway.rcs.conent.store.client.ConsentStoreClientException;
 import com.forgerock.sapi.gateway.rcs.conent.store.client.ConsentStoreClientException.ErrorType;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.RejectConsentRequest;
@@ -46,10 +50,7 @@ import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.CreateDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
 
-import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
-import uk.org.openbanking.datamodel.common.OBChargeBearerType1Code;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5DataCharges;
 import uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"rcs.consent.store.api.baseUri= 'ignored'"})
@@ -83,10 +84,8 @@ class DomesticPaymentConsentStoreClientTest {
 
     @Test
     void failsToCreateConsentWhenFieldIsMissing() {
-        final CreateDomesticPaymentConsentRequest requestMissingIdempotencyField = new CreateDomesticPaymentConsentRequest();
-        requestMissingIdempotencyField.setApiClientId("test-client-1");
-        requestMissingIdempotencyField.setConsentRequest(OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4());
-        requestMissingIdempotencyField.setCharges(List.of(new OBWriteDomesticConsentResponse5DataCharges().type("fee").chargeBearer(OBChargeBearerType1Code.BORNEBYCREDITOR).amount(new OBActiveOrHistoricCurrencyAndAmount().amount("1.25").currency("GBP"))));
+        final CreateDomesticPaymentConsentRequest requestMissingIdempotencyField = buildCreateConsentRequest();
+        requestMissingIdempotencyField.setIdempotencyKey(null);
 
         final ConsentStoreClientException clientException = assertThrows(ConsentStoreClientException.class,
                 () -> apiClient.createConsent(requestMissingIdempotencyField));
@@ -145,8 +144,12 @@ class DomesticPaymentConsentStoreClientTest {
         final CreateDomesticPaymentConsentRequest createConsentRequest = new CreateDomesticPaymentConsentRequest();
         createConsentRequest.setIdempotencyKey(UUID.randomUUID().toString());
         createConsentRequest.setApiClientId("test-client-1");
-        createConsentRequest.setConsentRequest(OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4());
-        createConsentRequest.setCharges(List.of(new OBWriteDomesticConsentResponse5DataCharges().type("fee").chargeBearer(OBChargeBearerType1Code.BORNEBYCREDITOR).amount(new OBActiveOrHistoricCurrencyAndAmount().amount("1.25").currency("GBP"))));
+        createConsentRequest.setConsentRequest(FRWriteDomesticConsentConverter.toFRWriteDomesticConsent(OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4()));
+        createConsentRequest.setCharges(List.of(
+                FRCharge.builder().type("fee")
+                        .chargeBearer(FRChargeBearerType.BORNEBYCREDITOR)
+                        .amount(new FRAmount("1.25","GBP"))
+                        .build()));
         return createConsentRequest;
     }
 

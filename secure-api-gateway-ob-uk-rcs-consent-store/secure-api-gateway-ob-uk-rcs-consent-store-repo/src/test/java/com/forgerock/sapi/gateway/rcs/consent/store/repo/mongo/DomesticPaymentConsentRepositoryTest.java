@@ -44,7 +44,6 @@ class DomesticPaymentConsentRepositoryTest {
         final DomesticPaymentConsentEntity entity = new DomesticPaymentConsentEntity();
         entity.setIdempotencyKey(key1);
         entity.setIdempotencyKeyExpiration(DateTime.now().plusDays(1));
-        entity.setRequestType("test");
         entity.setApiClientId(apiClientId);
         final DomesticPaymentConsentEntity savedEntity = repo.save(entity);
 
@@ -60,7 +59,6 @@ class DomesticPaymentConsentRepositoryTest {
         final DomesticPaymentConsentEntity entity = new DomesticPaymentConsentEntity();
         entity.setIdempotencyKey(key);
         entity.setIdempotencyKeyExpiration(DateTime.now().plusDays(1));
-        entity.setRequestType("test");
         entity.setApiClientId(client1);
 
         repo.save(entity);
@@ -83,7 +81,6 @@ class DomesticPaymentConsentRepositoryTest {
             final DomesticPaymentConsentEntity entity = new DomesticPaymentConsentEntity();
             entity.setIdempotencyKey(key);
             entity.setIdempotencyKeyExpiration(expiredTime);
-            entity.setRequestType("test");
             entity.setApiClientId(apiClient);
 
             repo.save(entity);

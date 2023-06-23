@@ -24,17 +24,16 @@ import org.joda.time.DateTime;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.validation.annotation.Validated;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.BaseConsentEntity;
-
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5DataCharges;
 
 /**
  * OBIE Domestic Payment Consent: https://openbankinguk.github.io/read-write-api-site3/v3.1.10/resources-and-data-models/pisp/domestic-payment-consents.html
  */
 @Document("DomesticPaymentConsent")
 @Validated
-public class DomesticPaymentConsentEntity extends BaseConsentEntity<OBWriteDomesticConsent4> {
+public class DomesticPaymentConsentEntity extends BaseConsentEntity<FRWriteDomesticConsent> {
 
     /**
      * Key supplied by the ApiClient when creating the Consent, to enable the request to be made idempotent
@@ -60,7 +59,7 @@ public class DomesticPaymentConsentEntity extends BaseConsentEntity<OBWriteDomes
      * Optional - charges applied to the payment transaction
      */
     @Valid
-    private List<OBWriteDomesticConsentResponse5DataCharges> charges;
+    private List<FRCharge> charges;
 
     public void setAuthorisedDebtorAccountId(String authorisedDebtorAccountId) {
         this.authorisedDebtorAccountId = authorisedDebtorAccountId;
@@ -86,11 +85,11 @@ public class DomesticPaymentConsentEntity extends BaseConsentEntity<OBWriteDomes
         this.idempotencyKeyExpiration = idempotencyKeyExpiration;
     }
 
-    public List<OBWriteDomesticConsentResponse5DataCharges> getCharges() {
+    public List<FRCharge> getCharges() {
         return charges;
     }
 
-    public void setCharges(List<OBWriteDomesticConsentResponse5DataCharges> charges) {
+    public void setCharges(List<FRCharge> charges) {
         this.charges = charges;
     }
 }

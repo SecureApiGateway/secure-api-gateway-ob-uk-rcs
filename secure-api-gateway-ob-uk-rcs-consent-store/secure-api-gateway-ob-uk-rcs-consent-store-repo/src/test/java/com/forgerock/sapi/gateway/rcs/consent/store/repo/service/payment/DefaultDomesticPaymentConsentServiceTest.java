@@ -18,7 +18,6 @@ package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import javax.validation.ConstraintViolationException;
@@ -31,6 +30,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRChargeBearerType;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConsentConverter;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticPaymentConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException.ErrorType;
@@ -38,11 +41,8 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentServ
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentServiceTest;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
-import uk.org.openbanking.datamodel.common.OBChargeBearerType1Code;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5DataCharges;
 import uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory;
 
 @ExtendWith(SpringExtension.class)
@@ -101,14 +101,22 @@ public class DefaultDomesticPaymentConsentServiceTest extends BaseConsentService
 
     public static DomesticPaymentConsentEntity createValidConsentEntity(OBWriteDomesticConsent4 obConsent, String apiClientId) {
         final DomesticPaymentConsentEntity domesticPaymentConsent = new DomesticPaymentConsentEntity();
-        domesticPaymentConsent.setRequestType(obConsent.getClass().getSimpleName());
         domesticPaymentConsent.setRequestVersion(OBVersion.v3_1_10);
         domesticPaymentConsent.setApiClientId(apiClientId);
-        domesticPaymentConsent.setRequestObj(obConsent);
+        domesticPaymentConsent.setRequestObj(FRWriteDomesticConsentConverter.toFRWriteDomesticConsent(obConsent));
         domesticPaymentConsent.setStatus(StatusEnum.AWAITINGAUTHORISATION.toString());
         domesticPaymentConsent.setIdempotencyKey(UUID.randomUUID().toString());
         domesticPaymentConsent.setIdempotencyKeyExpiration(DateTime.now().plusDays(1));
-        domesticPaymentConsent.setCharges(List.of(new OBWriteDomesticConsentResponse5DataCharges().amount(new OBActiveOrHistoricCurrencyAndAmount().currency("GBP").amount("0.25")).chargeBearer(OBChargeBearerType1Code.BORNEBYCREDITOR).type("fee")));
+        domesticPaymentConsent.setCharges(List.of(
+                FRCharge.builder().type("fee1")
+                        .chargeBearer(FRChargeBearerType.BORNEBYDEBTOR)
+                        .amount(new FRAmount("0.15","GBP"))
+                        .build(),
+                FRCharge.builder().type("fee2")
+                        .chargeBearer(FRChargeBearerType.BORNEBYDEBTOR)
+                        .amount(new FRAmount("0.10","GBP"))
+                        .build())
+        );
         return domesticPaymentConsent;
     }
 

@@ -48,12 +48,6 @@ public class BaseConsentEntity<T> {
     private T requestObj;
 
     /**
-     * OBIE type name of the requestObj e.g. OBWriteDomesticConsent4
-     */
-    @NotNull
-    private String requestType;
-
-    /**
      * Version of OBIE API used to create this consent
      */
     @NotNull
@@ -101,9 +95,6 @@ public class BaseConsentEntity<T> {
         return requestObj;
     }
 
-    public String getRequestType() {
-        return requestType;
-    }
 
     public OBVersion getRequestVersion() {
         return requestVersion;
@@ -121,9 +112,6 @@ public class BaseConsentEntity<T> {
         this.requestObj = requestObj;
     }
 
-    public void setRequestType(String requestType) {
-        this.requestType = requestType;
-    }
 
     public void setRequestVersion(OBVersion requestVersion) {
         this.requestVersion = requestVersion;
@@ -167,7 +155,6 @@ public class BaseConsentEntity<T> {
                 "id='" + id + '\'' +
                 ", entityVersion=" + entityVersion +
                 ", requestObj=" + requestObj +
-                ", requestType='" + requestType + '\'' +
                 ", requestVersion=" + requestVersion +
                 ", status='" + status + '\'' +
                 ", apiClientId='" + apiClientId + '\'' +

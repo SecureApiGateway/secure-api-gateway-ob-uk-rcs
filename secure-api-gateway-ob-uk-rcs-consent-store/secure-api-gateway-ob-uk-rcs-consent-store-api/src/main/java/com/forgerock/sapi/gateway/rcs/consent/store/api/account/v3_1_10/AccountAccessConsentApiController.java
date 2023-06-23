@@ -61,7 +61,6 @@ public class AccountAccessConsentApiController implements AccountAccessConsentAp
         consentEntity.setRequestObj(request.getConsentRequest());
         consentEntity.setApiClientId(apiClientId);
         consentEntity.setRequestVersion(obVersion);
-        consentEntity.setRequestType(request.getConsentRequest().getClass().getSimpleName());
         consentEntity.setStatus(OBExternalRequestStatus1Code.AWAITINGAUTHORISATION.toString());
 
         final AccountAccessConsentEntity persistedEntity = consentService.createConsent(consentEntity);
@@ -99,7 +98,6 @@ public class AccountAccessConsentApiController implements AccountAccessConsentAp
         dto.setStatus(entity.getStatus());
         dto.setStatusUpdateDateTime(entity.getStatusUpdatedDateTime());
         dto.setRequestVersion(entity.getRequestVersion());
-        dto.setRequestType(entity.getRequestType());
         dto.setRequestObj(entity.getRequestObj());
         dto.setResourceOwnerId(entity.getResourceOwnerId());
         return dto;
