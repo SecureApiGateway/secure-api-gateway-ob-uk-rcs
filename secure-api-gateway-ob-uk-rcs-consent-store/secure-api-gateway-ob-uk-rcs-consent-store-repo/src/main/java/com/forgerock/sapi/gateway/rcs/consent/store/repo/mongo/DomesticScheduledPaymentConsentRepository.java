@@ -15,11 +15,7 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
-
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticScheduledPaymentConsentEntity;
 
-public interface DomesticScheduledPaymentConsentRepository extends MongoRepository<DomesticScheduledPaymentConsentEntity, String>,
-                                                                   PaymentConsentRepository<DomesticScheduledPaymentConsentEntity> {
-
+public interface DomesticScheduledPaymentConsentRepository extends PaymentConsentRepository<DomesticScheduledPaymentConsentEntity> {
 }
