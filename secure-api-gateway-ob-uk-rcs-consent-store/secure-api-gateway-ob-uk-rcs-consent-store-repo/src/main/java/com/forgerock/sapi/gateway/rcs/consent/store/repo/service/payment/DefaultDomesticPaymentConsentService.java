@@ -27,5 +27,4 @@ public class DefaultDomesticPaymentConsentService extends BasePaymentConsentServ
     public DefaultDomesticPaymentConsentService(DomesticPaymentConsentRepository repo) {
         super(repo, IntentType.PAYMENT_DOMESTIC_CONSENT::generateIntentId);
     }
-
 }

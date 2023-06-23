@@ -27,7 +27,6 @@ public class DefaultDomesticScheduledPaymentConsentService extends BasePaymentCo
     public DefaultDomesticScheduledPaymentConsentService(DomesticScheduledPaymentConsentRepository repo) {
         super(repo, IntentType.PAYMENT_DOMESTIC_SCHEDULED_CONSENT::generateIntentId);
     }
-
 }
 
 

@@ -74,15 +74,15 @@ public class DomesticScheduledPaymentConsentApiController implements DomesticSch
                                                                          String apiClientId) {
 
         logger.info("Attempting to createConsent: {}, for apiClientId: {}", request, apiClientId);
-        final DomesticScheduledPaymentConsentEntity DomesticScheduledPaymentConsent = new DomesticScheduledPaymentConsentEntity();
-        DomesticScheduledPaymentConsent.setRequestVersion(obVersion);
-        DomesticScheduledPaymentConsent.setApiClientId(request.getApiClientId());
-        DomesticScheduledPaymentConsent.setRequestObj(request.getConsentRequest());
-        DomesticScheduledPaymentConsent.setStatus(StatusEnum.AWAITINGAUTHORISATION.toString());
-        DomesticScheduledPaymentConsent.setCharges(request.getCharges());
-        DomesticScheduledPaymentConsent.setIdempotencyKey(request.getIdempotencyKey());
-        DomesticScheduledPaymentConsent.setIdempotencyKeyExpiration(idempotencyKeyExpirationSupplier.get());
-        final DomesticScheduledPaymentConsentEntity persistedEntity = consentService.createConsent(DomesticScheduledPaymentConsent);
+        final DomesticScheduledPaymentConsentEntity domesticScheduledPaymentConsent = new DomesticScheduledPaymentConsentEntity();
+        domesticScheduledPaymentConsent.setRequestVersion(obVersion);
+        domesticScheduledPaymentConsent.setApiClientId(request.getApiClientId());
+        domesticScheduledPaymentConsent.setRequestObj(request.getConsentRequest());
+        domesticScheduledPaymentConsent.setStatus(StatusEnum.AWAITINGAUTHORISATION.toString());
+        domesticScheduledPaymentConsent.setCharges(request.getCharges());
+        domesticScheduledPaymentConsent.setIdempotencyKey(request.getIdempotencyKey());
+        domesticScheduledPaymentConsent.setIdempotencyKeyExpiration(idempotencyKeyExpirationSupplier.get());
+        final DomesticScheduledPaymentConsentEntity persistedEntity = consentService.createConsent(domesticScheduledPaymentConsent);
         logger.info("Consent created with id: {}", persistedEntity.getId());
 
         return new ResponseEntity<>(convertEntityToDto(persistedEntity), HttpStatus.CREATED);
