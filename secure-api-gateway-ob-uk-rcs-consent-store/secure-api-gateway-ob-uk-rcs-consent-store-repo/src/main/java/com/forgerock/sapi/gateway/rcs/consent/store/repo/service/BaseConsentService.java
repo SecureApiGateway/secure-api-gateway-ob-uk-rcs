@@ -15,30 +15,51 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.repo.service;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.util.MultiValueMap;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.BaseConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException.ErrorType;
 
-public abstract class BaseConsentService<T extends BaseConsentEntity<?>, A extends AuthoriseConsentArgs<T>> implements ConsentService<T, A> {
+public abstract class BaseConsentService<T extends BaseConsentEntity<?>, A extends AuthoriseConsentArgs> implements ConsentService<T, A> {
 
     protected final MongoRepository<T, String> repo;
 
+    /**
+     * Map of the valid state transitions.
+     *
+     * The key is the current Status of the Consent, and the values are the valid Status values that the Consent
+     * is allowed to transition to.
+     */
+    private final MultiValueMap<String, String> validStateTransitions;
+
     private final Supplier<String> idGenerator;
+
+    /**
+     * Status when the Consent has been Authorised by the Resource Owner
+     */
     private final String authorisedConsentStatus;
+    /**
+     * Status when the Resource Owner rejects the Consent
+     */
     private final String rejectedConsentStatus;
+    /**
+     * Status when the Resource Owner revokes a Authorisation previously given for a Consent
+     */
     private final String revokedConsentStatus;
 
-    public BaseConsentService(MongoRepository<T, String> repo, Supplier<String> idGenerator, String authorisedConsentStatus,
-                              String rejectedConsentStatus, String revokedConsentStatus) {
+    public BaseConsentService(MongoRepository<T, String> repo, Supplier<String> idGenerator, MultiValueMap<String, String> validStateTransitions,
+                              String authorisedConsentStatus, String rejectedConsentStatus, String revokedConsentStatus) {
 
         this.repo = Objects.requireNonNull(repo, "repo must be provided");
         this.idGenerator = Objects.requireNonNull(idGenerator, "idGenerator must be provided");
+        this.validStateTransitions = Objects.requireNonNull(validStateTransitions, "validStateTransitions must be provided");
         this.authorisedConsentStatus = Objects.requireNonNull(authorisedConsentStatus, "authorisedConsentStatus must be provided");
         this.rejectedConsentStatus = Objects.requireNonNull(rejectedConsentStatus, "rejectedConsentStatus must be provided");
         this.revokedConsentStatus = Objects.requireNonNull(revokedConsentStatus, "revokedConsentStatus must be provided");
@@ -82,10 +103,9 @@ public abstract class BaseConsentService<T extends BaseConsentEntity<?>, A exten
 
     protected abstract void addConsentSpecificAuthorisationData(T consent, A authoriseConsentArgs);
 
-    protected abstract boolean isStateTransitionAllowed(String currentStatus, String targetStatus);
-
     protected void validateStateTransition(T consent, String targetStatus) {
-        if (!isStateTransitionAllowed(consent.getStatus(), targetStatus)) {
+        final List<String> validTransitions = validStateTransitions.get(consent.getStatus());
+        if (validTransitions == null || !validTransitions.contains(targetStatus)) {
             throw new ConsentStoreException(ErrorType.INVALID_STATE_TRANSITION, consent.getId(),
                     "cannot transition from consentStatus: " + consent.getStatus() + " to status: " + targetStatus);
         }

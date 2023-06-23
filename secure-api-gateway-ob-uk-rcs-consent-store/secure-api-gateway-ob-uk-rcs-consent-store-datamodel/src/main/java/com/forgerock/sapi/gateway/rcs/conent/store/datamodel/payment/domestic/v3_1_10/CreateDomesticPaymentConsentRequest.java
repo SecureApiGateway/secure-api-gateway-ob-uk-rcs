@@ -22,40 +22,19 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.validation.annotation.Validated;
 
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.BaseCreateConsentRequest;
+
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5DataCharges;
 
 @Validated
-public class CreateDomesticPaymentConsentRequest {
-
-    @NotNull
-    private String apiClientId;
-
-    @NotNull
-    @Valid
-    private OBWriteDomesticConsent4 consentRequest;
+public class CreateDomesticPaymentConsentRequest extends BaseCreateConsentRequest<OBWriteDomesticConsent4> {
 
     @NotNull
     private String idempotencyKey;
 
     @Valid
     private List<OBWriteDomesticConsentResponse5DataCharges> charges;
-
-    public String getApiClientId() {
-        return apiClientId;
-    }
-
-    public void setApiClientId(String apiClientId) {
-        this.apiClientId = apiClientId;
-    }
-
-    public OBWriteDomesticConsent4 getConsentRequest() {
-        return consentRequest;
-    }
-
-    public void setConsentRequest(OBWriteDomesticConsent4 consentRequest) {
-        this.consentRequest = consentRequest;
-    }
 
     public String getIdempotencyKey() {
         return idempotencyKey;

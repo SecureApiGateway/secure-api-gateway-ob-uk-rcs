@@ -17,10 +17,12 @@ package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment;
 
 import javax.validation.constraints.NotNull;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticPaymentConsentEntity;
+import org.springframework.validation.annotation.Validated;
+
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.AuthoriseConsentArgs;
 
-public class DomesticPaymentAuthoriseConsentArgs extends AuthoriseConsentArgs<DomesticPaymentConsentEntity> {
+@Validated
+public class DomesticPaymentAuthoriseConsentArgs extends AuthoriseConsentArgs {
 
     @NotNull
     private final String authorisedDebtorAccountId;

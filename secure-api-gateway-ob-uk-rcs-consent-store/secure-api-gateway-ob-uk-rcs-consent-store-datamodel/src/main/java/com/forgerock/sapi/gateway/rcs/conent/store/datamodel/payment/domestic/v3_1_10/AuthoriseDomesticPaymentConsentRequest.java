@@ -15,42 +15,21 @@
  */
 package com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.validation.annotation.Validated;
 
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.BaseAuthoriseConsentRequest;
+
 @Validated
-public class AuthoriseDomesticPaymentConsentRequest {
+public class AuthoriseDomesticPaymentConsentRequest extends BaseAuthoriseConsentRequest {
 
     @NotNull
-    private String apiClientId;
-
-    @NotNull
-    private String consentId;
-
-    @NotNull
-    private String resourceOwnerId;
-
-    @NotNull
+    @NotBlank
     private String authorisedDebtorAccountId;
 
     public AuthoriseDomesticPaymentConsentRequest() {
-    }
-
-    public String getConsentId() {
-        return consentId;
-    }
-
-    public void setConsentId(String consentId) {
-        this.consentId = consentId;
-    }
-
-    public String getResourceOwnerId() {
-        return resourceOwnerId;
-    }
-
-    public void setResourceOwnerId(String resourceOwnerId) {
-        this.resourceOwnerId = resourceOwnerId;
     }
 
     public String getAuthorisedDebtorAccountId() {
@@ -61,11 +40,4 @@ public class AuthoriseDomesticPaymentConsentRequest {
         this.authorisedDebtorAccountId = authorisedDebtorAccountId;
     }
 
-    public String getApiClientId() {
-        return apiClientId;
-    }
-
-    public void setApiClientId(String apiClientId) {
-        this.apiClientId = apiClientId;
-    }
 }

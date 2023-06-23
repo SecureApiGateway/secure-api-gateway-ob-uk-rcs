@@ -22,7 +22,7 @@ import org.springframework.validation.annotation.Validated;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.BaseConsentEntity;
 
 @Validated
-public interface ConsentService<T extends BaseConsentEntity, A extends AuthoriseConsentArgs<T>> {
+public interface ConsentService<T extends BaseConsentEntity, A extends AuthoriseConsentArgs> {
 
     /**
      * Stores a new consent in the data store

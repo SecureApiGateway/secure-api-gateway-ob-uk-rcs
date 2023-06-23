@@ -23,9 +23,7 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 /**
  * Component which controls the IntentTypes that are enabled to use the Consent Store module.
- * This allows IntentTypes to be migrated to use this module on a per type basis.
- *
- * To be enabled, an IntentType must have a supported implementation and be configured to be enabled via config.
+ * This allows IntentTypes to be migrated to use this module on a per-type basis.
  */
 @Component
 public class ConsentStoreEnabledIntentTypes {
@@ -35,16 +33,11 @@ public class ConsentStoreEnabledIntentTypes {
      */
     private final EnumSet<IntentType> consentStoreEnabledIntentTypes;
 
-    /**
-     * IntentTypes which this module has implemented support for
-     */
-    private final EnumSet<IntentType> implementedIntentTypes = EnumSet.of(IntentType.PAYMENT_DOMESTIC_CONSENT);
-
     public ConsentStoreEnabledIntentTypes(EnumSet<IntentType> consentStoreEnabledIntentTypes) {
         this.consentStoreEnabledIntentTypes = consentStoreEnabledIntentTypes;
     }
 
     public boolean isIntentTypeSupported(IntentType intentType) {
-        return consentStoreEnabledIntentTypes.contains(intentType) && implementedIntentTypes.contains(intentType);
+        return consentStoreEnabledIntentTypes.contains(intentType);
     }
 }

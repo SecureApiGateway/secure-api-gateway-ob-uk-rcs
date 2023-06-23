@@ -18,7 +18,10 @@ package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+
+import javax.validation.ConstraintViolationException;
 
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.Assertions;
@@ -143,5 +146,13 @@ public class DefaultDomesticPaymentConsentServiceTest extends BaseConsentService
         assertThat(consentStoreException.getConsentId()).isEqualTo(persistedConsent.getId());
         assertThat(consentStoreException.getErrorType()).isEqualTo(ErrorType.INVALID_STATE_TRANSITION);
         assertThat(consentStoreException.getMessage()).contains("cannot transition from consentStatus: AwaitingAuthorisation to status: Consumed");
+    }
+
+    @Test
+    void failToAuthoriseConsentMissingDebtorAccountId() {
+        final DomesticPaymentConsentEntity persistedConsent = service.createConsent(getValidConsentEntity());
+        final ConstraintViolationException ex = Assertions.assertThrows(ConstraintViolationException.class,
+                () -> service.authoriseConsent(new DomesticPaymentAuthoriseConsentArgs(persistedConsent.getId(), persistedConsent.getApiClientId(), "user-1234", null)));
+        assertThat(ex.getMessage()).isEqualTo("authoriseConsent.arg0.authorisedDebtorAccountId: must not be null");
     }
 }
