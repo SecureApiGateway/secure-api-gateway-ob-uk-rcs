@@ -23,24 +23,24 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.BaseConsentDecis
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticPaymentConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException.ErrorType;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticPaymentAuthoriseConsentArgs;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticPaymentConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 @Component
-public class DomesticPaymentConsentDecisionService extends BaseConsentDecisionService<DomesticPaymentConsentEntity, DomesticPaymentAuthoriseConsentArgs> {
+public class DomesticPaymentConsentDecisionService extends BaseConsentDecisionService<DomesticPaymentConsentEntity, PaymentAuthoriseConsentArgs> {
 
     public DomesticPaymentConsentDecisionService(DomesticPaymentConsentService consentService) {
         super(IntentType.PAYMENT_DOMESTIC_CONSENT, consentService);
     }
 
-    protected DomesticPaymentAuthoriseConsentArgs buildAuthoriseConsentArgs(String intentId, String apiClientId,
+    protected PaymentAuthoriseConsentArgs buildAuthoriseConsentArgs(String intentId, String apiClientId,
                                                                             String resourceOwnerId, ConsentDecisionDeserialized consentDecision) {
 
         final FRFinancialAccount debtorAccount = consentDecision.getDebtorAccount();
         if (debtorAccount == null || debtorAccount.getAccountId() == null) {
             throw new ConsentStoreException(ErrorType.INVALID_CONSENT_DECISION, intentId, "consentDecision is missing authorisedAccountIds");
         }
-        return new DomesticPaymentAuthoriseConsentArgs(intentId, apiClientId, resourceOwnerId, debtorAccount.getAccountId());
+        return new PaymentAuthoriseConsentArgs(intentId, apiClientId, resourceOwnerId, debtorAccount.getAccountId());
     }
 }

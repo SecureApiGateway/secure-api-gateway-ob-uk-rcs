@@ -15,24 +15,11 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment;
 
-import javax.validation.constraints.NotNull;
-
-import org.springframework.validation.annotation.Validated;
-
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.BasePaymentConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.AuthoriseConsentArgs;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentService;
 
-@Validated
-public class DomesticPaymentAuthoriseConsentArgs extends AuthoriseConsentArgs {
+public interface PaymentConsentService<T extends BasePaymentConsentEntity, A extends AuthoriseConsentArgs> extends ConsentService<T, A> {
 
-    @NotNull
-    private final String authorisedDebtorAccountId;
-
-    public DomesticPaymentAuthoriseConsentArgs(String consentId, String apiClientId, String resourceOwnerId, String authorisedDebtorAccountId) {
-        super(consentId, resourceOwnerId, apiClientId);
-        this.authorisedDebtorAccountId = authorisedDebtorAccountId;
-    }
-
-    public String getAuthorisedDebtorAccountId() {
-        return authorisedDebtorAccountId;
-    }
+    T consumeConsent(String consentId, String apiClientId);
 }

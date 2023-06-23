@@ -15,17 +15,24 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment;
 
-import org.springframework.stereotype.Service;
+import javax.validation.constraints.NotNull;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticPaymentConsentEntity;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.DomesticPaymentConsentRepository;
-import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
+import org.springframework.validation.annotation.Validated;
 
-@Service
-public class DefaultDomesticPaymentConsentService extends BasePaymentConsentService<DomesticPaymentConsentEntity, PaymentAuthoriseConsentArgs> implements DomesticPaymentConsentService {
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.AuthoriseConsentArgs;
 
-    public DefaultDomesticPaymentConsentService(DomesticPaymentConsentRepository repo) {
-        super(repo, IntentType.PAYMENT_DOMESTIC_CONSENT::generateIntentId);
+@Validated
+public class PaymentAuthoriseConsentArgs extends AuthoriseConsentArgs {
+
+    @NotNull
+    private final String authorisedDebtorAccountId;
+
+    public PaymentAuthoriseConsentArgs(String consentId, String apiClientId, String resourceOwnerId, String authorisedDebtorAccountId) {
+        super(consentId, resourceOwnerId, apiClientId);
+        this.authorisedDebtorAccountId = authorisedDebtorAccountId;
     }
 
+    public String getAuthorisedDebtorAccountId() {
+        return authorisedDebtorAccountId;
+    }
 }

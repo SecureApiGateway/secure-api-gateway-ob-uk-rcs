@@ -32,7 +32,7 @@ import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.CreateDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticPaymentConsentEntity;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticPaymentAuthoriseConsentArgs;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticPaymentConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
@@ -95,9 +95,9 @@ public class DomesticPaymentConsentApiController implements DomesticPaymentConse
     @Override
     public ResponseEntity<DomesticPaymentConsent> authoriseConsent(String consentId, AuthoriseDomesticPaymentConsentRequest request, String apiClientId) {
         logger.info("Attempting to authoriseConsent - id: {}, request: {}, apiClientId: {}", consentId, request, apiClientId);
-        final DomesticPaymentAuthoriseConsentArgs domesticPaymentAuthoriseConsentArgs = new DomesticPaymentAuthoriseConsentArgs(consentId, apiClientId,
+        final PaymentAuthoriseConsentArgs paymentAuthoriseConsentArgs = new PaymentAuthoriseConsentArgs(consentId, apiClientId,
                                                                                                                                 request.getResourceOwnerId(), request.getAuthorisedDebtorAccountId());
-        return ResponseEntity.ok(convertEntityToDto(consentService.authoriseConsent(domesticPaymentAuthoriseConsentArgs)));
+        return ResponseEntity.ok(convertEntityToDto(consentService.authoriseConsent(paymentAuthoriseConsentArgs)));
     }
 
     @Override
