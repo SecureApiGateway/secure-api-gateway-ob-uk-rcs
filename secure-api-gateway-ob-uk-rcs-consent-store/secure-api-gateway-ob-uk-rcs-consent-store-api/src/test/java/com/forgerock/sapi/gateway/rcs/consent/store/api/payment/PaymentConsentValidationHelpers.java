@@ -13,37 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.api.payment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.joda.time.DateTime;
 
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.RejectConsentRequest;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.AuthoriseDomesticPaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.CreateDomesticPaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.AuthorisePaymentConsentRequest;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.BaseCreatePaymentConsentRequest;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.BasePaymentConsent;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
 
-/**
- * Helper methods for validating {@link DomesticPaymentConsent} objects as part of using the {@link DomesticPaymentConsentApi}
- */
-public class DomesticPaymentConsentValidationHelpers {
+public class PaymentConsentValidationHelpers {
 
-    /**
-     * Validates that a created {@link DomesticPaymentConsent} against the original {@link CreateDomesticPaymentConsentRequest}
-     */
-    public static void validateCreateConsentAgainstCreateRequest(DomesticPaymentConsent consent,
-                                                                 CreateDomesticPaymentConsentRequest createDomesticPaymentConsentRequest) {
+    public static void validateCreateConsentAgainstCreateRequest(BasePaymentConsent<?> consent,
+                                                                 BaseCreatePaymentConsentRequest<?> createConsentRequest) {
         assertThat(consent.getId()).isNotEmpty();
         assertThat(consent.getStatus()).isEqualTo(StatusEnum.AWAITINGAUTHORISATION.toString());
-        assertThat(consent.getApiClientId()).isEqualTo(createDomesticPaymentConsentRequest.getApiClientId());
-        assertThat(consent.getRequestObj()).isEqualTo(createDomesticPaymentConsentRequest.getConsentRequest());
+        assertThat(consent.getApiClientId()).isEqualTo(createConsentRequest.getApiClientId());
+        assertThat(consent.getRequestObj()).isEqualTo(createConsentRequest.getConsentRequest());
         assertThat(consent.getRequestVersion()).isEqualTo(OBVersion.v3_1_10);
-        assertThat(consent.getCharges()).isEqualTo(createDomesticPaymentConsentRequest.getCharges());
-        assertThat(consent.getIdempotencyKey()).isEqualTo(createDomesticPaymentConsentRequest.getIdempotencyKey());
+        assertThat(consent.getCharges()).isEqualTo(createConsentRequest.getCharges());
+        assertThat(consent.getIdempotencyKey()).isEqualTo(createConsentRequest.getIdempotencyKey());
         assertThat(consent.getResourceOwnerId()).isNull();
         assertThat(consent.getAuthorisedDebtorAccountId()).isNull();
 
@@ -53,14 +47,14 @@ public class DomesticPaymentConsentValidationHelpers {
         assertThat(consent.getStatusUpdateDateTime()).isEqualTo(consent.getCreationDateTime());
     }
 
-    public static void validateAuthorisedConsent(DomesticPaymentConsent authorisedConsent, AuthoriseDomesticPaymentConsentRequest authoriseReq, DomesticPaymentConsent originalConsent) {
+    public static void validateAuthorisedConsent(BasePaymentConsent<?> authorisedConsent, AuthorisePaymentConsentRequest authoriseReq, BasePaymentConsent<?> originalConsent) {
         assertThat(authorisedConsent.getStatus()).isEqualTo(StatusEnum.AUTHORISED.toString());
         assertThat(authorisedConsent.getResourceOwnerId()).isEqualTo(authoriseReq.getResourceOwnerId());
         assertThat(authorisedConsent.getAuthorisedDebtorAccountId()).isEqualTo(authoriseReq.getAuthorisedDebtorAccountId());
         validateUpdatedConsentAgainstOriginal(authorisedConsent, originalConsent);
     }
 
-    public static void validateRejectedConsent(DomesticPaymentConsent rejectedConsent, RejectConsentRequest rejectReq, DomesticPaymentConsent originalConsent) {
+    public static void validateRejectedConsent(BasePaymentConsent<?> rejectedConsent, RejectConsentRequest rejectReq, BasePaymentConsent<?> originalConsent) {
         assertThat(rejectedConsent.getStatus()).isEqualTo(StatusEnum.REJECTED.toString());
         assertThat(rejectedConsent.getResourceOwnerId()).isEqualTo(rejectReq.getResourceOwnerId());
         validateUpdatedConsentAgainstOriginal(rejectedConsent, originalConsent);
@@ -72,7 +66,7 @@ public class DomesticPaymentConsentValidationHelpers {
      * This checks that fields that should never change when a consent is updated do never change, and verifies that
      * the statusUpdateDateTime increases vs the original.
      */
-    public static void validateUpdatedConsentAgainstOriginal(DomesticPaymentConsent updatedConsent, DomesticPaymentConsent consent) {
+    public static void validateUpdatedConsentAgainstOriginal(BasePaymentConsent<?> updatedConsent, BasePaymentConsent<?> consent) {
         assertThat(updatedConsent.getId()).isEqualTo(consent.getId());
         assertThat(updatedConsent.getApiClientId()).isEqualTo(consent.getApiClientId());
         assertThat(updatedConsent.getRequestObj()).isEqualTo(consent.getRequestObj());
@@ -86,7 +80,7 @@ public class DomesticPaymentConsentValidationHelpers {
      *
      * Checks that data added to the consent during authorisation is present in the consumedConsent
      */
-    public static void validateConsumedConsent(DomesticPaymentConsent consumedConsent, DomesticPaymentConsent authorisedConsent) {
+    public static void validateConsumedConsent(BasePaymentConsent<?> consumedConsent, BasePaymentConsent<?> authorisedConsent) {
         assertThat(consumedConsent.getStatus()).isEqualTo(StatusEnum.CONSUMED.toString());
         validateUpdatedConsentAgainstOriginal(consumedConsent, authorisedConsent);
 

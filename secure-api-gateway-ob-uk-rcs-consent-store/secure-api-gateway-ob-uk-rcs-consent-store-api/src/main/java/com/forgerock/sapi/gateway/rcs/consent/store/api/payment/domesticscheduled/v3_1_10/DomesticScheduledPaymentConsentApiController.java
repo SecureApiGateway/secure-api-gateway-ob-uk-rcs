@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domesticscheduled.v3_1_10;
 
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -29,71 +29,76 @@ import org.springframework.stereotype.Controller;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.AuthorisePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.ConsumePaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.CreateDomesticPaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticPaymentConsentEntity;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domesticscheduledpayments.v3_1_10.CreateDomesticScheduledPaymentConsentRequest;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domesticscheduledpayments.v3_1_10.DomesticScheduledPaymentConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticScheduledPaymentConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticScheduledPaymentConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticPaymentConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
 
 /**
- * Implementation of DomesticPaymentConsentApi for OBIE version 3.1.10
+ * Implementation of DomesticScheduledPaymentConsentApi for OBIE version 3.1.10
  *
  * Note: the obVersion field is pluggable, so if there are no changes to the OBIE schema in later versions, then
  * these controllers can extend this and configure the
  */
 @Controller
-public class DomesticPaymentConsentApiController implements DomesticPaymentConsentApi {
+public class DomesticScheduledPaymentConsentApiController implements DomesticScheduledPaymentConsentApi {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final DomesticPaymentConsentService consentService;
+    private final DomesticScheduledPaymentConsentService consentService;
 
     private final Supplier<DateTime> idempotencyKeyExpirationSupplier;
 
     private final OBVersion obVersion;
 
     @Autowired
-    public DomesticPaymentConsentApiController(DomesticPaymentConsentService consentService,
-                                              Supplier<DateTime> idempotencyKeyExpirationSupplier) {
+    public DomesticScheduledPaymentConsentApiController(DomesticScheduledPaymentConsentService consentService,
+                                                        Supplier<DateTime> idempotencyKeyExpirationSupplier) {
         this(consentService, idempotencyKeyExpirationSupplier, OBVersion.v3_1_10);
     }
 
-    public DomesticPaymentConsentApiController(DomesticPaymentConsentService consentService,
-                                               Supplier<DateTime> idempotencyKeyExpirationSupplier,
-                                               OBVersion obVersion) {
+    public DomesticScheduledPaymentConsentApiController(DomesticScheduledPaymentConsentService consentService,
+                                                        Supplier<DateTime> idempotencyKeyExpirationSupplier,
+                                                        OBVersion obVersion) {
         this.consentService = Objects.requireNonNull(consentService, "consentService must be provided");
         this.idempotencyKeyExpirationSupplier = Objects.requireNonNull(idempotencyKeyExpirationSupplier, "idempotencyKeyExpirationSupplier must be provided");
         this.obVersion = Objects.requireNonNull(obVersion, "obVersion must be provided");
     }
 
     @Override
-    public ResponseEntity<DomesticPaymentConsent> createConsent(CreateDomesticPaymentConsentRequest request, String apiClientId) {
+    public ResponseEntity<DomesticScheduledPaymentConsent> createConsent(CreateDomesticScheduledPaymentConsentRequest request,
+                                                                         String apiClientId) {
+
         logger.info("Attempting to createConsent: {}, for apiClientId: {}", request, apiClientId);
-        final DomesticPaymentConsentEntity domesticPaymentConsent = new DomesticPaymentConsentEntity();
-        domesticPaymentConsent.setRequestVersion(obVersion);
-        domesticPaymentConsent.setApiClientId(request.getApiClientId());
-        domesticPaymentConsent.setRequestObj(request.getConsentRequest());
-        domesticPaymentConsent.setStatus(StatusEnum.AWAITINGAUTHORISATION.toString());
-        domesticPaymentConsent.setCharges(request.getCharges());
-        domesticPaymentConsent.setIdempotencyKey(request.getIdempotencyKey());
-        domesticPaymentConsent.setIdempotencyKeyExpiration(idempotencyKeyExpirationSupplier.get());
-        final DomesticPaymentConsentEntity persistedEntity = consentService.createConsent(domesticPaymentConsent);
+        final DomesticScheduledPaymentConsentEntity DomesticScheduledPaymentConsent = new DomesticScheduledPaymentConsentEntity();
+        DomesticScheduledPaymentConsent.setRequestVersion(obVersion);
+        DomesticScheduledPaymentConsent.setApiClientId(request.getApiClientId());
+        DomesticScheduledPaymentConsent.setRequestObj(request.getConsentRequest());
+        DomesticScheduledPaymentConsent.setStatus(StatusEnum.AWAITINGAUTHORISATION.toString());
+        DomesticScheduledPaymentConsent.setCharges(request.getCharges());
+        DomesticScheduledPaymentConsent.setIdempotencyKey(request.getIdempotencyKey());
+        DomesticScheduledPaymentConsent.setIdempotencyKeyExpiration(idempotencyKeyExpirationSupplier.get());
+        final DomesticScheduledPaymentConsentEntity persistedEntity = consentService.createConsent(DomesticScheduledPaymentConsent);
         logger.info("Consent created with id: {}", persistedEntity.getId());
 
         return new ResponseEntity<>(convertEntityToDto(persistedEntity), HttpStatus.CREATED);
     }
 
     @Override
-    public ResponseEntity<DomesticPaymentConsent> getConsent(String consentId, String apiClientId) {
+    public ResponseEntity<DomesticScheduledPaymentConsent> getConsent(String consentId, String apiClientId) {
         logger.info("Attempting to getConsent - id: {}, for apiClientId: {}", consentId, apiClientId);
         return ResponseEntity.ok(convertEntityToDto(consentService.getConsent(consentId, apiClientId)));
     }
 
     @Override
-    public ResponseEntity<DomesticPaymentConsent> authoriseConsent(String consentId, AuthorisePaymentConsentRequest request, String apiClientId) {
+    public ResponseEntity<DomesticScheduledPaymentConsent> authoriseConsent(String consentId,
+                                                                            AuthorisePaymentConsentRequest request,
+                                                                            String apiClientId) {
+
         logger.info("Attempting to authoriseConsent - id: {}, request: {}, apiClientId: {}", consentId, request, apiClientId);
         final PaymentAuthoriseConsentArgs paymentAuthoriseConsentArgs = new PaymentAuthoriseConsentArgs(consentId, apiClientId,
                                                                                                                                 request.getResourceOwnerId(), request.getAuthorisedDebtorAccountId());
@@ -101,19 +106,19 @@ public class DomesticPaymentConsentApiController implements DomesticPaymentConse
     }
 
     @Override
-    public ResponseEntity<DomesticPaymentConsent> rejectConsent(String consentId, RejectConsentRequest request, String apiClientId) {
+    public ResponseEntity<DomesticScheduledPaymentConsent> rejectConsent(String consentId, RejectConsentRequest request, String apiClientId) {
         logger.info("Attempting to rejectConsent - id: {}, request: {}, apiClientId: {}", consentId, request, apiClientId);
         return ResponseEntity.ok(convertEntityToDto(consentService.rejectConsent(consentId, apiClientId, request.getResourceOwnerId())));
     }
 
     @Override
-    public ResponseEntity<DomesticPaymentConsent> consumeConsent(String consentId, ConsumePaymentConsentRequest request, String apiClientId) {
+    public ResponseEntity<DomesticScheduledPaymentConsent> consumeConsent(String consentId, ConsumePaymentConsentRequest request, String apiClientId) {
         logger.info("Attempting to consumeConsent - id: {}, request: {}, apiClientId: {}", consentId, request, apiClientId);
         return ResponseEntity.ok(convertEntityToDto(consentService.consumeConsent(consentId, apiClientId)));
     }
 
-    private DomesticPaymentConsent convertEntityToDto(DomesticPaymentConsentEntity entity) {
-        final DomesticPaymentConsent dto = new DomesticPaymentConsent();
+    private DomesticScheduledPaymentConsent convertEntityToDto(DomesticScheduledPaymentConsentEntity entity) {
+        final DomesticScheduledPaymentConsent dto = new DomesticScheduledPaymentConsent();
         dto.setId(entity.getId());
         dto.setStatus(entity.getStatus());
         dto.setRequestObj(entity.getRequestObj());

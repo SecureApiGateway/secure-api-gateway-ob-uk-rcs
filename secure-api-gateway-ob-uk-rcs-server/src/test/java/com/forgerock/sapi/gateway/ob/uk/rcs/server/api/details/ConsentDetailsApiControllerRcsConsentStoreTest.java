@@ -51,6 +51,7 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.RedirectionAction;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.AccountsConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.ConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticPaymentConsentDetails;
+import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticScheduledPaymentConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ExceptionClient;
@@ -100,10 +101,18 @@ public class ConsentDetailsApiControllerRcsConsentStoreTest {
         return domesticPaymentConsentDetails;
     }
 
+    private static DomesticScheduledPaymentConsentDetails createDomesticScheduledPaymentConsentDetails() {
+        final DomesticScheduledPaymentConsentDetails domesticPaymentConsentDetails = new DomesticScheduledPaymentConsentDetails();
+        domesticPaymentConsentDetails.setConsentId(IntentType.PAYMENT_DOMESTIC_SCHEDULED_CONSENT.generateIntentId());
+        domesticPaymentConsentDetails.setLogo(TPP_LOGO);
+        return domesticPaymentConsentDetails;
+    }
+
     private static Stream<Arguments> validConsentDetailsArguments() {
         return Stream.of(
                 arguments(IntentType.PAYMENT_DOMESTIC_CONSENT, createDomesticPaymentConsentDetails(), DomesticPaymentConsentDetails.class),
-                arguments(IntentType.ACCOUNT_ACCESS_CONSENT, createAccountAccessConsentDetails(), AccountsConsentDetails.class)
+                arguments(IntentType.ACCOUNT_ACCESS_CONSENT, createAccountAccessConsentDetails(), AccountsConsentDetails.class),
+                arguments(IntentType.PAYMENT_DOMESTIC_SCHEDULED_CONSENT, createDomesticScheduledPaymentConsentDetails(), DomesticScheduledPaymentConsentDetails.class)
         );
     }
 
