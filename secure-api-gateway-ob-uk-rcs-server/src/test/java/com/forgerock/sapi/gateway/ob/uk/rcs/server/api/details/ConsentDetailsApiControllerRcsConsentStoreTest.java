@@ -52,6 +52,7 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.AccountsCons
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.ConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticPaymentConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticScheduledPaymentConsentDetails;
+import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticStandingOrderConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ExceptionClient;
@@ -102,17 +103,25 @@ public class ConsentDetailsApiControllerRcsConsentStoreTest {
     }
 
     private static DomesticScheduledPaymentConsentDetails createDomesticScheduledPaymentConsentDetails() {
-        final DomesticScheduledPaymentConsentDetails domesticPaymentConsentDetails = new DomesticScheduledPaymentConsentDetails();
-        domesticPaymentConsentDetails.setConsentId(IntentType.PAYMENT_DOMESTIC_SCHEDULED_CONSENT.generateIntentId());
-        domesticPaymentConsentDetails.setLogo(TPP_LOGO);
-        return domesticPaymentConsentDetails;
+        final DomesticScheduledPaymentConsentDetails domesticScheduled = new DomesticScheduledPaymentConsentDetails();
+        domesticScheduled.setConsentId(IntentType.PAYMENT_DOMESTIC_SCHEDULED_CONSENT.generateIntentId());
+        domesticScheduled.setLogo(TPP_LOGO);
+        return domesticScheduled;
+    }
+
+    private static DomesticStandingOrderConsentDetails createDomesticStandingOrderConsentDetails() {
+        final DomesticStandingOrderConsentDetails domesticStandingOrder = new DomesticStandingOrderConsentDetails();
+        domesticStandingOrder.setConsentId(IntentType.PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT.generateIntentId());
+        domesticStandingOrder.setLogo(TPP_LOGO);
+        return domesticStandingOrder;
     }
 
     private static Stream<Arguments> validConsentDetailsArguments() {
         return Stream.of(
                 arguments(IntentType.PAYMENT_DOMESTIC_CONSENT, createDomesticPaymentConsentDetails(), DomesticPaymentConsentDetails.class),
                 arguments(IntentType.ACCOUNT_ACCESS_CONSENT, createAccountAccessConsentDetails(), AccountsConsentDetails.class),
-                arguments(IntentType.PAYMENT_DOMESTIC_SCHEDULED_CONSENT, createDomesticScheduledPaymentConsentDetails(), DomesticScheduledPaymentConsentDetails.class)
+                arguments(IntentType.PAYMENT_DOMESTIC_SCHEDULED_CONSENT, createDomesticScheduledPaymentConsentDetails(), DomesticScheduledPaymentConsentDetails.class),
+                arguments(IntentType.PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT, createDomesticStandingOrderConsentDetails(), DomesticStandingOrderConsentDetails.class)
         );
     }
 

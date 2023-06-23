@@ -20,28 +20,28 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticPaymentConsentEntity;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticPaymentConsentService;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticScheduledPaymentConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticScheduledPaymentConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentConsentService;
 
 @ExtendWith(MockitoExtension.class)
-public class DomesticPaymentConsentDecisionServiceTest extends BasePaymentConsentDecisionServiceTest<DomesticPaymentConsentEntity> {
+public class DomesticScheduledPaymentConsentDecisionServiceTest extends BasePaymentConsentDecisionServiceTest<DomesticScheduledPaymentConsentEntity> {
 
     @Mock
-    private DomesticPaymentConsentService domesticPaymentConsentService;
+    private DomesticScheduledPaymentConsentService domesticScheduledPaymentConsentService;
 
     @InjectMocks
-    private DomesticPaymentConsentDecisionService domesticPaymentConsentDecisionService;
+    private DomesticScheduledPaymentConsentDecisionService domesticScheduledPaymentConsentDecisionService;
 
 
     @Override
-    protected PaymentConsentService<DomesticPaymentConsentEntity, PaymentAuthoriseConsentArgs> getPaymentConsentService() {
-        return domesticPaymentConsentService;
+    protected PaymentConsentService<DomesticScheduledPaymentConsentEntity, PaymentAuthoriseConsentArgs> getPaymentConsentService() {
+        return domesticScheduledPaymentConsentService;
     }
 
     @Override
-    protected BasePaymentConsentDecisionService<DomesticPaymentConsentEntity> getConsentDecisionService() {
-        return domesticPaymentConsentDecisionService;
+    protected BasePaymentConsentDecisionService<DomesticScheduledPaymentConsentEntity> getConsentDecisionService() {
+        return domesticScheduledPaymentConsentDecisionService;
     }
 }
