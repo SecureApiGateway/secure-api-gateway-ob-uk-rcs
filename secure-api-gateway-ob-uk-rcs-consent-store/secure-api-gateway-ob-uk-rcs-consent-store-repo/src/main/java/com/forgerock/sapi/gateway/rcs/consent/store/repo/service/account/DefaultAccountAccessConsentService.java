@@ -17,12 +17,12 @@ package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account;
 
 import java.util.List;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.account.AccountAccessConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.AccountAccessConsentRepository;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
@@ -41,7 +41,7 @@ public class DefaultAccountAccessConsentService extends BaseConsentService<Accou
     }
 
 
-    public DefaultAccountAccessConsentService(MongoRepository<AccountAccessConsentEntity, String> repo) {
+    public DefaultAccountAccessConsentService(AccountAccessConsentRepository repo) {
         super(repo, IntentType.ACCOUNT_ACCESS_CONSENT::generateIntentId, ACCOUNT_ACCESS_CONSENT_STATE_TRANSITIONS,
               OBExternalRequestStatus1Code.AUTHORISED.toString(), OBExternalRequestStatus1Code.REJECTED.toString(),
               OBExternalRequestStatus1Code.REJECTED.toString());

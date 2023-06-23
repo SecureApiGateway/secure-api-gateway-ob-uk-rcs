@@ -59,14 +59,14 @@ public class DefaultDomesticScheduledPaymentConsentServiceTest extends BasePayme
     }
 
     public static DomesticScheduledPaymentConsentEntity createValidConsentEntity(OBWriteDomesticScheduledConsent4 obConsent, String apiClientId) {
-        final DomesticScheduledPaymentConsentEntity domesticPaymentConsent = new DomesticScheduledPaymentConsentEntity();
-        domesticPaymentConsent.setRequestVersion(OBVersion.v3_1_10);
-        domesticPaymentConsent.setApiClientId(apiClientId);
-        domesticPaymentConsent.setRequestObj(FRWriteDomesticScheduledConsentConverter.toFRWriteDomesticScheduledConsent(obConsent));
-        domesticPaymentConsent.setStatus(StatusEnum.AWAITINGAUTHORISATION.toString());
-        domesticPaymentConsent.setIdempotencyKey(UUID.randomUUID().toString());
-        domesticPaymentConsent.setIdempotencyKeyExpiration(DateTime.now().plusDays(1));
-        domesticPaymentConsent.setCharges(List.of(
+        final DomesticScheduledPaymentConsentEntity domesticScheduledPaymentConsent = new DomesticScheduledPaymentConsentEntity();
+        domesticScheduledPaymentConsent.setRequestVersion(OBVersion.v3_1_10);
+        domesticScheduledPaymentConsent.setApiClientId(apiClientId);
+        domesticScheduledPaymentConsent.setRequestObj(FRWriteDomesticScheduledConsentConverter.toFRWriteDomesticScheduledConsent(obConsent));
+        domesticScheduledPaymentConsent.setStatus(StatusEnum.AWAITINGAUTHORISATION.toString());
+        domesticScheduledPaymentConsent.setIdempotencyKey(UUID.randomUUID().toString());
+        domesticScheduledPaymentConsent.setIdempotencyKeyExpiration(DateTime.now().plusDays(1));
+        domesticScheduledPaymentConsent.setCharges(List.of(
                 FRCharge.builder().type("fee1")
                         .chargeBearer(FRChargeBearerType.BORNEBYDEBTOR)
                         .amount(new FRAmount("0.15", "GBP"))
@@ -76,6 +76,6 @@ public class DefaultDomesticScheduledPaymentConsentServiceTest extends BasePayme
                         .amount(new FRAmount("0.10", "GBP"))
                         .build())
         );
-        return domesticPaymentConsent;
+        return domesticScheduledPaymentConsent;
     }
 }
