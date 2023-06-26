@@ -27,7 +27,7 @@ import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiationE
 
 public abstract class BaseInternationalPaymentConsentServiceTest<T extends BaseInternationalPaymentConsentEntity<?>> extends BasePaymentConsentServiceTest<T> {
 
-    protected static FRExchangeRateInformation getExchangeRateInformation(OBWriteInternational3DataInitiationExchangeRateInformation consentRequestExchangeRateInformation) {
+    public static FRExchangeRateInformation getExchangeRateInformation(OBWriteInternational3DataInitiationExchangeRateInformation consentRequestExchangeRateInformation) {
         if (consentRequestExchangeRateInformation.getRateType() == OBExchangeRateType2Code.AGREED) {
             return FRExchangeRateConverter.toFRExchangeRateInformation(consentRequestExchangeRateInformation);
         } else {
