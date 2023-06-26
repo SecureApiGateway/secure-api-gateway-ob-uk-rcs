@@ -13,41 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.payment;
+package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.payment.domestic;
 
 import org.springframework.stereotype.Component;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticConsentData;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticDataInitiation;
-import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticPaymentConsentDetails;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticScheduledConsentData;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticScheduledDataInitiation;
+import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticScheduledPaymentConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.ConsentClientDetailsRequest;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services.ApiClientServiceClient;
+import com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.payment.BasePaymentConsentDetailsService;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.client.rs.AccountService;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.ApiProviderConfiguration;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.domestic.DomesticPaymentConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.domestic.DomesticScheduledPaymentConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 @Component
-public class DomesticPaymentConsentDetailsService extends BasePaymentConsentDetailsService<DomesticPaymentConsentEntity, DomesticPaymentConsentDetails> {
+public class DomesticScheduledPaymentConsentDetailsService extends BasePaymentConsentDetailsService<DomesticScheduledPaymentConsentEntity, DomesticScheduledPaymentConsentDetails> {
 
-    public DomesticPaymentConsentDetailsService(ConsentService<DomesticPaymentConsentEntity, ?> consentService,
-            ApiProviderConfiguration apiProviderConfiguration, ApiClientServiceClient apiClientService,
-            AccountService accountService) {
-
-        super(IntentType.PAYMENT_DOMESTIC_CONSENT, DomesticPaymentConsentDetails::new, consentService,
-                apiProviderConfiguration, apiClientService, accountService);
+    public DomesticScheduledPaymentConsentDetailsService(ConsentService<DomesticScheduledPaymentConsentEntity, ?> consentService, ApiProviderConfiguration apiProviderConfiguration, ApiClientServiceClient apiClientService, AccountService accountService) {
+        super(IntentType.PAYMENT_DOMESTIC_SCHEDULED_CONSENT, DomesticScheduledPaymentConsentDetails::new, consentService,
+              apiProviderConfiguration, apiClientService, accountService);
     }
 
     @Override
-    protected void addIntentTypeSpecificData(DomesticPaymentConsentDetails consentDetails, DomesticPaymentConsentEntity consent,
-                                             ConsentClientDetailsRequest consentClientDetailsRequest) {
+    protected void addIntentTypeSpecificData(DomesticScheduledPaymentConsentDetails consentDetails, DomesticScheduledPaymentConsentEntity consent, ConsentClientDetailsRequest consentClientDetailsRequest) {
         final FRAmount totalChargeAmount = computeTotalChargeAmount(consent.getCharges());
         consentDetails.setCharges(totalChargeAmount);
 
-        final FRWriteDomesticConsentData obConsentRequestData = consent.getRequestObj().getData();
-        final FRWriteDomesticDataInitiation initiation = obConsentRequestData.getInitiation();
+        final FRWriteDomesticScheduledConsentData obConsentRequestData = consent.getRequestObj().getData();
+        final FRWriteDomesticScheduledDataInitiation initiation = obConsentRequestData.getInitiation();
         consentDetails.setInitiation(initiation);
         consentDetails.setInstructedAmount(initiation.getInstructedAmount());
         if (initiation.getRemittanceInformation() != null) {
@@ -56,5 +53,4 @@ public class DomesticPaymentConsentDetailsService extends BasePaymentConsentDeta
 
         addDebtorAccountDetails(consentDetails);
     }
-
 }

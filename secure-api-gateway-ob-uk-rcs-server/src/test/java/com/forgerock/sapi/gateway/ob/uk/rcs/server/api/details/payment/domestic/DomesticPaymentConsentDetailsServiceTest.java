@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.payment;
+package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.payment.domestic;
 
 import static com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DefaultDomesticPaymentConsentServiceTest.createValidConsentEntity;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,6 +37,7 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.ConsentDetai
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticPaymentConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ExceptionClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.ConsentClientDetailsRequest;
+import com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.payment.BasePaymentConsentDetailsServiceTest;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.domestic.DomesticPaymentConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DomesticPaymentConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;

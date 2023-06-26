@@ -13,18 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.payment;
+package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.payment.international;
 
 import org.springframework.stereotype.Component;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.domestic.DomesticScheduledPaymentConsentEntity;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DomesticScheduledPaymentConsentService;
+import com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.payment.BasePaymentConsentDecisionService;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.international.InternationalPaymentConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.international.InternationalPaymentConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 @Component
-public class DomesticScheduledPaymentConsentDecisionService extends BasePaymentConsentDecisionService<DomesticScheduledPaymentConsentEntity> {
+public class InternationalPaymentConsentDecisionService extends BasePaymentConsentDecisionService<InternationalPaymentConsentEntity> {
 
-    public DomesticScheduledPaymentConsentDecisionService(DomesticScheduledPaymentConsentService consentService) {
-        super(IntentType.PAYMENT_DOMESTIC_SCHEDULED_CONSENT, consentService);
+    public InternationalPaymentConsentDecisionService(InternationalPaymentConsentService consentService) {
+        super(IntentType.PAYMENT_INTERNATIONAL_CONSENT, consentService);
     }
+
 }

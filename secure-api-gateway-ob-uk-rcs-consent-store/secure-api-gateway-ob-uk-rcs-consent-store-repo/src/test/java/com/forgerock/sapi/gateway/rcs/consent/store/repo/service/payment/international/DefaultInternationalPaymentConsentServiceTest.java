@@ -39,6 +39,7 @@ import uk.org.openbanking.testsupport.payment.OBWriteInternationalConsentTestDat
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
+public
 class DefaultInternationalPaymentConsentServiceTest extends BaseInternationalPaymentConsentServiceTest<InternationalPaymentConsentEntity> {
 
     @Autowired

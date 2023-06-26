@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.payment;
+package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.payment.domestic;
 
 import org.springframework.stereotype.Component;
 
@@ -23,6 +23,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomestic
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticStandingOrderConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.ConsentClientDetailsRequest;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services.ApiClientServiceClient;
+import com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.payment.BasePaymentConsentDetailsService;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.client.rs.AccountService;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.ApiProviderConfiguration;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.domestic.DomesticStandingOrderConsentEntity;

@@ -48,7 +48,7 @@ public abstract class BasePaymentConsentDetailsService<T extends BasePaymentCons
     }
 
     @VisibleForTesting
-    static FRAmount computeTotalChargeAmount(List<FRCharge> charges) {
+    public static FRAmount computeTotalChargeAmount(List<FRCharge> charges) {
         String chargeCurrency = null;
         BigDecimal totalCharge = BigDecimal.ZERO;
         for (FRCharge charge : charges) {

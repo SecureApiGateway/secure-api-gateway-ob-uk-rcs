@@ -53,6 +53,7 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.ConsentDetai
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticPaymentConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticScheduledPaymentConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticStandingOrderConsentDetails;
+import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.InternationalPaymentConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ExceptionClient;
@@ -116,12 +117,20 @@ public class ConsentDetailsApiControllerRcsConsentStoreTest {
         return domesticStandingOrder;
     }
 
+    private static InternationalPaymentConsentDetails createInternationalPaymentConsentDetails() {
+        final InternationalPaymentConsentDetails internationalPaymentConsentDetails = new InternationalPaymentConsentDetails();
+        internationalPaymentConsentDetails.setConsentId(IntentType.PAYMENT_INTERNATIONAL_CONSENT.generateIntentId());
+        internationalPaymentConsentDetails.setLogo(TPP_LOGO);
+        return internationalPaymentConsentDetails;
+    }
+
     private static Stream<Arguments> validConsentDetailsArguments() {
         return Stream.of(
                 arguments(IntentType.PAYMENT_DOMESTIC_CONSENT, createDomesticPaymentConsentDetails(), DomesticPaymentConsentDetails.class),
                 arguments(IntentType.ACCOUNT_ACCESS_CONSENT, createAccountAccessConsentDetails(), AccountsConsentDetails.class),
                 arguments(IntentType.PAYMENT_DOMESTIC_SCHEDULED_CONSENT, createDomesticScheduledPaymentConsentDetails(), DomesticScheduledPaymentConsentDetails.class),
-                arguments(IntentType.PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT, createDomesticStandingOrderConsentDetails(), DomesticStandingOrderConsentDetails.class)
+                arguments(IntentType.PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT, createDomesticStandingOrderConsentDetails(), DomesticStandingOrderConsentDetails.class),
+                arguments(IntentType.PAYMENT_INTERNATIONAL_CONSENT, createInternationalPaymentConsentDetails(), InternationalPaymentConsentDetails.class)
         );
     }
 

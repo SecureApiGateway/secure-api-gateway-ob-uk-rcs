@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.payment;
+package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.payment.domestic;
 
 import org.springframework.stereotype.Service;
 
+import com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.payment.BasePaymentConsentDecisionService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.domestic.DomesticStandingOrderConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DomesticStandingOrderConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
