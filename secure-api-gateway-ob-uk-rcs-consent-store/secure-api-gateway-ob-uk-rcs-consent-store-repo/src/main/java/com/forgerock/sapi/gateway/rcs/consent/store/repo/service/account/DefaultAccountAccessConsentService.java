@@ -22,7 +22,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.account.AccountAccessConsentEntity;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.AccountAccessConsentRepository;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.account.AccountAccessConsentRepository;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 

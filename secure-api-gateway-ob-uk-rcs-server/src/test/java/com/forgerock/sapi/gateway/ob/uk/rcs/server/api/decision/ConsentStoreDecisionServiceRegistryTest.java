@@ -16,7 +16,7 @@
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision;
 
 import static com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.account.AccountAccessConsentDecisionServiceTest.createAuthoriseAccountAccessConsentDecision;
-import static com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.payment.DomesticPaymentConsentDecisionServiceTest.createAuthorisePaymentConsentDecision;
+import static com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.payment.domestic.DomesticPaymentConsentDecisionServiceTest.createAuthorisePaymentConsentDecision;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
@@ -36,12 +36,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.decision.ConsentDecisionDeserialized;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.account.AccountAccessConsentDecisionService;
-import com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.payment.DomesticPaymentConsentDecisionService;
+import com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.payment.domestic.DomesticPaymentConsentDecisionService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.ConsentStoreEnabledIntentTypes;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessAuthoriseConsentArgs;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticPaymentConsentService;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DomesticPaymentConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 @ExtendWith(MockitoExtension.class)

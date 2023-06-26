@@ -21,11 +21,13 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.joda.time.DateTime;
+import org.springframework.validation.annotation.Validated;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.BaseConsent;
 
-public class BasePaymentConsent<T> extends BaseConsent<T> {
+@Validated
+public abstract class BasePaymentConsent<T> extends BaseConsent<T> {
 
     @NotNull
     private String idempotencyKey;
