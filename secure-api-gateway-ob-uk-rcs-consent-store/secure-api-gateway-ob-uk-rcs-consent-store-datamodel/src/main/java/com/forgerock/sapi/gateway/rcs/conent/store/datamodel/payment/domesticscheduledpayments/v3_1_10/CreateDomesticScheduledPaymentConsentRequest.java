@@ -13,37 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10;
-
-import javax.validation.constraints.NotNull;
+package com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domesticscheduledpayments.v3_1_10;
 
 import org.springframework.validation.annotation.Validated;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticScheduledConsent;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.BaseCreatePaymentConsentRequest;
+
 @Validated
-public class ConsumeDomesticPaymentConsentRequest {
-
-    @NotNull
-    private String apiClientId;
-
-    @NotNull
-    private String consentId;
-
-    public ConsumeDomesticPaymentConsentRequest(){
-    }
-
-    public String getConsentId() {
-        return consentId;
-    }
-
-    public void setConsentId(String consentId) {
-        this.consentId = consentId;
-    }
-
-    public String getApiClientId() {
-        return apiClientId;
-    }
-
-    public void setApiClientId(String apiClientId) {
-        this.apiClientId = apiClientId;
-    }
+public class CreateDomesticScheduledPaymentConsentRequest extends BaseCreatePaymentConsentRequest<FRWriteDomesticScheduledConsent> {
 }

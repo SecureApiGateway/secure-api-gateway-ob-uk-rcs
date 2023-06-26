@@ -40,7 +40,7 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.payment.Domestic
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.ConsentStoreEnabledIntentTypes;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessAuthoriseConsentArgs;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessConsentService;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticPaymentAuthoriseConsentArgs;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticPaymentConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
@@ -94,7 +94,7 @@ class ConsentStoreDecisionServiceRegistryTest {
         final ConsentDecisionDeserialized consentDecision = createAuthorisePaymentConsentDecision(TEST_AUTHORISED_DEBTOR_ACC_ID);
         consentStoreDecisionServiceRegistry.authoriseConsent(paymentDomesticConsent, intentId, TEST_API_CLIENT_ID, TEST_RESOURCE_OWNER_ID, consentDecision);
 
-        verify(domesticPaymentConsentService).authoriseConsent(refEq(new DomesticPaymentAuthoriseConsentArgs(intentId, TEST_API_CLIENT_ID, TEST_RESOURCE_OWNER_ID, TEST_AUTHORISED_DEBTOR_ACC_ID)));
+        verify(domesticPaymentConsentService).authoriseConsent(refEq(new PaymentAuthoriseConsentArgs(intentId, TEST_API_CLIENT_ID, TEST_RESOURCE_OWNER_ID, TEST_AUTHORISED_DEBTOR_ACC_ID)));
         verifyNoMoreInteractions(domesticPaymentConsentService);
     }
 

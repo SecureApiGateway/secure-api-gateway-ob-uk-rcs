@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domesticscheduled.v3_1_10;
 
 import javax.validation.Valid;
 
@@ -28,8 +28,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.AuthorisePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.ConsumePaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.CreateDomesticPaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domesticscheduledpayments.v3_1_10.CreateDomesticScheduledPaymentConsentRequest;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domesticscheduledpayments.v3_1_10.DomesticScheduledPaymentConsent;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -41,12 +41,12 @@ import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 @Validated
 @Api(tags = {"v3.1.10"})
 @RequestMapping(value = "/consent/store/v3.1.10")
-public interface DomesticPaymentConsentApi {
+public interface DomesticScheduledPaymentConsentApi {
 
-    @ApiOperation(value = "Create Domestic Payment Consent")
+    @ApiOperation(value = "Create Domestic Scheduled Payment Consent")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "DomesticPaymentConsent object representing the consent created",
-                         response = DomesticPaymentConsent.class),
+            @ApiResponse(code = 201, message = "DomesticScheduledPaymentConsent object representing the consent created",
+                         response = DomesticScheduledPaymentConsent.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
             @ApiResponse(code = 403, message = "Forbidden", response = OBErrorResponse1.class),
             @ApiResponse(code = 404, message = "Not found"),
@@ -54,21 +54,21 @@ public interface DomesticPaymentConsentApi {
             @ApiResponse(code = 406, message = "Not Acceptable"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)
     })
-    @RequestMapping(value = "/domestic-payment-consents",
+    @RequestMapping(value = "/domestic-scheduled-payment-consents",
             consumes = {"application/json; charset=utf-8"},
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
-    ResponseEntity<DomesticPaymentConsent> createConsent(
+    ResponseEntity<DomesticScheduledPaymentConsent> createConsent(
             @ApiParam(value = "Create Consent Request", required = true)
             @Valid
-            @RequestBody CreateDomesticPaymentConsentRequest request,
+            @RequestBody CreateDomesticScheduledPaymentConsentRequest request,
             @RequestHeader(value = "x-api-client-id") String apiClientId);
 
 
-    @ApiOperation(value = "Get Domestic Payment Consent")
+    @ApiOperation(value = "Get Domestic Scheduled Payment Consent")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "DomesticPaymentConsent object representing the consent created",
-                         response = DomesticPaymentConsent.class),
+            @ApiResponse(code = 200, message = "DomesticScheduledPaymentConsent object representing the consent created",
+                         response = DomesticScheduledPaymentConsent.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
             @ApiResponse(code = 403, message = "Forbidden", response = OBErrorResponse1.class),
             @ApiResponse(code = 404, message = "Not found"),
@@ -76,17 +76,17 @@ public interface DomesticPaymentConsentApi {
             @ApiResponse(code = 406, message = "Not Acceptable"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)
     })
-    @RequestMapping(value = "/domestic-payment-consents/{consentId}",
+    @RequestMapping(value = "/domestic-scheduled-payment-consents/{consentId}",
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
-    ResponseEntity<DomesticPaymentConsent> getConsent(@PathVariable(value = "consentId") String consentId,
+    ResponseEntity<DomesticScheduledPaymentConsent> getConsent(@PathVariable(value = "consentId") String consentId,
                                                       @RequestHeader(value = "x-api-client-id") String apiClientId);
 
 
-    @ApiOperation(value = "Authorise Domestic Payment Consent")
+    @ApiOperation(value = "Authorise Domestic Scheduled Payment Consent")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "DomesticPaymentConsent object representing the consent created",
-                         response = DomesticPaymentConsent.class),
+            @ApiResponse(code = 200, message = "DomesticScheduledPaymentConsent object representing the consent created",
+                         response = DomesticScheduledPaymentConsent.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
             @ApiResponse(code = 403, message = "Forbidden", response = OBErrorResponse1.class),
             @ApiResponse(code = 404, message = "Not found"),
@@ -94,21 +94,21 @@ public interface DomesticPaymentConsentApi {
             @ApiResponse(code = 406, message = "Not Acceptable"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)
     })
-    @RequestMapping(value = "/domestic-payment-consents/{consentId}/authorise",
+    @RequestMapping(value = "/domestic-scheduled-payment-consents/{consentId}/authorise",
             consumes = {"application/json; charset=utf-8"},
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
-    ResponseEntity<DomesticPaymentConsent> authoriseConsent(@PathVariable(value = "consentId") String consentId,
+    ResponseEntity<DomesticScheduledPaymentConsent> authoriseConsent(@PathVariable(value = "consentId") String consentId,
                                                             @ApiParam(value = "Authorise Consent Request", required = true)
                                                             @Valid
                                                             @RequestBody AuthorisePaymentConsentRequest request,
                                                             @RequestHeader(value = "x-api-client-id") String apiClientId);
 
 
-    @ApiOperation(value = "Reject Domestic Payment Consent")
+    @ApiOperation(value = "Reject Domestic Scheduled Payment Consent")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "DomesticPaymentConsent object representing the consent created",
-                         response = DomesticPaymentConsent.class),
+            @ApiResponse(code = 200, message = "DomesticScheduledPaymentConsent object representing the consent created",
+                         response = DomesticScheduledPaymentConsent.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
             @ApiResponse(code = 403, message = "Forbidden", response = OBErrorResponse1.class),
             @ApiResponse(code = 404, message = "Not found"),
@@ -116,11 +116,11 @@ public interface DomesticPaymentConsentApi {
             @ApiResponse(code = 406, message = "Not Acceptable"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)
     })
-    @RequestMapping(value = "/domestic-payment-consents/{consentId}/reject",
+    @RequestMapping(value = "/domestic-scheduled-payment-consents/{consentId}/reject",
             consumes = {"application/json; charset=utf-8"},
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
-    ResponseEntity<DomesticPaymentConsent> rejectConsent(@PathVariable(value = "consentId") String consentId,
+    ResponseEntity<DomesticScheduledPaymentConsent> rejectConsent(@PathVariable(value = "consentId") String consentId,
                                                          @ApiParam(value = "Reject Consent Request", required = true)
                                                          @Valid
                                                          @RequestBody RejectConsentRequest request,
@@ -128,10 +128,10 @@ public interface DomesticPaymentConsentApi {
 
 
 
-    @ApiOperation(value = "Consume Domestic Payment Consent")
+    @ApiOperation(value = "Consume Domestic Scheduled Payment Consent")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "DomesticPaymentConsent object representing the consent created",
-                         response = DomesticPaymentConsent.class),
+            @ApiResponse(code = 200, message = "DomesticScheduledPaymentConsent object representing the consent created",
+                         response = DomesticScheduledPaymentConsent.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
             @ApiResponse(code = 403, message = "Forbidden", response = OBErrorResponse1.class),
             @ApiResponse(code = 404, message = "Not found"),
@@ -139,11 +139,11 @@ public interface DomesticPaymentConsentApi {
             @ApiResponse(code = 406, message = "Not Acceptable"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)
     })
-    @RequestMapping(value = "/domestic-payment-consents/{consentId}/consume",
+    @RequestMapping(value = "/domestic-scheduled-payment-consents/{consentId}/consume",
             consumes = {"application/json; charset=utf-8"},
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
-    ResponseEntity<DomesticPaymentConsent> consumeConsent(@PathVariable(value = "consentId") String consentId,
+    ResponseEntity<DomesticScheduledPaymentConsent> consumeConsent(@PathVariable(value = "consentId") String consentId,
                                                           @ApiParam(value = "Consume Consent Request", required = true)
                                                           @Valid
                                                           @RequestBody ConsumePaymentConsentRequest request,

@@ -15,39 +15,12 @@
  */
 package com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10;
 
-import java.util.List;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 import org.springframework.validation.annotation.Validated;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticConsent;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.BaseCreateConsentRequest;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.BaseCreatePaymentConsentRequest;
 
 @Validated
-public class CreateDomesticPaymentConsentRequest extends BaseCreateConsentRequest<FRWriteDomesticConsent> {
+public class CreateDomesticPaymentConsentRequest extends BaseCreatePaymentConsentRequest<FRWriteDomesticConsent> {
 
-    @NotNull
-    private String idempotencyKey;
-
-    @Valid
-    private List<FRCharge> charges;
-
-    public String getIdempotencyKey() {
-        return idempotencyKey;
-    }
-
-    public void setIdempotencyKey(String idempotencyKey) {
-        this.idempotencyKey = idempotencyKey;
-    }
-
-    public List<FRCharge> getCharges() {
-        return charges;
-    }
-
-    public void setCharges(List<FRCharge> charges) {
-        this.charges = charges;
-    }
 }

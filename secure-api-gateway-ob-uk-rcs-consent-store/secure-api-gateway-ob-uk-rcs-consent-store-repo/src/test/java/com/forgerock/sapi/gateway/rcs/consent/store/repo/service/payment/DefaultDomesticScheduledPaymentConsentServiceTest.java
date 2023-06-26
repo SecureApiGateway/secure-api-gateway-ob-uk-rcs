@@ -27,56 +27,55 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRChargeBearerType;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConsentConverter;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticPaymentConsentEntity;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticScheduledConsentConverter;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticScheduledPaymentConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
-import uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4;
+import uk.org.openbanking.testsupport.payment.OBWriteDomesticScheduledConsentTestDataFactory;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-public class DefaultDomesticPaymentConsentServiceTest extends BasePaymentConsentServiceTest<DomesticPaymentConsentEntity> {
+public class DefaultDomesticScheduledPaymentConsentServiceTest extends BasePaymentConsentServiceTest<DomesticScheduledPaymentConsentEntity> {
 
     @Autowired
-    private DefaultDomesticPaymentConsentService service;
+    private DefaultDomesticScheduledPaymentConsentService service;
 
     @Override
-    protected BaseConsentService<DomesticPaymentConsentEntity, PaymentAuthoriseConsentArgs> getConsentServiceToTest() {
+    protected BaseConsentService<DomesticScheduledPaymentConsentEntity, PaymentAuthoriseConsentArgs> getConsentServiceToTest() {
         return service;
     }
 
     @Override
-    protected DomesticPaymentConsentEntity getValidConsentEntity() {
+    protected DomesticScheduledPaymentConsentEntity getValidConsentEntity() {
         final String apiClientId = "test-client-987";
         return createValidConsentEntity(apiClientId);
     }
 
-    public static DomesticPaymentConsentEntity createValidConsentEntity(String apiClientId) {
-        return createValidConsentEntity(OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4(), apiClientId);
+    public static DomesticScheduledPaymentConsentEntity createValidConsentEntity(String apiClientId) {
+        return createValidConsentEntity(OBWriteDomesticScheduledConsentTestDataFactory.aValidOBWriteDomesticScheduledConsent4(), apiClientId);
     }
 
-    public static DomesticPaymentConsentEntity createValidConsentEntity(OBWriteDomesticConsent4 obConsent, String apiClientId) {
-        final DomesticPaymentConsentEntity domesticPaymentConsent = new DomesticPaymentConsentEntity();
+    public static DomesticScheduledPaymentConsentEntity createValidConsentEntity(OBWriteDomesticScheduledConsent4 obConsent, String apiClientId) {
+        final DomesticScheduledPaymentConsentEntity domesticPaymentConsent = new DomesticScheduledPaymentConsentEntity();
         domesticPaymentConsent.setRequestVersion(OBVersion.v3_1_10);
         domesticPaymentConsent.setApiClientId(apiClientId);
-        domesticPaymentConsent.setRequestObj(FRWriteDomesticConsentConverter.toFRWriteDomesticConsent(obConsent));
+        domesticPaymentConsent.setRequestObj(FRWriteDomesticScheduledConsentConverter.toFRWriteDomesticScheduledConsent(obConsent));
         domesticPaymentConsent.setStatus(StatusEnum.AWAITINGAUTHORISATION.toString());
         domesticPaymentConsent.setIdempotencyKey(UUID.randomUUID().toString());
         domesticPaymentConsent.setIdempotencyKeyExpiration(DateTime.now().plusDays(1));
         domesticPaymentConsent.setCharges(List.of(
                 FRCharge.builder().type("fee1")
                         .chargeBearer(FRChargeBearerType.BORNEBYDEBTOR)
-                        .amount(new FRAmount("0.15","GBP"))
+                        .amount(new FRAmount("0.15", "GBP"))
                         .build(),
                 FRCharge.builder().type("fee2")
                         .chargeBearer(FRChargeBearerType.BORNEBYDEBTOR)
-                        .amount(new FRAmount("0.10","GBP"))
+                        .amount(new FRAmount("0.10", "GBP"))
                         .build())
         );
         return domesticPaymentConsent;
     }
-
 }

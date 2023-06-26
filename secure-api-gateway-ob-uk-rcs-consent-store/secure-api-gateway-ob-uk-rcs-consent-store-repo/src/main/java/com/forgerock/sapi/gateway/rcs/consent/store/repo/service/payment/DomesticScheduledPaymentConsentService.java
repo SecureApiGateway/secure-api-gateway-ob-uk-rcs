@@ -15,8 +15,7 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticPaymentConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticScheduledPaymentConsentEntity;
 
-public interface DomesticPaymentConsentService extends PaymentConsentService<DomesticPaymentConsentEntity, PaymentAuthoriseConsentArgs> {
-
+public interface DomesticScheduledPaymentConsentService extends PaymentConsentService<DomesticScheduledPaymentConsentEntity, PaymentAuthoriseConsentArgs> {
 }
