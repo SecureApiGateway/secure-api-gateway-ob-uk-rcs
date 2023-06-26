@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo;
+package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.international;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.international.InternationalPaymentConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentConsentService;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.account.AccountAccessConsentEntity;
-
-public interface AccountAccessConsentRepository extends MongoRepository<AccountAccessConsentEntity, String> {
+public interface InternationalPaymentConsentService extends PaymentConsentService<InternationalPaymentConsentEntity, PaymentAuthoriseConsentArgs> {
 }

@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.payment;
 
-import static com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DefaultDomesticStandingOrderConsentServiceTest.createValidConsentEntity;
+import static com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DefaultDomesticStandingOrderConsentServiceTest.createValidConsentEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -38,8 +38,8 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.ConsentDetai
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticStandingOrderConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ExceptionClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.ConsentClientDetailsRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticStandingOrderConsentEntity;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticStandingOrderConsentService;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.domestic.DomesticStandingOrderConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DomesticStandingOrderConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import com.nimbusds.jwt.SignedJWT;
 

@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo;
+package com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.domestic;
 
-import java.util.Optional;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.validation.annotation.Validated;
 
-import org.joda.time.DateTime;
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
-
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticStandingOrderConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.BasePaymentConsentEntity;
 
-public interface PaymentConsentRepository<T extends BasePaymentConsentEntity> extends MongoRepository<T, String> {
-
-    @Query("{ 'apiClientId': ?0, 'idempotencyKey' : ?1, 'idempotencyKeyExpiration': {$gt: ?2 } }")
-    Optional<T> findByIdempotencyData(String apiClientId, String idempotencyKey, DateTime currentTime);
-
+/**
+ * OBIE Domestic Standing Order Consent: https://openbankinguk.github.io/read-write-api-site3/v3.1.10/resources-and-data-models/pisp/domestic-standing-order-consents.html
+ */
+@Document("DomesticStandingOrderConsent")
+@Validated
+public class DomesticStandingOrderConsentEntity extends BasePaymentConsentEntity<FRWriteDomesticStandingOrderConsent> {
 }

@@ -28,12 +28,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.DomesticPaymentConsentRepository;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.MongoRepoPackageMarker;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 @Configuration
 @ComponentScan(basePackageClasses = ConsentStoreConfiguration.class)
-@EnableMongoRepositories(basePackageClasses = DomesticPaymentConsentRepository.class)
+@EnableMongoRepositories(basePackageClasses = MongoRepoPackageMarker.class)
 @EnableMongoAuditing
 public class ConsentStoreConfiguration {
 

@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment;
+package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic;
 
 import org.springframework.stereotype.Service;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticPaymentConsentEntity;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.DomesticPaymentConsentRepository;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.domestic.DomesticPaymentConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.payment.domestic.DomesticPaymentConsentRepository;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.BasePaymentConsentService;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 @Service

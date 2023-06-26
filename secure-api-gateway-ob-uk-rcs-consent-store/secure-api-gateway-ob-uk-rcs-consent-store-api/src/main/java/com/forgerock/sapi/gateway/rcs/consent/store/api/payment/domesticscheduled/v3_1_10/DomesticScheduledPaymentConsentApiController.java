@@ -31,8 +31,8 @@ import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.AuthorisePa
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.ConsumePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domesticscheduled.v3_1_10.CreateDomesticScheduledPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domesticscheduled.v3_1_10.DomesticScheduledPaymentConsent;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticScheduledPaymentConsentEntity;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticScheduledPaymentConsentService;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.domestic.DomesticScheduledPaymentConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DomesticScheduledPaymentConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 

@@ -25,7 +25,7 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.ConsentClientDet
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services.ApiClientServiceClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.client.rs.AccountService;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.ApiProviderConfiguration;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticScheduledPaymentConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.domestic.DomesticScheduledPaymentConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 

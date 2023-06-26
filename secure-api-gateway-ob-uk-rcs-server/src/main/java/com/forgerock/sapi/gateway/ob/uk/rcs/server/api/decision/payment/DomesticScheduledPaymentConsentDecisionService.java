@@ -17,8 +17,8 @@ package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.payment;
 
 import org.springframework.stereotype.Component;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticScheduledPaymentConsentEntity;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticScheduledPaymentConsentService;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.domestic.DomesticScheduledPaymentConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DomesticScheduledPaymentConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 @Component

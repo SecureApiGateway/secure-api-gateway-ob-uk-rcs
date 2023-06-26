@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment;
+package com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.payment.domestic;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticScheduledPaymentConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.domestic.DomesticPaymentConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.payment.PaymentConsentRepository;
 
-public interface DomesticScheduledPaymentConsentService extends PaymentConsentService<DomesticScheduledPaymentConsentEntity, PaymentAuthoriseConsentArgs> {
+public interface DomesticPaymentConsentRepository extends PaymentConsentRepository<DomesticPaymentConsentEntity> {
 }

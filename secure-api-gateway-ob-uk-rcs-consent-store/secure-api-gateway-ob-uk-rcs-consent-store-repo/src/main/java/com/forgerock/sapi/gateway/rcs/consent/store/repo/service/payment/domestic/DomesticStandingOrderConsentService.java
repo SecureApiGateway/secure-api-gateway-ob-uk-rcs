@@ -13,18 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.payment;
-
-import org.springframework.stereotype.Service;
+package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.domestic.DomesticStandingOrderConsentEntity;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DomesticStandingOrderConsentService;
-import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentConsentService;
 
-@Service
-public class DomesticStandingOrderConsentDecisionService extends BasePaymentConsentDecisionService<DomesticStandingOrderConsentEntity> {
-
-    public DomesticStandingOrderConsentDecisionService(DomesticStandingOrderConsentService consentService) {
-        super(IntentType.PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT, consentService);
-    }
+public interface DomesticStandingOrderConsentService extends PaymentConsentService<DomesticStandingOrderConsentEntity, PaymentAuthoriseConsentArgs> {
 }

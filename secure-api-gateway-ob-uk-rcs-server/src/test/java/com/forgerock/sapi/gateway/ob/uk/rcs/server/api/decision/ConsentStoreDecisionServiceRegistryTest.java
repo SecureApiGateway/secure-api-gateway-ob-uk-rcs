@@ -41,7 +41,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.ConsentStoreEnabledInte
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessAuthoriseConsentArgs;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.DomesticPaymentConsentService;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DomesticPaymentConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 @ExtendWith(MockitoExtension.class)

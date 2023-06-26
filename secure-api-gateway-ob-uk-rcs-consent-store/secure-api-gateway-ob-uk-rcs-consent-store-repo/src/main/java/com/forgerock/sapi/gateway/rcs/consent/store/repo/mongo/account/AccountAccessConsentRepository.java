@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment;
+package com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.account;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticPaymentConsentEntity;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface DomesticPaymentConsentService extends PaymentConsentService<DomesticPaymentConsentEntity, PaymentAuthoriseConsentArgs> {
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.account.AccountAccessConsentEntity;
 
+public interface AccountAccessConsentRepository extends MongoRepository<AccountAccessConsentEntity, String> {
 }

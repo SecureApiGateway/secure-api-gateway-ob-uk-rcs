@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 import org.joda.time.DateTime;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.BasePaymentConsentEntity;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.PaymentConsentRepository;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.payment.PaymentConsentRepository;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentService;
 
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;

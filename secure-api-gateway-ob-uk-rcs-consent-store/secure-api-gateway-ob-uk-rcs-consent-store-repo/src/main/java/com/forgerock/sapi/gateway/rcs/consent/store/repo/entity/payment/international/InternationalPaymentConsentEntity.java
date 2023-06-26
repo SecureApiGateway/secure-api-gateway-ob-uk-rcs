@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment;
+package com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.international;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.validation.annotation.Validated;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticStandingOrderConsent;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalConsent;
 
 /**
- * OBIE Domestic Standing Order Consent: https://openbankinguk.github.io/read-write-api-site3/v3.1.10/resources-and-data-models/pisp/domestic-standing-order-consents.html
+ * OBIE International Payment Consent: https://openbankinguk.github.io/read-write-api-site3/v3.1.10/resources-and-data-models/pisp/international-payment-consents.html
  */
-@Document("DomesticStandingOrderConsent")
+@Document("InternationalPaymentConsent")
 @Validated
-public class DomesticStandingOrderConsentEntity extends BasePaymentConsentEntity<FRWriteDomesticStandingOrderConsent> {
+public class InternationalPaymentConsentEntity extends BaseInternationalPaymentConsentEntity<FRWriteInternationalConsent> {
 }

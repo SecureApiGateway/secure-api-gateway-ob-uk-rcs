@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment;
+package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,8 +28,10 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRChargeBearerType;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConsentConverter;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.DomesticPaymentConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.domestic.DomesticPaymentConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentService;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.BasePaymentConsentServiceTest;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
