@@ -13,13 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domesticscheduledpayments.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domesticscheduled.v3_1_10;
 
 import org.springframework.validation.annotation.Validated;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticScheduledConsent;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.BaseCreatePaymentConsentRequest;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.BasePaymentConsent;
 
+/**
+ * OBIE Domestic Scheduled Payment Consent: https://openbankinguk.github.io/read-write-api-site3/v3.1.10/resources-and-data-models/pisp/domestic-scheduled-payment-consents.html
+ */
 @Validated
-public class CreateDomesticScheduledPaymentConsentRequest extends BaseCreatePaymentConsentRequest<FRWriteDomesticScheduledConsent> {
+public class DomesticScheduledPaymentConsent extends BasePaymentConsent<FRWriteDomesticScheduledConsent> {
 }
