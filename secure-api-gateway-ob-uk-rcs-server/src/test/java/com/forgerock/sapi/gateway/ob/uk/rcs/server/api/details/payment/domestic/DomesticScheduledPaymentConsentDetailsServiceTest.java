@@ -76,6 +76,7 @@ class DomesticScheduledPaymentConsentDetailsServiceTest extends BasePaymentConse
         assertThat(domesticScheduledPaymentDetails.getClientName()).isEqualTo(testApiClient.getName());
         assertThat(domesticScheduledPaymentDetails.getPaymentReference()).isEqualTo("FRESCO-037");
         assertThat(domesticScheduledPaymentDetails.getCharges()).isEqualTo(new FRAmount("0.25", "GBP"));
+        assertThat(domesticScheduledPaymentDetails.getPaymentDate()).isEqualTo(consentEntity.getRequestObj().getData().getInitiation().getRequestedExecutionDateTime());
         assertThat(domesticScheduledPaymentDetails.getInstructedAmount()).isEqualTo(new FRAmount("10.01", "GBP"));
         assertThat(domesticScheduledPaymentDetails.getInitiation()).isEqualTo(consentEntity.getRequestObj().getData().getInitiation());
         assertThat(domesticScheduledPaymentDetails.getUsername()).isEqualTo(testUser.getUserName());
@@ -113,6 +114,7 @@ class DomesticScheduledPaymentConsentDetailsServiceTest extends BasePaymentConse
         assertThat(domesticScheduledConsentDetails.getClientName()).isEqualTo(testApiClient.getName());
         assertThat(domesticScheduledConsentDetails.getPaymentReference()).isEqualTo("FRESCO-037");
         assertThat(domesticScheduledConsentDetails.getCharges()).isEqualTo(new FRAmount("0.25", "GBP"));
+        assertThat(domesticScheduledConsentDetails.getPaymentDate()).isEqualTo(consentEntity.getRequestObj().getData().getInitiation().getRequestedExecutionDateTime());
         assertThat(domesticScheduledConsentDetails.getInstructedAmount()).isEqualTo(new FRAmount("10.01", "GBP"));
 
         final FRWriteDomesticScheduledDataInitiation initiation = consentEntity.getRequestObj().getData().getInitiation();
