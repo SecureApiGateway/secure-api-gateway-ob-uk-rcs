@@ -118,4 +118,19 @@ public class DefaultAccountAccessConsentServiceTest extends BaseConsentServiceTe
                 () -> consentService.authoriseConsent(new AccountAccessAuthoriseConsentArgs(persistedConsent.getId(), persistedConsent.getApiClientId(), "user-123", List.of())));
         assertThat(ex2.getMessage()).isEqualTo("authoriseConsent.arg0.authorisedAccountIds: must not be empty");
     }
+
+    @Test
+    void revokeConsent() {
+        final AccountAccessConsentEntity consentObj = getValidConsentEntity();
+
+        final AccountAccessConsentEntity persistedConsent = consentService.createConsent(consentObj);
+
+        final String consentId = persistedConsent.getId();
+        final AccountAccessAuthoriseConsentArgs authoriseConsentArgs = getAuthoriseConsentArgs(consentId, TEST_RESOURCE_OWNER, consentObj.getApiClientId());
+        final AccountAccessConsentEntity authorisedConsent = consentService.authoriseConsent(authoriseConsentArgs);
+
+        final AccountAccessConsentEntity rejectedConsent = consentService.revokeConsent(consentId, consentObj.getApiClientId());
+        validateRejectedConsent(authorisedConsent, rejectedConsent);
+    }
+
 }

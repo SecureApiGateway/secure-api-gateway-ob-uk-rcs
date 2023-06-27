@@ -29,9 +29,7 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.
 public class BasePaymentConsentService<T extends BasePaymentConsentEntity<?>, A extends PaymentAuthoriseConsentArgs> extends BaseConsentService<T, A> implements PaymentConsentService<T, A> {
 
     public BasePaymentConsentService(PaymentConsentRepository<T> repo, Supplier<String> idGenerator) {
-        super(repo, idGenerator, PaymentConsentStateTransitions.getPaymentConsentStateTransitions(),
-                PaymentConsentStateTransitions.AUTHORISED, PaymentConsentStateTransitions.REJECTED,
-                PaymentConsentStateTransitions.REJECTED);
+        super(repo, idGenerator, PaymentConsentStateModel.getInstance());
     }
 
     private PaymentConsentRepository<T> getRepo() {

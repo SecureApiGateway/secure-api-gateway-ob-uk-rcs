@@ -54,15 +54,16 @@ public abstract class BaseConsentService<T extends BaseConsentEntity<?>, A exten
      */
     private final String revokedConsentStatus;
 
-    public BaseConsentService(MongoRepository<T, String> repo, Supplier<String> idGenerator, MultiValueMap<String, String> validStateTransitions,
-                              String authorisedConsentStatus, String rejectedConsentStatus, String revokedConsentStatus) {
+    public BaseConsentService(MongoRepository<T, String> repo, Supplier<String> idGenerator, ConsentStateModel consentStateModel) {
 
         this.repo = Objects.requireNonNull(repo, "repo must be provided");
         this.idGenerator = Objects.requireNonNull(idGenerator, "idGenerator must be provided");
-        this.validStateTransitions = Objects.requireNonNull(validStateTransitions, "validStateTransitions must be provided");
-        this.authorisedConsentStatus = Objects.requireNonNull(authorisedConsentStatus, "authorisedConsentStatus must be provided");
-        this.rejectedConsentStatus = Objects.requireNonNull(rejectedConsentStatus, "rejectedConsentStatus must be provided");
-        this.revokedConsentStatus = Objects.requireNonNull(revokedConsentStatus, "revokedConsentStatus must be provided");
+
+        Objects.requireNonNull(consentStateModel, "consentStateModel must be provided");
+        this.validStateTransitions = consentStateModel.getValidStateTransitions();
+        this.authorisedConsentStatus = consentStateModel.getAuthorisedConsentStatus();
+        this.rejectedConsentStatus = consentStateModel.getRejectedConsentStatus();
+        this.revokedConsentStatus = consentStateModel.getRevokedConsentStatus();
     }
 
     @Override
@@ -114,6 +115,7 @@ public abstract class BaseConsentService<T extends BaseConsentEntity<?>, A exten
     @Override
     public T rejectConsent(String consentId, String apiClientId, String resourceOwnerId) {
         final T consent = getConsent(consentId, apiClientId);
+        validateStateTransition(consent, rejectedConsentStatus);
         consent.setStatus(rejectedConsentStatus);
         consent.setResourceOwnerId(resourceOwnerId);
 
@@ -122,7 +124,8 @@ public abstract class BaseConsentService<T extends BaseConsentEntity<?>, A exten
 
     @Override
     public T revokeConsent(String consentId, String apiClientId) {
-        final T consent = getConsent(consentId, consentId);
+        final T consent = getConsent(consentId, apiClientId);
+        validateStateTransition(consent, revokedConsentStatus);
         consent.setStatus(revokedConsentStatus);
         return repo.save(consent);
     }

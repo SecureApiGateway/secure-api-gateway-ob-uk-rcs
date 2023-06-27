@@ -140,14 +140,19 @@ public abstract class BaseConsentServiceTest<T extends BaseConsentEntity<?>, A e
         final T persistedConsent = consentService.createConsent(consentObj);
         final T rejectedConsent = consentService.rejectConsent(persistedConsent.getId(), consentObj.getApiClientId(), TEST_RESOURCE_OWNER);
 
-        final RecursiveComparisonConfiguration recursiveComparisonConfiguration = RecursiveComparisonConfiguration.builder().withIgnoredFields("status", "resourceOwnerId", "statusUpdatedDateTime", "entityVersion").build();
-        assertThat(rejectedConsent).usingRecursiveComparison(recursiveComparisonConfiguration).isEqualTo(persistedConsent);
-
-        assertThat(rejectedConsent.getStatus()).isEqualTo(getRejectedConsentStatus());
-        assertThat(rejectedConsent.getResourceOwnerId()).isEqualTo(TEST_RESOURCE_OWNER);
-        assertThat(rejectedConsent.getStatusUpdatedDateTime()).isGreaterThan(persistedConsent.getStatusUpdatedDateTime())
-                .isLessThan(DateTime.now());
-        assertThat(rejectedConsent.getEntityVersion()).isEqualTo(persistedConsent.getEntityVersion() + 1);
+        validateRejectedConsent(persistedConsent, rejectedConsent);
     }
 
+    protected void validateRejectedConsent(T consentBeforeRejectAction, T rejectedConsent) {
+        final RecursiveComparisonConfiguration recursiveComparisonConfiguration = RecursiveComparisonConfiguration.builder()
+                .withIgnoredFields("status", "resourceOwnerId", "statusUpdatedDateTime", "entityVersion").build();
+
+        assertThat(rejectedConsent).usingRecursiveComparison(recursiveComparisonConfiguration).isEqualTo(consentBeforeRejectAction);
+        assertThat(rejectedConsent.getStatus()).isEqualTo(getRejectedConsentStatus());
+        assertThat(rejectedConsent.getResourceOwnerId()).isEqualTo(TEST_RESOURCE_OWNER);
+
+        assertThat(rejectedConsent.getStatusUpdatedDateTime()).isGreaterThan(consentBeforeRejectAction.getStatusUpdatedDateTime())
+                .isLessThan(DateTime.now());
+        assertThat(rejectedConsent.getEntityVersion()).isEqualTo(consentBeforeRejectAction.getEntityVersion() + 1);
+    }
 }
