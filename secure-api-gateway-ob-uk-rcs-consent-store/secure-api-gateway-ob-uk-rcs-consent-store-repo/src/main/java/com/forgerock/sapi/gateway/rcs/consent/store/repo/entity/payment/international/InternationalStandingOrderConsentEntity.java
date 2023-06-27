@@ -18,12 +18,13 @@ package com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.interna
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.validation.annotation.Validated;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalConsent;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalStandingOrderConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.BasePaymentConsentEntity;
 
 /**
- * OBIE International Payment Consent: https://openbankinguk.github.io/read-write-api-site3/v3.1.10/resources-and-data-models/pisp/international-payment-consents.html
+ * OBIE International Standing Order Consent: https://openbankinguk.github.io/read-write-api-site3/v3.1.10/resources-and-data-models/pisp/international-standing-orders.html
  */
-@Document("InternationalPaymentConsent")
+@Document("InternationalStandingOrderConsent")
 @Validated
-public class InternationalPaymentConsentEntity extends BasePaymentConsentEntityWithExchangeRateInformation<FRWriteInternationalConsent> {
+public class InternationalStandingOrderConsentEntity extends BasePaymentConsentEntity<FRWriteInternationalStandingOrderConsent> {
 }

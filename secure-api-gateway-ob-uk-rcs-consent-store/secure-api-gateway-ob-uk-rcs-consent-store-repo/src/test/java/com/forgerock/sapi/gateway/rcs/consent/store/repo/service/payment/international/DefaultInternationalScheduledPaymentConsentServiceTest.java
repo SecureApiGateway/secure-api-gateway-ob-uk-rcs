@@ -40,7 +40,7 @@ import uk.org.openbanking.testsupport.payment.OBWriteInternationalScheduledConse
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 public
-class DefaultInternationalScheduledPaymentConsentServiceTest extends BaseInternationalPaymentConsentServiceTest<InternationalScheduledPaymentConsentEntity> {
+class DefaultInternationalScheduledPaymentConsentServiceTest extends BasePaymentServiceWithExchangeRateInformationTest<InternationalScheduledPaymentConsentEntity> {
 
     @Autowired
     private DefaultInternationalScheduledPaymentConsentService consentService;

@@ -55,6 +55,7 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticSche
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticStandingOrderConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.InternationalPaymentConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.InternationalScheduledPaymentConsentDetails;
+import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.InternationalStandingOrderConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ExceptionClient;
@@ -132,6 +133,13 @@ public class ConsentDetailsApiControllerRcsConsentStoreTest {
         return consentDetails;
     }
 
+    private static InternationalStandingOrderConsentDetails createInternationalStandingOrderConsentDetails() {
+        final InternationalStandingOrderConsentDetails consentDetails = new InternationalStandingOrderConsentDetails();
+        consentDetails.setConsentId(IntentType.PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT.generateIntentId());
+        consentDetails.setLogo(TPP_LOGO);
+        return consentDetails;
+    }
+
     private static Stream<Arguments> validConsentDetailsArguments() {
         return Stream.of(
                 arguments(IntentType.PAYMENT_DOMESTIC_CONSENT, createDomesticPaymentConsentDetails(), DomesticPaymentConsentDetails.class),
@@ -139,7 +147,8 @@ public class ConsentDetailsApiControllerRcsConsentStoreTest {
                 arguments(IntentType.PAYMENT_DOMESTIC_SCHEDULED_CONSENT, createDomesticScheduledPaymentConsentDetails(), DomesticScheduledPaymentConsentDetails.class),
                 arguments(IntentType.PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT, createDomesticStandingOrderConsentDetails(), DomesticStandingOrderConsentDetails.class),
                 arguments(IntentType.PAYMENT_INTERNATIONAL_CONSENT, createInternationalPaymentConsentDetails(), InternationalPaymentConsentDetails.class),
-                arguments(IntentType.PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT, createInternationalScheduledPaymentConsentDetails(), InternationalScheduledPaymentConsentDetails.class)
+                arguments(IntentType.PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT, createInternationalScheduledPaymentConsentDetails(), InternationalScheduledPaymentConsentDetails.class),
+                arguments(IntentType.PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT, createInternationalStandingOrderConsentDetails(), InternationalStandingOrderConsentDetails.class)
         );
     }
 

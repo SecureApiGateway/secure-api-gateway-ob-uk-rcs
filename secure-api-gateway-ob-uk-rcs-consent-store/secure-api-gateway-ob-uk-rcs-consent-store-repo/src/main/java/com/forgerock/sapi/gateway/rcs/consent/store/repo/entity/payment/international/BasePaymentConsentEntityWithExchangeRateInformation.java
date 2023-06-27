@@ -19,10 +19,10 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRExchangeRateIn
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.BasePaymentConsentEntity;
 
 /**
- * International payments extend the {@link BasePaymentConsentEntity} definition with the addition of ExchangeRateInformation
+ * Payment that extends the {@link BasePaymentConsentEntity} definition with the addition of ExchangeRateInformation
  * for the transaction.
  */
-public abstract class BaseInternationalPaymentConsentEntity<T> extends BasePaymentConsentEntity<T> {
+public abstract class BasePaymentConsentEntityWithExchangeRateInformation<T> extends BasePaymentConsentEntity<T> {
 
     /**
      * Optional - used to communicate exchange rate information for the transaction

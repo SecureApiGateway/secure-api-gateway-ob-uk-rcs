@@ -25,5 +25,5 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternat
  */
 @Document("InternationalScheduledPaymentConsent")
 @Validated
-public class InternationalScheduledPaymentConsentEntity extends BaseInternationalPaymentConsentEntity<FRWriteInternationalScheduledConsent> {
+public class InternationalScheduledPaymentConsentEntity extends BasePaymentConsentEntityWithExchangeRateInformation<FRWriteInternationalScheduledConsent> {
 }

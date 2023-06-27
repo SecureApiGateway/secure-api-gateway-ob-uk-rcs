@@ -20,14 +20,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.joda.time.DateTime;
 
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.BaseCreateInternationalPaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.BaseInternationalPaymentConsent;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.BasePaymentConsentWithExchangeRateInformation;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
 
-public class InternationalPaymentConsentValidationHelpers {
+public class PaymentConsentWithExchangeRateInformationValidationHelpers {
 
-    public static void validateCreateConsentAgainstCreateRequest(BaseInternationalPaymentConsent<?> consent,
+    public static void validateCreateConsentAgainstCreateRequest(BasePaymentConsentWithExchangeRateInformation<?> consent,
                                                                  BaseCreateInternationalPaymentConsentRequest<?> createConsentRequest) {
         assertThat(consent.getId()).isNotEmpty();
         assertThat(consent.getStatus()).isEqualTo(StatusEnum.AWAITINGAUTHORISATION.toString());
