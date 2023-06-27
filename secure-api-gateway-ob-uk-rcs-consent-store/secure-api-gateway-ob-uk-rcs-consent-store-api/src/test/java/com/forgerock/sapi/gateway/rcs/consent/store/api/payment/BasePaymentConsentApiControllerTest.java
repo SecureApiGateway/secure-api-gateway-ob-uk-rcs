@@ -90,7 +90,7 @@ public abstract class BasePaymentConsentApiControllerTest<T extends BasePaymentC
         final String apiClientId = "client-1";
         final String resourceOwnerId = "psu4test";
         final String debtorAccountId = "acc-123456";
-        final T consent = createConsent(apiClientId);
+        final T consent = getConsentInStateToAuthoriseOrReject(apiClientId);
 
         final AuthorisePaymentConsentRequest authoriseReq = new AuthorisePaymentConsentRequest();
         authoriseReq.setConsentId(consent.getId());
