@@ -15,25 +15,16 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.international;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRExchangeRateInformation;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.validation.annotation.Validated;
+
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalStandingOrderConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.BasePaymentConsentEntity;
 
 /**
- * International payments extend the {@link BasePaymentConsentEntity} definition with the addition of ExchangeRateInformation
- * for the transaction.
+ * OBIE International Standing Order Consent: https://openbankinguk.github.io/read-write-api-site3/v3.1.10/resources-and-data-models/pisp/international-standing-orders.html
  */
-public abstract class BaseInternationalPaymentConsentEntity<T> extends BasePaymentConsentEntity<T> {
-
-    /**
-     * Optional - used to communicate exchange rate information for the transaction
-     */
-    private FRExchangeRateInformation exchangeRateInformation;
-
-    public FRExchangeRateInformation getExchangeRateInformation() {
-        return exchangeRateInformation;
-    }
-
-    public void setExchangeRateInformation(FRExchangeRateInformation exchangeRateInformation) {
-        this.exchangeRateInformation = exchangeRateInformation;
-    }
+@Document("InternationalStandingOrderConsent")
+@Validated
+public class InternationalStandingOrderConsentEntity extends BasePaymentConsentEntity<FRWriteInternationalStandingOrderConsent> {
 }

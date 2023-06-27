@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.internationalscheduled.v3_1_10;
 
-import static com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.international.BaseInternationalPaymentConsentServiceTest.getExchangeRateInformation;
+import static com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.international.BasePaymentServiceWithExchangeRateInformationTest.getExchangeRateInformation;
 
 import java.util.List;
 import java.util.UUID;

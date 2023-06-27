@@ -25,5 +25,5 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternat
  */
 @Document("InternationalPaymentConsent")
 @Validated
-public class InternationalPaymentConsentEntity extends BaseInternationalPaymentConsentEntity<FRWriteInternationalConsent> {
+public class InternationalPaymentConsentEntity extends BasePaymentWithExchangeRateInformation<FRWriteInternationalConsent> {
 }

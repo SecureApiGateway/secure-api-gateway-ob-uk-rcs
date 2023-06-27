@@ -49,7 +49,7 @@ import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.AuthorisePa
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.ConsumePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.internationalscheduled.v3_1_10.CreateInternationalScheduledPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.internationalscheduled.v3_1_10.InternationalScheduledPaymentConsent;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.international.BaseInternationalPaymentConsentServiceTest;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.international.BasePaymentServiceWithExchangeRateInformationTest;
 
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse5Data.StatusEnum;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent5;
@@ -153,7 +153,7 @@ class InternationalScheduledPaymentConsentStoreClientTest {
                         .chargeBearer(FRChargeBearerType.BORNEBYCREDITOR)
                         .amount(new FRAmount("1.25","GBP"))
                         .build()));
-        createConsentRequest.setExchangeRateInformation(BaseInternationalPaymentConsentServiceTest.getExchangeRateInformation(obConsent.getData().getInitiation().getExchangeRateInformation()));
+        createConsentRequest.setExchangeRateInformation(BasePaymentServiceWithExchangeRateInformationTest.getExchangeRateInformation(obConsent.getData().getInitiation().getExchangeRateInformation()));
         return createConsentRequest;
     }
 
