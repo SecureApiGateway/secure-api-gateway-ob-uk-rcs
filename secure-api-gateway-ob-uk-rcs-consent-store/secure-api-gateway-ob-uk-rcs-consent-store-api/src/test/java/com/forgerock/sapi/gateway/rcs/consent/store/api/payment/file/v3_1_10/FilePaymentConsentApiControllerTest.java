@@ -35,6 +35,8 @@ import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.file.v3_1_1
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.file.v3_1_10.FileUploadRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.BasePaymentConsentApiControllerTest;
 
+import uk.org.openbanking.datamodel.error.OBError1;
+import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
 import uk.org.openbanking.testsupport.payment.OBWriteFileConsentTestDataFactory;
 
@@ -86,10 +88,19 @@ public class FilePaymentConsentApiControllerTest extends BasePaymentConsentApiCo
 
     @Override
     protected FilePaymentConsent getConsentInStateToAuthoriseOrReject(String apiClientId) {
-        final FilePaymentConsent consent = createConsent(apiClientId);
-        final ResponseEntity<FilePaymentConsent> fileUploadResponse = uploadFile(getValidFileUploadRequest(consent), FilePaymentConsent.class);
+        return uploadFile(createConsent(apiClientId));
+    }
+
+    private FilePaymentConsent uploadFile(FilePaymentConsent consent) {
+        return uploadFile(consent, getValidFileUploadRequest(consent));
+    }
+
+    private FilePaymentConsent uploadFile(FilePaymentConsent consent, FileUploadRequest fileUploadRequest) {
+        final ResponseEntity<FilePaymentConsent> fileUploadResponse = uploadFile(fileUploadRequest, FilePaymentConsent.class);
         assertThat(fileUploadResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-        return fileUploadResponse.getBody();
+        final FilePaymentConsent consentWithFile = fileUploadResponse.getBody();
+        FilePaymentConsentValidationHelpers.validateConsentAgainstFileUploadRequest(consentWithFile, fileUploadRequest, consent);
+        return consentWithFile;
     }
 
     private <R> ResponseEntity<R> uploadFile(FileUploadRequest fileUploadRequest, Class<R> responseClass) {
@@ -109,13 +120,47 @@ public class FilePaymentConsentApiControllerTest extends BasePaymentConsentApiCo
 
     @Test
     void uploadFile() {
+        uploadFile(createConsent(TEST_API_CLIENT_1));
+    }
+
+    @Test
+    void uploadFileShouldBeIdempotent() {
         final FilePaymentConsent consent = createConsent(TEST_API_CLIENT_1);
         final FileUploadRequest validFileUploadRequest = getValidFileUploadRequest(consent);
-        final ResponseEntity<FilePaymentConsent> fileUploadResponse = uploadFile(validFileUploadRequest, FilePaymentConsent.class);
-        assertThat(fileUploadResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-        final FilePaymentConsent consentWithFile = fileUploadResponse.getBody();
 
-        FilePaymentConsentValidationHelpers.validateConsentAgainstFileUploadRequest(consentWithFile, validFileUploadRequest, consent);
+        final FilePaymentConsent firstFileUploadResult = uploadFile(consent, validFileUploadRequest);
+
+        for (int i = 0 ; i < 5; i++) {
+            assertThat(uploadFile(consent, validFileUploadRequest)).usingRecursiveComparison().isEqualTo(firstFileUploadResult);
+        }
+    }
+
+    @Test
+    void failToUploadFileDifferentApiClient() {
+        final FilePaymentConsent consent = createConsent(TEST_API_CLIENT_1);
+
+        final FileUploadRequest fileUploadRequest = getValidFileUploadRequest(consent);
+        fileUploadRequest.setApiClientId("different-client-id");
+
+        final ResponseEntity<OBErrorResponse1> errorResult = uploadFile(fileUploadRequest, OBErrorResponse1.class);
+        validateInvalidPermissionsErrorResponse(consent.getId(), errorResult);
+    }
+
+    @Test
+    void failToUploadFileMissingFile() {
+        final FilePaymentConsent consent = createConsent(TEST_API_CLIENT_1);
+
+        final FileUploadRequest fileUploadRequest = getValidFileUploadRequest(consent);
+        fileUploadRequest.setFileContents(null);
+
+        final ResponseEntity<OBErrorResponse1> errorResponse = uploadFile(fileUploadRequest, OBErrorResponse1.class);
+        assertThat(errorResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        final OBErrorResponse1 obErrorResponse = errorResponse.getBody();
+        assertThat(obErrorResponse.getCode()).isEqualTo("OBRI.Argument.Invalid");
+        assertThat(obErrorResponse.getErrors()).isNotEmpty().
+                contains(new OBError1().errorCode("UK.OBIE.Field.Invalid")
+                        .message("The field received is invalid. Reason 'must not be null'")
+                        .path("fileContents"));
     }
 
 }
