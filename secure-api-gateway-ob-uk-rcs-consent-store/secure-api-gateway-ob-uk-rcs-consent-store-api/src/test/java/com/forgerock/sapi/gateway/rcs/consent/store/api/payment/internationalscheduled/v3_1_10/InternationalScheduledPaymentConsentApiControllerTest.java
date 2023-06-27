@@ -26,12 +26,12 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRChargeBearerTy
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalScheduledConsentConverter;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.internationalscheduled.v3_1_10.CreateInternationalScheduledPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.internationalscheduled.v3_1_10.InternationalScheduledPaymentConsent;
-import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.BaseInternationalPaymentConsentApiControllerTest;
+import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.BasePaymentConsentWithExchangeRateInformationApiControllerTest;
 
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent5;
 import uk.org.openbanking.testsupport.payment.OBWriteInternationalScheduledConsentTestDataFactory;
 
-public class InternationalScheduledPaymentConsentApiControllerTest extends BaseInternationalPaymentConsentApiControllerTest<InternationalScheduledPaymentConsent, CreateInternationalScheduledPaymentConsentRequest> {
+public class InternationalScheduledPaymentConsentApiControllerTest extends BasePaymentConsentWithExchangeRateInformationApiControllerTest<InternationalScheduledPaymentConsent, CreateInternationalScheduledPaymentConsentRequest> {
 
     public InternationalScheduledPaymentConsentApiControllerTest() {
         super(InternationalScheduledPaymentConsent.class);

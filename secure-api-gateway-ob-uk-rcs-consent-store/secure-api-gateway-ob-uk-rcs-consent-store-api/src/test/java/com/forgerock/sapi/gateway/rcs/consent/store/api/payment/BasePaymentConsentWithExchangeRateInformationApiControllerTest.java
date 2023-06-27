@@ -16,17 +16,17 @@
 package com.forgerock.sapi.gateway.rcs.consent.store.api.payment;
 
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.BaseCreateInternationalPaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.BaseInternationalPaymentConsent;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.BasePaymentConsentWithExchangeRateInformation;
 
-public abstract class BaseInternationalPaymentConsentApiControllerTest<T extends BaseInternationalPaymentConsent, C extends BaseCreateInternationalPaymentConsentRequest> extends BasePaymentConsentApiControllerTest<T, C> {
+public abstract class BasePaymentConsentWithExchangeRateInformationApiControllerTest<T extends BasePaymentConsentWithExchangeRateInformation, C extends BaseCreateInternationalPaymentConsentRequest> extends BasePaymentConsentApiControllerTest<T, C> {
 
-    public BaseInternationalPaymentConsentApiControllerTest(Class<T> consentClass) {
+    public BasePaymentConsentWithExchangeRateInformationApiControllerTest(Class<T> consentClass) {
         super(consentClass);
     }
 
     @Override
     protected void validateCreateConsentAgainstCreateRequest(T consent, C createConsentRequest) {
-        InternationalPaymentConsentValidationHelpers.validateCreateConsentAgainstCreateRequest(consent, createConsentRequest);
+        PaymentConsentWithExchangeRateInformationValidationHelpers.validateCreateConsentAgainstCreateRequest(consent, createConsentRequest);
     }
 
 }

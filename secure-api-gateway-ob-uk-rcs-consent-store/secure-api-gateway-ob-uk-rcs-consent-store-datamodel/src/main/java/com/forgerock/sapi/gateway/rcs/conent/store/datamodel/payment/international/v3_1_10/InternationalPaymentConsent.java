@@ -18,11 +18,11 @@ package com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.internatio
 import org.springframework.validation.annotation.Validated;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalConsent;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.BaseInternationalPaymentConsent;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.BasePaymentConsentWithExchangeRateInformation;
 
 /**
  * OBIE International Payment Consent: https://openbankinguk.github.io/read-write-api-site3/v3.1.10/resources-and-data-models/pisp/international-payment-consents.html
  */
 @Validated
-public class InternationalPaymentConsent extends BaseInternationalPaymentConsent<FRWriteInternationalConsent> {
+public class InternationalPaymentConsent extends BasePaymentConsentWithExchangeRateInformation<FRWriteInternationalConsent> {
 }

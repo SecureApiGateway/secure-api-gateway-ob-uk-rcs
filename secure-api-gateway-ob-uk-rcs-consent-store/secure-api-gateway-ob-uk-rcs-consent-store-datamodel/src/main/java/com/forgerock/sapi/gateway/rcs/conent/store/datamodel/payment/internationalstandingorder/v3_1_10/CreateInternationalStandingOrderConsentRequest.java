@@ -13,22 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment;
+package com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.internationalstandingorder.v3_1_10;
 
 import org.springframework.validation.annotation.Validated;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRExchangeRateInformation;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalStandingOrderConsent;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.BaseCreatePaymentConsentRequest;
 
 @Validated
-public abstract class BaseInternationalPaymentConsent<T> extends BasePaymentConsent<T> {
-
-    private FRExchangeRateInformation exchangeRateInformation;
-
-    public FRExchangeRateInformation getExchangeRateInformation() {
-        return exchangeRateInformation;
-    }
-
-    public void setExchangeRateInformation(FRExchangeRateInformation exchangeRateInformation) {
-        this.exchangeRateInformation = exchangeRateInformation;
-    }
+public class CreateInternationalStandingOrderConsentRequest extends BaseCreatePaymentConsentRequest<FRWriteInternationalStandingOrderConsent> {
 }

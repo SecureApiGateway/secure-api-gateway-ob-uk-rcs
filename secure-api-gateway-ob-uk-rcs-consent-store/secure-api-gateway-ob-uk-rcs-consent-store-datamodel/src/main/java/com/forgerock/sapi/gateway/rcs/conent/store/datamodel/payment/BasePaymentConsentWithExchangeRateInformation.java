@@ -13,17 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.international;
+package com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment;
 
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.validation.annotation.Validated;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalConsent;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRExchangeRateInformation;
 
-/**
- * OBIE International Payment Consent: https://openbankinguk.github.io/read-write-api-site3/v3.1.10/resources-and-data-models/pisp/international-payment-consents.html
- */
-@Document("InternationalPaymentConsent")
 @Validated
-public class InternationalPaymentConsentEntity extends BasePaymentConsentEntityWithExchangeRateInformation<FRWriteInternationalConsent> {
+public abstract class BasePaymentConsentWithExchangeRateInformation<T> extends BasePaymentConsent<T> {
+
+    private FRExchangeRateInformation exchangeRateInformation;
+
+    public FRExchangeRateInformation getExchangeRateInformation() {
+        return exchangeRateInformation;
+    }
+
+    public void setExchangeRateInformation(FRExchangeRateInformation exchangeRateInformation) {
+        this.exchangeRateInformation = exchangeRateInformation;
+    }
 }
