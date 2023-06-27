@@ -13,34 +13,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.file;
+package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.file;
 
-import org.springframework.data.mongodb.core.mapping.Document;
+import javax.validation.constraints.NotNull;
+
 import org.springframework.validation.annotation.Validated;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteFileConsent;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.BasePaymentConsentEntity;
-
-/**
- * OBIE File Payment Consent: https://openbankinguk.github.io/read-write-api-site3/v3.1.10/resources-and-data-models/pisp/file-payment-consents.html
- */
-@Document("FilePaymentConsent")
 @Validated
-public class FilePaymentConsentEntity extends BasePaymentConsentEntity<FRWriteFileConsent> {
+public class FileUploadArgs {
 
-    private String fileContent;
+    @NotNull
+    private String consentId;
 
-    /**
-     * IdempotencyKey for the file upload operation
-     */
+    @NotNull
+    private String apiClientId;
+
+    @NotNull
+    private String fileContents;
+
+    @NotNull
     private String fileUploadIdempotencyKey;
 
-    public String getFileContent() {
-        return fileContent;
+    public String getConsentId() {
+        return consentId;
     }
 
-    public void setFileContent(String fileContent) {
-        this.fileContent = fileContent;
+    public void setConsentId(String consentId) {
+        this.consentId = consentId;
+    }
+
+    public String getApiClientId() {
+        return apiClientId;
+    }
+
+    public void setApiClientId(String apiClientId) {
+        this.apiClientId = apiClientId;
+    }
+
+    public String getFileContents() {
+        return fileContents;
+    }
+
+    public void setFileContents(String fileContents) {
+        this.fileContents = fileContents;
     }
 
     public String getFileUploadIdempotencyKey() {

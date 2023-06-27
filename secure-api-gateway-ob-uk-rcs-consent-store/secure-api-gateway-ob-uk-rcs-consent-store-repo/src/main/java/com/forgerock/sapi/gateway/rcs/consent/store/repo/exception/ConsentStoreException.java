@@ -23,6 +23,7 @@ public class ConsentStoreException extends RuntimeException {
         BAD_REQUEST,
         INVALID_STATE_TRANSITION,
         INVALID_CONSENT_DECISION,
+        IDEMPOTENCY_ERROR
     }
 
     private final ErrorType errorType;

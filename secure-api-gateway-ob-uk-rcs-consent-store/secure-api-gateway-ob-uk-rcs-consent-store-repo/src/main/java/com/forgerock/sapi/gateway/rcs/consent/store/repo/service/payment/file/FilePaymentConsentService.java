@@ -13,10 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.payment.file;
+package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.file;
+
+import javax.validation.Valid;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.file.FilePaymentConsentEntity;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.payment.PaymentConsentRepository;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentConsentService;
 
-public interface FilePaymentConsentRepository  extends PaymentConsentRepository<FilePaymentConsentEntity> {
+public interface FilePaymentConsentService extends PaymentConsentService<FilePaymentConsentEntity, PaymentAuthoriseConsentArgs> {
+
+    FilePaymentConsentEntity uploadFile(@Valid FileUploadArgs fileUploadArgs);
+
 }

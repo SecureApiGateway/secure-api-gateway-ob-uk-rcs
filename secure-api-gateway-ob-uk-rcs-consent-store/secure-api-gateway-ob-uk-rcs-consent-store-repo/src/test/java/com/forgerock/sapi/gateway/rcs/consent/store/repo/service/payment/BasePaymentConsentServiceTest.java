@@ -61,8 +61,13 @@ public abstract class BasePaymentConsentServiceTest<T extends BasePaymentConsent
         assertThat(authorisedConsent.getAuthorisedDebtorAccountId()).isEqualTo(authorisationArgs.getAuthorisedDebtorAccountId());
     }
 
+    protected T getConsentInStateToConsume() {
+        final T consentToAuthorise = getConsentInStateToAuthoriseOrReject();
+        return consentService.authoriseConsent(getAuthoriseConsentArgs(consentToAuthorise.getId(), TEST_RESOURCE_OWNER, consentToAuthorise.getApiClientId()));
+    }
+
     @Test
-    void createConsumeShouldBeIdempotent() {
+    void createConsentShouldBeIdempotent() {
         final String idempotencyKey = "key-1";
         final DateTime idempotencyKeyExpiry = DateTime.now().plusDays(1);
 
@@ -82,15 +87,14 @@ public abstract class BasePaymentConsentServiceTest<T extends BasePaymentConsent
 
     @Test
     void consumeConsent() {
-        final T persistedConsent = getPaymentConsentService().createConsent(getValidConsentEntity());
-        getPaymentConsentService().authoriseConsent(getAuthoriseConsentArgs(persistedConsent.getId(), TEST_RESOURCE_OWNER, persistedConsent.getApiClientId()));
-        final T consumedConsent = getPaymentConsentService().consumeConsent(persistedConsent.getId(), persistedConsent.getApiClientId());
+        final T consentInStateToConsume = getConsentInStateToConsume();
+        final T consumedConsent = getPaymentConsentService().consumeConsent(consentInStateToConsume.getId(), consentInStateToConsume.getApiClientId());
         assertThat(consumedConsent.getStatus()).isEqualTo(StatusEnum.CONSUMED.toString());
     }
 
     @Test
     void failToConsumeConsentAwaitingAuthorisation() {
-        final T persistedConsent = getPaymentConsentService().createConsent(getValidConsentEntity());
+        final T persistedConsent = getConsentInStateToAuthoriseOrReject();
         final ConsentStoreException consentStoreException = Assertions.assertThrows(ConsentStoreException.class, () -> getPaymentConsentService().consumeConsent(persistedConsent.getId(), persistedConsent.getApiClientId()));
         assertThat(consentStoreException.getConsentId()).isEqualTo(persistedConsent.getId());
         assertThat(consentStoreException.getErrorType()).isEqualTo(ErrorType.INVALID_STATE_TRANSITION);
@@ -99,7 +103,7 @@ public abstract class BasePaymentConsentServiceTest<T extends BasePaymentConsent
 
     @Test
     void failToAuthoriseConsentMissingDebtorAccountId() {
-        final T persistedConsent = getPaymentConsentService().createConsent(getValidConsentEntity());
+        final T persistedConsent = getConsentInStateToAuthoriseOrReject();
         final ConstraintViolationException ex = Assertions.assertThrows(ConstraintViolationException.class,
                 () -> getPaymentConsentService().authoriseConsent(new PaymentAuthoriseConsentArgs(persistedConsent.getId(), persistedConsent.getApiClientId(), "user-1234", null)));
         assertThat(ex.getMessage()).isEqualTo("authoriseConsent.arg0.authorisedDebtorAccountId: must not be null");

@@ -52,7 +52,7 @@ public class FilePaymentConsentStateModel implements ConsentStateModel {
 
     @Override
     public String getInitialConsentStatus() {
-        return AWAITING_AUTHORISATION;
+        return AWAITING_UPLOAD;
     }
 
     @Override

@@ -42,6 +42,11 @@ public abstract class BaseConsentService<T extends BaseConsentEntity<?>, A exten
     private final Supplier<String> idGenerator;
 
     /**
+     * Initial status of the consent when it has been newly created
+     */
+    private final String initialConsentStatus;
+
+    /**
      * Status when the Consent has been Authorised by the Resource Owner
      */
     private final String authorisedConsentStatus;
@@ -61,6 +66,7 @@ public abstract class BaseConsentService<T extends BaseConsentEntity<?>, A exten
 
         Objects.requireNonNull(consentStateModel, "consentStateModel must be provided");
         this.validStateTransitions = consentStateModel.getValidStateTransitions();
+        this.initialConsentStatus = consentStateModel.getInitialConsentStatus();
         this.authorisedConsentStatus = consentStateModel.getAuthorisedConsentStatus();
         this.rejectedConsentStatus = consentStateModel.getRejectedConsentStatus();
         this.revokedConsentStatus = consentStateModel.getRevokedConsentStatus();
@@ -72,6 +78,7 @@ public abstract class BaseConsentService<T extends BaseConsentEntity<?>, A exten
             throw new IllegalStateException("Cannot create consent, object already has an id: " + consent.getId());
         }
         consent.setId(idGenerator.get());
+        consent.setStatus(initialConsentStatus);
 
         return repo.insert(consent);
     }
