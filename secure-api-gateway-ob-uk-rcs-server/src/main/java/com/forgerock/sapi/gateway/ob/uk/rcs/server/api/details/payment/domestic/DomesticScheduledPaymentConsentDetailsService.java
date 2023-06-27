@@ -50,6 +50,7 @@ public class DomesticScheduledPaymentConsentDetailsService extends BasePaymentCo
         if (initiation.getRemittanceInformation() != null) {
             consentDetails.setPaymentReference(initiation.getRemittanceInformation().getReference());
         }
+        consentDetails.setPaymentDate(initiation.getRequestedExecutionDateTime());
 
         addDebtorAccountDetails(consentDetails);
     }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.international.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.internationalscheduled.v3_1_10;
 
 import static com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.international.BaseInternationalPaymentConsentServiceTest.getExchangeRateInformation;
 
@@ -23,30 +23,30 @@ import java.util.UUID;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRChargeBearerType;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalConsentConverter;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.international.v3_1_10.CreateInternationalPaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.international.v3_1_10.InternationalPaymentConsent;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalScheduledConsentConverter;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.internationalscheduled.v3_1_10.CreateInternationalScheduledPaymentConsentRequest;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.internationalscheduled.v3_1_10.InternationalScheduledPaymentConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.BaseInternationalPaymentConsentApiControllerTest;
 
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent5;
-import uk.org.openbanking.testsupport.payment.OBWriteInternationalConsentTestDataFactory;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent5;
+import uk.org.openbanking.testsupport.payment.OBWriteInternationalScheduledConsentTestDataFactory;
 
-public class InternationalPaymentConsentAPiControllerTest extends BaseInternationalPaymentConsentApiControllerTest<InternationalPaymentConsent, CreateInternationalPaymentConsentRequest> {
+public class InternationalScheduledPaymentConsentApiControllerTest extends BaseInternationalPaymentConsentApiControllerTest<InternationalScheduledPaymentConsent, CreateInternationalScheduledPaymentConsentRequest> {
 
-    public InternationalPaymentConsentAPiControllerTest() {
-        super(InternationalPaymentConsent.class);
+    public InternationalScheduledPaymentConsentApiControllerTest() {
+        super(InternationalScheduledPaymentConsent.class);
     }
 
     @Override
     protected String getControllerEndpointName() {
-        return "international-payment-consents";
+        return "international-scheduled-payment-consents";
     }
 
     @Override
-    protected CreateInternationalPaymentConsentRequest buildCreateConsentRequest(String apiClientId) {
-        final CreateInternationalPaymentConsentRequest createConsentRequest = new CreateInternationalPaymentConsentRequest();
-        final OBWriteInternationalConsent5 paymentConsent = OBWriteInternationalConsentTestDataFactory.aValidOBWriteInternationalConsent5();
-        createConsentRequest.setConsentRequest(FRWriteInternationalConsentConverter.toFRWriteInternationalConsent(paymentConsent));
+    protected CreateInternationalScheduledPaymentConsentRequest buildCreateConsentRequest(String apiClientId) {
+        final CreateInternationalScheduledPaymentConsentRequest createConsentRequest = new CreateInternationalScheduledPaymentConsentRequest();
+        final OBWriteInternationalScheduledConsent5 paymentConsent = OBWriteInternationalScheduledConsentTestDataFactory.aValidOBWriteInternationalScheduledConsent5();
+        createConsentRequest.setConsentRequest(FRWriteInternationalScheduledConsentConverter.toFRWriteInternationalScheduledConsent(paymentConsent));
         createConsentRequest.setApiClientId(apiClientId);
         createConsentRequest.setIdempotencyKey(UUID.randomUUID().toString());
         createConsentRequest.setCharges(List.of(

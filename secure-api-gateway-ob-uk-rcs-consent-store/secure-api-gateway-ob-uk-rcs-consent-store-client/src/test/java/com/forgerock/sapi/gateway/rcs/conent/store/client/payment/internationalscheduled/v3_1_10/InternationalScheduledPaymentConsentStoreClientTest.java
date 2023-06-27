@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.conent.store.client.payment.international.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.conent.store.client.payment.internationalscheduled.v3_1_10;
 
 import static com.forgerock.sapi.gateway.rcs.conent.store.client.TestConsentStoreClientConfigurationFactory.createConsentStoreClientConfiguration;
 import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.PaymentConsentValidationHelpers.validateAuthorisedConsent;
@@ -41,24 +41,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRChargeBearerType;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalScheduledConsentConverter;
 import com.forgerock.sapi.gateway.rcs.conent.store.client.ConsentStoreClientException;
 import com.forgerock.sapi.gateway.rcs.conent.store.client.ConsentStoreClientException.ErrorType;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.AuthorisePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.ConsumePaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.international.v3_1_10.CreateInternationalPaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.international.v3_1_10.InternationalPaymentConsent;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.internationalscheduled.v3_1_10.CreateInternationalScheduledPaymentConsentRequest;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.internationalscheduled.v3_1_10.InternationalScheduledPaymentConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.international.BaseInternationalPaymentConsentServiceTest;
 
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent4;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse5Data.StatusEnum;
-import uk.org.openbanking.testsupport.payment.OBWriteInternationalConsentTestDataFactory;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent5;
+import uk.org.openbanking.testsupport.payment.OBWriteInternationalScheduledConsentTestDataFactory;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"rcs.consent.store.api.baseUri= 'ignored'"})
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
-class InternationalPaymentConsentStoreClientTest {
+class InternationalScheduledPaymentConsentStoreClientTest {
 
     @LocalServerPort
     private int port;
@@ -69,24 +69,24 @@ class InternationalPaymentConsentStoreClientTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private RestInternationalPaymentConsentStoreClient apiClient;
+    private RestInternationalScheduledPaymentConsentStoreClient apiClient;
 
     @BeforeEach
     public void beforeEach() {
-        apiClient = new RestInternationalPaymentConsentStoreClient(createConsentStoreClientConfiguration(port), restTemplateBuilder, objectMapper);
+        apiClient = new RestInternationalScheduledPaymentConsentStoreClient(createConsentStoreClientConfiguration(port), restTemplateBuilder, objectMapper);
     }
 
     @Test
     void testCreateConsent() {
-        final CreateInternationalPaymentConsentRequest createConsentRequest = buildCreateConsentRequest();
-        final InternationalPaymentConsent consent = apiClient.createConsent(createConsentRequest);
+        final CreateInternationalScheduledPaymentConsentRequest createConsentRequest = buildCreateConsentRequest();
+        final InternationalScheduledPaymentConsent consent = apiClient.createConsent(createConsentRequest);
 
         validateCreateConsentAgainstCreateRequest(consent, createConsentRequest);
     }
 
     @Test
     void failsToCreateConsentWhenFieldIsMissing() {
-        final CreateInternationalPaymentConsentRequest requestMissingIdempotencyField = buildCreateConsentRequest();
+        final CreateInternationalScheduledPaymentConsentRequest requestMissingIdempotencyField = buildCreateConsentRequest();
         requestMissingIdempotencyField.setIdempotencyKey(null);
 
         final ConsentStoreClientException clientException = assertThrows(ConsentStoreClientException.class,
@@ -100,35 +100,35 @@ class InternationalPaymentConsentStoreClientTest {
 
     @Test
     void testAuthoriseConsent() {
-        final CreateInternationalPaymentConsentRequest createConsentRequest = buildCreateConsentRequest();
-        final InternationalPaymentConsent consent = apiClient.createConsent(createConsentRequest);
+        final CreateInternationalScheduledPaymentConsentRequest createConsentRequest = buildCreateConsentRequest();
+        final InternationalScheduledPaymentConsent consent = apiClient.createConsent(createConsentRequest);
 
         final AuthorisePaymentConsentRequest authRequest = buildAuthoriseConsentRequest(consent, "psu4test", "acc-12345");
-        final InternationalPaymentConsent authResponse = apiClient.authoriseConsent(authRequest);
+        final InternationalScheduledPaymentConsent authResponse = apiClient.authoriseConsent(authRequest);
 
         validateAuthorisedConsent(authResponse, authRequest, consent);
     }
 
     @Test
     void testRejectConsent() {
-        final CreateInternationalPaymentConsentRequest createConsentRequest = buildCreateConsentRequest();
-        final InternationalPaymentConsent consent = apiClient.createConsent(createConsentRequest);
+        final CreateInternationalScheduledPaymentConsentRequest createConsentRequest = buildCreateConsentRequest();
+        final InternationalScheduledPaymentConsent consent = apiClient.createConsent(createConsentRequest);
 
         final RejectConsentRequest rejectRequest = buildRejectRequest(consent, "joe.bloggs");
-        final InternationalPaymentConsent rejectedConsent = apiClient.rejectConsent(rejectRequest);
+        final InternationalScheduledPaymentConsent rejectedConsent = apiClient.rejectConsent(rejectRequest);
         validateRejectedConsent(rejectedConsent, rejectRequest, consent);
     }
 
     @Test
     void testConsumeConsent() {
-        final CreateInternationalPaymentConsentRequest createConsentRequest = buildCreateConsentRequest();
-        final InternationalPaymentConsent consent = apiClient.createConsent(createConsentRequest);
+        final CreateInternationalScheduledPaymentConsentRequest createConsentRequest = buildCreateConsentRequest();
+        final InternationalScheduledPaymentConsent consent = apiClient.createConsent(createConsentRequest);
 
         final AuthorisePaymentConsentRequest authRequest = buildAuthoriseConsentRequest(consent, "psu4test", "acc-12345");
-        final InternationalPaymentConsent authResponse = apiClient.authoriseConsent(authRequest);
+        final InternationalScheduledPaymentConsent authResponse = apiClient.authoriseConsent(authRequest);
         assertThat(authResponse.getStatus()).isEqualTo(StatusEnum.AUTHORISED.toString());
 
-        final InternationalPaymentConsent consumedConsent = apiClient.consumeConsent(buildConsumeRequest(consent));
+        final InternationalScheduledPaymentConsent consumedConsent = apiClient.consumeConsent(buildConsumeRequest(consent));
         assertThat(consumedConsent.getStatus()).isEqualTo(StatusEnum.CONSUMED.toString());
 
         validateConsumedConsent(consumedConsent, authResponse);
@@ -136,18 +136,18 @@ class InternationalPaymentConsentStoreClientTest {
 
     @Test
     void testGetConsent() {
-        final CreateInternationalPaymentConsentRequest createConsentRequest = buildCreateConsentRequest();
-        final InternationalPaymentConsent consent = apiClient.createConsent(createConsentRequest);
-        final InternationalPaymentConsent getResponse = apiClient.getConsent(consent.getId(), consent.getApiClientId());
+        final CreateInternationalScheduledPaymentConsentRequest createConsentRequest = buildCreateConsentRequest();
+        final InternationalScheduledPaymentConsent consent = apiClient.createConsent(createConsentRequest);
+        final InternationalScheduledPaymentConsent getResponse = apiClient.getConsent(consent.getId(), consent.getApiClientId());
         assertThat(getResponse).usingRecursiveComparison().isEqualTo(consent);
     }
 
-    private static CreateInternationalPaymentConsentRequest buildCreateConsentRequest() {
-        final CreateInternationalPaymentConsentRequest createConsentRequest = new CreateInternationalPaymentConsentRequest();
+    private static CreateInternationalScheduledPaymentConsentRequest buildCreateConsentRequest() {
+        final CreateInternationalScheduledPaymentConsentRequest createConsentRequest = new CreateInternationalScheduledPaymentConsentRequest();
         createConsentRequest.setIdempotencyKey(UUID.randomUUID().toString());
         createConsentRequest.setApiClientId("test-client-1");
-        final OBWriteInternationalConsent4 obConsent = OBWriteInternationalConsentTestDataFactory.aValidOBWriteInternationalConsent4();
-        createConsentRequest.setConsentRequest(FRWriteInternationalConsentConverter.toFRWriteInternationalConsent(obConsent));
+        final OBWriteInternationalScheduledConsent5 obConsent = OBWriteInternationalScheduledConsentTestDataFactory.aValidOBWriteInternationalScheduledConsent5();
+        createConsentRequest.setConsentRequest(FRWriteInternationalScheduledConsentConverter.toFRWriteInternationalScheduledConsent(obConsent));
         createConsentRequest.setCharges(List.of(
                 FRCharge.builder().type("fee")
                         .chargeBearer(FRChargeBearerType.BORNEBYCREDITOR)
@@ -157,7 +157,7 @@ class InternationalPaymentConsentStoreClientTest {
         return createConsentRequest;
     }
 
-    private static AuthorisePaymentConsentRequest buildAuthoriseConsentRequest(InternationalPaymentConsent consent, String resourceOwnerId, String authorisedDebtorAccountId) {
+    private static AuthorisePaymentConsentRequest buildAuthoriseConsentRequest(InternationalScheduledPaymentConsent consent, String resourceOwnerId, String authorisedDebtorAccountId) {
         final AuthorisePaymentConsentRequest authRequest = new AuthorisePaymentConsentRequest();
         authRequest.setAuthorisedDebtorAccountId(authorisedDebtorAccountId);
         authRequest.setConsentId(consent.getId());
@@ -166,7 +166,7 @@ class InternationalPaymentConsentStoreClientTest {
         return authRequest;
     }
 
-    private static RejectConsentRequest buildRejectRequest(InternationalPaymentConsent consent, String resourceOwnerId) {
+    private static RejectConsentRequest buildRejectRequest(InternationalScheduledPaymentConsent consent, String resourceOwnerId) {
         final RejectConsentRequest rejectRequest = new RejectConsentRequest();
         rejectRequest.setApiClientId(consent.getApiClientId());
         rejectRequest.setConsentId(consent.getId());
@@ -174,7 +174,7 @@ class InternationalPaymentConsentStoreClientTest {
         return rejectRequest;
     }
 
-    private static ConsumePaymentConsentRequest buildConsumeRequest(InternationalPaymentConsent consent) {
+    private static ConsumePaymentConsentRequest buildConsumeRequest(InternationalScheduledPaymentConsent consent) {
         final ConsumePaymentConsentRequest consumeRequest = new ConsumePaymentConsentRequest();
         consumeRequest.setApiClientId(consent.getApiClientId());
         consumeRequest.setConsentId((consent.getId()));

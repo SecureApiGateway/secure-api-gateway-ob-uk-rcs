@@ -34,7 +34,7 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 public class DomesticStandingOrderConsentDetailsService extends BasePaymentConsentDetailsService<DomesticStandingOrderConsentEntity, DomesticStandingOrderConsentDetails> {
 
     public DomesticStandingOrderConsentDetailsService(ConsentService<DomesticStandingOrderConsentEntity, ?> consentService, ApiProviderConfiguration apiProviderConfiguration, ApiClientServiceClient apiClientService, AccountService accountService) {
-        super(IntentType.PAYMENT_DOMESTIC_SCHEDULED_CONSENT, DomesticStandingOrderConsentDetails::new, consentService,
+        super(IntentType.PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT, DomesticStandingOrderConsentDetails::new, consentService,
               apiProviderConfiguration, apiClientService, accountService);
     }
 

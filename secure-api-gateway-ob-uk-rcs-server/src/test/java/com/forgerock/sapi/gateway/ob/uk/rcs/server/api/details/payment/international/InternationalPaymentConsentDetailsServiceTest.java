@@ -113,6 +113,7 @@ class InternationalPaymentConsentDetailsServiceTest extends BasePaymentConsentDe
         assertThat(internationalPaymentConsentDetails.getClientName()).isEqualTo(testApiClient.getName());
         assertThat(internationalPaymentConsentDetails.getPaymentReference()).isEqualTo("FRESCO-037");
         assertThat(internationalPaymentConsentDetails.getCharges()).isEqualTo(new FRAmount("0.25", "GBP"));
+        assertThat(internationalPaymentConsentDetails.getExchangeRateInformation()).isEqualTo(consentEntity.getExchangeRateInformation());
         assertThat(internationalPaymentConsentDetails.getInstructedAmount()).isEqualTo(new FRAmount("10.01", "GBP"));
 
         final FRWriteInternationalDataInitiation initiation = consentEntity.getRequestObj().getData().getInitiation();
