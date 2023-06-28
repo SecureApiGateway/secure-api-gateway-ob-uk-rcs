@@ -162,10 +162,29 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                     e.getErrorClient().getClientId(),
                     e.getErrorClient().getIntentId());
         } catch (ConsentStoreException cse) {
-            log.error("Failed to get Consent Details due to ConsentStoreException", cse);
-            throw new InvalidConsentException(consentRequestJws, ErrorType.INTERNAL_SERVER_ERROR, OBRIErrorType.REQUEST_BINDING_FAILED,
-                                              "Internal Server Error", apiClientId, intentId);
+            throw buildInvalidConsentException(consentRequestJws, intentId, apiClientId, cse);
         }
+    }
+
+    private static InvalidConsentException buildInvalidConsentException(String consentRequestJws, String intentId, String apiClientId, ConsentStoreException cse) {
+        log.error("Failed to get Consent Details due to ConsentStoreException", cse);
+        final ErrorType errorType;
+        final String errorMessage;
+        switch (cse.getErrorType()) {
+            case NOT_FOUND:
+                errorType = ErrorType.NOT_FOUND;
+                errorMessage = "Consent Not Found";
+                break;
+            case INVALID_PERMISSIONS:
+                errorType = ErrorType.ACCESS_DENIED;
+                errorMessage = "Access Denied";
+                break;
+            default:
+                errorType = ErrorType.INTERNAL_SERVER_ERROR;
+                errorMessage = "Server Error";
+        }
+        return new InvalidConsentException(consentRequestJws, errorType, OBRIErrorType.REQUEST_BINDING_FAILED,
+                errorMessage, apiClientId, intentId);
     }
 
     private ConsentClientDetailsRequest buildConsentClientRequest(SignedJWT signedJWT) throws ExceptionClient {
