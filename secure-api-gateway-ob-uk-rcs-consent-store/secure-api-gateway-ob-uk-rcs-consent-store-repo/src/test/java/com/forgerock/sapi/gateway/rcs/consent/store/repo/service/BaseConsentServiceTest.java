@@ -56,6 +56,10 @@ public abstract class BaseConsentServiceTest<T extends BaseConsentEntity<?>, A e
 
     protected abstract void validateConsentSpecificAuthorisationFields(T authorisedConsent, A authorisationArgs);
 
+    protected T getConsentInStateToAuthoriseOrReject() {
+        final T consentObj = getValidConsentEntity();
+        return consentService.createConsent(consentObj);
+    }
 
     @Test
     void createConsent() {
@@ -110,24 +114,22 @@ public abstract class BaseConsentServiceTest<T extends BaseConsentEntity<?>, A e
 
     @Test
     void authoriseConsent() {
-        final T consentObj = getValidConsentEntity();
+        final T consentToAuthorise = getConsentInStateToAuthoriseOrReject();
 
-        final T persistedConsent = consentService.createConsent(consentObj);
-
-        final A authoriseConsentArgs = getAuthoriseConsentArgs(persistedConsent.getId(), TEST_RESOURCE_OWNER, persistedConsent.getApiClientId());
+        final A authoriseConsentArgs = getAuthoriseConsentArgs(consentToAuthorise.getId(), TEST_RESOURCE_OWNER, consentToAuthorise.getApiClientId());
         final T authorisedConsent = consentService.authoriseConsent(authoriseConsentArgs);
 
         assertThat(authorisedConsent.getStatus()).isEqualTo(getAuthorisedConsentStatus());
         assertThat(authorisedConsent.getResourceOwnerId()).isEqualTo(TEST_RESOURCE_OWNER);
-        assertThat(authorisedConsent.getStatusUpdatedDateTime()).isGreaterThan(persistedConsent.getStatusUpdatedDateTime())
+        assertThat(authorisedConsent.getStatusUpdatedDateTime()).isGreaterThan(consentToAuthorise.getStatusUpdatedDateTime())
                                                                 .isLessThan(DateTime.now());
 
-        assertThat(authorisedConsent.getCreationDateTime()).isEqualTo(persistedConsent.getCreationDateTime());
-        assertThat(authorisedConsent.getApiClientId()).isEqualTo(persistedConsent.getApiClientId());
-        assertThat(authorisedConsent.getId()).isEqualTo(persistedConsent.getId());
-        assertThat(authorisedConsent.getRequestVersion()).isEqualTo(persistedConsent.getRequestVersion());
-        assertThat(authorisedConsent.getRequestObj()).isEqualTo(persistedConsent.getRequestObj());
-        validateConsentSpecificFields(persistedConsent, authorisedConsent);
+        assertThat(authorisedConsent.getCreationDateTime()).isEqualTo(consentToAuthorise.getCreationDateTime());
+        assertThat(authorisedConsent.getApiClientId()).isEqualTo(consentToAuthorise.getApiClientId());
+        assertThat(authorisedConsent.getId()).isEqualTo(consentToAuthorise.getId());
+        assertThat(authorisedConsent.getRequestVersion()).isEqualTo(consentToAuthorise.getRequestVersion());
+        assertThat(authorisedConsent.getRequestObj()).isEqualTo(consentToAuthorise.getRequestObj());
+        validateConsentSpecificFields(consentToAuthorise, authorisedConsent);
 
         validateConsentSpecificAuthorisationFields(authorisedConsent, authoriseConsentArgs);
     }
@@ -135,19 +137,22 @@ public abstract class BaseConsentServiceTest<T extends BaseConsentEntity<?>, A e
 
     @Test
     void rejectConsent() {
-        final T consentObj = getValidConsentEntity();
+        final T consentToReject = getConsentInStateToAuthoriseOrReject();
+        final T rejectedConsent = consentService.rejectConsent(consentToReject.getId(), consentToReject.getApiClientId(), TEST_RESOURCE_OWNER);
 
-        final T persistedConsent = consentService.createConsent(consentObj);
-        final T rejectedConsent = consentService.rejectConsent(persistedConsent.getId(), consentObj.getApiClientId(), TEST_RESOURCE_OWNER);
-
-        final RecursiveComparisonConfiguration recursiveComparisonConfiguration = RecursiveComparisonConfiguration.builder().withIgnoredFields("status", "resourceOwnerId", "statusUpdatedDateTime", "entityVersion").build();
-        assertThat(rejectedConsent).usingRecursiveComparison(recursiveComparisonConfiguration).isEqualTo(persistedConsent);
-
-        assertThat(rejectedConsent.getStatus()).isEqualTo(getRejectedConsentStatus());
-        assertThat(rejectedConsent.getResourceOwnerId()).isEqualTo(TEST_RESOURCE_OWNER);
-        assertThat(rejectedConsent.getStatusUpdatedDateTime()).isGreaterThan(persistedConsent.getStatusUpdatedDateTime())
-                .isLessThan(DateTime.now());
-        assertThat(rejectedConsent.getEntityVersion()).isEqualTo(persistedConsent.getEntityVersion() + 1);
+        validateRejectedConsent(consentToReject, rejectedConsent);
     }
 
+    protected void validateRejectedConsent(T consentBeforeRejectAction, T rejectedConsent) {
+        final RecursiveComparisonConfiguration recursiveComparisonConfiguration = RecursiveComparisonConfiguration.builder()
+                .withIgnoredFields("status", "resourceOwnerId", "statusUpdatedDateTime", "entityVersion").build();
+
+        assertThat(rejectedConsent).usingRecursiveComparison(recursiveComparisonConfiguration).isEqualTo(consentBeforeRejectAction);
+        assertThat(rejectedConsent.getStatus()).isEqualTo(getRejectedConsentStatus());
+        assertThat(rejectedConsent.getResourceOwnerId()).isEqualTo(TEST_RESOURCE_OWNER);
+
+        assertThat(rejectedConsent.getStatusUpdatedDateTime()).isGreaterThan(consentBeforeRejectAction.getStatusUpdatedDateTime())
+                .isLessThan(DateTime.now());
+        assertThat(rejectedConsent.getEntityVersion()).isEqualTo(consentBeforeRejectAction.getEntityVersion() + 1);
+    }
 }

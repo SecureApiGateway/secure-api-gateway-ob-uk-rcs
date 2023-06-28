@@ -86,6 +86,11 @@ public abstract class BaseControllerTest<T extends BaseConsent, C extends BaseCr
         return createConsent(buildCreateConsentRequest(apiClient));
     }
 
+    protected T getConsentInStateToAuthoriseOrReject(String apiClientId) {
+        return createConsent(apiClientId);
+    }
+
+
     protected T createConsent(C createConsentRequest) {
         final ResponseEntity<T> consentResponseEntity = makePostRequest(createConsentRequest, consentClass);
         assertThat(consentResponseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -147,14 +152,14 @@ public abstract class BaseControllerTest<T extends BaseConsent, C extends BaseCr
 
     @Test
     public void authoriseConsent() {
-        final T consent = createConsent(TEST_API_CLIENT_1);
-        final A authoriseReq = buildAuthoriseConsentRequest(consent, TEST_RESOURCE_OWNER_ID);
+        final T consentToAuthorise = getConsentInStateToAuthoriseOrReject(TEST_API_CLIENT_1);
+        final A authoriseReq = buildAuthoriseConsentRequest(consentToAuthorise, TEST_RESOURCE_OWNER_ID);
 
         final ResponseEntity<T> authoriseConsentResponse = authoriseConsent(authoriseReq, consentClass);
         assertThat(authoriseConsentResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         final T authorisedConsent = authoriseConsentResponse.getBody();
-        validateAuthorisedConsent(authorisedConsent, authoriseReq, consent);
+        validateAuthorisedConsent(authorisedConsent, authoriseReq, consentToAuthorise);
     }
 
     @Test
@@ -169,10 +174,10 @@ public abstract class BaseControllerTest<T extends BaseConsent, C extends BaseCr
 
     @Test
     public void rejectConsent() {
-        final T consent = createConsent(TEST_API_CLIENT_1);
+        final T consentToReject = getConsentInStateToAuthoriseOrReject(TEST_API_CLIENT_1);
 
         final RejectConsentRequest rejectRequest = new RejectConsentRequest();
-        rejectRequest.setConsentId(consent.getId());
+        rejectRequest.setConsentId(consentToReject.getId());
         rejectRequest.setResourceOwnerId(TEST_RESOURCE_OWNER_ID);
         rejectRequest.setApiClientId(TEST_API_CLIENT_1);
 
@@ -180,7 +185,7 @@ public abstract class BaseControllerTest<T extends BaseConsent, C extends BaseCr
         assertThat(rejectResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         final T rejectedConsent = rejectResponse.getBody();
-        validateRejectedConsent(rejectedConsent, rejectRequest, consent);
+        validateRejectedConsent(rejectedConsent, rejectRequest, consentToReject);
     }
 
     @Test

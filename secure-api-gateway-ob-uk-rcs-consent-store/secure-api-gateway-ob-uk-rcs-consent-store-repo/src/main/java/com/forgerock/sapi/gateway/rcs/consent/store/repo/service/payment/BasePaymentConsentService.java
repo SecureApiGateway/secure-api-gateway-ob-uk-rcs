@@ -23,15 +23,20 @@ import org.joda.time.DateTime;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.BasePaymentConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.payment.PaymentConsentRepository;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentService;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentStateModel;
 
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
 
 public class BasePaymentConsentService<T extends BasePaymentConsentEntity<?>, A extends PaymentAuthoriseConsentArgs> extends BaseConsentService<T, A> implements PaymentConsentService<T, A> {
 
-    public BasePaymentConsentService(PaymentConsentRepository<T> repo, Supplier<String> idGenerator) {
-        super(repo, idGenerator, PaymentConsentStateTransitions.getPaymentConsentStateTransitions(),
-                PaymentConsentStateTransitions.AUTHORISED, PaymentConsentStateTransitions.REJECTED,
-                PaymentConsentStateTransitions.REJECTED);
+    protected BasePaymentConsentService(PaymentConsentRepository<T> repo, Supplier<String> idGenerator) {
+        this(repo, idGenerator, PaymentConsentStateModel.getInstance());
+    }
+
+    protected BasePaymentConsentService(PaymentConsentRepository<T> repo, Supplier<String> idGenerator,
+                                        ConsentStateModel consentStateModel) {
+
+        super(repo, idGenerator, consentStateModel);
     }
 
     private PaymentConsentRepository<T> getRepo() {
