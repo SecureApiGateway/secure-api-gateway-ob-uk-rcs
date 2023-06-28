@@ -16,7 +16,7 @@
 package com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRReadRefundAccount;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.vrp.FRDomesticVRPControlParameters;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.vrp.FRWriteDomesticVrpDataInitiation;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
@@ -24,7 +24,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPControlParameters;
 
 /**
  * Models the consent data for a domestic vrp payment.
@@ -36,8 +35,7 @@ import uk.org.openbanking.datamodel.vrp.OBDomesticVRPControlParameters;
 public class DomesticVrpPaymentConsentDetails extends PaymentsConsentDetails {
 
     private FRWriteDomesticVrpDataInitiation initiation;
-    private FRReadRefundAccount readRefundAccount;
-    private OBDomesticVRPControlParameters controlParameters;
+    private FRDomesticVRPControlParameters controlParameters;
 
     @Override
     public FRAccountIdentifier getDebtorAccount() {

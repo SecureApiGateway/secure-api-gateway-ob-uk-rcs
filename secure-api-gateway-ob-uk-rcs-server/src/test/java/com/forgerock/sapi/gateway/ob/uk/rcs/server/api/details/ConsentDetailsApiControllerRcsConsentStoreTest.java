@@ -53,6 +53,7 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.ConsentDetai
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticPaymentConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticScheduledPaymentConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticStandingOrderConsentDetails;
+import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticVrpPaymentConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.FilePaymentConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.InternationalPaymentConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.InternationalScheduledPaymentConsentDetails;
@@ -148,6 +149,13 @@ public class ConsentDetailsApiControllerRcsConsentStoreTest {
         return filePaymentConsentDetails;
     }
 
+    private static DomesticVrpPaymentConsentDetails createVrpConsentDetails() {
+        final DomesticVrpPaymentConsentDetails consentDetails = new DomesticVrpPaymentConsentDetails();
+        consentDetails.setConsentId(IntentType.DOMESTIC_VRP_PAYMENT_CONSENT.generateIntentId());
+        consentDetails.setLogo(TPP_LOGO);
+        return consentDetails;
+    }
+
     private static Stream<Arguments> validConsentDetailsArguments() {
         return Stream.of(
                 arguments(IntentType.PAYMENT_DOMESTIC_CONSENT, createDomesticPaymentConsentDetails(), DomesticPaymentConsentDetails.class),
@@ -157,7 +165,8 @@ public class ConsentDetailsApiControllerRcsConsentStoreTest {
                 arguments(IntentType.PAYMENT_INTERNATIONAL_CONSENT, createInternationalPaymentConsentDetails(), InternationalPaymentConsentDetails.class),
                 arguments(IntentType.PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT, createInternationalScheduledPaymentConsentDetails(), InternationalScheduledPaymentConsentDetails.class),
                 arguments(IntentType.PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT, createInternationalStandingOrderConsentDetails(), InternationalStandingOrderConsentDetails.class),
-                arguments(IntentType.PAYMENT_FILE_CONSENT, createFilePaymentConsentDetails(), FilePaymentConsentDetails.class)
+                arguments(IntentType.PAYMENT_FILE_CONSENT, createFilePaymentConsentDetails(), FilePaymentConsentDetails.class),
+                arguments(IntentType.DOMESTIC_VRP_PAYMENT_CONSENT, createVrpConsentDetails(), DomesticVrpPaymentConsentDetails.class)
         );
     }
 
