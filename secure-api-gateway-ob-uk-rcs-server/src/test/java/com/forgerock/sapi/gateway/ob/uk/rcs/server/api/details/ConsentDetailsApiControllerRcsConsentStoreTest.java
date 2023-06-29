@@ -53,6 +53,7 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.ConsentDetai
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticPaymentConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticScheduledPaymentConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticStandingOrderConsentDetails;
+import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticVrpPaymentConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.FilePaymentConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.InternationalPaymentConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.InternationalScheduledPaymentConsentDetails;
@@ -148,6 +149,13 @@ public class ConsentDetailsApiControllerRcsConsentStoreTest {
         return filePaymentConsentDetails;
     }
 
+    private static DomesticVrpPaymentConsentDetails createVrpConsentDetails() {
+        final DomesticVrpPaymentConsentDetails consentDetails = new DomesticVrpPaymentConsentDetails();
+        consentDetails.setConsentId(IntentType.DOMESTIC_VRP_PAYMENT_CONSENT.generateIntentId());
+        consentDetails.setLogo(TPP_LOGO);
+        return consentDetails;
+    }
+
     private static Stream<Arguments> validConsentDetailsArguments() {
         return Stream.of(
                 arguments(IntentType.PAYMENT_DOMESTIC_CONSENT, createDomesticPaymentConsentDetails(), DomesticPaymentConsentDetails.class),
@@ -157,7 +165,8 @@ public class ConsentDetailsApiControllerRcsConsentStoreTest {
                 arguments(IntentType.PAYMENT_INTERNATIONAL_CONSENT, createInternationalPaymentConsentDetails(), InternationalPaymentConsentDetails.class),
                 arguments(IntentType.PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT, createInternationalScheduledPaymentConsentDetails(), InternationalScheduledPaymentConsentDetails.class),
                 arguments(IntentType.PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT, createInternationalStandingOrderConsentDetails(), InternationalStandingOrderConsentDetails.class),
-                arguments(IntentType.PAYMENT_FILE_CONSENT, createFilePaymentConsentDetails(), FilePaymentConsentDetails.class)
+                arguments(IntentType.PAYMENT_FILE_CONSENT, createFilePaymentConsentDetails(), FilePaymentConsentDetails.class),
+                arguments(IntentType.DOMESTIC_VRP_PAYMENT_CONSENT, createVrpConsentDetails(), DomesticVrpPaymentConsentDetails.class)
         );
     }
 
@@ -237,7 +246,7 @@ public class ConsentDetailsApiControllerRcsConsentStoreTest {
     }
 
     @Test
-    public void shouldGetRedirectActionWhenConsentStoreExceptionRaised() throws ExceptionClient {
+    public void shouldGetRedirectActionWhenConsentNotFound() throws ExceptionClient {
         final IntentType intentType = IntentType.PAYMENT_DOMESTIC_CONSENT;
         final String consentId = intentType.generateIntentId();
         ConsentClientDetailsRequest consentDetailsRequest = aValidConsentDetailsRequest(consentId);
@@ -247,7 +256,40 @@ public class ConsentDetailsApiControllerRcsConsentStoreTest {
         given(consentStoreDetailsServiceRegistry.isIntentTypeSupported(eq(intentType))).willReturn(Boolean.TRUE);
 
         final ArgumentCaptor<ConsentClientDetailsRequest> consentDetailsArgCaptor = ArgumentCaptor.forClass(ConsentClientDetailsRequest.class);
-        given(consentStoreDetailsServiceRegistry.getDetailsFromConsentStore(eq(intentType), consentDetailsArgCaptor.capture())).willThrow(new ConsentStoreException(ConsentStoreException.ErrorType.NOT_FOUND, consentId));
+        given(consentStoreDetailsServiceRegistry.getDetailsFromConsentStore(eq(intentType), consentDetailsArgCaptor.capture())).willThrow(
+                new ConsentStoreException(ConsentStoreException.ErrorType.NOT_FOUND, consentId));
+
+        String jwtRequest = JwtTestHelper.consentRequestJwt(
+                consentDetailsRequest.getClientId(),
+                consentDetailsRequest.getIntentId(),
+                consentDetailsRequest.getUser().getId()
+        );
+        HttpEntity<String> request = new HttpEntity<>(jwtRequest, headers());
+
+        ResponseEntity<RedirectionAction> response = restTemplate.postForEntity(consentDetailsUri, request, RedirectionAction.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+
+        final RedirectionAction redirectionAction = response.getBody();
+        assertThat(redirectionAction.getErrorMessage()).isEqualTo("Object requested not found");
+        assertThat(Objects.requireNonNull(redirectionAction).getRedirectUri()).isNotEmpty();
+        assertThat(Objects.requireNonNull(redirectionAction.getConsentJwt())).isNotEmpty();
+
+    }
+
+    @Test
+    public void shouldGetRedirectActionWhenConsentInvalidPermissions() throws ExceptionClient {
+        final IntentType intentType = IntentType.PAYMENT_DOMESTIC_CONSENT;
+        final String consentId = intentType.generateIntentId();
+        ConsentClientDetailsRequest consentDetailsRequest = aValidConsentDetailsRequest(consentId);
+        User user = aValidUser();
+        consentDetailsRequest.setUser(user);
+        given(userServiceClient.getUser(anyString())).willReturn(user);
+        given(consentStoreDetailsServiceRegistry.isIntentTypeSupported(eq(intentType))).willReturn(Boolean.TRUE);
+
+        final ArgumentCaptor<ConsentClientDetailsRequest> consentDetailsArgCaptor = ArgumentCaptor.forClass(ConsentClientDetailsRequest.class);
+        given(consentStoreDetailsServiceRegistry.getDetailsFromConsentStore(eq(intentType), consentDetailsArgCaptor.capture())).willThrow(
+                new ConsentStoreException(ConsentStoreException.ErrorType.INVALID_PERMISSIONS, consentId));
+
         String jwtRequest = JwtTestHelper.consentRequestJwt(
                 consentDetailsRequest.getClientId(),
                 consentDetailsRequest.getIntentId(),
@@ -257,9 +299,12 @@ public class ConsentDetailsApiControllerRcsConsentStoreTest {
 
         ResponseEntity<RedirectionAction> response = restTemplate.postForEntity(consentDetailsUri, request, RedirectionAction.class);
 
-        assertThat(Objects.requireNonNull(response.getBody()).getRedirectUri()).isNotEmpty();
-        assertThat(Objects.requireNonNull(response.getBody().getConsentJwt())).isNotEmpty();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+
+        final RedirectionAction redirectionAction = response.getBody();
+        assertThat(redirectionAction.getErrorMessage()).isEqualTo("The resource owner or authorization server denied the request.");
+        assertThat(Objects.requireNonNull(redirectionAction).getRedirectUri()).isNotEmpty();
+        assertThat(Objects.requireNonNull(redirectionAction.getConsentJwt())).isNotEmpty();
     }
 
     private HttpHeaders headers() {

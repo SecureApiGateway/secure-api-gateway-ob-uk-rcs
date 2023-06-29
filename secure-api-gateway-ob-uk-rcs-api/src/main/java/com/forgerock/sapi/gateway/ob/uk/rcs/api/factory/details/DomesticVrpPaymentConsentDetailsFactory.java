@@ -15,6 +15,9 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.api.factory.details;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.vrp.FRDomesticVRPControlParameters;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.vrp.FRPeriodicLimits;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticVrpPaymentConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.factory.details.decoder.FRAccountIdentifierDecoder;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.json.utils.JsonUtilValidation;
@@ -29,9 +32,6 @@ import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.Instant;
 import org.springframework.stereotype.Component;
-import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPControlParameters;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPControlParametersPeriodicLimits;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,11 +115,11 @@ public class DomesticVrpPaymentConsentDetailsFactory implements ConsentDetailsFa
         return vrpDataInitiation;
     }
 
-    private OBDomesticVRPControlParameters decodeControlParameters(JsonObject data) {
+    private FRDomesticVRPControlParameters decodeControlParameters(JsonObject data) {
         final JsonObject controlParameters = data.get(CONTROL_PARAMETERS).getAsJsonObject();
         log.debug("{}.{}.{}: {}", OB_INTENT_OBJECT, DATA, CONTROL_PARAMETERS, controlParameters);
 
-        OBDomesticVRPControlParameters ctrlParams = new OBDomesticVRPControlParameters();
+        FRDomesticVRPControlParameters ctrlParams = new FRDomesticVRPControlParameters();
 
         if (JsonUtilValidation.isNotNull(controlParameters.get(VALID_FROM_DATETIME))) {
             ctrlParams.setValidFromDateTime(Instant.parse(controlParameters.get(VALID_FROM_DATETIME).getAsString()).toDateTime());
@@ -133,12 +133,12 @@ public class DomesticVrpPaymentConsentDetailsFactory implements ConsentDetailsFa
                 controlParameters.get(VRP_TYPE), new TypeToken<List<String>>() {
                 }.getType()
         );
-        ctrlParams.setVrPType(vrpTypeList);
+        ctrlParams.setVrpType(vrpTypeList);
         List<String> vrpAuthMethodsList = new Gson().fromJson(
                 controlParameters.get(PSU_AUTHENTICATION_METHODS), new TypeToken<List<String>>() {
                 }.getType()
         );
-        ctrlParams.setPsUAuthenticationMethods(vrpAuthMethodsList);
+        ctrlParams.setPsuAuthenticationMethods(vrpAuthMethodsList);
 
         if (JsonUtilValidation.isNotNull(controlParameters.get(MAXIMUM_INDIVIDUAL_AMOUNT))) {
             ctrlParams.setMaximumIndividualAmount(decodeMaximumIndividualAmount(controlParameters));
@@ -150,32 +150,32 @@ public class DomesticVrpPaymentConsentDetailsFactory implements ConsentDetailsFa
         return ctrlParams;
     }
 
-    private OBActiveOrHistoricCurrencyAndAmount decodeMaximumIndividualAmount(JsonObject controlParameters) {
+    private FRAmount decodeMaximumIndividualAmount(JsonObject controlParameters) {
         final JsonObject maximumIndividualAmount = controlParameters.get(MAXIMUM_INDIVIDUAL_AMOUNT).getAsJsonObject();
         log.debug("{}.{}.{}.{}: {}", OB_INTENT_OBJECT, DATA, CONTROL_PARAMETERS, MAXIMUM_INDIVIDUAL_AMOUNT, maximumIndividualAmount);
-        OBActiveOrHistoricCurrencyAndAmount maxIndividualAmount = new OBActiveOrHistoricCurrencyAndAmount();
+        FRAmount maxIndividualAmount = new FRAmount();
         maxIndividualAmount.setAmount(maximumIndividualAmount.get(AMOUNT).getAsString());
         maxIndividualAmount.setCurrency(maximumIndividualAmount.get(CURRENCY).getAsString());
         return maxIndividualAmount;
     }
 
-    private List<OBDomesticVRPControlParametersPeriodicLimits> decodePeriodicLimits(JsonObject controlParameters) {
+    private List<FRPeriodicLimits> decodePeriodicLimits(JsonObject controlParameters) {
         final JsonArray periodicLimits = controlParameters.get(PERIODIC_LIMITS).getAsJsonArray();
         log.debug("{}.{}.{}.{}: {}", OB_INTENT_OBJECT, DATA, CONTROL_PARAMETERS, PERIODIC_LIMITS, periodicLimits);
-        List<OBDomesticVRPControlParametersPeriodicLimits> periodicLimitsList = new ArrayList<>();
+        List<FRPeriodicLimits> periodicLimitsList = new ArrayList<>();
         for (JsonElement periodicLimit : periodicLimits) {
             JsonObject periodicLimitObj = periodicLimit.getAsJsonObject();
             if (periodicLimitObj != null) {
-                OBDomesticVRPControlParametersPeriodicLimits periodicLimitElement = new OBDomesticVRPControlParametersPeriodicLimits();
+                FRPeriodicLimits periodicLimitElement = new FRPeriodicLimits();
                 periodicLimitElement.setAmount(periodicLimitObj.get(AMOUNT).getAsString());
                 periodicLimitElement.setCurrency(periodicLimitObj.get(CURRENCY).getAsString());
                 periodicLimitElement.setPeriodAlignment(
-                        OBDomesticVRPControlParametersPeriodicLimits.PeriodAlignmentEnum.fromValue(
+                        FRPeriodicLimits.PeriodAlignmentEnum.fromValue(
                                 periodicLimitObj.get(PERIOD_ALIGNMENT).getAsString()
                         )
                 );
                 periodicLimitElement.setPeriodType(
-                        OBDomesticVRPControlParametersPeriodicLimits.PeriodTypeEnum.fromValue(
+                        FRPeriodicLimits.PeriodTypeEnum.fromValue(
                                 periodicLimitObj.get(PERIOD_TYPE).getAsString()
                         )
                 );
