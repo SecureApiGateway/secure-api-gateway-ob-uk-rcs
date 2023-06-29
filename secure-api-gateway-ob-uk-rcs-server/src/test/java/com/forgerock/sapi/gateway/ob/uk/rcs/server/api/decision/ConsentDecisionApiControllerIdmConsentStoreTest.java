@@ -84,7 +84,7 @@ import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 /**
- * Spring Boot Test for {@link ConsentDecisionApiController}.
+ * Spring Boot Test for {@link ConsentDecisionApiController} using the IDM Consent Service to fetch consents
  */
 @EnableConfigurationProperties
 @ActiveProfiles("test")
@@ -320,7 +320,7 @@ public class ConsentDecisionApiControllerIdmConsentStoreTest {
         assertEquals(ErrorType.UNKNOWN_INTENT_TYPE.getDescription(), response.getBody().getErrorMessage());
     }
 
-    private HttpHeaders headers() {
+    static HttpHeaders headers() {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(singletonList(APPLICATION_JSON));
         headers.setContentType(APPLICATION_JSON);

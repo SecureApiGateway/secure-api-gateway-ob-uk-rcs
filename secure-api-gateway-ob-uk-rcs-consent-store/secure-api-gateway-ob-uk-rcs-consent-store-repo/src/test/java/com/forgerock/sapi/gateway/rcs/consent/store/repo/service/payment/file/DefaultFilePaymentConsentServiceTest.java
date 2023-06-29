@@ -119,7 +119,7 @@ public class DefaultFilePaymentConsentServiceTest extends BasePaymentConsentServ
         assertThat(consentWithFile.getCharges()).isEqualTo(persistedConsent.getCharges());
         assertThat(consentWithFile.getApiClientId()).isEqualTo(persistedConsent.getApiClientId());
         assertThat(consentWithFile.getCreationDateTime()).isEqualTo(persistedConsent.getCreationDateTime());
-        assertThat(consentWithFile.getStatusUpdatedDateTime()).isGreaterThan(persistedConsent.getStatusUpdatedDateTime()).isLessThan(DateTime.now());
+        assertThat(consentWithFile.getStatusUpdatedDateTime()).isGreaterThan(persistedConsent.getStatusUpdatedDateTime()).isLessThanOrEqualTo(DateTime.now());
         assertThat(consentWithFile.getAuthorisedDebtorAccountId()).isNull();
         assertThat(consentWithFile.getResourceOwnerId()).isNull();
         assertThat(consentWithFile.getIdempotencyKey()).isEqualTo(persistedConsent.getIdempotencyKey());
