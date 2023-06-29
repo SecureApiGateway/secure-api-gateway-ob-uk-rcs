@@ -31,6 +31,7 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services.ConsentService
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.utils.jwt.JwtUtil;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.exception.InvalidConsentException;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.jwt.RcsJwtSigner;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import com.google.gson.JsonObject;
 import com.nimbusds.jose.JOSEException;
@@ -189,6 +190,10 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
             log.error(errorMessage, e);
             throw new InvalidConsentException(consentDecisionDeserialized.getConsentJwt(), INTERNAL_SERVER_ERROR,
                     OBRIErrorType.RCS_CONSENT_RESPONSE_FAILURE, errorMessage, null, null);
+        } catch (ConsentStoreException cse) {
+            log.error("Consent Store Exception raise when processing decision", cse);
+            throw new InvalidConsentException(consentDecisionDeserialized.getConsentJwt(), INTERNAL_SERVER_ERROR,
+                    OBRIErrorType.RCS_CONSENT_RESPONSE_FAILURE, "Internal Server Error", null, null);
         }
     }
 

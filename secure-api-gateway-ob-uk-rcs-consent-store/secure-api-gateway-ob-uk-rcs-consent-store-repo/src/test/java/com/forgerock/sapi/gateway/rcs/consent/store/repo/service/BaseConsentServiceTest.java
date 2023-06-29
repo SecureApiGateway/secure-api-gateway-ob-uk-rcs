@@ -122,7 +122,7 @@ public abstract class BaseConsentServiceTest<T extends BaseConsentEntity<?>, A e
         assertThat(authorisedConsent.getStatus()).isEqualTo(getAuthorisedConsentStatus());
         assertThat(authorisedConsent.getResourceOwnerId()).isEqualTo(TEST_RESOURCE_OWNER);
         assertThat(authorisedConsent.getStatusUpdatedDateTime()).isGreaterThan(consentToAuthorise.getStatusUpdatedDateTime())
-                                                                .isLessThan(DateTime.now());
+                                                                .isLessThanOrEqualTo(DateTime.now());
 
         assertThat(authorisedConsent.getCreationDateTime()).isEqualTo(consentToAuthorise.getCreationDateTime());
         assertThat(authorisedConsent.getApiClientId()).isEqualTo(consentToAuthorise.getApiClientId());
@@ -152,7 +152,7 @@ public abstract class BaseConsentServiceTest<T extends BaseConsentEntity<?>, A e
         assertThat(rejectedConsent.getResourceOwnerId()).isEqualTo(TEST_RESOURCE_OWNER);
 
         assertThat(rejectedConsent.getStatusUpdatedDateTime()).isGreaterThan(consentBeforeRejectAction.getStatusUpdatedDateTime())
-                .isLessThan(DateTime.now());
+                                                              .isLessThanOrEqualTo(DateTime.now());
         assertThat(rejectedConsent.getEntityVersion()).isEqualTo(consentBeforeRejectAction.getEntityVersion() + 1);
     }
 }

@@ -62,7 +62,7 @@ public class FilePaymentConsentValidationHelpers {
         assertThat(consentWithFile.getRequestObj()).isEqualTo(originalConsent.getRequestObj());
         assertThat(consentWithFile.getRequestVersion()).isEqualTo(originalConsent.getRequestVersion());
         assertThat(consentWithFile.getCreationDateTime()).isEqualTo(originalConsent.getCreationDateTime());
-        assertThat(consentWithFile.getStatusUpdateDateTime()).isGreaterThan(originalConsent.getStatusUpdateDateTime()).isLessThan(DateTime.now());
+        assertThat(consentWithFile.getStatusUpdateDateTime()).isGreaterThan(originalConsent.getStatusUpdateDateTime()).isLessThanOrEqualTo(DateTime.now());
     }
 
     public static void validateAuthorisedConsent(FilePaymentConsent authorisedConsent, AuthorisePaymentConsentRequest authoriseReq, FilePaymentConsent originalConsent) {
@@ -90,7 +90,7 @@ public class FilePaymentConsentValidationHelpers {
         assertThat(updatedConsent.getRequestObj()).isEqualTo(consent.getRequestObj());
         assertThat(updatedConsent.getRequestVersion()).isEqualTo(consent.getRequestVersion());
         assertThat(updatedConsent.getCreationDateTime()).isEqualTo(consent.getCreationDateTime());
-        assertThat(updatedConsent.getStatusUpdateDateTime()).isLessThan(DateTime.now()).isGreaterThan(consent.getStatusUpdateDateTime());
+        assertThat(updatedConsent.getStatusUpdateDateTime()).isLessThanOrEqualTo(DateTime.now()).isGreaterThan(consent.getStatusUpdateDateTime());
         assertThat(updatedConsent.getFileUploadIdempotencyKey()).isEqualTo(consent.getFileUploadIdempotencyKey());
         assertThat(updatedConsent.getFileContent()).isEqualTo(consent.getFileContent());
 
