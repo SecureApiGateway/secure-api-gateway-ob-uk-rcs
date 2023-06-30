@@ -17,6 +17,7 @@ package com.forgerock.sapi.gateway.rcs.consent.store.api.account.v3_1_10;
 
 import java.util.List;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRReadConsentConverter;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AccountAccessConsent;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AuthoriseAccountAccessConsentRequest;
@@ -45,9 +46,9 @@ public class AccountAccessConsentApiControllerTest extends BaseControllerTest<Ac
     protected CreateAccountAccessConsentRequest buildCreateConsentRequest(String apiClientId) {
         final CreateAccountAccessConsentRequest createRequest = new CreateAccountAccessConsentRequest();
         createRequest.setApiClientId(apiClientId);
-        createRequest.setConsentRequest(new OBReadConsent1()
+        createRequest.setConsentRequest(FRReadConsentConverter.toFRReadConsent(new OBReadConsent1()
                 .data(new OBReadData1().permissions(List.of(OBExternalPermissions1Code.READACCOUNTSBASIC)))
-                .risk(new OBRisk2()));
+                .risk(new OBRisk2())));
         return createRequest;
     }
 

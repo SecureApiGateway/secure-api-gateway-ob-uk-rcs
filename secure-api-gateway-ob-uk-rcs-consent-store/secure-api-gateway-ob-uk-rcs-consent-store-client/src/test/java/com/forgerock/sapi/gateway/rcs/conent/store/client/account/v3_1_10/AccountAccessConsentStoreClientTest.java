@@ -36,6 +36,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRReadConsentConverter;
 import com.forgerock.sapi.gateway.rcs.conent.store.client.ConsentStoreClientException;
 import com.forgerock.sapi.gateway.rcs.conent.store.client.ConsentStoreClientException.ErrorType;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.RejectConsentRequest;
@@ -123,9 +124,9 @@ public class AccountAccessConsentStoreClientTest {
     private static CreateAccountAccessConsentRequest buildCreateConsentRequest() {
         final CreateAccountAccessConsentRequest createConsentRequest = new CreateAccountAccessConsentRequest();
         createConsentRequest.setApiClientId("test-client-1");
-        createConsentRequest.setConsentRequest(new OBReadConsent1()
+        createConsentRequest.setConsentRequest(FRReadConsentConverter.toFRReadConsent(new OBReadConsent1()
                                                     .data(new OBReadData1().permissions(List.of(OBExternalPermissions1Code.READACCOUNTSBASIC)))
-                                                    .risk(new OBRisk2()));
+                                                    .risk(new OBRisk2())));
         return createConsentRequest;
     }
 

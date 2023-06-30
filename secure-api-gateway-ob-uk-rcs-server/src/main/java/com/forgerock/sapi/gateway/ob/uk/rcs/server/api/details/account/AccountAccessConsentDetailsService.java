@@ -17,7 +17,7 @@ package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.account;
 
 import org.springframework.stereotype.Component;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRExternalPermissionsCodeConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRReadConsentData;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.AccountsConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.ConsentClientDetailsRequest;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services.ApiClientServiceClient;
@@ -27,8 +27,6 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.ApiProviderConf
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.account.AccountAccessConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
-
-import uk.org.openbanking.datamodel.account.OBReadData1;
 
 @Component
 public class AccountAccessConsentDetailsService extends BaseConsentDetailsService<AccountAccessConsentEntity, AccountsConsentDetails> {
@@ -47,8 +45,8 @@ public class AccountAccessConsentDetailsService extends BaseConsentDetailsServic
     protected void addIntentTypeSpecificData(AccountsConsentDetails consentDetails, AccountAccessConsentEntity consent,
                                              ConsentClientDetailsRequest consentClientDetailsRequest) {
 
-        final OBReadData1 readData = consent.getRequestObj().getData();
-        consentDetails.setPermissions(FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList(readData.getPermissions()));
+        final FRReadConsentData readData = consent.getRequestObj().getData();
+        consentDetails.setPermissions(readData.getPermissions());
         consentDetails.setFromTransaction(readData.getTransactionFromDateTime());
         consentDetails.setToTransaction(readData.getTransactionToDateTime());
         consentDetails.setExpiredDate(readData.getExpirationDateTime());

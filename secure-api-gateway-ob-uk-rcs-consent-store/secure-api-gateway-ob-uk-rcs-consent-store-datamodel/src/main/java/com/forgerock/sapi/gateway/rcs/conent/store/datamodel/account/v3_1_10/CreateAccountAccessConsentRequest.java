@@ -17,10 +17,9 @@ package com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10;
 
 import org.springframework.validation.annotation.Validated;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRReadConsent;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.BaseCreateConsentRequest;
 
-import uk.org.openbanking.datamodel.account.OBReadConsent1;
-
 @Validated
-public class CreateAccountAccessConsentRequest extends BaseCreateConsentRequest<OBReadConsent1> {
+public class CreateAccountAccessConsentRequest extends BaseCreateConsentRequest<FRReadConsent> {
 }
