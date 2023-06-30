@@ -55,11 +55,11 @@ public class AccountAccessConsentApiController implements AccountAccessConsentAp
     }
 
     @Override
-    public ResponseEntity<AccountAccessConsent> createConsent(CreateAccountAccessConsentRequest request, String apiClientId) {
-        logger.info("Attempting to createConsent: {}, for apiClientId: {}", request, apiClientId);
+    public ResponseEntity<AccountAccessConsent> createConsent(CreateAccountAccessConsentRequest request) {
+        logger.info("Attempting to createConsent: {}", request);
         final AccountAccessConsentEntity consentEntity = new AccountAccessConsentEntity();
         consentEntity.setRequestObj(request.getConsentRequest());
-        consentEntity.setApiClientId(apiClientId);
+        consentEntity.setApiClientId(request.getApiClientId());
         consentEntity.setRequestVersion(obVersion);
         consentEntity.setStatus(OBExternalRequestStatus1Code.AWAITINGAUTHORISATION.toString());
 
@@ -76,17 +76,17 @@ public class AccountAccessConsentApiController implements AccountAccessConsentAp
     }
 
     @Override
-    public ResponseEntity<AccountAccessConsent> authoriseConsent(String consentId, AuthoriseAccountAccessConsentRequest request, String apiClientId) {
-        logger.info("Attempting to authoriseConsent - id: {}, request: {}, apiClientId: {}", consentId, request, apiClientId);
-        final AccountAccessAuthoriseConsentArgs authoriseArgs = new AccountAccessAuthoriseConsentArgs(consentId, apiClientId,
+    public ResponseEntity<AccountAccessConsent> authoriseConsent(String consentId, AuthoriseAccountAccessConsentRequest request) {
+        logger.info("Attempting to authoriseConsent - id: {}, request: {}", consentId, request);
+        final AccountAccessAuthoriseConsentArgs authoriseArgs = new AccountAccessAuthoriseConsentArgs(consentId, request.getApiClientId(),
                 request.getResourceOwnerId(), request.getAuthorisedAccountIds());
         return ResponseEntity.ok(convertEntityToDto(consentService.authoriseConsent(authoriseArgs)));
     }
 
     @Override
-    public ResponseEntity<AccountAccessConsent> rejectConsent(String consentId, RejectConsentRequest request, String apiClientId) {
-        logger.info("Attempting to rejectConsent - id: {}, request: {}, apiClientId: {}", consentId, request, apiClientId);
-        return ResponseEntity.ok(convertEntityToDto(consentService.rejectConsent(consentId, apiClientId, request.getResourceOwnerId())));
+    public ResponseEntity<AccountAccessConsent> rejectConsent(String consentId, RejectConsentRequest request) {
+        logger.info("Attempting to rejectConsent - id: {}, request: {}", consentId, request);
+        return ResponseEntity.ok(convertEntityToDto(consentService.rejectConsent(consentId, request.getApiClientId(), request.getResourceOwnerId())));
     }
 
     private AccountAccessConsent convertEntityToDto(AccountAccessConsentEntity entity) {

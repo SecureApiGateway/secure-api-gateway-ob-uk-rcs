@@ -58,11 +58,9 @@ public interface AccountAccessConsentApi {
             consumes = {"application/json; charset=utf-8"},
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
-    ResponseEntity<AccountAccessConsent> createConsent(
-            @ApiParam(value = "Create Consent Request", required = true)
-            @Valid
-            @RequestBody CreateAccountAccessConsentRequest request,
-            @RequestHeader(value = "x-api-client-id") String apiClientId);
+    ResponseEntity<AccountAccessConsent> createConsent(@ApiParam(value = "Create Consent Request", required = true)
+                                                       @Valid
+                                                       @RequestBody CreateAccountAccessConsentRequest request);
 
 
     @ApiOperation(value = "Get Account Access Consent")
@@ -80,7 +78,7 @@ public interface AccountAccessConsentApi {
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
     ResponseEntity<AccountAccessConsent> getConsent(@PathVariable(value = "consentId") String consentId,
-            @RequestHeader(value = "x-api-client-id") String apiClientId);
+                                                    @RequestHeader(value = "x-api-client-id") String apiClientId);
 
 
     @ApiOperation(value = "Authorise Account Access Consent")
@@ -99,10 +97,9 @@ public interface AccountAccessConsentApi {
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
     ResponseEntity<AccountAccessConsent> authoriseConsent(@PathVariable(value = "consentId") String consentId,
-            @ApiParam(value = "Authorise Consent Request", required = true)
-            @Valid
-            @RequestBody AuthoriseAccountAccessConsentRequest request,
-            @RequestHeader(value = "x-api-client-id") String apiClientId);
+                                                          @ApiParam(value = "Authorise Consent Request", required = true)
+                                                          @Valid
+                                                          @RequestBody AuthoriseAccountAccessConsentRequest request);
 
 
     @ApiOperation(value = "Reject Account Access Consent")
@@ -121,9 +118,8 @@ public interface AccountAccessConsentApi {
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
     ResponseEntity<AccountAccessConsent> rejectConsent(@PathVariable(value = "consentId") String consentId,
-            @ApiParam(value = "Reject Consent Request", required = true)
-            @Valid
-            @RequestBody RejectConsentRequest request,
-            @RequestHeader(value = "x-api-client-id") String apiClientId);
+                                                       @ApiParam(value = "Reject Consent Request", required = true)
+                                                       @Valid
+                                                       @RequestBody RejectConsentRequest request);
 
 }

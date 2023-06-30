@@ -31,4 +31,23 @@ public abstract class BasePaymentConsentWithExchangeRateInformation<T> extends B
     public void setExchangeRateInformation(FRExchangeRateInformation exchangeRateInformation) {
         this.exchangeRateInformation = exchangeRateInformation;
     }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "{" +
+                "exchangeRateInformation=" + exchangeRateInformation +
+                ", idempotencyKey='" + getIdempotencyKey() + '\'' +
+                ", idempotencyKeyExpiration=" + getIdempotencyKeyExpiration() +
+                ", authorisedDebtorAccountId='" + getAuthorisedDebtorAccountId() + '\'' +
+                ", charges=" + getCharges() +
+                ", id='" + getId() + '\'' +
+                ", requestObj=" + getRequestObj() +
+                ", requestVersion=" + getRequestVersion() +
+                ", status='" + getStatus() + '\'' +
+                ", apiClientId='" + getApiClientId() + '\'' +
+                ", resourceOwnerId='" + getResourceOwnerId() + '\'' +
+                ", creationDateTime=" + getCreationDateTime() +
+                ", statusUpdateDateTime=" + getStatusUpdateDateTime() +
+                '}';
+    }
 }

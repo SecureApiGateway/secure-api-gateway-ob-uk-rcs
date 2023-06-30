@@ -38,4 +38,14 @@ public class AuthoriseAccountAccessConsentRequest extends BaseAuthoriseConsentRe
     public void setAuthorisedAccountIds(List<String> authorisedAccountIds) {
         this.authorisedAccountIds = authorisedAccountIds;
     }
+
+    @Override
+    public String toString() {
+        return "AuthoriseAccountAccessConsentRequest{" +
+                "authorisedAccountIds=" + authorisedAccountIds +
+                ", consentId='" + getConsentId() + '\'' +
+                ", resourceOwnerId='" + getResourceOwnerId() + '\'' +
+                ", apiClientId='" + getApiClientId() + '\'' +
+                '}';
+    }
 }

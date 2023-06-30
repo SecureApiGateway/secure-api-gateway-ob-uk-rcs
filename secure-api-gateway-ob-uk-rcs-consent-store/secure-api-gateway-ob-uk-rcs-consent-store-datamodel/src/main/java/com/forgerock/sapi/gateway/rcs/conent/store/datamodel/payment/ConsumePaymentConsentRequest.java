@@ -46,4 +46,12 @@ public class ConsumePaymentConsentRequest {
     public void setApiClientId(String apiClientId) {
         this.apiClientId = apiClientId;
     }
+
+    @Override
+    public String toString() {
+        return "ConsumePaymentConsentRequest{" +
+                "apiClientId='" + apiClientId + '\'' +
+                ", consentId='" + consentId + '\'' +
+                '}';
+    }
 }

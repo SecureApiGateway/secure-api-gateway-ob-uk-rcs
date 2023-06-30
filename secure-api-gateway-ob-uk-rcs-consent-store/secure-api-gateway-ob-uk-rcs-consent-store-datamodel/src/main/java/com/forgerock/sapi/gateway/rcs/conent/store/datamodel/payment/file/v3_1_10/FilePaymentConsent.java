@@ -45,4 +45,23 @@ public class FilePaymentConsent extends BasePaymentConsent<FRWriteFileConsent> {
     public void setFileUploadIdempotencyKey(String fileUploadIdempotencyKey) {
         this.fileUploadIdempotencyKey = fileUploadIdempotencyKey;
     }
+
+    @Override
+    public String toString() {
+        return "FilePaymentConsent{" +
+                "fileUploadIdempotencyKey='" + fileUploadIdempotencyKey + '\'' +
+                ", idempotencyKey='" + getIdempotencyKey() + '\'' +
+                ", idempotencyKeyExpiration=" + getIdempotencyKeyExpiration() +
+                ", authorisedDebtorAccountId='" + getAuthorisedDebtorAccountId() + '\'' +
+                ", charges=" + getCharges() +
+                ", id='" + getId() + '\'' +
+                ", requestObj=" + getRequestObj() +
+                ", requestVersion=" + getRequestVersion() +
+                ", status='" + getStatus() + '\'' +
+                ", apiClientId='" + getApiClientId() + '\'' +
+                ", resourceOwnerId='" + getResourceOwnerId() + '\'' +
+                ", creationDateTime=" + getCreationDateTime() +
+                ", statusUpdateDateTime=" + getStatusUpdateDateTime() +
+                '}';
+    }
 }

@@ -59,11 +59,9 @@ public interface FilePaymentConsentApi {
             consumes = {"application/json; charset=utf-8"},
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
-    ResponseEntity<FilePaymentConsent> createConsent(
-            @ApiParam(value = "Create Consent Request", required = true)
-            @Valid
-            @RequestBody CreateFilePaymentConsentRequest request,
-            @RequestHeader(value = "x-api-client-id") String apiClientId);
+    ResponseEntity<FilePaymentConsent> createConsent(@ApiParam(value = "Create Consent Request", required = true)
+                                                     @Valid
+                                                     @RequestBody CreateFilePaymentConsentRequest request);
 
 
     @ApiOperation(value = "Get File Payment Consent")
@@ -103,8 +101,7 @@ public interface FilePaymentConsentApi {
     ResponseEntity<FilePaymentConsent> uploadFile(@PathVariable(value = "consentId") String consentId,
                                                   @ApiParam(value = "File Upload Request", required = true)
                                                   @Valid
-                                                  @RequestBody FileUploadRequest request,
-                                                  @RequestHeader(value = "x-api-client-id") String apiClientId);
+                                                  @RequestBody FileUploadRequest request);
 
 
     @ApiOperation(value = "Authorise File Payment Consent")
@@ -125,8 +122,7 @@ public interface FilePaymentConsentApi {
     ResponseEntity<FilePaymentConsent> authoriseConsent(@PathVariable(value = "consentId") String consentId,
                                                         @ApiParam(value = "Authorise Consent Request", required = true)
                                                         @Valid
-                                                        @RequestBody AuthorisePaymentConsentRequest request,
-                                                        @RequestHeader(value = "x-api-client-id") String apiClientId);
+                                                        @RequestBody AuthorisePaymentConsentRequest request);
 
 
     @ApiOperation(value = "Reject File Payment Consent")
@@ -147,8 +143,7 @@ public interface FilePaymentConsentApi {
     ResponseEntity<FilePaymentConsent> rejectConsent(@PathVariable(value = "consentId") String consentId,
                                                      @ApiParam(value = "Reject Consent Request", required = true)
                                                      @Valid
-                                                     @RequestBody RejectConsentRequest request,
-                                                     @RequestHeader(value = "x-api-client-id") String apiClientId);
+                                                     @RequestBody RejectConsentRequest request);
 
 
 
@@ -170,7 +165,6 @@ public interface FilePaymentConsentApi {
     ResponseEntity<FilePaymentConsent> consumeConsent(@PathVariable(value = "consentId") String consentId,
                                                       @ApiParam(value = "Consume Consent Request", required = true)
                                                       @Valid
-                                                      @RequestBody ConsumePaymentConsentRequest request,
-                                                      @RequestHeader(value = "x-api-client-id") String apiClientId);
+                                                      @RequestBody ConsumePaymentConsentRequest request);
 
 }

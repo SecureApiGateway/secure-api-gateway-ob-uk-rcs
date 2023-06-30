@@ -39,4 +39,18 @@ public class AccountAccessConsent extends BaseConsent<OBReadConsent1> {
         return authorisedAccountIds;
     }
 
+    @Override
+    public String toString() {
+        return "AccountAccessConsent{" +
+                "authorisedAccountIds=" + authorisedAccountIds +
+                ", id='" + getId() + '\'' +
+                ", requestObj=" + getRequestObj() +
+                ", requestVersion=" + getRequestVersion() +
+                ", status='" + getStatus() + '\'' +
+                ", apiClientId='" + getApiClientId() + '\'' +
+                ", resourceOwnerId='" + getResourceOwnerId() + '\'' +
+                ", creationDateTime=" + getCreationDateTime() +
+                ", statusUpdateDateTime=" + getStatusUpdateDateTime() +
+                '}';
+    }
 }

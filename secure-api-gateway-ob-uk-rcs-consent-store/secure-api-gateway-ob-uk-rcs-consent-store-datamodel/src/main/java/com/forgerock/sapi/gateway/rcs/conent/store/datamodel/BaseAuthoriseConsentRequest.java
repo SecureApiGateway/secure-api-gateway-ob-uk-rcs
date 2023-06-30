@@ -31,7 +31,6 @@ public abstract class BaseAuthoriseConsentRequest {
     @NotNull
     private String resourceOwnerId;
 
-
     public BaseAuthoriseConsentRequest() {
     }
 
@@ -57,5 +56,14 @@ public abstract class BaseAuthoriseConsentRequest {
 
     public void setApiClientId(String apiClientId) {
         this.apiClientId = apiClientId;
+    }
+
+    @Override
+    public String toString() {
+        return "BaseAuthoriseConsentRequest{" +
+                "apiClientId='" + apiClientId + '\'' +
+                ", consentId='" + consentId + '\'' +
+                ", resourceOwnerId='" + resourceOwnerId + '\'' +
+                '}';
     }
 }
