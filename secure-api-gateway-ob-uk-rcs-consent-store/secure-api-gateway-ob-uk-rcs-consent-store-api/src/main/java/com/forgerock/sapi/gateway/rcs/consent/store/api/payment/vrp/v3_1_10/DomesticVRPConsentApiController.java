@@ -70,8 +70,8 @@ public class DomesticVRPConsentApiController implements DomesticVRPConsentApi {
     }
 
     @Override
-    public ResponseEntity<DomesticVRPConsent> createConsent(CreateDomesticVRPConsentRequest request, String apiClientId) {
-        logger.info("Attempting to createConsent: {}, for apiClientId: {}", request, apiClientId);
+    public ResponseEntity<DomesticVRPConsent> createConsent(CreateDomesticVRPConsentRequest request) {
+        logger.info("Attempting to createConsent: {}", request);
         final DomesticVRPConsentEntity domesticPaymentConsent = new DomesticVRPConsentEntity();
         domesticPaymentConsent.setRequestVersion(obVersion);
         domesticPaymentConsent.setApiClientId(request.getApiClientId());
@@ -93,23 +93,23 @@ public class DomesticVRPConsentApiController implements DomesticVRPConsentApi {
     }
 
     @Override
-    public ResponseEntity<DomesticVRPConsent> authoriseConsent(String consentId, AuthorisePaymentConsentRequest request, String apiClientId) {
-        logger.info("Attempting to authoriseConsent - id: {}, request: {}, apiClientId: {}", consentId, request, apiClientId);
-        final PaymentAuthoriseConsentArgs paymentAuthoriseConsentArgs = new PaymentAuthoriseConsentArgs(consentId, apiClientId,
-                                                                                                                                request.getResourceOwnerId(), request.getAuthorisedDebtorAccountId());
+    public ResponseEntity<DomesticVRPConsent> authoriseConsent(String consentId, AuthorisePaymentConsentRequest request) {
+        logger.info("Attempting to authoriseConsent - id: {}, request: {}", consentId, request);
+        final PaymentAuthoriseConsentArgs paymentAuthoriseConsentArgs = new PaymentAuthoriseConsentArgs(consentId,
+                request.getApiClientId(), request.getResourceOwnerId(), request.getAuthorisedDebtorAccountId());
         return ResponseEntity.ok(convertEntityToDto(consentService.authoriseConsent(paymentAuthoriseConsentArgs)));
     }
 
     @Override
-    public ResponseEntity<DomesticVRPConsent> rejectConsent(String consentId, RejectConsentRequest request, String apiClientId) {
-        logger.info("Attempting to rejectConsent - id: {}, request: {}, apiClientId: {}", consentId, request, apiClientId);
-        return ResponseEntity.ok(convertEntityToDto(consentService.rejectConsent(consentId, apiClientId, request.getResourceOwnerId())));
+    public ResponseEntity<DomesticVRPConsent> rejectConsent(String consentId, RejectConsentRequest request) {
+        logger.info("Attempting to rejectConsent - id: {}, request: {}", consentId, request);
+        return ResponseEntity.ok(convertEntityToDto(consentService.rejectConsent(consentId, request.getApiClientId(), request.getResourceOwnerId())));
     }
 
     @Override
-    public ResponseEntity<DomesticVRPConsent> consumeConsent(String consentId, ConsumePaymentConsentRequest request, String apiClientId) {
-        logger.info("Attempting to consumeConsent - id: {}, request: {}, apiClientId: {}", consentId, request, apiClientId);
-        return ResponseEntity.ok(convertEntityToDto(consentService.consumeConsent(consentId, apiClientId)));
+    public ResponseEntity<DomesticVRPConsent> consumeConsent(String consentId, ConsumePaymentConsentRequest request) {
+        logger.info("Attempting to consumeConsent - id: {}, request: {}", consentId, request);
+        return ResponseEntity.ok(convertEntityToDto(consentService.consumeConsent(consentId, request.getApiClientId())));
     }
 
     private DomesticVRPConsent convertEntityToDto(DomesticVRPConsentEntity entity) {

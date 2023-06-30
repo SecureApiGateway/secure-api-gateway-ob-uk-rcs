@@ -58,11 +58,9 @@ public interface DomesticVRPConsentApi {
             consumes = {"application/json; charset=utf-8"},
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
-    ResponseEntity<DomesticVRPConsent> createConsent(
-            @ApiParam(value = "Create Consent Request", required = true)
-            @Valid
-            @RequestBody CreateDomesticVRPConsentRequest request,
-            @RequestHeader(value = "x-api-client-id") String apiClientId);
+    ResponseEntity<DomesticVRPConsent> createConsent(@ApiParam(value = "Create Consent Request", required = true)
+                                                     @Valid
+                                                     @RequestBody CreateDomesticVRPConsentRequest request);
 
 
     @ApiOperation(value = "Get Domestic VRP Consent")
@@ -80,7 +78,7 @@ public interface DomesticVRPConsentApi {
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
     ResponseEntity<DomesticVRPConsent> getConsent(@PathVariable(value = "consentId") String consentId,
-                                                      @RequestHeader(value = "x-api-client-id") String apiClientId);
+                                                  @RequestHeader(value = "x-api-client-id") String apiClientId);
 
 
     @ApiOperation(value = "Authorise Domestic VRP Consent")
@@ -99,10 +97,9 @@ public interface DomesticVRPConsentApi {
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
     ResponseEntity<DomesticVRPConsent> authoriseConsent(@PathVariable(value = "consentId") String consentId,
-                                                            @ApiParam(value = "Authorise Consent Request", required = true)
-                                                            @Valid
-                                                            @RequestBody AuthorisePaymentConsentRequest request,
-                                                            @RequestHeader(value = "x-api-client-id") String apiClientId);
+                                                        @ApiParam(value = "Authorise Consent Request", required = true)
+                                                        @Valid
+                                                        @RequestBody AuthorisePaymentConsentRequest request);
 
 
     @ApiOperation(value = "Reject Domestic VRP Consent")
@@ -121,10 +118,9 @@ public interface DomesticVRPConsentApi {
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
     ResponseEntity<DomesticVRPConsent> rejectConsent(@PathVariable(value = "consentId") String consentId,
-                                                         @ApiParam(value = "Reject Consent Request", required = true)
-                                                         @Valid
-                                                         @RequestBody RejectConsentRequest request,
-                                                         @RequestHeader(value = "x-api-client-id") String apiClientId);
+                                                     @ApiParam(value = "Reject Consent Request", required = true)
+                                                     @Valid
+                                                     @RequestBody RejectConsentRequest request);
 
 
 
@@ -144,9 +140,8 @@ public interface DomesticVRPConsentApi {
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
     ResponseEntity<DomesticVRPConsent> consumeConsent(@PathVariable(value = "consentId") String consentId,
-                                                          @ApiParam(value = "Consume Consent Request", required = true)
-                                                          @Valid
-                                                          @RequestBody ConsumePaymentConsentRequest request,
-                                                          @RequestHeader(value = "x-api-client-id") String apiClientId);
+                                                      @ApiParam(value = "Consume Consent Request", required = true)
+                                                      @Valid
+                                                      @RequestBody ConsumePaymentConsentRequest request);
 
 }
