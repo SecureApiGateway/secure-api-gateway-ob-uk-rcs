@@ -19,15 +19,14 @@ import java.util.List;
 
 import org.springframework.validation.annotation.Validated;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRReadConsent;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.BaseConsent;
-
-import uk.org.openbanking.datamodel.account.OBReadConsent1;
 
 /**
  * OBIE Account Access Consent: https://openbankinguk.github.io/read-write-api-site3/v3.1.10/resources-and-data-models/aisp/account-access-consents.html
  */
 @Validated
-public class AccountAccessConsent extends BaseConsent<OBReadConsent1> {
+public class AccountAccessConsent extends BaseConsent<FRReadConsent> {
 
     private List<String> authorisedAccountIds;
 

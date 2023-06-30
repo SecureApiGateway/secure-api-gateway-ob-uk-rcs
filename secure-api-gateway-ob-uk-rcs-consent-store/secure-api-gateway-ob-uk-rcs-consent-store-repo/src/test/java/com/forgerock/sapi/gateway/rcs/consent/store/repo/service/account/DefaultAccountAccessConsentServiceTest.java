@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRReadConsentConverter;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.account.AccountAccessConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentServiceTest;
@@ -71,7 +72,7 @@ public class DefaultAccountAccessConsentServiceTest extends BaseConsentServiceTe
         obReadConsent.setData(new OBReadData1().permissions(List.of(OBExternalPermissions1Code.READACCOUNTSBASIC))
                                                .expirationDateTime(DateTime.now().plusDays(30)));
         obReadConsent.setRisk(new OBRisk2());
-        accountAccessConsentEntity.setRequestObj(obReadConsent);
+        accountAccessConsentEntity.setRequestObj(FRReadConsentConverter.toFRReadConsent(obReadConsent));
 
         return accountAccessConsentEntity;
     }

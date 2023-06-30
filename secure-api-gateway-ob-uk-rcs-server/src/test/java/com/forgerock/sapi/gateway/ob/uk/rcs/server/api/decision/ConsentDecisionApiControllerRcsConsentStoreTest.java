@@ -54,6 +54,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRReadConsent;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRReadConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticScheduledConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticStandingOrderConsentConverter;
@@ -199,8 +201,7 @@ public class ConsentDecisionApiControllerRcsConsentStoreTest {
         consent.setApiClientId(TEST_API_CLIENT_ID);
         consent.setRequestVersion(OBVersion.v3_1_10);
         consent.setStatus(AccountAccessConsentStateModel.AWAITING_AUTHORISATION);
-        consent.setRequestObj(new OBReadConsent1().data(new OBReadData1().permissions(
-                List.of(OBExternalPermissions1Code.READACCOUNTSBASIC))).risk(new OBRisk2()));
+        consent.setRequestObj(createConsentRequestObj());
         final AccountAccessConsentEntity persistedConsent = accountAccessConsentService.createConsent(consent);
 
         final String consentRequestJwt = JwtTestHelper.consentRequestJwt(TEST_API_CLIENT_ID, persistedConsent.getId(), TEST_RESOURCE_OWNER_ID);
@@ -227,6 +228,11 @@ public class ConsentDecisionApiControllerRcsConsentStoreTest {
         assertEquals(TEST_ACCOUNT_ACCESS_ACCOUNT_IDS, authorisedConsent.getAuthorisedAccountIds());
     }
 
+    private static FRReadConsent createConsentRequestObj() {
+        return FRReadConsentConverter.toFRReadConsent(new OBReadConsent1().data(new OBReadData1().permissions(
+                List.of(OBExternalPermissions1Code.READACCOUNTSBASIC))).risk(new OBRisk2()));
+    }
+
     @Test
     public void testRejectedAccountAccessConsent() {
         Assumptions.assumeTrue(consentStoreEnabledIntentTypes.isIntentTypeSupported(IntentType.ACCOUNT_ACCESS_CONSENT));
@@ -236,8 +242,7 @@ public class ConsentDecisionApiControllerRcsConsentStoreTest {
         consent.setApiClientId(TEST_API_CLIENT_ID);
         consent.setRequestVersion(OBVersion.v3_1_10);
         consent.setStatus(AccountAccessConsentStateModel.AWAITING_AUTHORISATION);
-        consent.setRequestObj(new OBReadConsent1().data(new OBReadData1().permissions(
-                List.of(OBExternalPermissions1Code.READACCOUNTSBASIC))).risk(new OBRisk2()));
+        consent.setRequestObj(createConsentRequestObj());
         final AccountAccessConsentEntity persistedConsent = accountAccessConsentService.createConsent(consent);
 
         final String consentRequestJwt = JwtTestHelper.consentRequestJwt(TEST_API_CLIENT_ID, persistedConsent.getId(), TEST_RESOURCE_OWNER_ID);

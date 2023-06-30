@@ -30,6 +30,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccountWithBalance;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRReadConsentData;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.account.FRAccountWithBalanceTestDataFactory;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.AccountsConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.ConsentDetails;
@@ -43,8 +44,6 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.ApiProviderConf
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.account.AccountAccessConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
-
-import uk.org.openbanking.datamodel.account.OBReadData1;
 
 @ExtendWith(MockitoExtension.class)
 class AccountAccessConsentDetailsServiceTest {
@@ -109,7 +108,7 @@ class AccountAccessConsentDetailsServiceTest {
         assertThat(accountsConsentDetails.getServiceProviderName()).isEqualTo(TEST_API_PROVIDER);
         assertThat(accountsConsentDetails.getUserId()).isEqualTo(testUser.getId());
 
-        final OBReadData1 consentData = consentEntity.getRequestObj().getData();
+        final FRReadConsentData consentData = consentEntity.getRequestObj().getData();
         assertThat(accountsConsentDetails.getExpiredDate()).isEqualTo(consentData.getExpirationDateTime());
         assertThat(accountsConsentDetails.getFromTransaction()).isEqualTo(consentData.getTransactionFromDateTime());
         assertThat(accountsConsentDetails.getToTransaction()).isEqualTo(consentData.getTransactionToDateTime());

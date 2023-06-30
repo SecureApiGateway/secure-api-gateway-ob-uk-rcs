@@ -20,16 +20,15 @@ import java.util.List;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.validation.annotation.Validated;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRReadConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.BaseConsentEntity;
-
-import uk.org.openbanking.datamodel.account.OBReadConsent1;
 
 /**
  * OBIE Account Access Consent: https://openbankinguk.github.io/read-write-api-site3/v3.1.10/resources-and-data-models/aisp/account-access-consents.html
  */
 @Document("AccountAccessConsent")
 @Validated
-public class AccountAccessConsentEntity extends BaseConsentEntity<OBReadConsent1> {
+public class AccountAccessConsentEntity extends BaseConsentEntity<FRReadConsent> {
 
     private List<String> authorisedAccountIds;
 
