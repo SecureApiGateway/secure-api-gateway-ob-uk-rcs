@@ -44,4 +44,12 @@ public abstract class BaseCreateConsentRequest<T> {
     public void setConsentRequest(T consentRequest) {
         this.consentRequest = consentRequest;
     }
+
+    @Override
+    public String toString() {
+        return "BaseCreateConsentRequest{" +
+                "apiClientId='" + apiClientId + '\'' +
+                ", consentRequest=" + consentRequest +
+                '}';
+    }
 }

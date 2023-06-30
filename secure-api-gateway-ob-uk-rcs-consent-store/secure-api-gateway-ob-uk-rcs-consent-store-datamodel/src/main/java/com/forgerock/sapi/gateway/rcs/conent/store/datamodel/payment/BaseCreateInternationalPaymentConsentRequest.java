@@ -28,4 +28,15 @@ public class BaseCreateInternationalPaymentConsentRequest<T> extends BaseCreateP
     public void setExchangeRateInformation(FRExchangeRateInformation exchangeRateInformation) {
         this.exchangeRateInformation = exchangeRateInformation;
     }
+
+    @Override
+    public String toString() {
+        return "BaseCreateInternationalPaymentConsentRequest{" +
+                "exchangeRateInformation=" + exchangeRateInformation +
+                ", idempotencyKey='" + getIdempotencyKey() + '\'' +
+                ", charges=" + getCharges() +
+                ", apiClientId='" + getApiClientId() + '\'' +
+                ", consentRequest=" + getConsentRequest() +
+                '}';
+    }
 }

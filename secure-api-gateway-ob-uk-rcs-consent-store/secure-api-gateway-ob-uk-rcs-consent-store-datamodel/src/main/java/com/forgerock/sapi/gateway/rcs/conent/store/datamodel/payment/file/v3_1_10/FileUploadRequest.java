@@ -66,4 +66,12 @@ public class FileUploadRequest {
         this.fileUploadIdempotencyKey = fileUploadIdempotencyKey;
     }
 
+    @Override
+    public String toString() {
+        return "FileUploadRequest{" +
+                "consentId='" + consentId + '\'' +
+                ", apiClientId='" + apiClientId + '\'' +
+                ", fileUploadIdempotencyKey='" + fileUploadIdempotencyKey + '\'' +
+                '}';
+    }
 }

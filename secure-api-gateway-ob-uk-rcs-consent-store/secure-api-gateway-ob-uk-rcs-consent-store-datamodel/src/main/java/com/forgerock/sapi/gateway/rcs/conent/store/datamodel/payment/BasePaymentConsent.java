@@ -68,4 +68,22 @@ public abstract class BasePaymentConsent<T> extends BaseConsent<T> {
     public void setCharges(List<FRCharge> charges) {
         this.charges = charges;
     }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "{" +
+                "idempotencyKey='" + idempotencyKey + '\'' +
+                ", idempotencyKeyExpiration=" + idempotencyKeyExpiration +
+                ", authorisedDebtorAccountId='" + authorisedDebtorAccountId + '\'' +
+                ", charges=" + charges +
+                ", id='" + getId() + '\'' +
+                ", requestObj=" + getRequestObj() +
+                ", requestVersion=" + getRequestVersion() +
+                ", status='" + getStatus() + '\'' +
+                ", apiClientId='" + getApiClientId() + '\'' +
+                ", resourceOwnerId='" + getResourceOwnerId() + '\'' +
+                ", creationDateTime=" + getCreationDateTime() +
+                ", statusUpdateDateTime=" + getStatusUpdateDateTime() +
+                '}';
+    }
 }

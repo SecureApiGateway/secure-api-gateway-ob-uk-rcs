@@ -40,4 +40,13 @@ public class AuthorisePaymentConsentRequest extends BaseAuthoriseConsentRequest 
         this.authorisedDebtorAccountId = authorisedDebtorAccountId;
     }
 
+    @Override
+    public String toString() {
+        return "AuthorisePaymentConsentRequest{" +
+                "authorisedDebtorAccountId='" + authorisedDebtorAccountId + '\'' +
+                ", consentId='" + getConsentId() + '\'' +
+                ", resourceOwnerId='" + getResourceOwnerId() + '\'' +
+                ", apiClientId='" + getApiClientId() + '\'' +
+                '}';
+    }
 }

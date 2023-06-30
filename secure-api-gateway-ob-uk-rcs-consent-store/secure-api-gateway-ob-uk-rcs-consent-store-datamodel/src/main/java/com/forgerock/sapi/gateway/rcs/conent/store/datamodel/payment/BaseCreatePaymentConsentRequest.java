@@ -44,4 +44,14 @@ public class BaseCreatePaymentConsentRequest<T> extends BaseCreateConsentRequest
     public void setCharges(List<FRCharge> charges) {
         this.charges = charges;
     }
+
+    @Override
+    public String toString() {
+        return "BaseCreatePaymentConsentRequest{" +
+                "idempotencyKey='" + idempotencyKey + '\'' +
+                ", charges=" + charges +
+                ", apiClientId='" + getApiClientId() + '\'' +
+                ", consentRequest=" + getConsentRequest() +
+                '}';
+    }
 }

@@ -57,5 +57,14 @@ public class RejectConsentRequest {
     public void setApiClientId(String apiClientId) {
         this.apiClientId = apiClientId;
     }
+
+    @Override
+    public String toString() {
+        return "RejectConsentRequest{" +
+                "apiClientId='" + apiClientId + '\'' +
+                ", consentId='" + consentId + '\'' +
+                ", resourceOwnerId='" + resourceOwnerId + '\'' +
+                '}';
+    }
 }
 
