@@ -70,8 +70,8 @@ public class InternationalScheduledPaymentConsentApiController implements Intern
     }
 
     @Override
-    public ResponseEntity<InternationalScheduledPaymentConsent> createConsent(CreateInternationalScheduledPaymentConsentRequest request, String apiClientId) {
-        logger.info("Attempting to createConsent: {}, for apiClientId: {}", request, apiClientId);
+    public ResponseEntity<InternationalScheduledPaymentConsent> createConsent(CreateInternationalScheduledPaymentConsentRequest request) {
+        logger.info("Attempting to createConsent: {}", request);
         final InternationalScheduledPaymentConsentEntity internationalPaymentConsent = new InternationalScheduledPaymentConsentEntity();
         internationalPaymentConsent.setRequestVersion(obVersion);
         internationalPaymentConsent.setApiClientId(request.getApiClientId());
@@ -94,23 +94,23 @@ public class InternationalScheduledPaymentConsentApiController implements Intern
     }
 
     @Override
-    public ResponseEntity<InternationalScheduledPaymentConsent> authoriseConsent(String consentId, AuthorisePaymentConsentRequest request, String apiClientId) {
-        logger.info("Attempting to authoriseConsent - id: {}, request: {}, apiClientId: {}", consentId, request, apiClientId);
-        final PaymentAuthoriseConsentArgs paymentAuthoriseConsentArgs = new PaymentAuthoriseConsentArgs(consentId, apiClientId,
-                                                                                                                                request.getResourceOwnerId(), request.getAuthorisedDebtorAccountId());
+    public ResponseEntity<InternationalScheduledPaymentConsent> authoriseConsent(String consentId, AuthorisePaymentConsentRequest request) {
+        logger.info("Attempting to authoriseConsent - id: {}, request: {}", consentId, request);
+        final PaymentAuthoriseConsentArgs paymentAuthoriseConsentArgs = new PaymentAuthoriseConsentArgs(consentId,
+                request.getApiClientId(), request.getResourceOwnerId(), request.getAuthorisedDebtorAccountId());
         return ResponseEntity.ok(convertEntityToDto(consentService.authoriseConsent(paymentAuthoriseConsentArgs)));
     }
 
     @Override
-    public ResponseEntity<InternationalScheduledPaymentConsent> rejectConsent(String consentId, RejectConsentRequest request, String apiClientId) {
-        logger.info("Attempting to rejectConsent - id: {}, request: {}, apiClientId: {}", consentId, request, apiClientId);
-        return ResponseEntity.ok(convertEntityToDto(consentService.rejectConsent(consentId, apiClientId, request.getResourceOwnerId())));
+    public ResponseEntity<InternationalScheduledPaymentConsent> rejectConsent(String consentId, RejectConsentRequest request) {
+        logger.info("Attempting to rejectConsent - id: {}, request: {}", consentId, request);
+        return ResponseEntity.ok(convertEntityToDto(consentService.rejectConsent(consentId, request.getApiClientId(), request.getResourceOwnerId())));
     }
 
     @Override
-    public ResponseEntity<InternationalScheduledPaymentConsent> consumeConsent(String consentId, ConsumePaymentConsentRequest request, String apiClientId) {
-        logger.info("Attempting to consumeConsent - id: {}, request: {}, apiClientId: {}", consentId, request, apiClientId);
-        return ResponseEntity.ok(convertEntityToDto(consentService.consumeConsent(consentId, apiClientId)));
+    public ResponseEntity<InternationalScheduledPaymentConsent> consumeConsent(String consentId, ConsumePaymentConsentRequest request) {
+        logger.info("Attempting to consumeConsent - id: {}, request: {},", consentId, request);
+        return ResponseEntity.ok(convertEntityToDto(consentService.consumeConsent(consentId, request.getApiClientId())));
     }
 
     private InternationalScheduledPaymentConsent convertEntityToDto(InternationalScheduledPaymentConsentEntity entity) {
