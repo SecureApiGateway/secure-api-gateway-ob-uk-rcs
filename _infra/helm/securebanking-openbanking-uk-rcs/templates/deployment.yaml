@@ -70,11 +70,11 @@ spec:
               secretKeyRef:
                 name: openig-secrets-env
                 key: MONGODB_CONSENT_PASSWORD
-          - name: CONSENT_REPO_URI
+          - name: CLOUD_CLIENT_BASE_URI
             valueFrom:
               configMapKeyRef:
                 name: deployment-config
-                key: CONSENT_REPO_URI
+                key: GATEWAY_DATA_REPO_URI
           - name: RS_API_URI
             valueFrom:
               configMapKeyRef:

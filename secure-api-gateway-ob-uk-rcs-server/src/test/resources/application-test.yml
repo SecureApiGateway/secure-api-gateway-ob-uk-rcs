@@ -4,9 +4,9 @@ rs:
   api:
     uri: http://localhost:8080
 
-consent:
-  repo:
-    uri: http://ig:80
+cloud:
+  client:
+    baseUri: http://ig:80
 
 rcs:
   consent:

@@ -4,11 +4,11 @@
 # The following section is a template of the mandatory configuration that needs to be supplied in order to start the
 # application, this config is deployment specific.
 #
-# Consent Repo Configuration
-#consent:
-#  repo:
-#    # Connection string to the Consent Repo base URI
-#    uri:
+# Cloud Client API settings
+#cloud:
+#  client:
+#    # Connection string to connect to the Cloud Client API
+#    baseUri:
 #
 # Resource Server Configuration
 #rs:
@@ -51,11 +51,10 @@ api:
     # Name used in ConsentDetails, this gets displayed in the Consent UI
     name: Test Bank
 
-# Configuration for calling the Consent Repository
-# See: com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.configuration.ConsentRepoConfiguration
-consent:
-  # IDM Consent Repo
-  repo:
+# Configuration for calling the Cloud Data repository
+# com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.configuration.CloudClientConfiguration
+cloud:
+  client:
     # Context to build the URI to make a request against the repository endpoint to obtain the client object by clientId
     contexts_api_client:
       get: /repo/apiclients/@ClientId@
@@ -69,10 +68,11 @@ consent:
       patch: /repo/users/@UserId@
       delete: /repo/users/@UserId@
 
-  # RCS Consent Store config
+# RCS Consent Store config
+consent:
   store:
     enabled:
-      # Controls which intentTypes will use the new Consent Store (format: comma separated list)
+      # Controls which intentTypes are supported
       intentTypes: ACCOUNT_ACCESS_CONSENT, PAYMENT_DOMESTIC_CONSENT, PAYMENT_DOMESTIC_SCHEDULED_CONSENT, PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT, DOMESTIC_VRP_PAYMENT_CONSENT, PAYMENT_FILE_CONSENT, CUSTOMER_INFO_CONSENT, PAYMENT_INTERNATIONAL_CONSENT, PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT, PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT, FUNDS_CONFIRMATION_CONSENT
 
 spring:

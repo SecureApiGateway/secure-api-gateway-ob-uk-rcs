@@ -1,6 +1,6 @@
-consent:
-  repo:
-    uri: http://ig:80
+cloud:
+  client:
+    baseUri: http://ig:80
     contexts_api_client:
       get: /repo/apiclients/@ClientId@
       put: /repo/apiclients/@ClientId@
