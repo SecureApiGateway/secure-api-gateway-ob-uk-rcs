@@ -89,6 +89,13 @@ public class AccountAccessConsentApiController implements AccountAccessConsentAp
         return ResponseEntity.ok(convertEntityToDto(consentService.rejectConsent(consentId, request.getApiClientId(), request.getResourceOwnerId())));
     }
 
+    @Override
+    public ResponseEntity<Void> deleteConsent(String consentId, String apiClientId) {
+        logger.info("Attempting to deleteConsent - id: {}, apiClientId: {}", consentId, apiClientId);
+        consentService.deleteConsent(consentId, apiClientId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
     private AccountAccessConsent convertEntityToDto(AccountAccessConsentEntity entity) {
         final AccountAccessConsent dto = new AccountAccessConsent();
         dto.setApiClientId(entity.getApiClientId());

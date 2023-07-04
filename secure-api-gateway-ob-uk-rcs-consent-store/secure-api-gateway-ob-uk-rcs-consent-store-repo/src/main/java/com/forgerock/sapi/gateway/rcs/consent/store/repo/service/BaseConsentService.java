@@ -93,6 +93,9 @@ public abstract class BaseConsentService<T extends BaseConsentEntity<?>, A exten
         if (!Objects.equals(consent.getApiClientId(), apiClientId)) {
             throw new ConsentStoreException(ErrorType.INVALID_PERMISSIONS, consentId);
         }
+        if (consent.isDeleted()) {
+            throw new ConsentStoreException(ErrorType.NOT_FOUND, consentId);
+        }
         return consent;
     }
 
@@ -130,10 +133,10 @@ public abstract class BaseConsentService<T extends BaseConsentEntity<?>, A exten
     }
 
     @Override
-    public T revokeConsent(String consentId, String apiClientId) {
+    public void deleteConsent(String consentId, String apiClientId) {
         final T consent = getConsent(consentId, apiClientId);
-        validateStateTransition(consent, revokedConsentStatus);
         consent.setStatus(revokedConsentStatus);
-        return repo.save(consent);
+        consent.setDeleted(true);
+        repo.save(consent);
     }
 }

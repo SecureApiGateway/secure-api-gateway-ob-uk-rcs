@@ -38,6 +38,6 @@ public interface ConsentService<T extends BaseConsentEntity, A extends Authorise
 
     T rejectConsent(String consentId, String apiClientId, String resourceOwnerId);
 
-    T revokeConsent(String consentId, String apiClientId);
+    void deleteConsent(String consentId, String apiClientId);
 
 }

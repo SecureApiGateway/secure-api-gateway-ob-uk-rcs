@@ -35,6 +35,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRReadConsentConverter;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.account.AccountAccessConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException.ErrorType;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentServiceTest;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
@@ -121,17 +123,18 @@ public class DefaultAccountAccessConsentServiceTest extends BaseConsentServiceTe
     }
 
     @Test
-    void revokeConsent() {
+    void deleteConsent() {
         final AccountAccessConsentEntity consentObj = getValidConsentEntity();
 
         final AccountAccessConsentEntity persistedConsent = consentService.createConsent(consentObj);
 
         final String consentId = persistedConsent.getId();
         final AccountAccessAuthoriseConsentArgs authoriseConsentArgs = getAuthoriseConsentArgs(consentId, TEST_RESOURCE_OWNER, consentObj.getApiClientId());
-        final AccountAccessConsentEntity authorisedConsent = consentService.authoriseConsent(authoriseConsentArgs);
+        consentService.authoriseConsent(authoriseConsentArgs);
 
-        final AccountAccessConsentEntity rejectedConsent = consentService.revokeConsent(consentId, consentObj.getApiClientId());
-        validateRejectedConsent(authorisedConsent, rejectedConsent);
+        consentService.deleteConsent(consentId, consentObj.getApiClientId());
+        final ConsentStoreException consentStoreException = Assertions.assertThrows(ConsentStoreException.class, () -> consentService.getConsent(consentId, consentObj.getApiClientId()));
+        assertThat(consentStoreException.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
     }
 
 }

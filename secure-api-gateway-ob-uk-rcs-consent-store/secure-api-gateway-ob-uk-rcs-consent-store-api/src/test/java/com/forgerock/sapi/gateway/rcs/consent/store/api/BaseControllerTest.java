@@ -115,8 +115,20 @@ public abstract class BaseControllerTest<T extends BaseConsent, C extends BaseCr
 
     @Test
     public void failToGetConsentDoesNotExist() {
-        final ResponseEntity<OBErrorResponse1> getResponse = makeGetRequest("unknown-consent", "client-123", OBErrorResponse1.class);
-        assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        final String consentId = "unknown-consent";
+        final ResponseEntity<OBErrorResponse1> getResponse = makeGetRequest(consentId, "client-123", OBErrorResponse1.class);
+        validateConsentNotFoundErrorResponse(consentId, getResponse);
+    }
+
+    protected static void validateConsentNotFoundErrorResponse(String consentId, ResponseEntity<OBErrorResponse1> errorResponse) {
+        assertThat(errorResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        final OBErrorResponse1 obErrorResponse1 = errorResponse.getBody();
+        assertThat(obErrorResponse1.getCode()).isEqualTo("OBRI.Consent.Store.Error");
+        assertThat(obErrorResponse1.getId()).isNotNull(); // TODO test with x-fapi-interaction-id
+        assertThat(obErrorResponse1.getErrors()).hasSize(1);
+        final OBError1 obError = obErrorResponse1.getErrors().get(0);
+        assertThat(obError.getErrorCode()).isEqualTo("NOT_FOUND");
+        assertThat(obError.getMessage()).isEqualTo("NOT_FOUND for consentId: " + consentId);
     }
 
     @Test
@@ -224,6 +236,12 @@ public abstract class BaseControllerTest<T extends BaseConsent, C extends BaseCr
     protected <T> ResponseEntity<T> rejectConsent(RejectConsentRequest rejectRequest, Class<T> responseClass) {
         return restTemplate.exchange(apiBaseUrl + "/" + rejectRequest.getConsentId() + "/reject", HttpMethod.POST,
                 new HttpEntity<>(rejectRequest, createConsentStoreApiRequiredHeaders(rejectRequest.getApiClientId())),
+                responseClass);
+    }
+
+    protected <T> ResponseEntity<T> deleteConsent(String consentId, String apiClientId, Class<T> responseClass) {
+        return restTemplate.exchange(apiBaseUrl + "/" + consentId, HttpMethod.DELETE,
+                new HttpEntity<>(createConsentStoreApiRequiredHeaders(apiClientId)),
                 responseClass);
     }
 }
