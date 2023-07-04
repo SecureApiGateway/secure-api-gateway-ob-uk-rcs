@@ -121,6 +121,13 @@ public class AccountAccessConsentStoreClientTest {
         assertThat(getResponse).usingRecursiveComparison().isEqualTo(consent);
     }
 
+    @Test
+    void testDeleteConsent() {
+        final CreateAccountAccessConsentRequest createConsentRequest = buildCreateConsentRequest();
+        final AccountAccessConsent consent = apiClient.createConsent(createConsentRequest);
+        apiClient.deleteConsent(consent.getId(), consent.getApiClientId());
+    }
+
     private static CreateAccountAccessConsentRequest buildCreateConsentRequest() {
         final CreateAccountAccessConsentRequest createConsentRequest = new CreateAccountAccessConsentRequest();
         createConsentRequest.setApiClientId("test-client-1");
@@ -130,9 +137,9 @@ public class AccountAccessConsentStoreClientTest {
         return createConsentRequest;
     }
 
-    private static AuthoriseAccountAccessConsentRequest buildAuthoriseConsentRequest(AccountAccessConsent consent, String resourceOwnerId, List<String> authoirsedAccounts) {
+    private static AuthoriseAccountAccessConsentRequest buildAuthoriseConsentRequest(AccountAccessConsent consent, String resourceOwnerId, List<String> authorisedAccounts) {
         final AuthoriseAccountAccessConsentRequest authRequest = new AuthoriseAccountAccessConsentRequest();
-        authRequest.setAuthorisedAccountIds(authoirsedAccounts);
+        authRequest.setAuthorisedAccountIds(authorisedAccounts);
         authRequest.setConsentId(consent.getId());
         authRequest.setResourceOwnerId(resourceOwnerId);
         authRequest.setApiClientId(consent.getApiClientId());

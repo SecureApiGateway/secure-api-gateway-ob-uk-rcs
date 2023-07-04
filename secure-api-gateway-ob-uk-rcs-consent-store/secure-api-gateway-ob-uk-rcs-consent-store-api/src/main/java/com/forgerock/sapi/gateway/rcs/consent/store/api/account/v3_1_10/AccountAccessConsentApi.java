@@ -122,4 +122,22 @@ public interface AccountAccessConsentApi {
                                                        @Valid
                                                        @RequestBody RejectConsentRequest request);
 
+
+    @ApiOperation(value = "Delete Account Access Consent")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Delete successful"),
+            @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
+            @ApiResponse(code = 403, message = "Forbidden", response = OBErrorResponse1.class),
+            @ApiResponse(code = 404, message = "Not found"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 406, message = "Not Acceptable"),
+            @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)
+    })
+    @RequestMapping(value = "/account-access-consents/{consentId}",
+            produces = {"application/json; charset=utf-8"},
+            method = RequestMethod.DELETE)
+    ResponseEntity<Void> deleteConsent(@PathVariable(value = "consentId") String consentId,
+                                       @RequestHeader(value = "x-api-client-id") String apiClientId);
+
+
 }

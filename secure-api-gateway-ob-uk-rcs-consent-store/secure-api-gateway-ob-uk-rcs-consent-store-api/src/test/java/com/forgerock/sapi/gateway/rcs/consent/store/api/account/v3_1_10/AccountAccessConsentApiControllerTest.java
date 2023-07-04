@@ -15,7 +15,13 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.api.account.v3_1_10;
 
+import static org.assertj.core.api.Assertions.*;
+
 import java.util.List;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRReadConsentConverter;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.RejectConsentRequest;
@@ -28,6 +34,7 @@ import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadConsent1;
 import uk.org.openbanking.datamodel.account.OBReadData1;
 import uk.org.openbanking.datamodel.account.OBRisk2;
+import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 
 public class AccountAccessConsentApiControllerTest extends BaseControllerTest<AccountAccessConsent, CreateAccountAccessConsentRequest, AuthoriseAccountAccessConsentRequest> {
 
@@ -75,5 +82,28 @@ public class AccountAccessConsentApiControllerTest extends BaseControllerTest<Ac
     @Override
     protected void validateRejectedConsent(AccountAccessConsent rejectedConsent, RejectConsentRequest rejectConsentRequest, AccountAccessConsent originalConsent) {
         AccountAccessConsentValidationHelpers.validateRejectedConsent(rejectedConsent, rejectConsentRequest, originalConsent);
+    }
+
+    @Test
+    void deleteConsent() {
+        final AccountAccessConsent consent = createConsent(TEST_API_CLIENT_1);
+        final ResponseEntity<Void> deleteConsentResponse = deleteConsent(consent.getId(), consent.getApiClientId(), Void.class);
+        assertThat(deleteConsentResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        validateConsentNotFoundErrorResponse(consent.getId(), makeGetRequest(consent.getId(), consent.getApiClientId(), OBErrorResponse1.class));
+    }
+
+    @Test
+    void failToDeleteConsentBelongingToDifferentApiClient() {
+        final AccountAccessConsent consent = createConsent(TEST_API_CLIENT_1);
+        final ResponseEntity<OBErrorResponse1> deleteConsentResponse = deleteConsent(consent.getId(), "different-client", OBErrorResponse1.class);
+        validateInvalidPermissionsErrorResponse(consent.getId(), deleteConsentResponse);
+    }
+
+    @Test
+    void failToDeleteConsentThatHasBeenDeleted() {
+        final AccountAccessConsent consent = createConsent(TEST_API_CLIENT_1);
+        deleteConsent(consent.getId(), consent.getApiClientId(), Void.class);
+        validateConsentNotFoundErrorResponse(consent.getId(), deleteConsent(consent.getId(), consent.getApiClientId(), OBErrorResponse1.class));
     }
 }

@@ -79,4 +79,11 @@ public class RestAccountAccessConsentStoreClient extends BaseRestConsentStoreCli
         final HttpEntity<RejectConsentRequest> requestEntity = new HttpEntity<>(rejectRequest, createHeaders(rejectRequest.getApiClientId()));
         return doRestCall(url, HttpMethod.POST, requestEntity, AccountAccessConsent.class);
     }
+
+    @Override
+    public void deleteConsent(String consentId, String apiClientId) throws ConsentStoreClientException {
+        final String url = consentServiceBaseUrl + "/" + consentId;
+        final HttpEntity<Object> requestEntity = new HttpEntity<>(createHeaders(apiClientId));
+        doRestCall(url, HttpMethod.DELETE, requestEntity, Void.class);
+    }
 }

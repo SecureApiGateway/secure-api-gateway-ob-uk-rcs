@@ -72,6 +72,13 @@ public class BaseConsentEntity<T> {
     private String resourceOwnerId;
 
     /**
+     * Flag to support soft deletes
+     *
+     * If a consent has been deleted then it should not be returned via the API
+     */
+    private boolean deleted;
+
+    /**
      * Time at which the Consent was persisted
      */
     @CreatedDate
@@ -148,6 +155,14 @@ public class BaseConsentEntity<T> {
         return entityVersion;
     }
 
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
     @Override
     public String toString() {
         return "BaseConsentEntity{" +
@@ -158,6 +173,7 @@ public class BaseConsentEntity<T> {
                 ", status='" + status + '\'' +
                 ", apiClientId='" + apiClientId + '\'' +
                 ", resourceOwnerId='" + resourceOwnerId + '\'' +
+                ", deleted=" + deleted +
                 ", creationDateTime=" + creationDateTime +
                 ", statusUpdatedDateTime=" + statusUpdatedDateTime +
                 '}';

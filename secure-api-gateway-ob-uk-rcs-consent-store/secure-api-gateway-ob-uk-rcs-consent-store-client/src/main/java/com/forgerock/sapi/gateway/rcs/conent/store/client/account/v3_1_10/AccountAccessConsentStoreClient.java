@@ -34,4 +34,6 @@ public interface AccountAccessConsentStoreClient {
 
     AccountAccessConsent rejectConsent(RejectConsentRequest rejectAccountAccessConsentRequest) throws ConsentStoreClientException;
 
+    void deleteConsent(String consentId, String apiClientId) throws ConsentStoreClientException;
+
 }
