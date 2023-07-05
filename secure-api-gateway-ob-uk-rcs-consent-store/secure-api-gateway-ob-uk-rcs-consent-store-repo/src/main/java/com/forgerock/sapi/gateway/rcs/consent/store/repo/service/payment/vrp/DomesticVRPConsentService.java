@@ -16,8 +16,8 @@
 package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.vrp;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.vrp.DomesticVRPConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentConsentService;
 
-public interface DomesticVRPConsentService extends PaymentConsentService<DomesticVRPConsentEntity, PaymentAuthoriseConsentArgs> {
+public interface DomesticVRPConsentService extends ConsentService<DomesticVRPConsentEntity, PaymentAuthoriseConsentArgs> {
 }

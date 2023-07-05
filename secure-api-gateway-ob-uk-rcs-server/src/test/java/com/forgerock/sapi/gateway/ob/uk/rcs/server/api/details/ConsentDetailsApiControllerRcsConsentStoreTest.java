@@ -307,6 +307,37 @@ public class ConsentDetailsApiControllerRcsConsentStoreTest {
         assertThat(Objects.requireNonNull(redirectionAction.getConsentJwt())).isNotEmpty();
     }
 
+    @Test
+    void shouldGetRedirectActionWhenConsentReAuthenticationNotSupported() throws ExceptionClient {
+        final IntentType intentType = IntentType.PAYMENT_DOMESTIC_CONSENT;
+        final String consentId = intentType.generateIntentId();
+        ConsentClientDetailsRequest consentDetailsRequest = aValidConsentDetailsRequest(consentId);
+        User user = aValidUser();
+        consentDetailsRequest.setUser(user);
+        given(userServiceClient.getUser(anyString())).willReturn(user);
+        given(consentStoreDetailsServiceRegistry.isIntentTypeSupported(eq(intentType))).willReturn(Boolean.TRUE);
+
+        final ArgumentCaptor<ConsentClientDetailsRequest> consentDetailsArgCaptor = ArgumentCaptor.forClass(ConsentClientDetailsRequest.class);
+        given(consentStoreDetailsServiceRegistry.getDetailsFromConsentStore(eq(intentType), consentDetailsArgCaptor.capture())).willThrow(
+                new ConsentStoreException(ConsentStoreException.ErrorType.CONSENT_REAUTHENTICATION_NOT_SUPPORTED, consentId));
+
+        String jwtRequest = JwtTestHelper.consentRequestJwt(
+                consentDetailsRequest.getClientId(),
+                consentDetailsRequest.getIntentId(),
+                consentDetailsRequest.getUser().getId()
+        );
+        HttpEntity<String> request = new HttpEntity<>(jwtRequest, headers());
+
+        ResponseEntity<RedirectionAction> response = restTemplate.postForEntity(consentDetailsUri, request, RedirectionAction.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+
+        final RedirectionAction redirectionAction = response.getBody();
+        assertThat(redirectionAction.getErrorMessage()).isEqualTo("The resource owner or authorization server denied the request.");
+        assertThat(redirectionAction.getRedirectUri()).isNotEmpty();
+        assertThat(redirectionAction.getConsentJwt()).isNotEmpty();
+    }
+
     private HttpHeaders headers() {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(singletonList(APPLICATION_JSON));

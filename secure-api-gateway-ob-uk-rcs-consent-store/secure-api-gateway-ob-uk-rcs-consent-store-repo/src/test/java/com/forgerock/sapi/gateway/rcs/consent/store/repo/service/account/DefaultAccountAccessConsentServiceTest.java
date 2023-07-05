@@ -39,6 +39,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreE
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException.ErrorType;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentServiceTest;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentStateModel;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
@@ -53,6 +54,11 @@ public class DefaultAccountAccessConsentServiceTest extends BaseConsentServiceTe
 
     @Autowired
     private DefaultAccountAccessConsentService accountAccessConsentService;
+
+    @Override
+    protected ConsentStateModel getConsentStateModel() {
+        return AccountAccessConsentStateModel.getInstance();
+    }
 
     @Override
     protected BaseConsentService<AccountAccessConsentEntity, AccountAccessAuthoriseConsentArgs> getConsentServiceToTest() {
@@ -82,21 +88,6 @@ public class DefaultAccountAccessConsentServiceTest extends BaseConsentServiceTe
     @Override
     protected AccountAccessAuthoriseConsentArgs getAuthoriseConsentArgs(String consentId, String resourceOwnerId, String apiClientId) {
         return new AccountAccessAuthoriseConsentArgs(consentId, apiClientId, resourceOwnerId, List.of("acc-1", "acc-2"));
-    }
-
-    @Override
-    protected String getNewConsentStatus() {
-        return OBExternalRequestStatus1Code.AWAITINGAUTHORISATION.toString();
-    }
-
-    @Override
-    protected String getAuthorisedConsentStatus() {
-        return OBExternalRequestStatus1Code.AUTHORISED.toString();
-    }
-
-    @Override
-    protected String getRejectedConsentStatus() {
-        return OBExternalRequestStatus1Code.REJECTED.toString();
     }
 
     @Override
@@ -137,4 +128,10 @@ public class DefaultAccountAccessConsentServiceTest extends BaseConsentServiceTe
         assertThat(consentStoreException.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
     }
 
+    @Test
+    void testConsentCanBeReAuthenticated() {
+        final AccountAccessConsentEntity consent = createValidConsentEntity("client-id");
+        consent.setStatus(getConsentStateModel().getAuthorisedConsentStatus());
+        assertThat(consentService.canTransitionToAuthorisedState(consent)).isTrue();
+    }
 }

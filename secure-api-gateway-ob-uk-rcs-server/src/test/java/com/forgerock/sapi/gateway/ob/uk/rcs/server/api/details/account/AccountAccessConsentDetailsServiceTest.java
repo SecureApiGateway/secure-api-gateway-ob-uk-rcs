@@ -43,6 +43,7 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.server.client.rs.AccountService;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.ApiProviderConfiguration;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.account.AccountAccessConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessConsentService;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessConsentStateModel;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 @ExtendWith(MockitoExtension.class)
@@ -85,15 +86,30 @@ class AccountAccessConsentDetailsServiceTest {
 
     @Test
     void testCreateAccountAccessDetails() throws ExceptionClient {
+        final String intentId = IntentType.ACCOUNT_ACCESS_CONSENT.generateIntentId();
+        final AccountAccessConsentEntity consentEntity = createValidConsentEntity(testApiClient.getId());
+        consentEntity.setId(intentId);
+
+        testCreateAccountAccessDetails(consentEntity);
+    }
+
+    @Test
+    void testCreateAccountAccessDetailsReAuthenticateConsent() throws ExceptionClient {
+        final String intentId = IntentType.ACCOUNT_ACCESS_CONSENT.generateIntentId();
+        final AccountAccessConsentEntity consentEntity = createValidConsentEntity(testApiClient.getId());
+        consentEntity.setId(intentId);
+        consentEntity.setStatus(AccountAccessConsentStateModel.getInstance().getAuthorisedConsentStatus());
+
+        testCreateAccountAccessDetails(consentEntity);
+    }
+
+    private void testCreateAccountAccessDetails(AccountAccessConsentEntity consentEntity) throws ExceptionClient {
+        final String intentId = consentEntity.getId();
         given(apiClientServiceClient.getApiClient(eq(testApiClient.getId()))).willReturn(testApiClient);
         given(accountService.getAccountsWithBalance(testUser.getId())).willReturn(testUserBankAccounts);
         given(apiProviderConfiguration.getName()).willReturn(TEST_API_PROVIDER);
-
-        final String intentId = IntentType.ACCOUNT_ACCESS_CONSENT.generateIntentId();
-
-        final AccountAccessConsentEntity consentEntity = createValidConsentEntity(testApiClient.getId());
-        consentEntity.setId(intentId);
         given(accountAccessConsentService.getConsent(intentId, testApiClient.getId())).willReturn(consentEntity);
+        given(accountAccessConsentService.canTransitionToAuthorisedState(eq(consentEntity))).willReturn(Boolean.TRUE);
 
         final ConsentDetails consentDetails = consentDetailsService.getDetailsFromConsentStore(
                 new ConsentClientDetailsRequest(intentId, null, testUser, testApiClient.getId()));

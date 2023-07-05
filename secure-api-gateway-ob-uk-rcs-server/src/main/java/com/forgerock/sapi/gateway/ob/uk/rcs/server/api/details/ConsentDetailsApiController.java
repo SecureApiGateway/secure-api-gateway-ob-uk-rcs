@@ -171,17 +171,22 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
         final ErrorType errorType;
         final String errorMessage;
         switch (cse.getErrorType()) {
-            case NOT_FOUND:
+            case NOT_FOUND -> {
                 errorType = ErrorType.NOT_FOUND;
                 errorMessage = "Consent Not Found";
-                break;
-            case INVALID_PERMISSIONS:
+            }
+            case INVALID_PERMISSIONS -> {
                 errorType = ErrorType.ACCESS_DENIED;
                 errorMessage = "Access Denied";
-                break;
-            default:
+            }
+            case CONSENT_REAUTHENTICATION_NOT_SUPPORTED -> {
+                errorType = ErrorType.ACCESS_DENIED;
+                errorMessage = "Consent Re-Authentication not supported for this type of consent";
+            }
+            default -> {
                 errorType = ErrorType.INTERNAL_SERVER_ERROR;
                 errorMessage = "Server Error";
+            }
         }
         return new InvalidConsentException(consentRequestJws, errorType, OBRIErrorType.REQUEST_BINDING_FAILED,
                 errorMessage, apiClientId, intentId);

@@ -27,28 +27,19 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.BasePaym
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException.ErrorType;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentServiceTest;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentStateModel;
 
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
 
 public abstract class BasePaymentConsentServiceTest<T extends BasePaymentConsentEntity<?>> extends BaseConsentServiceTest<T, PaymentAuthoriseConsentArgs> {
 
+    @Override
+    protected ConsentStateModel getConsentStateModel() {
+        return PaymentConsentStateModel.getInstance();
+    }
+
     protected PaymentConsentService<T, PaymentAuthoriseConsentArgs> getPaymentConsentService() {
         return (PaymentConsentService<T, PaymentAuthoriseConsentArgs>) getConsentServiceToTest();
-    }
-
-    @Override
-    protected String getNewConsentStatus() {
-        return StatusEnum.AWAITINGAUTHORISATION.toString();
-    }
-
-    @Override
-    protected String getAuthorisedConsentStatus() {
-        return StatusEnum.AUTHORISED.toString();
-    }
-
-    @Override
-    protected String getRejectedConsentStatus() {
-        return StatusEnum.REJECTED.toString();
     }
 
     @Override
@@ -107,6 +98,13 @@ public abstract class BasePaymentConsentServiceTest<T extends BasePaymentConsent
         final ConstraintViolationException ex = Assertions.assertThrows(ConstraintViolationException.class,
                 () -> getPaymentConsentService().authoriseConsent(new PaymentAuthoriseConsentArgs(persistedConsent.getId(), persistedConsent.getApiClientId(), "user-1234", null)));
         assertThat(ex.getMessage()).isEqualTo("authoriseConsent.arg0.authorisedDebtorAccountId: must not be null");
+    }
+
+    @Test
+    void testConsentCannotBeReAuthenticated() {
+        final T consent = getValidConsentEntity();
+        consent.setStatus(getConsentStateModel().getAuthorisedConsentStatus());
+        assertThat(consentService.canTransitionToAuthorisedState(consent)).isFalse();
     }
 
     @Override

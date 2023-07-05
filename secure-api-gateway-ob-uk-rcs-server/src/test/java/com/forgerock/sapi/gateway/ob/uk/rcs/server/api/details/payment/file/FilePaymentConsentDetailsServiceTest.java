@@ -67,6 +67,7 @@ class FilePaymentConsentDetailsServiceTest extends BasePaymentConsentDetailsServ
         final FilePaymentConsentEntity consentEntity = createValidConsentEntity(testApiClient.getId());
         consentEntity.setId(intentId);
         given(filePaymentConsentService.getConsent(intentId, testApiClient.getId())).willReturn(consentEntity);
+        mockConsentServiceCanAuthorise(filePaymentConsentService);
 
         final ConsentDetails consentDetails = consentDetailsService.getDetailsFromConsentStore(
                 new ConsentClientDetailsRequest(intentId, null, testUser, testApiClient.getId()));
@@ -105,6 +106,7 @@ class FilePaymentConsentDetailsServiceTest extends BasePaymentConsentDetailsServ
         consentEntity.getRequestObj().getData().getInitiation().setDebtorAccount(FRAccountIdentifierConverter.toFRAccountIdentifier(debtorAccount));
         consentEntity.setId(intentId);
         given(filePaymentConsentService.getConsent(intentId, testApiClient.getId())).willReturn(consentEntity);
+        mockConsentServiceCanAuthorise(filePaymentConsentService);
 
         final ConsentDetails consentDetails = consentDetailsService.getDetailsFromConsentStore(
                 new ConsentClientDetailsRequest(intentId, Mockito.mock(SignedJWT.class), testUser, testApiClient.getId()));

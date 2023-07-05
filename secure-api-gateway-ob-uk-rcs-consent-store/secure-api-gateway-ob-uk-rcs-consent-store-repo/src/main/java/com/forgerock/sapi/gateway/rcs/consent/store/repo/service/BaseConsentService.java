@@ -55,7 +55,7 @@ public abstract class BaseConsentService<T extends BaseConsentEntity<?>, A exten
      */
     private final String rejectedConsentStatus;
     /**
-     * Status when the Resource Owner revokes a Authorisation previously given for a Consent
+     * Status when the Resource Owner revokes an Authorisation previously given for a Consent
      */
     private final String revokedConsentStatus;
 
@@ -115,11 +115,15 @@ public abstract class BaseConsentService<T extends BaseConsentEntity<?>, A exten
     protected abstract void addConsentSpecificAuthorisationData(T consent, A authoriseConsentArgs);
 
     protected void validateStateTransition(T consent, String targetStatus) {
-        final List<String> validTransitions = validStateTransitions.get(consent.getStatus());
-        if (validTransitions == null || !validTransitions.contains(targetStatus)) {
+        if (!isTransitionAllowed(consent, targetStatus)) {
             throw new ConsentStoreException(ErrorType.INVALID_STATE_TRANSITION, consent.getId(),
                     "cannot transition from consentStatus: " + consent.getStatus() + " to status: " + targetStatus);
         }
+    }
+
+    private boolean isTransitionAllowed(T consent, String targetStatus) {
+        final List<String> validTransitions = validStateTransitions.get(consent.getStatus());
+        return validTransitions != null && validTransitions.contains(targetStatus);
     }
 
     @Override
@@ -138,5 +142,10 @@ public abstract class BaseConsentService<T extends BaseConsentEntity<?>, A exten
         consent.setStatus(revokedConsentStatus);
         consent.setDeleted(true);
         repo.save(consent);
+    }
+
+    @Override
+    public boolean canTransitionToAuthorisedState(T consent) {
+        return isTransitionAllowed(consent, authorisedConsentStatus);
     }
 }

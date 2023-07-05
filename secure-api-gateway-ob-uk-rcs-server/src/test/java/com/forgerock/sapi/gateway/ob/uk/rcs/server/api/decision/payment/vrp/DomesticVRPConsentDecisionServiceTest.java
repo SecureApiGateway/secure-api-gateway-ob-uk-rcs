@@ -23,8 +23,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.payment.BasePaymentConsentDecisionService;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.payment.BasePaymentConsentDecisionServiceTest;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.vrp.DomesticVRPConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.vrp.DomesticVRPConsentService;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,7 +38,7 @@ public class DomesticVRPConsentDecisionServiceTest extends BasePaymentConsentDec
 
 
     @Override
-    protected PaymentConsentService<DomesticVRPConsentEntity, PaymentAuthoriseConsentArgs> getPaymentConsentService() {
+    protected ConsentService<DomesticVRPConsentEntity, PaymentAuthoriseConsentArgs> getPaymentConsentService() {
         return domesticPaymentConsentService;
     }
 

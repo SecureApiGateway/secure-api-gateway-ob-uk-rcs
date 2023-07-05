@@ -17,10 +17,12 @@ package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.payment.domestic
 
 import static com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DefaultDomesticPaymentConsentServiceTest.createValidConsentEntity;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 import java.util.List;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -39,6 +41,8 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ExceptionCli
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.ConsentClientDetailsRequest;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.payment.BasePaymentConsentDetailsServiceTest;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.domestic.DomesticPaymentConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException.ErrorType;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DomesticPaymentConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import com.nimbusds.jwt.SignedJWT;
@@ -65,6 +69,7 @@ class DomesticPaymentConsentDetailsServiceTest extends BasePaymentConsentDetails
         final DomesticPaymentConsentEntity consentEntity = createValidConsentEntity(testApiClient.getId());
         consentEntity.setId(intentId);
         given(domesticPaymentConsentService.getConsent(intentId, testApiClient.getId())).willReturn(consentEntity);
+        mockConsentServiceCanAuthorise(domesticPaymentConsentService);
 
         final ConsentDetails consentDetails = consentDetailsService.getDetailsFromConsentStore(
                 new ConsentClientDetailsRequest(intentId, null, testUser, testApiClient.getId()));
@@ -101,6 +106,7 @@ class DomesticPaymentConsentDetailsServiceTest extends BasePaymentConsentDetails
         consentEntity.getRequestObj().getData().getInitiation().setDebtorAccount(FRAccountIdentifierConverter.toFRAccountIdentifier(debtorAccount));
         consentEntity.setId(intentId);
         given(domesticPaymentConsentService.getConsent(intentId, testApiClient.getId())).willReturn(consentEntity);
+        mockConsentServiceCanAuthorise(domesticPaymentConsentService);
 
         final ConsentDetails consentDetails = consentDetailsService.getDetailsFromConsentStore(
                 new ConsentClientDetailsRequest(intentId, Mockito.mock(SignedJWT.class), testUser, testApiClient.getId()));
@@ -124,6 +130,18 @@ class DomesticPaymentConsentDetailsServiceTest extends BasePaymentConsentDetails
         assertThat(domesticPaymentConsentDetails.getUserId()).isEqualTo(testUser.getId());
 
         assertThat(domesticPaymentConsentDetails.getDebtorAccount()).isNotNull();
+    }
+
+    @Test
+    void testConsentReAuthenticationNotSupported() {
+        final String intentId = IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId();
+        given(domesticPaymentConsentService.getConsent(intentId, testApiClient.getId())).willReturn(createValidConsentEntity(testApiClient.getId()));
+
+        given(domesticPaymentConsentService.canTransitionToAuthorisedState(any())).willReturn(Boolean.FALSE);
+
+        final ConsentStoreException consentStoreException = Assertions.assertThrows(ConsentStoreException.class,
+                () -> consentDetailsService.getDetailsFromConsentStore(new ConsentClientDetailsRequest(intentId, Mockito.mock(SignedJWT.class), testUser, testApiClient.getId())));
+        assertThat(consentStoreException.getErrorType()).isEqualTo(ErrorType.CONSENT_REAUTHENTICATION_NOT_SUPPORTED);
     }
 
 }

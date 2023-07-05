@@ -27,7 +27,6 @@ import com.forgerock.sapi.gateway.rcs.conent.store.client.ConsentStoreClientConf
 import com.forgerock.sapi.gateway.rcs.conent.store.client.ConsentStoreClientException;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.AuthorisePaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.ConsumePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.vrp.v3_1_10.CreateDomesticVRPConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.vrp.v3_1_10.DomesticVRPConsent;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
@@ -76,13 +75,6 @@ public class RestDomesticVRPConsentStoreClient extends BaseRestConsentStoreClien
     public DomesticVRPConsent rejectConsent(RejectConsentRequest rejectRequest) throws ConsentStoreClientException {
         final String url = consentServiceBaseUrl + "/" + rejectRequest.getConsentId() + "/reject";
         final HttpEntity<RejectConsentRequest> requestEntity = new HttpEntity<>(rejectRequest, createHeaders(rejectRequest.getApiClientId()));
-        return doRestCall(url, HttpMethod.POST, requestEntity, DomesticVRPConsent.class);
-    }
-
-    @Override
-    public DomesticVRPConsent consumeConsent(ConsumePaymentConsentRequest consumeRequest) throws ConsentStoreClientException {
-        final String url = consentServiceBaseUrl + "/" + consumeRequest.getConsentId() + "/consume";
-        final HttpEntity<ConsumePaymentConsentRequest> requestEntity = new HttpEntity<>(consumeRequest, createHeaders(consumeRequest.getApiClientId()));
         return doRestCall(url, HttpMethod.POST, requestEntity, DomesticVRPConsent.class);
     }
 

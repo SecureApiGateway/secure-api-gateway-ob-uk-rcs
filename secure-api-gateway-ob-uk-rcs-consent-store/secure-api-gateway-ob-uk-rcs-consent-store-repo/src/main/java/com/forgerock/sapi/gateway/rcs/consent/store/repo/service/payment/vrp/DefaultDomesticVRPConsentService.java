@@ -15,18 +15,36 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.vrp;
 
+import java.util.Optional;
+
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.vrp.DomesticVRPConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.payment.PaymentConsentRepository;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.BasePaymentConsentService;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 @Service
-public class DefaultDomesticVRPConsentService extends BasePaymentConsentService<DomesticVRPConsentEntity, PaymentAuthoriseConsentArgs> implements DomesticVRPConsentService {
+public class DefaultDomesticVRPConsentService extends BaseConsentService<DomesticVRPConsentEntity, PaymentAuthoriseConsentArgs> implements DomesticVRPConsentService {
 
-    protected DefaultDomesticVRPConsentService(PaymentConsentRepository<DomesticVRPConsentEntity> repo) {
-        super(repo, IntentType.DOMESTIC_VRP_PAYMENT_CONSENT::generateIntentId);
+    public DefaultDomesticVRPConsentService(PaymentConsentRepository<DomesticVRPConsentEntity> repo) {
+        super(repo, IntentType.DOMESTIC_VRP_PAYMENT_CONSENT::generateIntentId, VRPConsentStateModel.getInstance());
+    }
+
+    private PaymentConsentRepository<DomesticVRPConsentEntity> getRepo() {
+        return (PaymentConsentRepository<DomesticVRPConsentEntity>) repo;
+    }
+
+    public DomesticVRPConsentEntity createConsent(DomesticVRPConsentEntity consent) {
+        final Optional<DomesticVRPConsentEntity> consentMatchingIdempotencyData = getRepo().findByIdempotencyData(consent.getApiClientId(), consent.getIdempotencyKey(), DateTime.now());
+        // TODO ifPresent then test that requests match
+        return consentMatchingIdempotencyData.orElseGet(() -> super.createConsent(consent));
+    }
+
+    @Override
+    protected void addConsentSpecificAuthorisationData(DomesticVRPConsentEntity consent, PaymentAuthoriseConsentArgs authoriseConsentArgs) {
+        consent.setAuthorisedDebtorAccountId(authoriseConsentArgs.getAuthorisedDebtorAccountId());
     }
 }

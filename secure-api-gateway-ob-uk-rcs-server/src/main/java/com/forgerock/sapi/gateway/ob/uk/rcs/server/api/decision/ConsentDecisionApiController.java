@@ -191,7 +191,7 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
             throw new InvalidConsentException(consentDecisionDeserialized.getConsentJwt(), INTERNAL_SERVER_ERROR,
                     OBRIErrorType.RCS_CONSENT_RESPONSE_FAILURE, errorMessage, null, null);
         } catch (ConsentStoreException cse) {
-            log.error("Consent Store Exception raise when processing decision", cse);
+            log.error("Consent Store Exception raised when processing decision", cse);
             throw new InvalidConsentException(consentDecisionDeserialized.getConsentJwt(), INTERNAL_SERVER_ERROR,
                     OBRIErrorType.RCS_CONSENT_RESPONSE_FAILURE, "Internal Server Error", null, null);
         }

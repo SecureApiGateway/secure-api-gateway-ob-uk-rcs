@@ -17,6 +17,7 @@ package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.payment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 
@@ -28,7 +29,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.BDDMockito.BDDMyOngoingStubbing;
 import org.mockito.Mock;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccountWithBalance;
@@ -42,6 +42,7 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.User;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services.ApiClientServiceClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.client.rs.AccountService;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.ApiProviderConfiguration;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentService;
 
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationDebtorAccount;
 
@@ -109,6 +110,10 @@ public class BasePaymentConsentDetailsServiceTest {
 
         final IllegalStateException ex = assertThrows(IllegalStateException.class, () -> BasePaymentConsentDetailsService.computeTotalChargeAmount(charges));
         assertThat(ex.getMessage()).isEqualTo("Charges contain more than 1 currency, all charges must be in the same currency");
+    }
+
+    protected void mockConsentServiceCanAuthorise(ConsentService<?, ?> consentService) {
+        given(consentService.canTransitionToAuthorisedState(any())).willReturn(Boolean.TRUE);
     }
 
     protected void mockApiProviderConfigurationGetName() {
