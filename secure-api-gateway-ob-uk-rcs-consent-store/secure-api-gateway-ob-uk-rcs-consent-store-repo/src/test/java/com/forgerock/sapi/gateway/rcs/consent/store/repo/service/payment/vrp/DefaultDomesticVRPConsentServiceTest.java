@@ -33,6 +33,8 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRChargeBearerType;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVRPConsentConverters;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.vrp.DomesticVRPConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException.ErrorType;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentServiceTest;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentStateModel;
@@ -113,6 +115,21 @@ public class DefaultDomesticVRPConsentServiceTest extends BaseConsentServiceTest
         final DomesticVRPConsentEntity consent = createValidConsentEntity("client-id");
         consent.setStatus(getConsentStateModel().getAuthorisedConsentStatus());
         Assertions.assertThat(consentService.canTransitionToAuthorisedState(consent)).isTrue();
+    }
+
+    @Test
+    void deleteConsent() {
+        final DomesticVRPConsentEntity consentObj = getValidConsentEntity();
+
+        final DomesticVRPConsentEntity persistedConsent = consentService.createConsent(consentObj);
+
+        final String consentId = persistedConsent.getId();
+        final PaymentAuthoriseConsentArgs authoriseConsentArgs = getAuthoriseConsentArgs(consentId, TEST_RESOURCE_OWNER, consentObj.getApiClientId());
+        consentService.authoriseConsent(authoriseConsentArgs);
+
+        consentService.deleteConsent(consentId, consentObj.getApiClientId());
+        final ConsentStoreException consentStoreException = org.junit.jupiter.api.Assertions.assertThrows(ConsentStoreException.class, () -> consentService.getConsent(consentId, consentObj.getApiClientId()));
+        Assertions.assertThat(consentStoreException.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
     }
 
 }

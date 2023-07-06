@@ -78,4 +78,11 @@ public class RestDomesticVRPConsentStoreClient extends BaseRestConsentStoreClien
         return doRestCall(url, HttpMethod.POST, requestEntity, DomesticVRPConsent.class);
     }
 
+    @Override
+    public void deleteConsent(String consentId, String apiClientId) throws ConsentStoreClientException {
+        final String url = consentServiceBaseUrl + "/" + consentId;
+        final HttpEntity<Object> requestEntity = new HttpEntity<>(createHeaders(apiClientId));
+        doRestCall(url, HttpMethod.DELETE, requestEntity, Void.class);
+    }
+
 }

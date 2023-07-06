@@ -34,4 +34,6 @@ public interface DomesticVRPConsentStoreClient {
 
     DomesticVRPConsent rejectConsent(RejectConsentRequest rejectDomesticVRPConsentRequest) throws ConsentStoreClientException;
 
+    void deleteConsent(String consentId, String apiClientId) throws ConsentStoreClientException;
+
 }
