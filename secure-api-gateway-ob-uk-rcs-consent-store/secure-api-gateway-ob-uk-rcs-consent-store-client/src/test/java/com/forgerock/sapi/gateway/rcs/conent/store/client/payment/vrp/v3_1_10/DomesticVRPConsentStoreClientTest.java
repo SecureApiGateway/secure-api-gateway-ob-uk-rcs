@@ -122,6 +122,13 @@ class DomesticVRPConsentStoreClientTest {
         assertThat(getResponse).usingRecursiveComparison().isEqualTo(consent);
     }
 
+    @Test
+    void testDeleteConsent() {
+        final CreateDomesticVRPConsentRequest createConsentRequest = buildCreateConsentRequest();
+        final DomesticVRPConsent consent = apiClient.createConsent(createConsentRequest);
+        apiClient.deleteConsent(consent.getId(), consent.getApiClientId());
+    }
+
     private static CreateDomesticVRPConsentRequest buildCreateConsentRequest() {
         final CreateDomesticVRPConsentRequest createConsentRequest = new CreateDomesticVRPConsentRequest();
         createConsentRequest.setIdempotencyKey(UUID.randomUUID().toString());
