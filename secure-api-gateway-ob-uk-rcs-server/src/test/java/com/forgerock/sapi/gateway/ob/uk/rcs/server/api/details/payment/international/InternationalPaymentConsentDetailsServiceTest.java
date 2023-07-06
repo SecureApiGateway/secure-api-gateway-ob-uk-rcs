@@ -65,6 +65,7 @@ class InternationalPaymentConsentDetailsServiceTest extends BasePaymentConsentDe
         final InternationalPaymentConsentEntity consentEntity = createValidConsentEntity(testApiClient.getId());
         consentEntity.setId(intentId);
         given(internationalPaymentConsentService.getConsent(intentId, testApiClient.getId())).willReturn(consentEntity);
+        mockConsentServiceCanAuthorise(internationalPaymentConsentService);
 
         final ConsentDetails consentDetails = consentDetailsService.getDetailsFromConsentStore(
                 new ConsentClientDetailsRequest(intentId, null, testUser, testApiClient.getId()));
@@ -103,6 +104,7 @@ class InternationalPaymentConsentDetailsServiceTest extends BasePaymentConsentDe
         consentEntity.getRequestObj().getData().getInitiation().setDebtorAccount(FRAccountIdentifierConverter.toFRAccountIdentifier(debtorAccount));
         consentEntity.setId(intentId);
         given(internationalPaymentConsentService.getConsent(intentId, testApiClient.getId())).willReturn(consentEntity);
+        mockConsentServiceCanAuthorise(internationalPaymentConsentService);
 
         final ConsentDetails consentDetails = consentDetailsService.getDetailsFromConsentStore(
                 new ConsentClientDetailsRequest(intentId, Mockito.mock(SignedJWT.class), testUser, testApiClient.getId()));

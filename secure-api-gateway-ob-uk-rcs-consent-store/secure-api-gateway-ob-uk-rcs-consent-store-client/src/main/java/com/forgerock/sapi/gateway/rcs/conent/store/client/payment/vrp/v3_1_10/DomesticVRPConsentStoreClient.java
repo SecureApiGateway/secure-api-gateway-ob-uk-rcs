@@ -18,7 +18,6 @@ package com.forgerock.sapi.gateway.rcs.conent.store.client.payment.vrp.v3_1_10;
 import com.forgerock.sapi.gateway.rcs.conent.store.client.ConsentStoreClientException;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.AuthorisePaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.ConsumePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.vrp.v3_1_10.CreateDomesticVRPConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.vrp.v3_1_10.DomesticVRPConsent;
 
@@ -34,7 +33,5 @@ public interface DomesticVRPConsentStoreClient {
     DomesticVRPConsent authoriseConsent(AuthorisePaymentConsentRequest authorisePaymentConsentRequest) throws ConsentStoreClientException;
 
     DomesticVRPConsent rejectConsent(RejectConsentRequest rejectDomesticVRPConsentRequest) throws ConsentStoreClientException;
-
-    DomesticVRPConsent consumeConsent(ConsumePaymentConsentRequest consumePaymentConsentRequest) throws ConsentStoreClientException;
 
 }

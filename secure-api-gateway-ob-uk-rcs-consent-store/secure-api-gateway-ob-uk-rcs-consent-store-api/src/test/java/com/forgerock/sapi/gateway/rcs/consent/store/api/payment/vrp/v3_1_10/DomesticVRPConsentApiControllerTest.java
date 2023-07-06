@@ -18,15 +18,20 @@ package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.vrp.v3_1_10;
 import java.util.UUID;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVRPConsentConverters;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.RejectConsentRequest;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.AuthorisePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.vrp.v3_1_10.CreateDomesticVRPConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.vrp.v3_1_10.DomesticVRPConsent;
-import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.BasePaymentConsentApiControllerTest;
+import com.forgerock.sapi.gateway.rcs.consent.store.api.BaseControllerTest;
+import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.PaymentConsentValidationHelpers;
 
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
 import uk.org.openbanking.testsupport.vrp.OBDomesticVrpConsentRequestTestDataFactory;
 
 
-public class DomesticVRPConsentApiControllerTest extends BasePaymentConsentApiControllerTest<DomesticVRPConsent, CreateDomesticVRPConsentRequest> {
+public class DomesticVRPConsentApiControllerTest extends BaseControllerTest<DomesticVRPConsent, CreateDomesticVRPConsentRequest, AuthorisePaymentConsentRequest> {
+
+    private static final String TEST_DEBTOR_ACC_ID = "acc-435345";
 
     public DomesticVRPConsentApiControllerTest() {
         super(DomesticVRPConsent.class);
@@ -40,6 +45,31 @@ public class DomesticVRPConsentApiControllerTest extends BasePaymentConsentApiCo
     @Override
     protected CreateDomesticVRPConsentRequest buildCreateConsentRequest(String apiClientId) {
         return buildCreateDomesticVRPConsentRequest(apiClientId, UUID.randomUUID().toString());
+    }
+
+    @Override
+    protected AuthorisePaymentConsentRequest buildAuthoriseConsentRequest(DomesticVRPConsent consent, String resourceOwnerId) {
+        final AuthorisePaymentConsentRequest authoriseReq = new AuthorisePaymentConsentRequest();
+        authoriseReq.setConsentId(consent.getId());
+        authoriseReq.setApiClientId(consent.getApiClientId());
+        authoriseReq.setResourceOwnerId(resourceOwnerId);
+        authoriseReq.setAuthorisedDebtorAccountId(TEST_DEBTOR_ACC_ID);
+        return authoriseReq;
+    }
+
+    @Override
+    protected void validateCreateConsentAgainstCreateRequest(DomesticVRPConsent consent, CreateDomesticVRPConsentRequest createConsentRequest) {
+        PaymentConsentValidationHelpers.validateCreateConsentAgainstCreateRequest(consent, createConsentRequest);
+    }
+
+    @Override
+    protected void validateAuthorisedConsent(DomesticVRPConsent authorisedConsent, AuthorisePaymentConsentRequest authoriseConsentReq, DomesticVRPConsent originalConsent) {
+        PaymentConsentValidationHelpers.validateAuthorisedConsent(authorisedConsent, authoriseConsentReq, originalConsent);
+    }
+
+    @Override
+    protected void validateRejectedConsent(DomesticVRPConsent rejectedConsent, RejectConsentRequest rejectConsentRequest, DomesticVRPConsent originalConsent) {
+        PaymentConsentValidationHelpers.validateRejectedConsent(rejectedConsent, rejectConsentRequest, originalConsent);
     }
 
     private static CreateDomesticVRPConsentRequest buildCreateDomesticVRPConsentRequest(String apiClientId, String idempotencyKey) {

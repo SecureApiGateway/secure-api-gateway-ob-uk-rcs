@@ -66,6 +66,7 @@ class DomesticScheduledPaymentConsentDetailsServiceTest extends BasePaymentConse
         final DomesticScheduledPaymentConsentEntity consentEntity = createValidConsentEntity(testApiClient.getId());
         consentEntity.setId(intentId);
         given(domesticScheduledPaymentConsentService.getConsent(intentId, testApiClient.getId())).willReturn(consentEntity);
+        mockConsentServiceCanAuthorise(domesticScheduledPaymentConsentService);
 
         final ConsentDetails consentDetails = consentDetailsService.getDetailsFromConsentStore(
                 new ConsentClientDetailsRequest(intentId, null, testUser, testApiClient.getId()));
@@ -104,6 +105,7 @@ class DomesticScheduledPaymentConsentDetailsServiceTest extends BasePaymentConse
         consentEntity.getRequestObj().getData().getInitiation().setDebtorAccount(FRAccountIdentifierConverter.toFRAccountIdentifier(debtorAccount));
         consentEntity.setId(intentId);
         given(domesticScheduledPaymentConsentService.getConsent(intentId, testApiClient.getId())).willReturn(consentEntity);
+        mockConsentServiceCanAuthorise(domesticScheduledPaymentConsentService);
 
         final ConsentDetails consentDetails = consentDetailsService.getDetailsFromConsentStore(
                 new ConsentClientDetailsRequest(intentId, Mockito.mock(SignedJWT.class), testUser, testApiClient.getId()));

@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.AuthorisePaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.ConsumePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.vrp.v3_1_10.CreateDomesticVRPConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.vrp.v3_1_10.DomesticVRPConsent;
 
@@ -121,27 +120,5 @@ public interface DomesticVRPConsentApi {
                                                      @ApiParam(value = "Reject Consent Request", required = true)
                                                      @Valid
                                                      @RequestBody RejectConsentRequest request);
-
-
-
-    @ApiOperation(value = "Consume Domestic VRP Consent")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "DomesticVRPConsent object representing the consent created",
-                         response = DomesticVRPConsent.class),
-            @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
-            @ApiResponse(code = 403, message = "Forbidden", response = OBErrorResponse1.class),
-            @ApiResponse(code = 404, message = "Not found"),
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 406, message = "Not Acceptable"),
-            @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)
-    })
-    @RequestMapping(value = "/domestic-vrp-consents/{consentId}/consume",
-            consumes = {"application/json; charset=utf-8"},
-            produces = {"application/json; charset=utf-8"},
-            method = RequestMethod.POST)
-    ResponseEntity<DomesticVRPConsent> consumeConsent(@PathVariable(value = "consentId") String consentId,
-                                                      @ApiParam(value = "Consume Consent Request", required = true)
-                                                      @Valid
-                                                      @RequestBody ConsumePaymentConsentRequest request);
 
 }

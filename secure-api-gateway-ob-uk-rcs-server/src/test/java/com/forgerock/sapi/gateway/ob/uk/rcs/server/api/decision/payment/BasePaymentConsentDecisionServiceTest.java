@@ -30,8 +30,8 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.Constants;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.BasePaymentConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException.ErrorType;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 public abstract class BasePaymentConsentDecisionServiceTest<T extends BasePaymentConsentEntity> {
@@ -48,7 +48,7 @@ public abstract class BasePaymentConsentDecisionServiceTest<T extends BasePaymen
         return consentDecision;
     }
 
-    protected abstract PaymentConsentService<T, PaymentAuthoriseConsentArgs> getPaymentConsentService();
+    protected abstract ConsentService<T, PaymentAuthoriseConsentArgs> getPaymentConsentService();
 
     protected abstract BasePaymentConsentDecisionService<T> getConsentDecisionService();
 
@@ -59,7 +59,7 @@ public abstract class BasePaymentConsentDecisionServiceTest<T extends BasePaymen
         final ConsentDecisionDeserialized consentDecision = BasePaymentConsentDecisionServiceTest.createAuthorisePaymentConsentDecision(TEST_AUTHORISED_DEBTOR_ACC_ID);
         getConsentDecisionService().authoriseConsent(intentId, TEST_API_CLIENT_ID, TEST_RESOURCE_OWNER_ID, consentDecision);
 
-        final PaymentConsentService<T, PaymentAuthoriseConsentArgs> paymentConsentService = getPaymentConsentService();
+        final ConsentService<T, PaymentAuthoriseConsentArgs> paymentConsentService = getPaymentConsentService();
         verify(paymentConsentService).authoriseConsent(refEq(new PaymentAuthoriseConsentArgs(intentId, TEST_API_CLIENT_ID, TEST_RESOURCE_OWNER_ID, TEST_AUTHORISED_DEBTOR_ACC_ID)));
         Mockito.verifyNoMoreInteractions(paymentConsentService);
     }

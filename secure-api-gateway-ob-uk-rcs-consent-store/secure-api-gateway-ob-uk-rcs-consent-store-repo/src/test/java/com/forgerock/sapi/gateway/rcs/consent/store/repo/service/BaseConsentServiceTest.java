@@ -35,6 +35,7 @@ public abstract class BaseConsentServiceTest<T extends BaseConsentEntity<?>, A e
 
     protected BaseConsentService<T, A> consentService;
 
+
     @BeforeEach
     public void beforeEach() {
         consentService = getConsentServiceToTest();
@@ -42,15 +43,11 @@ public abstract class BaseConsentServiceTest<T extends BaseConsentEntity<?>, A e
 
     protected abstract BaseConsentService<T, A> getConsentServiceToTest();
 
+    protected abstract ConsentStateModel getConsentStateModel();
+
     protected abstract T getValidConsentEntity();
 
     protected abstract A getAuthoriseConsentArgs(String consentId, String resourceOwnerId, String apiClientId);
-
-    protected abstract String getNewConsentStatus();
-
-    protected abstract String getAuthorisedConsentStatus();
-
-    protected abstract String getRejectedConsentStatus();
 
     protected abstract void validateConsentSpecificFields(T expected, T actual);
 
@@ -72,7 +69,7 @@ public abstract class BaseConsentServiceTest<T extends BaseConsentEntity<?>, A e
         assertThat(persistedConsent.getCreationDateTime()).isNotNull().isBetween(timeBeforePersist, DateTime.now());
         assertThat(persistedConsent.getStatusUpdatedDateTime()).isEqualTo(persistedConsent.getCreationDateTime());
 
-        assertThat(persistedConsent.getStatus()).isEqualTo(getNewConsentStatus());
+        assertThat(persistedConsent.getStatus()).isEqualTo(getConsentStateModel().getInitialConsentStatus());
 
         assertThat(persistedConsent.getRequestVersion()).isEqualTo(consentObj.getRequestVersion());
         assertThat(persistedConsent.getApiClientId()).isEqualTo(consentObj.getApiClientId());
@@ -119,7 +116,7 @@ public abstract class BaseConsentServiceTest<T extends BaseConsentEntity<?>, A e
         final A authoriseConsentArgs = getAuthoriseConsentArgs(consentToAuthorise.getId(), TEST_RESOURCE_OWNER, consentToAuthorise.getApiClientId());
         final T authorisedConsent = consentService.authoriseConsent(authoriseConsentArgs);
 
-        assertThat(authorisedConsent.getStatus()).isEqualTo(getAuthorisedConsentStatus());
+        assertThat(authorisedConsent.getStatus()).isEqualTo(getConsentStateModel().getAuthorisedConsentStatus());
         assertThat(authorisedConsent.getResourceOwnerId()).isEqualTo(TEST_RESOURCE_OWNER);
         assertThat(authorisedConsent.getStatusUpdatedDateTime()).isGreaterThan(consentToAuthorise.getStatusUpdatedDateTime())
                                                                 .isLessThanOrEqualTo(DateTime.now());
@@ -148,11 +145,23 @@ public abstract class BaseConsentServiceTest<T extends BaseConsentEntity<?>, A e
                 .withIgnoredFields("status", "resourceOwnerId", "statusUpdatedDateTime", "entityVersion").build();
 
         assertThat(rejectedConsent).usingRecursiveComparison(recursiveComparisonConfiguration).isEqualTo(consentBeforeRejectAction);
-        assertThat(rejectedConsent.getStatus()).isEqualTo(getRejectedConsentStatus());
+        assertThat(rejectedConsent.getStatus()).isEqualTo(getConsentStateModel().getRejectedConsentStatus());
         assertThat(rejectedConsent.getResourceOwnerId()).isEqualTo(TEST_RESOURCE_OWNER);
 
         assertThat(rejectedConsent.getStatusUpdatedDateTime()).isGreaterThan(consentBeforeRejectAction.getStatusUpdatedDateTime())
                                                               .isLessThanOrEqualTo(DateTime.now());
         assertThat(rejectedConsent.getEntityVersion()).isEqualTo(consentBeforeRejectAction.getEntityVersion() + 1);
+    }
+
+    @Test
+    protected void testCanConsentBeAuthorised() {
+        final T consent = getValidConsentEntity();
+        assertThat(consentService.canTransitionToAuthorisedState(consent)).isTrue();
+
+        consent.setStatus(getConsentStateModel().getRejectedConsentStatus());
+        assertThat(consentService.canTransitionToAuthorisedState(consent)).isFalse();
+
+        consent.setStatus(getConsentStateModel().getRevokedConsentStatus());
+        assertThat(consentService.canTransitionToAuthorisedState(consent)).isFalse();
     }
 }

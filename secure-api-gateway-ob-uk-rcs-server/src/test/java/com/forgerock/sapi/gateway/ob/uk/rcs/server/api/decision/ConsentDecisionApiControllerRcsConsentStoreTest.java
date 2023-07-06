@@ -81,9 +81,9 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.internat
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.international.InternationalScheduledPaymentConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.international.InternationalStandingOrderConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.vrp.DomesticVRPConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessConsentStateModel;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentConsentStateModel;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DomesticPaymentConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DomesticScheduledPaymentConsentService;
@@ -290,7 +290,7 @@ public class ConsentDecisionApiControllerRcsConsentStoreTest {
         throw new UnsupportedOperationException();
     }
 
-    private PaymentConsentService getConsentService(IntentType intentType) {
+    private ConsentService getConsentService(IntentType intentType) {
         switch (intentType) {
         case PAYMENT_DOMESTIC_CONSENT:
             return domesticPaymentConsentService;
@@ -351,7 +351,7 @@ public class ConsentDecisionApiControllerRcsConsentStoreTest {
         verifyConsentResponseJwt(consentResponseJwt);
 
         // Verify consent in store is now authorised
-        final PaymentConsentService consentService = getConsentService(intentType);
+        final ConsentService consentService = getConsentService(intentType);
         final BasePaymentConsentEntity authorisedConsent = (BasePaymentConsentEntity) consentService.getConsent(consent.getId(), consent.getApiClientId());
         assertEquals(PaymentConsentStateModel.AUTHORISED, authorisedConsent.getStatus());
         assertEquals(TEST_RESOURCE_OWNER_ID, authorisedConsent.getResourceOwnerId());
@@ -381,7 +381,7 @@ public class ConsentDecisionApiControllerRcsConsentStoreTest {
         verifyConsentResponseJwt(consentResponseJwt);
 
         // Verify consent in store is now rejected
-        final PaymentConsentService consentService = getConsentService(intentType);
+        final ConsentService consentService = getConsentService(intentType);
         final BasePaymentConsentEntity rejectedConsent = (BasePaymentConsentEntity) consentService.getConsent(consent.getId(), consent.getApiClientId());
         assertEquals(PaymentConsentStateModel.REJECTED, rejectedConsent.getStatus());
         assertEquals(TEST_RESOURCE_OWNER_ID, rejectedConsent.getResourceOwnerId());

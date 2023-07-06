@@ -28,6 +28,8 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.ConsentClientDet
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services.ApiClientServiceClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.ApiProviderConfiguration;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.BaseConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException.ErrorType;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
@@ -43,7 +45,8 @@ public abstract class BaseConsentDetailsService<T extends BaseConsentEntity, D e
     private final ApiProviderConfiguration apiProviderConfiguration;
     private final ApiClientServiceClient apiClientService;
 
-    public BaseConsentDetailsService(IntentType supportedIntentType, Supplier<D> consentDetailsObjSupplier, ConsentService<T, ?> consentService, ApiProviderConfiguration apiProviderConfiguration, ApiClientServiceClient apiClientService) {
+    public BaseConsentDetailsService(IntentType supportedIntentType, Supplier<D> consentDetailsObjSupplier, ConsentService<T, ?> consentService,
+                                     ApiProviderConfiguration apiProviderConfiguration, ApiClientServiceClient apiClientService) {
         this.supportedIntentType = Objects.requireNonNull(supportedIntentType, "supportedIntentType must be provided");
         this.consentDetailsObjSupplier = Objects.requireNonNull(consentDetailsObjSupplier, "consentDetailsObjSupplier must be provided");
         this.consentService = Objects.requireNonNull(consentService, "consentService must be provided");
@@ -54,6 +57,10 @@ public abstract class BaseConsentDetailsService<T extends BaseConsentEntity, D e
     @Override
     public ConsentDetails getDetailsFromConsentStore(ConsentClientDetailsRequest consentClientRequest) throws ExceptionClient {
         final T consent = getConsent(consentClientRequest);
+
+        if (!consentService.canTransitionToAuthorisedState(consent)) {
+            throw new ConsentStoreException(ErrorType.CONSENT_REAUTHENTICATION_NOT_SUPPORTED, consent.getId());
+        }
 
         final D consentDetails = consentDetailsObjSupplier.get();
         populateCommonConsentDetailsFields(consentDetails, consentClientRequest);

@@ -27,6 +27,8 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.
 /**
  * State model for Payment APIs: https://openbankinguk.github.io/read-write-api-site3/v3.1.10/resources-and-data-models/pisp/domestic-payment-consents.html#payment-order-consent
  *
+ * Payments are short-lived consents, and therefore do not support re-authentication.
+ *
  * File payments have a different model, see {@link com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.file.FilePaymentConsentStateModel}
  */
 public class PaymentConsentStateModel implements ConsentStateModel {
@@ -77,4 +79,5 @@ public class PaymentConsentStateModel implements ConsentStateModel {
     public MultiValueMap<String, String> getValidStateTransitions() {
         return new LinkedMultiValueMap<>(stateTransitions);
     }
+
 }

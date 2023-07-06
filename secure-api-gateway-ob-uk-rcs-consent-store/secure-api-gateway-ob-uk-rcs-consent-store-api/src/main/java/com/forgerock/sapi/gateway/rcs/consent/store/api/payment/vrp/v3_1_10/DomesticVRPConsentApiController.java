@@ -28,7 +28,6 @@ import org.springframework.stereotype.Controller;
 
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.AuthorisePaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.ConsumePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.vrp.v3_1_10.CreateDomesticVRPConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.vrp.v3_1_10.DomesticVRPConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.vrp.DomesticVRPConsentEntity;
@@ -104,12 +103,6 @@ public class DomesticVRPConsentApiController implements DomesticVRPConsentApi {
     public ResponseEntity<DomesticVRPConsent> rejectConsent(String consentId, RejectConsentRequest request) {
         logger.info("Attempting to rejectConsent - id: {}, request: {}", consentId, request);
         return ResponseEntity.ok(convertEntityToDto(consentService.rejectConsent(consentId, request.getApiClientId(), request.getResourceOwnerId())));
-    }
-
-    @Override
-    public ResponseEntity<DomesticVRPConsent> consumeConsent(String consentId, ConsumePaymentConsentRequest request) {
-        logger.info("Attempting to consumeConsent - id: {}, request: {}", consentId, request);
-        return ResponseEntity.ok(convertEntityToDto(consentService.consumeConsent(consentId, request.getApiClientId())));
     }
 
     private DomesticVRPConsent convertEntityToDto(DomesticVRPConsentEntity entity) {

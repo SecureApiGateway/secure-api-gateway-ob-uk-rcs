@@ -17,7 +17,6 @@ package com.forgerock.sapi.gateway.rcs.conent.store.client.payment.vrp.v3_1_10;
 
 import static com.forgerock.sapi.gateway.rcs.conent.store.client.TestConsentStoreClientConfigurationFactory.createConsentStoreClientConfiguration;
 import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.PaymentConsentValidationHelpers.validateAuthorisedConsent;
-import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.PaymentConsentValidationHelpers.validateConsumedConsent;
 import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.PaymentConsentValidationHelpers.validateCreateConsentAgainstCreateRequest;
 import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.PaymentConsentValidationHelpers.validateRejectedConsent;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,11 +45,9 @@ import com.forgerock.sapi.gateway.rcs.conent.store.client.ConsentStoreClientExce
 import com.forgerock.sapi.gateway.rcs.conent.store.client.ConsentStoreClientException.ErrorType;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.AuthorisePaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.ConsumePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.vrp.v3_1_10.CreateDomesticVRPConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.vrp.v3_1_10.DomesticVRPConsent;
 
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
 import uk.org.openbanking.testsupport.vrp.OBDomesticVrpConsentRequestTestDataFactory;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"rcs.consent.store.api.baseUri= 'ignored'"})
@@ -118,21 +115,6 @@ class DomesticVRPConsentStoreClientTest {
     }
 
     @Test
-    void testConsumeConsent() {
-        final CreateDomesticVRPConsentRequest createConsentRequest = buildCreateConsentRequest();
-        final DomesticVRPConsent consent = apiClient.createConsent(createConsentRequest);
-
-        final AuthorisePaymentConsentRequest authRequest = buildAuthoriseConsentRequest(consent, "psu4test", "acc-12345");
-        final DomesticVRPConsent authResponse = apiClient.authoriseConsent(authRequest);
-        assertThat(authResponse.getStatus()).isEqualTo(StatusEnum.AUTHORISED.toString());
-
-        final DomesticVRPConsent consumedConsent = apiClient.consumeConsent(buildConsumeRequest(consent));
-        assertThat(consumedConsent.getStatus()).isEqualTo(StatusEnum.CONSUMED.toString());
-
-        validateConsumedConsent(consumedConsent, authResponse);
-    }
-
-    @Test
     void testGetConsent() {
         final CreateDomesticVRPConsentRequest createConsentRequest = buildCreateConsentRequest();
         final DomesticVRPConsent consent = apiClient.createConsent(createConsentRequest);
@@ -168,13 +150,6 @@ class DomesticVRPConsentStoreClientTest {
         rejectRequest.setConsentId(consent.getId());
         rejectRequest.setResourceOwnerId(resourceOwnerId);
         return rejectRequest;
-    }
-
-    private static ConsumePaymentConsentRequest buildConsumeRequest(DomesticVRPConsent consent) {
-        final ConsumePaymentConsentRequest consumeRequest = new ConsumePaymentConsentRequest();
-        consumeRequest.setApiClientId(consent.getApiClientId());
-        consumeRequest.setConsentId((consent.getId()));
-        return consumeRequest;
     }
 
 }

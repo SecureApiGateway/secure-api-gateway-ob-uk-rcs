@@ -27,6 +27,8 @@ import uk.org.openbanking.datamodel.common.OBExternalRequestStatus1Code;
 /**
  * State Model for Account Access Consents: https://openbankinguk.github.io/read-write-api-site3/v3.1.10/resources-and-data-models/aisp/account-access-consents.html#status-flow
  *
+ * Account Access Consents are long-lived, and support re-authentication.
+ *
  * Note: When a Consent is revoked (consent was previously authorised), it goes to rejected state. In previous versions of the
  * OBIE API, there was a specific revoked state.
  */
@@ -45,11 +47,10 @@ public class AccountAccessConsentStateModel implements ConsentStateModel {
     private final MultiValueMap<String, String> stateTransitions;
 
 
-
     private AccountAccessConsentStateModel() {
         stateTransitions = new LinkedMultiValueMap<>();
         stateTransitions.addAll(AWAITING_AUTHORISATION, List.of(AUTHORISED, REJECTED));
-        stateTransitions.addAll(AUTHORISED, List.of(REJECTED));
+        stateTransitions.addAll(AUTHORISED, List.of(AUTHORISED, REJECTED)); // Authorised has a self link as consent Re-Authentication is supported
     }
 
     @Override

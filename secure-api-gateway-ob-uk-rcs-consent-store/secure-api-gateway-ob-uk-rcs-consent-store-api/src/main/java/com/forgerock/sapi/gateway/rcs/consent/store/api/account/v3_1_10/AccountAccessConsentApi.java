@@ -134,7 +134,6 @@ public interface AccountAccessConsentApi {
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)
     })
     @RequestMapping(value = "/account-access-consents/{consentId}",
-            produces = {"application/json; charset=utf-8"},
             method = RequestMethod.DELETE)
     ResponseEntity<Void> deleteConsent(@PathVariable(value = "consentId") String consentId,
                                        @RequestHeader(value = "x-api-client-id") String apiClientId);

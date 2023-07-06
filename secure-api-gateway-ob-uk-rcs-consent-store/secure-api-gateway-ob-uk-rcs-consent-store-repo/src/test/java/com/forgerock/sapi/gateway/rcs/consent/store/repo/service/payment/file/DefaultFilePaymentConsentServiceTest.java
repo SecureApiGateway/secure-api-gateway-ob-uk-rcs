@@ -40,6 +40,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.file.Fil
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException.ErrorType;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentService;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentStateModel;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.BasePaymentConsentServiceTest;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
@@ -56,13 +57,13 @@ public class DefaultFilePaymentConsentServiceTest extends BasePaymentConsentServ
     private DefaultFilePaymentConsentService service;
 
     @Override
-    protected BaseConsentService<FilePaymentConsentEntity, PaymentAuthoriseConsentArgs> getConsentServiceToTest() {
-        return service;
+    protected ConsentStateModel getConsentStateModel() {
+        return FilePaymentConsentStateModel.getInstance();
     }
 
     @Override
-    protected String getNewConsentStatus() {
-        return FilePaymentConsentStateModel.AWAITING_UPLOAD;
+    protected BaseConsentService<FilePaymentConsentEntity, PaymentAuthoriseConsentArgs> getConsentServiceToTest() {
+        return service;
     }
 
     @Override
@@ -191,6 +192,20 @@ public class DefaultFilePaymentConsentServiceTest extends BasePaymentConsentServ
         assertThat(consentStoreException.getErrorType()).isEqualTo(ErrorType.INVALID_STATE_TRANSITION);
         assertThat(consentStoreException.getMessage()).contains("cannot transition from consentStatus: AwaitingUpload to status: Authorised");
     }
+
+    @Test
+    protected void testCanConsentBeAuthorised() {
+        final FilePaymentConsentEntity consent = getValidConsentEntity();
+        assertThat(consentService.canTransitionToAuthorisedState(consent)).isFalse();
+
+        consent.setStatus(FilePaymentConsentStateModel.AWAITING_AUTHORISATION);
+        assertThat(consentService.canTransitionToAuthorisedState(consent)).isTrue();
+
+        consent.setStatus(getConsentStateModel().getRevokedConsentStatus());
+        assertThat(consentService.canTransitionToAuthorisedState(consent)).isFalse();
+    }
+
+
 
     private static FileUploadArgs createValidFileUploadArgs(FilePaymentConsentEntity persistedConsent) {
         final FileUploadArgs fileUploadArgs = new FileUploadArgs();

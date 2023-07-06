@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.file;
+package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.vrp;
 
 import java.util.List;
 
@@ -22,37 +22,41 @@ import org.springframework.util.MultiValueMap;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentStateModel;
 
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4Data.StatusEnum;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
 
 /**
- * State Model for File Payment Consents: https://openbankinguk.github.io/read-write-api-site3/v3.1.10/resources-and-data-models/pisp/file-payment-consents.html#state-model
+ * State model for VRP Payment APIs: https://openbankinguk.github.io/read-write-api-site3/v3.1.10/resources-and-data-models/vrp/domestic-vrp-consents.html#state-model-vrp-consents
+ *
+ * VRPs share a similar state model to Account Access Consents (and other long-lived Consents), they support re-authentication and
+ * unlike other payments cannot be consumed (because they are recurring).
  */
-public class FilePaymentConsentStateModel implements ConsentStateModel {
+public class VRPConsentStateModel implements ConsentStateModel {
 
-    public static final String AWAITING_UPLOAD = StatusEnum.AWAITINGUPLOAD.toString();
     public static final String AWAITING_AUTHORISATION = StatusEnum.AWAITINGAUTHORISATION.toString();
+
     public static final String AUTHORISED = StatusEnum.AUTHORISED.toString();
+
     public static final String CONSUMED = StatusEnum.CONSUMED.toString();
+
     public static final String REJECTED = StatusEnum.REJECTED.toString();
 
-    private static final FilePaymentConsentStateModel INSTANCE = new FilePaymentConsentStateModel();
+    private static final VRPConsentStateModel INSTANCE = new VRPConsentStateModel();
 
-    public static FilePaymentConsentStateModel getInstance() {
+    public static VRPConsentStateModel getInstance() {
         return INSTANCE;
     }
 
     private final MultiValueMap<String, String> stateTransitions;
 
-    private FilePaymentConsentStateModel() {
+    private VRPConsentStateModel() {
         stateTransitions = new LinkedMultiValueMap<>();
-        stateTransitions.addAll(AWAITING_UPLOAD, List.of(AWAITING_AUTHORISATION));
         stateTransitions.addAll(AWAITING_AUTHORISATION, List.of(AUTHORISED, REJECTED));
-        stateTransitions.addAll(AUTHORISED, List.of(CONSUMED));
+        stateTransitions.addAll(AUTHORISED, List.of(AUTHORISED, REJECTED)); // Authorised has a self link as consent Re-Authentication is supported
     }
 
     @Override
     public String getInitialConsentStatus() {
-        return AWAITING_UPLOAD;
+        return AWAITING_AUTHORISATION;
     }
 
     @Override
