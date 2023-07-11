@@ -79,7 +79,7 @@ consent:
   store:
     enabled:
       # Controls which intentTypes will use the new Consent Store (format: comma separated list)
-      intentTypes: ACCOUNT_ACCESS_CONSENT, PAYMENT_DOMESTIC_CONSENT, DOMESTIC_VRP_PAYMENT_CONSENT
+      intentTypes: ACCOUNT_ACCESS_CONSENT, PAYMENT_DOMESTIC_CONSENT, PAYMENT_DOMESTIC_SCHEDULED_CONSENT, DOMESTIC_VRP_PAYMENT_CONSENT
 
 spring:
   data:
