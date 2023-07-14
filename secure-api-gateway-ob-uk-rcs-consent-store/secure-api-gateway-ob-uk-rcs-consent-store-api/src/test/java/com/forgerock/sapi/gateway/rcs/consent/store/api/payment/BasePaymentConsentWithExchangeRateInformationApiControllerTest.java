@@ -15,8 +15,8 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.api.payment;
 
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.BaseCreateInternationalPaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.BasePaymentConsentWithExchangeRateInformation;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.BaseCreateInternationalPaymentConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.BasePaymentConsentWithExchangeRateInformation;
 
 public abstract class BasePaymentConsentWithExchangeRateInformationApiControllerTest<T extends BasePaymentConsentWithExchangeRateInformation, C extends BaseCreateInternationalPaymentConsentRequest> extends BasePaymentConsentApiControllerTest<T, C> {
 
