@@ -19,10 +19,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.joda.time.DateTime;
 
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.RejectConsentRequest;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.AuthorisePaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.BaseCreatePaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.BasePaymentConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.AuthorisePaymentConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.BaseCreatePaymentConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.BasePaymentConsent;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;

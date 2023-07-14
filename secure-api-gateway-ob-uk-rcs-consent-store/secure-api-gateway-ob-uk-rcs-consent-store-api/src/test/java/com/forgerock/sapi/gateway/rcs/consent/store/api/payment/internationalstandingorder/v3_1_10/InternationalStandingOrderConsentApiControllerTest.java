@@ -18,8 +18,8 @@ package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.internationalst
 import java.util.UUID;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalStandingOrderConsentConverter;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.internationalstandingorder.v3_1_10.CreateInternationalStandingOrderConsentRequest;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.internationalstandingorder.v3_1_10.InternationalStandingOrderConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internationalstandingorder.v3_1_10.CreateInternationalStandingOrderConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internationalstandingorder.v3_1_10.InternationalStandingOrderConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.BasePaymentConsentApiControllerTest;
 
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent5;

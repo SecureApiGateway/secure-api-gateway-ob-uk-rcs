@@ -34,10 +34,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.BaseAuthoriseConsentRequest;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.BaseConsent;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.BaseCreateConsentRequest;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.RejectConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.BaseAuthoriseConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.BaseConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.BaseCreateConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
 
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
