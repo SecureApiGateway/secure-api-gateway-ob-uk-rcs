@@ -30,8 +30,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Unit test for {@link RsConfiguration}
  */
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {RsConfiguration.class, RsBackofficeConfiguration.class}, initializers = ConfigFileApplicationContextInitializer.class)
-@EnableConfigurationProperties(value = RsBackofficeConfiguration.class)
+@ContextConfiguration(
+        classes = {RsConfiguration.class, RsBackofficeConfiguration.class, RsResourceApiConfiguration.class},
+        initializers = ConfigFileApplicationContextInitializer.class
+)
+@EnableConfigurationProperties(value = {RsBackofficeConfiguration.class, RsResourceApiConfiguration.class})
 @ActiveProfiles("test")
 public class RcsConfigurationPropertiesTest {
 
@@ -39,6 +42,8 @@ public class RcsConfigurationPropertiesTest {
     private RsConfiguration configurationProperties;
     @Autowired
     private RsBackofficeConfiguration rsBackofficeConfiguration;
+    @Autowired
+    private RsResourceApiConfiguration rsResourceApiConfiguration;
 
     @Test
     public void shouldHaveAllRCSProperties() {
@@ -54,5 +59,12 @@ public class RcsConfigurationPropertiesTest {
         assertThat(rsBackofficeConfiguration.getDomesticPayments().get(
                 RsBackofficeConfiguration.UriContexts.FIND_USER_BY_ID.toString())
         ).isEqualTo("/backoffice/domestic-payments/search/findByUserId");
+    }
+
+    @Test
+    public void shouldHaveAllRsResourceApiProperties() {
+        assertThat(rsResourceApiConfiguration.getCustomerInfo().get(
+                RsResourceApiConfiguration.Operation.FIND_USER_BY_ID.toString())
+        ).isEqualTo("/resources/customerinfo/findByUserId");
     }
 }

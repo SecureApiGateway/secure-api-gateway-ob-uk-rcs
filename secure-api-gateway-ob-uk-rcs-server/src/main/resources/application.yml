@@ -79,7 +79,7 @@ consent:
   store:
     enabled:
       # Controls which intentTypes will use the new Consent Store (format: comma separated list)
-      intentTypes: ACCOUNT_ACCESS_CONSENT, PAYMENT_DOMESTIC_CONSENT, PAYMENT_DOMESTIC_SCHEDULED_CONSENT, PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT, DOMESTIC_VRP_PAYMENT_CONSENT, PAYMENT_FILE_CONSENT
+      intentTypes: ACCOUNT_ACCESS_CONSENT, PAYMENT_DOMESTIC_CONSENT, PAYMENT_DOMESTIC_SCHEDULED_CONSENT, PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT, DOMESTIC_VRP_PAYMENT_CONSENT, PAYMENT_FILE_CONSENT, CUSTOMER_INFO_CONSENT
 
 spring:
   data:
@@ -90,6 +90,10 @@ spring:
 # See: com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.RsBackofficeConfiguration
 rs:
   api:
+    resource:
+      customer-info:
+        # Context endpoing to find customer information by userId
+        findByUserId: /resources/customerinfo/findByUserId
     backoffice:
       uris:
         accounts:
