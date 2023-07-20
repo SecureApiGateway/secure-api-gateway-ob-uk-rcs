@@ -29,6 +29,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.*;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,16 +49,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.RedirectionAction;
-import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.AccountsConsentDetails;
-import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.ConsentDetails;
-import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticPaymentConsentDetails;
-import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticScheduledPaymentConsentDetails;
-import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticStandingOrderConsentDetails;
-import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticVrpPaymentConsentDetails;
-import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.FilePaymentConsentDetails;
-import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.InternationalPaymentConsentDetails;
-import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.InternationalScheduledPaymentConsentDetails;
-import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.InternationalStandingOrderConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ExceptionClient;
@@ -166,7 +157,8 @@ public class ConsentDetailsApiControllerRcsConsentStoreTest {
                 arguments(IntentType.PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT, createInternationalScheduledPaymentConsentDetails(), InternationalScheduledPaymentConsentDetails.class),
                 arguments(IntentType.PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT, createInternationalStandingOrderConsentDetails(), InternationalStandingOrderConsentDetails.class),
                 arguments(IntentType.PAYMENT_FILE_CONSENT, createFilePaymentConsentDetails(), FilePaymentConsentDetails.class),
-                arguments(IntentType.DOMESTIC_VRP_PAYMENT_CONSENT, createVrpConsentDetails(), DomesticVrpPaymentConsentDetails.class)
+                arguments(IntentType.DOMESTIC_VRP_PAYMENT_CONSENT, createVrpConsentDetails(), DomesticVrpPaymentConsentDetails.class),
+                arguments(IntentType.CUSTOMER_INFO_CONSENT, createCustomerInfoConsentDetails(), CustomerInfoConsentDetails.class)
         );
     }
 
@@ -177,9 +169,16 @@ public class ConsentDetailsApiControllerRcsConsentStoreTest {
         return accountsConsentDetails;
     }
 
-    @ParameterizedTest
+    private static CustomerInfoConsentDetails createCustomerInfoConsentDetails() {
+        final CustomerInfoConsentDetails customerInfoConsentDetails = new CustomerInfoConsentDetails();
+        customerInfoConsentDetails.setConsentId(IntentType.CUSTOMER_INFO_CONSENT.generateIntentId());
+        customerInfoConsentDetails.setLogo(TPP_LOGO);
+        return customerInfoConsentDetails;
+    }
+
+    @ParameterizedTest(name = "{0}")
     @MethodSource("validConsentDetailsArguments")
-    public <C extends ConsentDetails> void shouldGetDomesticPaymentConsentDetails(IntentType intentType, ConsentDetails testConsentDetails,
+    public <C extends ConsentDetails> void shouldGetParameterizedConsentDetails(IntentType intentType, ConsentDetails testConsentDetails,
                                                                                   Class<C> consentDetailsClass) throws Exception {
 
         Assumptions.assumeTrue(consentStoreEnabledIntentTypes.isIntentTypeSupported(intentType));
