@@ -42,7 +42,8 @@ import java.util.List;
         @Type(value = InternationalPaymentConsentDetails.class, name = "InternationalPaymentConsentDetails"),
         @Type(value = InternationalScheduledPaymentConsentDetails.class, name = "InternationalScheduledPaymentConsentDetails"),
         @Type(value = InternationalStandingOrderConsentDetails.class, name = "InternationalStandingOrderConsentDetails"),
-        @Type(value = FilePaymentConsentDetails.class, name = "FilePaymentConsentDetails")
+        @Type(value = FilePaymentConsentDetails.class, name = "FilePaymentConsentDetails"),
+        @Type(value = FundsConfirmationConsentDetails.class, name = "FundsConfirmationConsentDetails"),
 })
 @Data
 @NoArgsConstructor

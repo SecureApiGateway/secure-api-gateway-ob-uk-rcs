@@ -27,6 +27,7 @@ import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentData1;
 
 import javax.annotation.PostConstruct;
+import java.util.UUID;
 
 /**
  * Test for {@link FundsConfirmationConsentApiController}
@@ -78,6 +79,7 @@ public class FundsConfirmationConsentApiControllerTest extends BaseControllerTes
         authoriseFundsConfirmationConsentRequest.setConsentId(consent.getId());
         authoriseFundsConfirmationConsentRequest.setApiClientId(consent.getApiClientId());
         authoriseFundsConfirmationConsentRequest.setResourceOwnerId(resourceOwnerId);
+        authoriseFundsConfirmationConsentRequest.setAuthorisedDebtorAccountId(UUID.randomUUID().toString());
         return authoriseFundsConfirmationConsentRequest;
     }
 

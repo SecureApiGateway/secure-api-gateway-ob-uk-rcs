@@ -77,7 +77,7 @@ public class FundsConfirmationConsentApiController implements FundsConfirmationC
     public ResponseEntity<FundsConfirmationConsent> authoriseConsent(String consentId, AuthoriseFundsConfirmationConsentRequest request) {
         logger.info("Attempting to authoriseConsent - id: {}, request: {}", consentId, request);
         final FundsConfirmationAuthoriseConsentArgs authoriseArgs = new FundsConfirmationAuthoriseConsentArgs(consentId, request.getApiClientId(),
-                request.getResourceOwnerId());
+                request.getResourceOwnerId(), request.getAuthorisedDebtorAccountId());
         return ResponseEntity.ok(convertEntityToDto(consentService.authoriseConsent(authoriseArgs)));
     }
 

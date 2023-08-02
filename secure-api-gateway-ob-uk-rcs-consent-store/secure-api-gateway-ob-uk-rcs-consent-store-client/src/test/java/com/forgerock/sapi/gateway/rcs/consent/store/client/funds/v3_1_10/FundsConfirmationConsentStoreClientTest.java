@@ -152,6 +152,7 @@ public class FundsConfirmationConsentStoreClientTest {
         authRequest.setConsentId(consent.getId());
         authRequest.setResourceOwnerId(RESOURCE_OWNER_ID);
         authRequest.setApiClientId(consent.getApiClientId());
+        authRequest.setAuthorisedDebtorAccountId(UUID.randomUUID().toString());
         return authRequest;
     }
 

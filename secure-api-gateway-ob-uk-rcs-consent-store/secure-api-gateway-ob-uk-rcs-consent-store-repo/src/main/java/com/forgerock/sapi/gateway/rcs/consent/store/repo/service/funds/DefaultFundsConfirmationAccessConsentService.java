@@ -33,5 +33,6 @@ public class DefaultFundsConfirmationAccessConsentService extends BaseConsentSer
 
     @Override
     protected void addConsentSpecificAuthorisationData(FundsConfirmationConsentEntity consent, FundsConfirmationAuthoriseConsentArgs authoriseConsentArgs) {
+        consent.setAuthorisedDebtorAccountId(authoriseConsentArgs.getAuthorisedDebtorAccountId());
     }
 }

@@ -18,16 +18,29 @@ package com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.BaseAuthoriseConsentRequest;
 import org.springframework.validation.annotation.Validated;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Validated
 public class AuthoriseFundsConfirmationConsentRequest extends BaseAuthoriseConsentRequest {
+    @NotNull
+    @NotBlank
+    private String authorisedDebtorAccountId;
+
+    public String getAuthorisedDebtorAccountId() {
+        return authorisedDebtorAccountId;
+    }
+
+    public void setAuthorisedDebtorAccountId(String authorisedDebtorAccountId) {
+        this.authorisedDebtorAccountId = authorisedDebtorAccountId;
+    }
 
     @Override
     public String toString() {
         return "AuthoriseFundsConfirmationConsentRequest{" +
+                ", authorisedDebtorAccountId='" + getAuthorisedDebtorAccountId() + '\'' +
                 ", consentId='" + getConsentId() + '\'' +
                 ", resourceOwnerId='" + getResourceOwnerId() + '\'' +
                 ", apiClientId='" + getApiClientId() + '\'' +
