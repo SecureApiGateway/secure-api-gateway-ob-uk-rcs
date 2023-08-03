@@ -15,6 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.funds;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccountWithBalance;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.funds.FRFundsConfirmationConsentData;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.FundsConfirmationConsentDetails;
@@ -66,6 +67,7 @@ public class FundsConfirmationConsentDetailsService extends BaseConsentDetailsSe
                 debtorAccount.getIdentification(),
                 debtorAccount.getSchemeName()
         );
+
         log.debug("Account found it {}", frAccountIdentifier);
         if(frAccountIdentifier != null){
             debtorAccount.setAccountId(frAccountIdentifier.getAccountId());

@@ -29,6 +29,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.web.util.UriComponentsBuilder.fromHttpUrl;
@@ -119,8 +120,13 @@ public class AccountService {
     public FRAccountIdentifier getAccountIdentifier(String userID, String name, String identification, String schemeName) {
         // This is necessary as auth server always uses lowercase user id
         String lowercaseUserId = userID.toLowerCase();
-        log.debug("Searching for accounts with balance for user ID: {}", lowercaseUserId);
-        ParameterizedTypeReference<FRAccountIdentifier> ptr = new ParameterizedTypeReference<>() {
+        log.debug("Searching for accounts by identifiers user {}, name {}, identification {}, schemeName {}",
+                lowercaseUserId,
+                name,
+                identification,
+                schemeName
+        );
+        ParameterizedTypeReference<FRAccountWithBalance> ptr = new ParameterizedTypeReference<>() {
         };
 
         UriComponentsBuilder builder = fromHttpUrl(
@@ -136,7 +142,13 @@ public class AccountService {
         builder.queryParam("schemeName", schemeName);
 
         URI uri = builder.build().encode().toUri();
-        ResponseEntity<FRAccountIdentifier> entity = restTemplate.exchange(uri, GET, null, ptr);
-        return entity.getBody();
+        ResponseEntity<FRAccountWithBalance> entity = restTemplate.exchange(uri, GET, null, ptr);
+        FRAccountIdentifier accountIdentifier = entity.getBody().getAccount().getAccounts().stream().filter(ai ->
+            ai.getIdentification().equals(identification) &&
+                    ai.getSchemeName().equals(schemeName) &&
+                    ai.getName().equals(name)
+        ).findFirst().orElse(null);
+
+        return accountIdentifier;
     }
 }
