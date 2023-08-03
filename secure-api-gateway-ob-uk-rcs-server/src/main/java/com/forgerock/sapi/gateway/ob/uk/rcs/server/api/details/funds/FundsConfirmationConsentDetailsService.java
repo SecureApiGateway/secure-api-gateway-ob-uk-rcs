@@ -25,10 +25,14 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.BaseConsentDetail
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.client.rs.AccountService;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.ApiProviderConfiguration;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.funds.FundsConfirmationConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Objects;
 
 @Component
 @Slf4j
@@ -55,25 +59,28 @@ public class FundsConfirmationConsentDetailsService extends BaseConsentDetailsSe
     protected void addIntentTypeSpecificData(FundsConfirmationConsentDetails consentDetails, FundsConfirmationConsentEntity consent, ConsentClientDetailsRequest consentClientDetailsRequest) {
         final FRFundsConfirmationConsentData readData = consent.getRequestObj().getData();
         final FRAccountIdentifier debtorAccount = readData.getDebtorAccount();
-        log.debug("Searching account by {},{},{},{}",
-                consentDetails.getUserId(),
-                debtorAccount.getName(),
-                debtorAccount.getIdentification(),
-                debtorAccount.getSchemeName()
-        );
-        final FRAccountIdentifier frAccountIdentifier = accountService.getAccountIdentifier(
-                consentDetails.getUserId(),
-                debtorAccount.getName(),
-                debtorAccount.getIdentification(),
-                debtorAccount.getSchemeName()
-        );
-
-        log.debug("Account found it {}", frAccountIdentifier);
-        if(frAccountIdentifier != null){
-            debtorAccount.setAccountId(frAccountIdentifier.getAccountId());
-        }
 
         consentDetails.setExpirationDateTime(readData.getExpirationDateTime());
         consentDetails.setDebtorAccount(debtorAccount);
+
+        addDebtorAccountDetails(consentDetails);
+    }
+
+    private void addDebtorAccountDetails(FundsConfirmationConsentDetails consentDetails) {
+        final FRAccountIdentifier debtorAccount = consentDetails.getDebtorAccount();
+        Objects.requireNonNull(debtorAccount, "The debtor account must be not null to check funds availability.");
+        FRAccountWithBalance accountWithBalance = accountService.getAccountWithBalanceByIdentifiers(
+                consentDetails.getUserId(), debtorAccount.getName(), debtorAccount.getIdentification(), debtorAccount.getSchemeName());
+
+        if (Objects.nonNull(accountWithBalance)) {
+            debtorAccount.setAccountId(accountWithBalance.getAccount().getAccountId());
+            consentDetails.setAccounts(List.of(accountWithBalance));
+        } else {
+            logger.warn("Failed to set debtorAccount details for consentId: {}, " +
+                            "no account found for userId: {}, name:{}, identification: {}, schemeName: {}",
+                    consentDetails.getConsentId(), consentDetails.getUserId(), debtorAccount.getName(),
+                    debtorAccount.getIdentification(), debtorAccount.getSchemeName());
+            throw new ConsentStoreException(ConsentStoreException.ErrorType.NOT_FOUND, consentDetails.getConsentId(), "DebtorAccount not found for user");
+        }
     }
 }

@@ -117,7 +117,7 @@ public class AccountService {
         return entity.getBody();
     }
 
-    public FRAccountIdentifier getAccountIdentifier(String userID, String name, String identification, String schemeName) {
+    public FRAccountWithBalance getAccountIdentifier(String userID, String name, String identification, String schemeName) {
         // This is necessary as auth server always uses lowercase user id
         String lowercaseUserId = userID.toLowerCase();
         log.debug("Searching for accounts by identifiers user {}, name {}, identification {}, schemeName {}",
@@ -143,12 +143,6 @@ public class AccountService {
 
         URI uri = builder.build().encode().toUri();
         ResponseEntity<FRAccountWithBalance> entity = restTemplate.exchange(uri, GET, null, ptr);
-        FRAccountIdentifier accountIdentifier = entity.getBody().getAccount().getAccounts().stream().filter(ai ->
-            ai.getIdentification().equals(identification) &&
-                    ai.getSchemeName().equals(schemeName) &&
-                    ai.getName().equals(name)
-        ).findFirst().orElse(null);
-
-        return accountIdentifier;
+        return entity.getBody();
     }
 }
