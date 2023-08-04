@@ -15,10 +15,11 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.funds;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.funds.FRFundsConfirmationConsent;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.BaseConsentEntity;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.validation.annotation.Validated;
+
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.funds.FRFundsConfirmationConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.BaseConsentEntity;
 
 /**
  * OBIE Funds Confirmation Consent: https://openbankinguk.github.io/read-write-api-site3/v3.1.10/resources-and-data-models/cbpii/funds-confirmation-consent.html
@@ -26,4 +27,25 @@ import org.springframework.validation.annotation.Validated;
 @Document("FundsConfirmationConsent")
 @Validated
 public class FundsConfirmationConsentEntity extends BaseConsentEntity<FRFundsConfirmationConsent> {
+    /**
+     * ID of the DebtorAccount that:<br/>
+     * <ul>
+     *     <li>
+     *         Match with the debtor account data consent
+     *     </li>
+     *     <li>
+     *         The Resource Owner has authorised to check funds availability
+     *     </li>
+     * </ul>
+     * This field is set as part of Consent Authorisation, therefore may be null in other states.
+     */
+    private String authorisedDebtorAccountId;
+
+    public String getAuthorisedDebtorAccountId() {
+        return authorisedDebtorAccountId;
+    }
+
+    public void setAuthorisedDebtorAccountId(String authorisedDebtorAccountId) {
+        this.authorisedDebtorAccountId = authorisedDebtorAccountId;
+    }
 }

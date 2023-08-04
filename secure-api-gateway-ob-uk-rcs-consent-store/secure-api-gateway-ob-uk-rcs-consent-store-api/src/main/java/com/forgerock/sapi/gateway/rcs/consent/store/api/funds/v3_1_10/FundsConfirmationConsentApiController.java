@@ -15,6 +15,15 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.api.funds.v3_1_10;
 
+import java.util.Objects;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.AuthoriseFundsConfirmationConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.CreateFundsConfirmationConsentRequest;
@@ -23,15 +32,8 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.funds.FundsConfi
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.funds.FundsConfirmationAuthoriseConsentArgs;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.funds.FundsConfirmationConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import uk.org.openbanking.datamodel.common.OBExternalRequestStatus1Code;
 
-import java.util.Objects;
+import uk.org.openbanking.datamodel.common.OBExternalRequestStatus1Code;
 
 @Controller
 public class FundsConfirmationConsentApiController implements FundsConfirmationConsentApi {
@@ -77,7 +79,7 @@ public class FundsConfirmationConsentApiController implements FundsConfirmationC
     public ResponseEntity<FundsConfirmationConsent> authoriseConsent(String consentId, AuthoriseFundsConfirmationConsentRequest request) {
         logger.info("Attempting to authoriseConsent - id: {}, request: {}", consentId, request);
         final FundsConfirmationAuthoriseConsentArgs authoriseArgs = new FundsConfirmationAuthoriseConsentArgs(consentId, request.getApiClientId(),
-                request.getResourceOwnerId());
+                request.getResourceOwnerId(), request.getAuthorisedDebtorAccountId());
         return ResponseEntity.ok(convertEntityToDto(consentService.authoriseConsent(authoriseArgs)));
     }
 

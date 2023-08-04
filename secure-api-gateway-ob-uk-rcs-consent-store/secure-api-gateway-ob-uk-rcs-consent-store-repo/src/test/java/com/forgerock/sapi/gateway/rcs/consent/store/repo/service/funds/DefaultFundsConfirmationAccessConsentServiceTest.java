@@ -15,28 +15,29 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.funds;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRReadConsentConverter;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
+import java.util.UUID;
+
+import org.joda.time.DateTime;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.funds.FRFundsConfirmationConsentConverter;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.funds.FundsConfirmationConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentServiceTest;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentStateModel;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
-import org.joda.time.DateTime;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
-import uk.org.openbanking.datamodel.account.OBReadConsent1;
-import uk.org.openbanking.datamodel.account.OBReadData1;
+
 import uk.org.openbanking.datamodel.common.OBCashAccount3;
+import uk.org.openbanking.datamodel.common.OBExternalAccountIdentification2Code;
 import uk.org.openbanking.datamodel.common.OBExternalRequestStatus1Code;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentData1;
-
-import java.util.List;
-import java.util.UUID;
 
 /**
  * Test for {@link DefaultFundsConfirmationAccessConsentService}
@@ -46,7 +47,7 @@ import java.util.UUID;
 public class DefaultFundsConfirmationAccessConsentServiceTest extends BaseConsentServiceTest<FundsConfirmationConsentEntity, FundsConfirmationAuthoriseConsentArgs> {
 
     private static final String API_CLIENT_ID = UUID.randomUUID().toString();
-
+    private static final String DEBTOR_AUTHORISED_ACCOUNT_ID = UUID.randomUUID().toString();
     @Autowired
     private DefaultFundsConfirmationAccessConsentService fundsConfirmationAccessConsentService;
 
@@ -67,20 +68,30 @@ public class DefaultFundsConfirmationAccessConsentServiceTest extends BaseConsen
 
     @Override
     protected FundsConfirmationAuthoriseConsentArgs getAuthoriseConsentArgs(String consentId, String resourceOwnerId, String apiClientId) {
-        return new FundsConfirmationAuthoriseConsentArgs(consentId, apiClientId, resourceOwnerId);
+        return new FundsConfirmationAuthoriseConsentArgs(consentId, apiClientId, resourceOwnerId, DEBTOR_AUTHORISED_ACCOUNT_ID);
     }
 
     @Override
     protected void validateConsentSpecificFields(FundsConfirmationConsentEntity expected, FundsConfirmationConsentEntity actual) {
-
     }
 
     @Override
     protected void validateConsentSpecificAuthorisationFields(FundsConfirmationConsentEntity authorisedConsent, FundsConfirmationAuthoriseConsentArgs authorisationArgs) {
-
+        assertThat(authorisedConsent.getAuthorisedDebtorAccountId()).isEqualTo(authorisationArgs.getAuthorisedDebtorAccountId());
     }
 
     public static FundsConfirmationConsentEntity createValidConsentEntity(String apiClientId) {
+        final FRAccountIdentifier accountIdentifier = FRAccountIdentifier.builder()
+                .accountId(UUID.randomUUID().toString())
+                .name("account-name")
+                .schemeName(OBExternalAccountIdentification2Code.SortCodeAccountNumber.toString())
+                .identification("08080021325698")
+                .secondaryIdentification("secondary-identification")
+                .build();
+        return createValidConsentEntity(apiClientId, accountIdentifier);
+    }
+
+    public static FundsConfirmationConsentEntity createValidConsentEntity(String apiClientId, FRAccountIdentifier accountIdentifier) {
         final FundsConfirmationConsentEntity fundsConfirmationConsentEntity = new FundsConfirmationConsentEntity();
         fundsConfirmationConsentEntity.setApiClientId(apiClientId);
         fundsConfirmationConsentEntity.setStatus(OBExternalRequestStatus1Code.AWAITINGAUTHORISATION.toString());
@@ -91,9 +102,10 @@ public class DefaultFundsConfirmationAccessConsentServiceTest extends BaseConsen
                         .expirationDateTime(DateTime.now().plusDays(30))
                         .debtorAccount(
                                 new OBCashAccount3()
-                                .schemeName("UK.OBIE.SortCodeAccountNumber")
-                                .identification("40400422390112")
-                                .name("Mrs B Smith")
+                                        .schemeName(accountIdentifier.getSchemeName())
+                                        .identification(accountIdentifier.getIdentification())
+                                        .name(accountIdentifier.getName())
+                                        .secondaryIdentification(accountIdentifier.getSecondaryIdentification())
                         )
         );
         fundsConfirmationConsentEntity.setRequestObj(FRFundsConfirmationConsentConverter.toFRFundsConfirmationConsent(fundsConfirmationConsent1));

@@ -15,23 +15,24 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.client.rs;
 
-import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.RsBackofficeConfiguration;
-import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.RsConfiguration;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccount;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccountWithBalance;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
-import lombok.extern.slf4j.Slf4j;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.web.util.UriComponentsBuilder.fromHttpUrl;
+
+import java.net.URI;
+import java.util.List;
+
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
-import java.util.List;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccount;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccountWithBalance;
+import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.RsBackofficeConfiguration;
+import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.RsConfiguration;
 
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.web.util.UriComponentsBuilder.fromHttpUrl;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -116,11 +117,16 @@ public class AccountService {
         return entity.getBody();
     }
 
-    public FRAccountIdentifier getAccountIdentifier(String userID, String name, String identification, String schemeName) {
+    public FRAccountWithBalance getAccountIdentifier(String userID, String name, String identification, String schemeName) {
         // This is necessary as auth server always uses lowercase user id
         String lowercaseUserId = userID.toLowerCase();
-        log.debug("Searching for accounts with balance for user ID: {}", lowercaseUserId);
-        ParameterizedTypeReference<FRAccountIdentifier> ptr = new ParameterizedTypeReference<>() {
+        log.debug("Searching for accounts by identifiers user {}, name {}, identification {}, schemeName {}",
+                lowercaseUserId,
+                name,
+                identification,
+                schemeName
+        );
+        ParameterizedTypeReference<FRAccountWithBalance> ptr = new ParameterizedTypeReference<>() {
         };
 
         UriComponentsBuilder builder = fromHttpUrl(
@@ -136,7 +142,7 @@ public class AccountService {
         builder.queryParam("schemeName", schemeName);
 
         URI uri = builder.build().encode().toUri();
-        ResponseEntity<FRAccountIdentifier> entity = restTemplate.exchange(uri, GET, null, ptr);
+        ResponseEntity<FRAccountWithBalance> entity = restTemplate.exchange(uri, GET, null, ptr);
         return entity.getBody();
     }
 }

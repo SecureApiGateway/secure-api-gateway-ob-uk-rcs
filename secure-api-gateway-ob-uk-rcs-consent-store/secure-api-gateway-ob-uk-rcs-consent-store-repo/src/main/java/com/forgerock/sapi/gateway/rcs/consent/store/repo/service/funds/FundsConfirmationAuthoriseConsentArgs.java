@@ -15,13 +15,24 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.funds;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.AuthoriseConsentArgs;
+import javax.validation.constraints.NotNull;
+
 import org.springframework.validation.annotation.Validated;
+
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.AuthoriseConsentArgs;
 
 @Validated
 public class FundsConfirmationAuthoriseConsentArgs extends AuthoriseConsentArgs {
 
-    public FundsConfirmationAuthoriseConsentArgs(String consentId, String apiClientId, String resourceOwnerId) {
+    @NotNull
+    private final String authorisedDebtorAccountId;
+
+    public FundsConfirmationAuthoriseConsentArgs(String consentId, String apiClientId, String resourceOwnerId, String authorisedDebtorAccountId) {
         super(consentId, resourceOwnerId, apiClientId);
+        this.authorisedDebtorAccountId = authorisedDebtorAccountId;
+    }
+
+    public String getAuthorisedDebtorAccountId() {
+        return authorisedDebtorAccountId;
     }
 }

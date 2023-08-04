@@ -56,6 +56,7 @@ import org.springframework.test.context.ActiveProfiles;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRReadConsent;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRReadConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.funds.FRFundsConfirmationConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticScheduledConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticStandingOrderConsentConverter;
@@ -72,6 +73,7 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.server.RCSServerApplicationTestSuppo
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.testsupport.JwtTestHelper;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.ConsentStoreEnabledIntentTypes;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.account.AccountAccessConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.funds.FundsConfirmationConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.BasePaymentConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.domestic.DomesticPaymentConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.domestic.DomesticScheduledPaymentConsentEntity;
@@ -84,6 +86,8 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.vrp.Dome
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessConsentStateModel;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.funds.FundsConfirmationConsentService;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.funds.FundsConfirmationConsentStateModel;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentConsentStateModel;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DomesticPaymentConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DomesticScheduledPaymentConsentService;
@@ -108,6 +112,9 @@ import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadConsent1;
 import uk.org.openbanking.datamodel.account.OBReadData1;
 import uk.org.openbanking.datamodel.account.OBRisk2;
+import uk.org.openbanking.datamodel.common.OBCashAccount3;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentData1;
 import uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory;
 import uk.org.openbanking.testsupport.payment.OBWriteDomesticScheduledConsentTestDataFactory;
 import uk.org.openbanking.testsupport.payment.OBWriteDomesticStandingOrderConsentTestDataFactory;
@@ -172,6 +179,9 @@ public class ConsentDecisionApiControllerRcsConsentStoreTest {
 
     @Autowired
     private DomesticVRPConsentService domesticVRPConsentService;
+
+    @Autowired
+    private FundsConfirmationConsentService fundsConfirmationConsentService;
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -386,6 +396,87 @@ public class ConsentDecisionApiControllerRcsConsentStoreTest {
         assertEquals(PaymentConsentStateModel.REJECTED, rejectedConsent.getStatus());
         assertEquals(TEST_RESOURCE_OWNER_ID, rejectedConsent.getResourceOwnerId());
         assertNull(rejectedConsent.getAuthorisedDebtorAccountId());
+    }
+
+    @Test
+    public void testAuthoriseFundsConsent() {
+        final IntentType intentType = IntentType.FUNDS_CONFIRMATION_CONSENT;
+        Assumptions.assumeTrue(consentStoreEnabledIntentTypes.isIntentTypeSupported(intentType));
+
+        final FundsConfirmationConsentEntity consent = createFundsConfirmationConsentEntity();
+        final String consentRequestJwt = JwtTestHelper.consentRequestJwt(TEST_API_CLIENT_ID, consent.getId(), TEST_RESOURCE_OWNER_ID);
+
+        final FRFinancialAccount debtorAccount = new FRFinancialAccount();
+        debtorAccount.setAccountId(TEST_PAYMENT_DEBTOR_ACC_ID);
+        final ConsentDecisionDeserialized authoriseConsentDecision = ConsentDecisionDeserialized.builder()
+                .debtorAccount(debtorAccount)
+                .consentJwt(consentRequestJwt)
+                .decision(Constants.ConsentDecisionStatus.AUTHORISED)
+                .build();
+        final HttpEntity<ConsentDecisionDeserialized> request = new HttpEntity<>(authoriseConsentDecision, headers());
+
+        final ResponseEntity<RedirectionAction> response = restTemplate.postForEntity(consentDecisionUrl, request, RedirectionAction.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK);
+        assertThat(response.getBody()).isNotNull();
+        final String consentResponseJwt = response.getBody().getConsentJwt();
+        assertThat(consentResponseJwt).isNotEmpty();
+        verifyConsentResponseJwt(consentResponseJwt);
+
+        // Verify consent in store is now authorised
+        final FundsConfirmationConsentEntity authorisedConsent = fundsConfirmationConsentService.getConsent(consent.getId(), consent.getApiClientId());
+        assertEquals(PaymentConsentStateModel.AUTHORISED, authorisedConsent.getStatus());
+        assertEquals(TEST_RESOURCE_OWNER_ID, authorisedConsent.getResourceOwnerId());
+        assertEquals(TEST_PAYMENT_DEBTOR_ACC_ID, authorisedConsent.getAuthorisedDebtorAccountId());
+    }
+
+    @Test
+    public void testRejectFundsConsent() {
+        final IntentType intentType = IntentType.FUNDS_CONFIRMATION_CONSENT;
+        Assumptions.assumeTrue(consentStoreEnabledIntentTypes.isIntentTypeSupported(intentType));
+
+        final FundsConfirmationConsentEntity consent = createFundsConfirmationConsentEntity();
+        final String consentRequestJwt = JwtTestHelper.consentRequestJwt(TEST_API_CLIENT_ID, consent.getId(), TEST_RESOURCE_OWNER_ID);
+
+        final ConsentDecisionDeserialized rejectConsentDecision = ConsentDecisionDeserialized.builder()
+                .consentJwt(consentRequestJwt)
+                .decision(ConsentDecisionStatus.REJECTED)
+                .build();
+        final HttpEntity<ConsentDecisionDeserialized> request = new HttpEntity<>(rejectConsentDecision, headers());
+
+        final ResponseEntity<RedirectionAction> response = restTemplate.postForEntity(consentDecisionUrl, request, RedirectionAction.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK);
+        assertThat(response.getBody()).isNotNull();
+        final String consentResponseJwt = response.getBody().getConsentJwt();
+        assertThat(consentResponseJwt).isNotEmpty();
+        verifyConsentResponseJwt(consentResponseJwt);
+
+        // Verify consent in store is now rejected
+        final FundsConfirmationConsentEntity rejectedConsent = fundsConfirmationConsentService.getConsent(consent.getId(), consent.getApiClientId());
+        assertEquals(FundsConfirmationConsentStateModel.REJECTED, rejectedConsent.getStatus());
+        assertEquals(TEST_RESOURCE_OWNER_ID, rejectedConsent.getResourceOwnerId());
+        assertNull(rejectedConsent.getAuthorisedDebtorAccountId());
+    }
+
+    FundsConfirmationConsentEntity createFundsConfirmationConsentEntity() {
+        final FundsConfirmationConsentEntity entity = new FundsConfirmationConsentEntity();
+        entity.setApiClientId(TEST_API_CLIENT_ID);
+        entity.setRequestVersion(OBVersion.v3_1_10);
+        entity.setStatus(PaymentConsentStateModel.AWAITING_AUTHORISATION);
+        final OBFundsConfirmationConsent1 fundsConfirmationConsent1 = new OBFundsConfirmationConsent1();
+        fundsConfirmationConsent1.setData(
+                new OBFundsConfirmationConsentData1()
+                        .expirationDateTime(DateTime.now().plusDays(30))
+                        .debtorAccount(
+                                new OBCashAccount3()
+                                        .schemeName("UK.OBIE.SortCodeAccountNumber")
+                                        .identification("40400422390112")
+                                        .name("Mrs B Smith")
+                        )
+        );
+        entity.setRequestObj(FRFundsConfirmationConsentConverter.toFRFundsConfirmationConsent(fundsConfirmationConsent1));
+        return fundsConfirmationConsentService.createConsent(entity);
     }
 
     <T extends BasePaymentConsentEntity> T setCommonPaymentConsentFields(T consent) {

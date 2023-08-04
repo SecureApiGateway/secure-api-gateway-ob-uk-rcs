@@ -15,16 +15,18 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details;
 
+import org.joda.time.DateTime;
+
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.joda.time.DateTime;
-
-import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 /**
- * Models the consent data for a confirmation of funds request.
+ * Models the consent data for a funds confirmation request.
  */
 @Data
 @SuperBuilder
@@ -33,6 +35,7 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 public class FundsConfirmationConsentDetails extends ConsentDetails {
 
     private DateTime expirationDateTime;
+    private FRAccountIdentifier debtorAccount;
 
     @Override
     public IntentType getIntentType() {
