@@ -15,10 +15,11 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.funds;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.AuthoriseConsentArgs;
+import javax.validation.constraints.NotNull;
+
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.constraints.NotNull;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.AuthoriseConsentArgs;
 
 @Validated
 public class FundsConfirmationAuthoriseConsentArgs extends AuthoriseConsentArgs {

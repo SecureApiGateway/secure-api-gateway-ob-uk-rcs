@@ -15,10 +15,11 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.funds;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.funds.FRFundsConfirmationConsent;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.BaseConsentEntity;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.validation.annotation.Validated;
+
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.funds.FRFundsConfirmationConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.BaseConsentEntity;
 
 /**
  * OBIE Funds Confirmation Consent: https://openbankinguk.github.io/read-write-api-site3/v3.1.10/resources-and-data-models/cbpii/funds-confirmation-consent.html

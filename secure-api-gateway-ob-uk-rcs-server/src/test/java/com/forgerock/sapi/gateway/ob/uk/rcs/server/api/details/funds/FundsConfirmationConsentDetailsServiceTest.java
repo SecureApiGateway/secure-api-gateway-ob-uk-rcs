@@ -15,6 +15,18 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.funds;
 
+import static com.forgerock.sapi.gateway.rcs.consent.store.repo.service.funds.DefaultFundsConfirmationAccessConsentServiceTest.createValidConsentEntity;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccountWithBalance;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.funds.FRFundsConfirmationConsentData;
@@ -33,20 +45,6 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreE
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.funds.FundsConfirmationConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.funds.FundsConfirmationConsentStateModel;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import javax.validation.constraints.Null;
-import java.util.UUID;
-
-import static com.forgerock.sapi.gateway.rcs.consent.store.repo.service.funds.DefaultFundsConfirmationAccessConsentServiceTest.createValidConsentEntity;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
 
 /**
  * Test for {@link FundsConfirmationConsentDetailsService}

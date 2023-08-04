@@ -15,24 +15,24 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.client.rs;
 
-import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.RsBackofficeConfiguration;
-import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.RsConfiguration;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccount;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccountWithBalance;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
-import lombok.extern.slf4j.Slf4j;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.web.util.UriComponentsBuilder.fromHttpUrl;
+
+import java.net.URI;
+import java.util.List;
+
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
-import java.util.List;
-import java.util.Optional;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccount;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccountWithBalance;
+import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.RsBackofficeConfiguration;
+import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.RsConfiguration;
 
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.web.util.UriComponentsBuilder.fromHttpUrl;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j

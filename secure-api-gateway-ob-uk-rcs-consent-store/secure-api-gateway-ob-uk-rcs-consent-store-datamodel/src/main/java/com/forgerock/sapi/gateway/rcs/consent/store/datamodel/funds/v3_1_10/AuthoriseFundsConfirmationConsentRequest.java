@@ -15,13 +15,12 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.BaseAuthoriseConsentRequest;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import java.util.List;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.BaseAuthoriseConsentRequest;
 
 @Validated
 public class AuthoriseFundsConfirmationConsentRequest extends BaseAuthoriseConsentRequest {

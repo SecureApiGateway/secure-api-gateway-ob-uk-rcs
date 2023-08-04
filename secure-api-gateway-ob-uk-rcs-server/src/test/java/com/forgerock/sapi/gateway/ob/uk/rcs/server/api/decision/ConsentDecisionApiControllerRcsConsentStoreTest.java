@@ -15,15 +15,56 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision;
 
+import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+
+import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.text.ParseException;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Stream;
+
+import javax.annotation.PostConstruct;
+
+import org.joda.time.DateTime;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
+
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRReadConsent;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRReadConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.funds.FRFundsConfirmationConsentConverter;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.*;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticScheduledConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticStandingOrderConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteFileConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalScheduledConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalStandingOrderConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVRPConsentConverters;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.funds.FRFundsConfirmationConsent;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.funds.FRFundsConfirmationConsentData;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.RedirectionAction;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.decision.ConsentDecisionDeserialized;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.Constants;
@@ -66,22 +107,7 @@ import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jwt.JWTClaimsSet;
-import org.joda.time.DateTime;
-import org.junit.jupiter.api.Assumptions;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ActiveProfiles;
+
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadConsent1;
 import uk.org.openbanking.datamodel.account.OBReadData1;
@@ -89,25 +115,14 @@ import uk.org.openbanking.datamodel.account.OBRisk2;
 import uk.org.openbanking.datamodel.common.OBCashAccount3;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentData1;
-import uk.org.openbanking.testsupport.payment.*;
+import uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory;
+import uk.org.openbanking.testsupport.payment.OBWriteDomesticScheduledConsentTestDataFactory;
+import uk.org.openbanking.testsupport.payment.OBWriteDomesticStandingOrderConsentTestDataFactory;
+import uk.org.openbanking.testsupport.payment.OBWriteFileConsentTestDataFactory;
+import uk.org.openbanking.testsupport.payment.OBWriteInternationalConsentTestDataFactory;
+import uk.org.openbanking.testsupport.payment.OBWriteInternationalScheduledConsentTestDataFactory;
+import uk.org.openbanking.testsupport.payment.OBWriteInternationalStandingOrderConsentTestDataFactory;
 import uk.org.openbanking.testsupport.vrp.OBDomesticVrpConsentRequestTestDataFactory;
-
-import javax.annotation.PostConstruct;
-import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.text.ParseException;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Stream;
-
-import static java.util.Collections.singletonList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 /**
  * Spring Boot Test for {@link ConsentDecisionApiController} using the RCS Consent Store.
@@ -265,44 +280,44 @@ public class ConsentDecisionApiControllerRcsConsentStoreTest {
 
     private BasePaymentConsentEntity createPaymentConsent(IntentType intentType) {
         switch (intentType) {
-            case PAYMENT_DOMESTIC_CONSENT:
-                return createDomesticPaymentConsentEntity();
-            case DOMESTIC_VRP_PAYMENT_CONSENT:
-                return createDomesticVRPConsentEntity();
-            case PAYMENT_DOMESTIC_SCHEDULED_CONSENT:
-                return createDomesticScheduledPaymentConsent();
-            case PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT:
-                return createDomesticStandingOrderConsent();
-            case PAYMENT_INTERNATIONAL_CONSENT:
-                return createInternationalPaymentConsent();
-            case PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT:
-                return createInternationalScheduledPaymentConsent();
-            case PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT:
-                return createInternationalStandingOrderConsent();
-            case PAYMENT_FILE_CONSENT:
-                return createFilePaymentConsent();
+        case PAYMENT_DOMESTIC_CONSENT:
+            return createDomesticPaymentConsentEntity();
+        case DOMESTIC_VRP_PAYMENT_CONSENT:
+            return createDomesticVRPConsentEntity();
+        case PAYMENT_DOMESTIC_SCHEDULED_CONSENT:
+            return createDomesticScheduledPaymentConsent();
+        case PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT:
+            return createDomesticStandingOrderConsent();
+        case PAYMENT_INTERNATIONAL_CONSENT:
+            return createInternationalPaymentConsent();
+        case PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT:
+            return createInternationalScheduledPaymentConsent();
+        case PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT:
+            return createInternationalStandingOrderConsent();
+        case PAYMENT_FILE_CONSENT:
+            return createFilePaymentConsent();
         }
         throw new UnsupportedOperationException();
     }
 
     private ConsentService getConsentService(IntentType intentType) {
         switch (intentType) {
-            case PAYMENT_DOMESTIC_CONSENT:
-                return domesticPaymentConsentService;
-            case DOMESTIC_VRP_PAYMENT_CONSENT:
-                return domesticVRPConsentService;
-            case PAYMENT_DOMESTIC_SCHEDULED_CONSENT:
-                return domesticScheduledPaymentConsentService;
-            case PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT:
-                return domesticStandingOrderConsentService;
-            case PAYMENT_INTERNATIONAL_CONSENT:
-                return internationalPaymentConsentService;
-            case PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT:
-                return internationalScheduledPaymentConsentService;
-            case PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT:
-                return internationalStandingOrderConsentService;
-            case PAYMENT_FILE_CONSENT:
-                return filePaymentConsentService;
+        case PAYMENT_DOMESTIC_CONSENT:
+            return domesticPaymentConsentService;
+        case DOMESTIC_VRP_PAYMENT_CONSENT:
+            return domesticVRPConsentService;
+        case PAYMENT_DOMESTIC_SCHEDULED_CONSENT:
+            return domesticScheduledPaymentConsentService;
+        case PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT:
+            return domesticStandingOrderConsentService;
+        case PAYMENT_INTERNATIONAL_CONSENT:
+            return internationalPaymentConsentService;
+        case PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT:
+            return internationalScheduledPaymentConsentService;
+        case PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT:
+            return internationalStandingOrderConsentService;
+        case PAYMENT_FILE_CONSENT:
+            return filePaymentConsentService;
         }
         throw new UnsupportedOperationException();
     }
@@ -438,7 +453,7 @@ public class ConsentDecisionApiControllerRcsConsentStoreTest {
         verifyConsentResponseJwt(consentResponseJwt);
 
         // Verify consent in store is now rejected
-        final FundsConfirmationConsentEntity rejectedConsent =fundsConfirmationConsentService.getConsent(consent.getId(), consent.getApiClientId());
+        final FundsConfirmationConsentEntity rejectedConsent = fundsConfirmationConsentService.getConsent(consent.getId(), consent.getApiClientId());
         assertEquals(FundsConfirmationConsentStateModel.REJECTED, rejectedConsent.getStatus());
         assertEquals(TEST_RESOURCE_OWNER_ID, rejectedConsent.getResourceOwnerId());
         assertNull(rejectedConsent.getAuthorisedDebtorAccountId());

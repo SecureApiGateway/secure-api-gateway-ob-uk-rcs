@@ -15,14 +15,15 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details;
 
+import org.joda.time.DateTime;
+
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.joda.time.DateTime;
-
-import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 /**
  * Models the consent data for a funds confirmation request.

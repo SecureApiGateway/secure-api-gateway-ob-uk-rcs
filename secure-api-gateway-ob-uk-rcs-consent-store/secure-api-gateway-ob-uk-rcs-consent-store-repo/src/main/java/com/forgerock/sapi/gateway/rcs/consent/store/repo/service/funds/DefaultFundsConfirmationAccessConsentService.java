@@ -15,11 +15,12 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.funds;
 
+import org.springframework.stereotype.Service;
+
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.funds.FundsConfirmationConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.funds.FundsConfirmationConsentRepository;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
-import org.springframework.stereotype.Service;
 
 @Service
 public class DefaultFundsConfirmationAccessConsentService extends BaseConsentService<FundsConfirmationConsentEntity, FundsConfirmationAuthoriseConsentArgs> implements FundsConfirmationConsentService {
