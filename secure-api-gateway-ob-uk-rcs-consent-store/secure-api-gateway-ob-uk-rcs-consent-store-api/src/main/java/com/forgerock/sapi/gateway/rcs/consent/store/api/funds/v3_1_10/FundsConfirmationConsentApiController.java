@@ -106,6 +106,7 @@ public class FundsConfirmationConsentApiController implements FundsConfirmationC
         dto.setRequestVersion(entity.getRequestVersion());
         dto.setRequestObj(entity.getRequestObj());
         dto.setResourceOwnerId(entity.getResourceOwnerId());
+        dto.setAuthorisedDebtorAccountId(entity.getAuthorisedDebtorAccountId());
         return dto;
     }
 }
