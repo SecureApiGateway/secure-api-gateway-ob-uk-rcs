@@ -25,10 +25,21 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class FundsConfirmationConsent extends BaseConsent<FRFundsConfirmationConsent> {
 
+    private String authorisedDebtorAccountId;
+
+    public String getAuthorisedDebtorAccountId() {
+        return authorisedDebtorAccountId;
+    }
+
+    public void setAuthorisedDebtorAccountId(String authorisedDebtorAccountId) {
+        this.authorisedDebtorAccountId = authorisedDebtorAccountId;
+    }
+
     @Override
     public String toString() {
         return "FundsConfirmationConsent{" +
                 ", id='" + getId() + '\'' +
+                ", authorisedDebtorAccountId='" + authorisedDebtorAccountId + '\'' +
                 ", requestObj=" + getRequestObj() +
                 ", requestVersion=" + getRequestVersion() +
                 ", status='" + getStatus() + '\'' +

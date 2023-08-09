@@ -45,6 +45,7 @@ public class FundsConfirmationConsentValidationHelpers {
     public static void validateAuthorisedConsent(FundsConfirmationConsent authorisedConsent, AuthoriseFundsConfirmationConsentRequest authoriseReq, FundsConfirmationConsent originalConsent) {
         assertThat(authorisedConsent.getStatus()).isEqualTo(StatusEnum.AUTHORISED.toString());
         assertThat(authorisedConsent.getResourceOwnerId()).isEqualTo(authoriseReq.getResourceOwnerId());
+        assertThat(authorisedConsent.getAuthorisedDebtorAccountId()).isEqualTo(authoriseReq.getAuthorisedDebtorAccountId());
         validateUpdatedConsentAgainstOriginal(authorisedConsent, originalConsent);
     }
 
