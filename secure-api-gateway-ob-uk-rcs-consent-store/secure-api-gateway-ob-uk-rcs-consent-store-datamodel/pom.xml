@@ -22,11 +22,11 @@
     <parent>
         <groupId>com.forgerock.sapi.gateway</groupId>
         <artifactId>secure-api-gateway-ob-uk-rcs-consent-store</artifactId>
-        <version>2.0.1</version>
+        <version>2.0.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>secure-api-gateway-ob-uk-rcs-consent-store-datamodel</artifactId>
-    <version>2.0.1</version>
+    <version>2.0.2-SNAPSHOT</version>
 
     <properties>
         <legal.path.header>../../legal/LICENSE-HEADER.txt</legal.path.header>
