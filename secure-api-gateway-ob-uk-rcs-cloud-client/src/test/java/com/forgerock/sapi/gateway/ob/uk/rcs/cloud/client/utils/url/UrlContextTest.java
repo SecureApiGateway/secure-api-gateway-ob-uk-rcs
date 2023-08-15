@@ -18,7 +18,6 @@ package com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.utils.url;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.Constants;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ExceptionClient;
-import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 import org.junit.jupiter.api.Test;
 
@@ -31,46 +30,6 @@ import static org.assertj.core.api.Assertions.catchThrowableOfType;
  * Unit test for {@link UrlContext}
  */
 public class UrlContextTest {
-
-    @Test
-    public void shouldReplaceIntentId() throws ExceptionClient {
-        // Given
-        String partTestContext = "/repo/context/";
-        String testContext = partTestContext + Constants.URLParameters.INTENT_ID;
-        String intentId = IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId();
-
-        // When
-        String replaced = UrlContext.replaceParameterContextIntentId(testContext, intentId);
-
-        //Then
-        assertThat(replaced).isEqualTo(partTestContext + intentId);
-    }
-
-    @Test
-    public void shouldGetUnknownIntentType() {
-        // Given
-        String partTestContext = "/repo/context/";
-        String testContext = partTestContext + Constants.URLParameters.INTENT_ID;
-        // No intentTypeClient prefix
-        String intentId = UUID.randomUUID().toString();
-
-        // When
-        ExceptionClient exception = catchThrowableOfType(() -> UrlContext.replaceParameterContextIntentId(testContext, intentId), ExceptionClient.class);
-
-        //Then
-        assertThat(exception.getErrorClient().getErrorType()).isEqualTo(ErrorType.UNKNOWN_INTENT_TYPE);
-        assertThat(exception.getErrorClient().getErrorType().getInternalCode()).isEqualTo(ErrorType.UNKNOWN_INTENT_TYPE.getInternalCode());
-    }
-
-    @Test
-    public void shouldGetParameterErrorIntentContext() {
-        // When
-        ExceptionClient exception = catchThrowableOfType(() -> UrlContext.replaceParameterContextIntentId(null, null), ExceptionClient.class);
-
-        //Then
-        assertThat(exception.getErrorClient().getErrorType()).isEqualTo(ErrorType.PARAMETER_ERROR);
-        assertThat(exception.getErrorClient().getErrorType().getInternalCode()).isEqualTo(ErrorType.PARAMETER_ERROR.getInternalCode());
-    }
 
     @Test
     public void shouldReplaceParameterContextValue() throws ExceptionClient {

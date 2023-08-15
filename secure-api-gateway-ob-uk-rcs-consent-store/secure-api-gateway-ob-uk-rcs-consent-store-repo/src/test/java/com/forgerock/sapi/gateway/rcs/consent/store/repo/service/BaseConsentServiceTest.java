@@ -148,7 +148,8 @@ public abstract class BaseConsentServiceTest<T extends BaseConsentEntity<?>, A e
         assertThat(rejectedConsent.getStatus()).isEqualTo(getConsentStateModel().getRejectedConsentStatus());
         assertThat(rejectedConsent.getResourceOwnerId()).isEqualTo(TEST_RESOURCE_OWNER);
 
-        assertThat(rejectedConsent.getStatusUpdatedDateTime()).isGreaterThan(consentBeforeRejectAction.getStatusUpdatedDateTime())
+        // sometimes actions complete so fast that statusUpdatedTime is the same (to millisecond precision)
+        assertThat(rejectedConsent.getStatusUpdatedDateTime()).isGreaterThanOrEqualTo(consentBeforeRejectAction.getStatusUpdatedDateTime())
                                                               .isLessThanOrEqualTo(DateTime.now());
         assertThat(rejectedConsent.getEntityVersion()).isEqualTo(consentBeforeRejectAction.getEntityVersion() + 1);
     }

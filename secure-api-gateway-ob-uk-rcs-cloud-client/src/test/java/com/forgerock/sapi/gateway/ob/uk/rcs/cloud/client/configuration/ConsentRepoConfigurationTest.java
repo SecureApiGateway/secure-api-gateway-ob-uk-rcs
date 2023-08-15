@@ -56,17 +56,8 @@ public class ConsentRepoConfigurationTest {
     @Test
     public void shouldHaveAllPropertiesSet() {
         assertThat(consentRepoConfiguration.getConsentRepoBaseUri()).isNotNull();
-        assertThat(consentRepoConfiguration.getContextsRepoConsent()).isNotNull();
         assertThat(consentRepoConfiguration.getContextsApiClient()).isNotNull();
         assertThat(consentRepoConfiguration.getContextsUser()).isNotNull();
-    }
-
-    @Test
-    public void shouldHaveConsentContextVerbProperties() {
-        assertThat(consentRepoConfiguration.getContextsRepoConsent().get(GET)).isNotNull();
-        assertThat(consentRepoConfiguration.getContextsRepoConsent().get(PUT)).isNotNull();
-        assertThat(consentRepoConfiguration.getContextsRepoConsent().get(PATCH)).isNotNull();
-        assertThat(consentRepoConfiguration.getContextsRepoConsent().get(DELETE)).isNotNull();
     }
 
     @Test

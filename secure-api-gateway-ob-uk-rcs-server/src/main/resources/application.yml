@@ -68,12 +68,6 @@ consent:
       put: /repo/users/@UserId@
       patch: /repo/users/@UserId@
       delete: /repo/users/@UserId@
-    # Context to build the URI to make a request against the repository endpoint to obtain the consent object intentId
-    contexts_repo_consent:
-      get: /repo/consents/@IntentId@
-      put: /repo/consents/@IntentId@
-      patch: /repo/consents/@IntentId@
-      delete: /repo/consents/@IntentId@
 
   # RCS Consent Store config
   store:

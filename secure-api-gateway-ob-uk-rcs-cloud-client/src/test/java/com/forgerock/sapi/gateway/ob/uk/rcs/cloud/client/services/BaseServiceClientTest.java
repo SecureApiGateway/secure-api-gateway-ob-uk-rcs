@@ -26,7 +26,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestTemplate;
 
-import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(MockitoExtension.class)
 public class BaseServiceClientTest {
@@ -41,9 +40,6 @@ public class BaseServiceClientTest {
     @BeforeEach
     public void setup() {
         urlContextMockedStatic = Mockito.mockStatic(UrlContext.class);
-        urlContextMockedStatic.when(
-                () -> UrlContext.replaceParameterContextIntentId(anyString(), anyString())
-        ).thenReturn("http://a.domain/context/intent-id-xxxx");
     }
 
     @AfterEach

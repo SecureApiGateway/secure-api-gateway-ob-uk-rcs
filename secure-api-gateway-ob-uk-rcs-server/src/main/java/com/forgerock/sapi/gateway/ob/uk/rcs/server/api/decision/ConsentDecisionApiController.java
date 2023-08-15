@@ -27,13 +27,11 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ExceptionClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.ConsentClientDecisionRequest;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.ConsentClientDecisionRequestData;
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services.ConsentServiceClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.utils.jwt.JwtUtil;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.exception.InvalidConsentException;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.jwt.RcsJwtSigner;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
-import com.google.gson.JsonObject;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
@@ -59,18 +57,16 @@ import static com.forgerock.sapi.gateway.ob.uk.rcs.server.util.ConsentDecisionDe
 public class ConsentDecisionApiController implements ConsentDecisionApi {
 
     private final ObjectMapper objectMapper;
-    private final ConsentServiceClient consentServiceClient;
     private final RcsJwtSigner jwtSigner;
     private final String rcsJwtIssuer;
 
     private final ConsentStoreDecisionServiceRegistry consentStoreDecisionServiceRegistry;
 
-    public ConsentDecisionApiController(ObjectMapper objectMapper, ConsentServiceClient consentServiceClient,
+    public ConsentDecisionApiController(ObjectMapper objectMapper,
                                         RcsJwtSigner jwtSigner,
                                         @Value("${rcs.consent.response.jwt.issuer}") String rcsJwtIssuer,
                                         ConsentStoreDecisionServiceRegistry consentStoreDecisionServiceRegistry) {
         this.objectMapper = objectMapper;
-        this.consentServiceClient = consentServiceClient;
         this.jwtSigner = jwtSigner;
         this.rcsJwtIssuer = rcsJwtIssuer;
         this.consentStoreDecisionServiceRegistry = consentStoreDecisionServiceRegistry;
@@ -134,9 +130,7 @@ public class ConsentDecisionApiController implements ConsentDecisionApi {
                         consentStoreDecisionServiceRegistry.rejectConsent(intentType, intentId, clientId, resourceOwner);
                     }
                 } else {
-                    log.debug("Updating consent: {}  in idm", intentId);
-                    JsonObject consentUpdated = consentServiceClient.updateConsent(consentClientDecisionRequest);
-                    log.debug("Consent updated '{}", consentUpdated);
+                    throw new IllegalStateException(intentType + " not supported");
                 }
 
                 JWTClaimsSet jwtClaimsSetGenerated = generateJWTResponse(authorised, consentClientDecisionRequest);

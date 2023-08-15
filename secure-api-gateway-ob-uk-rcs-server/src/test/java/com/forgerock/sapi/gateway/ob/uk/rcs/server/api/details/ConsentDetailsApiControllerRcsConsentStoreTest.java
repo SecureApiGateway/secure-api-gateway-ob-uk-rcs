@@ -30,7 +30,6 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.*;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -180,8 +179,6 @@ public class ConsentDetailsApiControllerRcsConsentStoreTest {
     @MethodSource("validConsentDetailsArguments")
     public <C extends ConsentDetails> void shouldGetParameterizedConsentDetails(IntentType intentType, ConsentDetails testConsentDetails,
                                                                                   Class<C> consentDetailsClass) throws Exception {
-
-        Assumptions.assumeTrue(consentStoreEnabledIntentTypes.isIntentTypeSupported(intentType));
 
         final String consentId = testConsentDetails.getConsentId();
         ConsentClientDetailsRequest consentDetailsRequest = aValidConsentDetailsRequest(consentId);
