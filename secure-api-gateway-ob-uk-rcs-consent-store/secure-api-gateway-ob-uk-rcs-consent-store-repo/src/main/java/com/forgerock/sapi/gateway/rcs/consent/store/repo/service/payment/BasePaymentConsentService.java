@@ -21,6 +21,8 @@ import java.util.function.Supplier;
 import org.joda.time.DateTime;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.BasePaymentConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException.ErrorType;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.payment.PaymentConsentRepository;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentStateModel;
@@ -46,7 +48,13 @@ public class BasePaymentConsentService<T extends BasePaymentConsentEntity<?>, A 
     @Override
     public T createConsent(T consent) {
         final Optional<T> consentMatchingIdempotencyData = getRepo().findByIdempotencyData(consent.getApiClientId(), consent.getIdempotencyKey(), DateTime.now());
-        // TODO ifPresent then test that requests match
+        if (consentMatchingIdempotencyData.isPresent()) {
+            final T existingConsent = consentMatchingIdempotencyData.get();
+            if (!existingConsent.getRequestObj().equals(consent.getRequestObj())) {
+                throw new ConsentStoreException(ErrorType.IDEMPOTENCY_ERROR, existingConsent.getId(),
+                        "The provided Idempotency Key: '" + consent.getIdempotencyKey() + "' header matched a previous request but the request body has been changed.");
+            }
+        }
         return consentMatchingIdempotencyData.orElseGet(() -> super.createConsent(consent));
     }
 

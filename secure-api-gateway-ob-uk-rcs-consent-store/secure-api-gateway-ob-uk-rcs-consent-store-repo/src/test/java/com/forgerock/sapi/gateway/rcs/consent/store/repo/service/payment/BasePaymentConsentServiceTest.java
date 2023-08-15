@@ -16,11 +16,13 @@
 package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.UUID;
 
 import javax.validation.ConstraintViolationException;
 
 import org.joda.time.DateTime;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.BasePaymentConsentEntity;
@@ -59,14 +61,15 @@ public abstract class BasePaymentConsentServiceTest<T extends BasePaymentConsent
 
     @Test
     void createConsentShouldBeIdempotent() {
-        final String idempotencyKey = "key-1";
+        final String idempotencyKey = UUID.randomUUID().toString();
         final DateTime idempotencyKeyExpiry = DateTime.now().plusDays(1);
+
+        final T validConsentEntity = getValidConsentEntity();
+        validConsentEntity.setIdempotencyKey(idempotencyKey);
+        validConsentEntity.setIdempotencyKeyExpiration(idempotencyKeyExpiry);
 
         T firstCreateResponse = null;
         for (int i = 0 ; i < 10; i++) {
-            final T validConsentEntity = getValidConsentEntity();
-            validConsentEntity.setIdempotencyKey(idempotencyKey);
-            validConsentEntity.setIdempotencyKeyExpiration(idempotencyKeyExpiry);
             final T consentResponse = getPaymentConsentService().createConsent(validConsentEntity);
             if (firstCreateResponse == null) {
                 firstCreateResponse = consentResponse;
@@ -74,6 +77,25 @@ public abstract class BasePaymentConsentServiceTest<T extends BasePaymentConsent
                 assertThat(consentResponse).usingRecursiveComparison().isEqualTo(firstCreateResponse);
             }
         }
+    }
+
+    @Test
+    void createConsentIdempotencyCheckShouldFailIfRequestObjDoesNotMatch() {
+        final String idempotencyKey = UUID.randomUUID().toString();
+        final DateTime idempotencyKeyExpiry = DateTime.now().plusDays(1);
+
+        final T validConsentEntity = getValidConsentEntity();
+        validConsentEntity.setIdempotencyKey(idempotencyKey);
+        validConsentEntity.setIdempotencyKeyExpiration(idempotencyKeyExpiry);
+        final T consentResponse = getPaymentConsentService().createConsent(validConsentEntity);
+
+        final T secomdConsentEntity = getValidConsentEntity();
+        secomdConsentEntity.setIdempotencyKey(idempotencyKey);
+        secomdConsentEntity.setIdempotencyKeyExpiration(idempotencyKeyExpiry);
+        final ConsentStoreException consentStoreException = assertThrows(ConsentStoreException.class, () -> getPaymentConsentService().createConsent(secomdConsentEntity));
+        assertThat(consentStoreException.getErrorType()).isEqualTo(ErrorType.IDEMPOTENCY_ERROR);
+        assertThat(consentStoreException.getConsentId()).isEqualTo(consentResponse.getId());
+        assertThat(consentStoreException.getMessage()).contains("The provided Idempotency Key: '" + idempotencyKey + "' header matched a previous request but the request body has been changed");
     }
 
     @Test
@@ -86,7 +108,7 @@ public abstract class BasePaymentConsentServiceTest<T extends BasePaymentConsent
     @Test
     void failToConsumeConsentAwaitingAuthorisation() {
         final T persistedConsent = getConsentInStateToAuthoriseOrReject();
-        final ConsentStoreException consentStoreException = Assertions.assertThrows(ConsentStoreException.class, () -> getPaymentConsentService().consumeConsent(persistedConsent.getId(), persistedConsent.getApiClientId()));
+        final ConsentStoreException consentStoreException = assertThrows(ConsentStoreException.class, () -> getPaymentConsentService().consumeConsent(persistedConsent.getId(), persistedConsent.getApiClientId()));
         assertThat(consentStoreException.getConsentId()).isEqualTo(persistedConsent.getId());
         assertThat(consentStoreException.getErrorType()).isEqualTo(ErrorType.INVALID_STATE_TRANSITION);
         assertThat(consentStoreException.getMessage()).contains("cannot transition from consentStatus: AwaitingAuthorisation to status: Consumed");
@@ -95,7 +117,7 @@ public abstract class BasePaymentConsentServiceTest<T extends BasePaymentConsent
     @Test
     void failToAuthoriseConsentMissingDebtorAccountId() {
         final T persistedConsent = getConsentInStateToAuthoriseOrReject();
-        final ConstraintViolationException ex = Assertions.assertThrows(ConstraintViolationException.class,
+        final ConstraintViolationException ex = assertThrows(ConstraintViolationException.class,
                 () -> getPaymentConsentService().authoriseConsent(new PaymentAuthoriseConsentArgs(persistedConsent.getId(), persistedConsent.getApiClientId(), "user-1234", null)));
         assertThat(ex.getMessage()).isEqualTo("authoriseConsent.arg0.authorisedDebtorAccountId: must not be null");
     }

@@ -15,10 +15,20 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.repo;
 
+import javax.annotation.PostConstruct;
+
+import org.joda.time.DateTimeZone;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 
 @SpringBootApplication
 @Import(ConsentStoreConfiguration.class)
 public class TestApp {
+
+    @PostConstruct
+    void postConstruct() {
+        // This is needed to make data generated in the unit tests UTC, which makes equality checking easier as Mongo will return data in UTC (and DateTime.equals using different timezones is false)
+        DateTimeZone.setDefault(DateTimeZone.UTC);
+    }
+
 }
