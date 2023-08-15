@@ -16,6 +16,7 @@
 package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.vrp;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 import java.util.UUID;
@@ -130,6 +131,45 @@ public class DefaultDomesticVRPConsentServiceTest extends BaseConsentServiceTest
         consentService.deleteConsent(consentId, consentObj.getApiClientId());
         final ConsentStoreException consentStoreException = org.junit.jupiter.api.Assertions.assertThrows(ConsentStoreException.class, () -> consentService.getConsent(consentId, consentObj.getApiClientId()));
         Assertions.assertThat(consentStoreException.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
+    }
+
+    @Test
+    void createConsentShouldBeIdempotent() {
+        final String idempotencyKey = UUID.randomUUID().toString();
+        final DateTime idempotencyKeyExpiry = DateTime.now().plusDays(1);
+
+        final DomesticVRPConsentEntity validConsentEntity = getValidConsentEntity();
+        validConsentEntity.setIdempotencyKey(idempotencyKey);
+        validConsentEntity.setIdempotencyKeyExpiration(idempotencyKeyExpiry);
+
+        DomesticVRPConsentEntity firstCreateResponse = null;
+        for (int i = 0 ; i < 10; i++) {
+            final DomesticVRPConsentEntity consentResponse = service.createConsent(validConsentEntity);
+            if (firstCreateResponse == null) {
+                firstCreateResponse = consentResponse;
+            } else {
+                assertThat(consentResponse).usingRecursiveComparison().isEqualTo(firstCreateResponse);
+            }
+        }
+    }
+
+    @Test
+    void createConsentIdempotencyCheckShouldFailIfRequestObjDoesNotMatch() {
+        final String idempotencyKey = UUID.randomUUID().toString();
+        final DateTime idempotencyKeyExpiry = DateTime.now().plusDays(1);
+
+        final DomesticVRPConsentEntity validConsentEntity = getValidConsentEntity();
+        validConsentEntity.setIdempotencyKey(idempotencyKey);
+        validConsentEntity.setIdempotencyKeyExpiration(idempotencyKeyExpiry);
+        final DomesticVRPConsentEntity consentResponse = service.createConsent(validConsentEntity);
+
+        final DomesticVRPConsentEntity secomdConsentEntity = getValidConsentEntity();
+        secomdConsentEntity.setIdempotencyKey(idempotencyKey);
+        secomdConsentEntity.setIdempotencyKeyExpiration(idempotencyKeyExpiry);
+        final ConsentStoreException consentStoreException = assertThrows(ConsentStoreException.class, () -> service.createConsent(secomdConsentEntity));
+        assertThat(consentStoreException.getErrorType()).isEqualTo(ErrorType.IDEMPOTENCY_ERROR);
+        assertThat(consentStoreException.getConsentId()).isEqualTo(consentResponse.getId());
+        assertThat(consentStoreException.getMessage()).contains("The provided Idempotency Key: '" + idempotencyKey + "' header matched a previous request but the request body has been changed");
     }
 
 }

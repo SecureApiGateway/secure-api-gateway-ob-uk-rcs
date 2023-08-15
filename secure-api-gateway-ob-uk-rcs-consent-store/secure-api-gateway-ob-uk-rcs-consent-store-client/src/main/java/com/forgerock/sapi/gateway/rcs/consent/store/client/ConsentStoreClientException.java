@@ -26,6 +26,7 @@ public class ConsentStoreClientException extends RuntimeException {
         BAD_REQUEST,
         INVALID_STATE_TRANSITION,
         FAILED_TO_DECODE_RESPONSE,
+        IDEMPOTENCY_ERROR,
         UNKNOWN
     }
 
