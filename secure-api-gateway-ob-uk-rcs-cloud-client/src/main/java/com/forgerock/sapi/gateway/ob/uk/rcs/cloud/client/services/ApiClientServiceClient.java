@@ -16,7 +16,7 @@
 package com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services;
 
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.Constants;
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.configuration.ConsentRepoConfiguration;
+import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.configuration.CloudClientConfiguration;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ExceptionClient;
@@ -38,11 +38,11 @@ import static org.springframework.http.HttpMethod.GET;
 public class ApiClientServiceClient {
 
     private final RestTemplate restTemplate;
-    private final ConsentRepoConfiguration consentRepoConfiguration;
+    private final CloudClientConfiguration cloudClientConfiguration;
 
-    public ApiClientServiceClient(RestTemplate restTemplate, ConsentRepoConfiguration consentRepoConfiguration) {
+    public ApiClientServiceClient(RestTemplate restTemplate, CloudClientConfiguration cloudClientConfiguration) {
         this.restTemplate = restTemplate;
-        this.consentRepoConfiguration = consentRepoConfiguration;
+        this.cloudClientConfiguration = cloudClientConfiguration;
     }
 
     public ApiClient getApiClient(String apiClientId) throws ExceptionClient {
@@ -62,9 +62,9 @@ public class ApiClientServiceClient {
     }
 
     private ApiClient request(String apiClientId) throws ExceptionClient {
-        String apiClientURL = consentRepoConfiguration.getConsentRepoBaseUri() +
+        String apiClientURL = cloudClientConfiguration.getBaseUri() +
                 UrlContext.replaceParameterContextValue(
-                        consentRepoConfiguration.getContextsApiClient().get(GET.name()),
+                        cloudClientConfiguration.getContextsApiClient().get(GET.name()),
                         Constants.URLParameters.CLIENT_ID,
                         apiClientId
                 );

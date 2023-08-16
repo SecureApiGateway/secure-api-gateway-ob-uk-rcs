@@ -16,6 +16,7 @@
 package com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.configuration;
 
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.TestApplicationClient;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -30,13 +31,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 
 /**
- * Unit test for {@link ConsentRepoConfiguration}
+ * Unit test for {@link CloudClientConfiguration}
  */
-@ContextConfiguration(classes = {ConsentRepoConfiguration.class}, initializers = ConfigFileApplicationContextInitializer.class)
-@EnableConfigurationProperties(value = ConsentRepoConfiguration.class)
+@ContextConfiguration(classes = {CloudClientConfiguration.class}, initializers = ConfigFileApplicationContextInitializer.class)
+@EnableConfigurationProperties(value = CloudClientConfiguration.class)
 @ActiveProfiles("test")
 @SpringBootTest(classes = TestApplicationClient.class, webEnvironment = MOCK)
-public class ConsentRepoConfigurationTest {
+public class CloudClientConfigurationTest {
 
     // values to get the proper context from the http verb that match with key mapping in the context, case-insensitive.
     private static final String GET = "GeT";
@@ -46,33 +47,33 @@ public class ConsentRepoConfigurationTest {
     @MockBean // mandatory to satisfied dependency for beans definitions
     private RestTemplate restTemplate;
     @Autowired
-    private ConsentRepoConfiguration consentRepoConfiguration;
+    private CloudClientConfiguration cloudClientConfiguration;
 
     @Test
     public void shouldConfigureIgBaseUri(){
-        assertThat(consentRepoConfiguration.getConsentRepoBaseUri()).isEqualTo("http://ig:80");
+        assertThat(cloudClientConfiguration.getBaseUri()).isEqualTo("http://ig:80");
     }
 
     @Test
     public void shouldHaveAllPropertiesSet() {
-        assertThat(consentRepoConfiguration.getConsentRepoBaseUri()).isNotNull();
-        assertThat(consentRepoConfiguration.getContextsApiClient()).isNotNull();
-        assertThat(consentRepoConfiguration.getContextsUser()).isNotNull();
+        assertThat(cloudClientConfiguration.getBaseUri()).isNotNull();
+        assertThat(cloudClientConfiguration.getContextsApiClient()).isNotNull();
+        assertThat(cloudClientConfiguration.getContextsUser()).isNotNull();
     }
 
     @Test
     public void shouldHaveApiClientContextVerbProperties() {
-        assertThat(consentRepoConfiguration.getContextsApiClient().get(GET)).isNotNull();
-        assertThat(consentRepoConfiguration.getContextsApiClient().get(PUT)).isNotNull();
-        assertThat(consentRepoConfiguration.getContextsApiClient().get(PATCH)).isNotNull();
-        assertThat(consentRepoConfiguration.getContextsApiClient().get(DELETE)).isNotNull();
+        assertThat(cloudClientConfiguration.getContextsApiClient().get(GET)).isNotNull();
+        assertThat(cloudClientConfiguration.getContextsApiClient().get(PUT)).isNotNull();
+        assertThat(cloudClientConfiguration.getContextsApiClient().get(PATCH)).isNotNull();
+        assertThat(cloudClientConfiguration.getContextsApiClient().get(DELETE)).isNotNull();
     }
 
     @Test
     public void shouldHaveUserContextVerbProperties() {
-        assertThat(consentRepoConfiguration.getContextsUser().get(GET)).isNotNull();
-        assertThat(consentRepoConfiguration.getContextsUser().get(PUT)).isNotNull();
-        assertThat(consentRepoConfiguration.getContextsUser().get(PATCH)).isNotNull();
-        assertThat(consentRepoConfiguration.getContextsUser().get(DELETE)).isNotNull();
+        assertThat(cloudClientConfiguration.getContextsUser().get(GET)).isNotNull();
+        assertThat(cloudClientConfiguration.getContextsUser().get(PUT)).isNotNull();
+        assertThat(cloudClientConfiguration.getContextsUser().get(PATCH)).isNotNull();
+        assertThat(cloudClientConfiguration.getContextsUser().get(DELETE)).isNotNull();
     }
 }

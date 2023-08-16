@@ -16,7 +16,7 @@
 package com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services;
 
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.Constants;
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.configuration.ConsentRepoConfiguration;
+import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.configuration.CloudClientConfiguration;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ExceptionClient;
@@ -38,11 +38,11 @@ import static org.springframework.http.HttpMethod.GET;
 public class UserServiceClient {
 
     private final RestTemplate restTemplate;
-    private final ConsentRepoConfiguration consentRepoConfiguration;
+    private final CloudClientConfiguration cloudClientConfiguration;
 
-    public UserServiceClient(RestTemplate restTemplate, ConsentRepoConfiguration consentRepoConfiguration) {
+    public UserServiceClient(RestTemplate restTemplate, CloudClientConfiguration cloudClientConfiguration) {
         this.restTemplate = restTemplate;
-        this.consentRepoConfiguration = consentRepoConfiguration;
+        this.cloudClientConfiguration = cloudClientConfiguration;
     }
 
     public User getUser(String userId) throws ExceptionClient {
@@ -62,9 +62,9 @@ public class UserServiceClient {
     }
 
     private User request(String userId) throws ExceptionClient {
-        String userURL = consentRepoConfiguration.getConsentRepoBaseUri() +
+        String userURL = cloudClientConfiguration.getBaseUri() +
                 UrlContext.replaceParameterContextValue(
-                        consentRepoConfiguration.getContextsUser().get(GET.name()),
+                        cloudClientConfiguration.getContextsUser().get(GET.name()),
                         Constants.URLParameters.USER_ID,
                         userId
                 );
