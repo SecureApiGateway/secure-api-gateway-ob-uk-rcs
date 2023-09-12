@@ -15,6 +15,8 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.customerinfo;
 
+import org.springframework.stereotype.Component;
+
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.decision.ConsentDecisionDeserialized;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.BaseConsentDecisionService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.customerinfo.CustomerInfoConsentEntity;
@@ -22,6 +24,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.customerinfo.Cu
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.customerinfo.CustomerInfoConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
+@Component
 public class CustomerInfoConsentDecisionService extends BaseConsentDecisionService<CustomerInfoConsentEntity, CustomerInfoAuthoriseConsentArgs> {
 
     public CustomerInfoConsentDecisionService(CustomerInfoConsentService customerInfoConsentService) {
