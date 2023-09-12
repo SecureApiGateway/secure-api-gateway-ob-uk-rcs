@@ -16,6 +16,7 @@
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision;
 
 import static com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.account.AccountAccessConsentDecisionServiceTest.createAuthoriseAccountAccessConsentDecision;
+import static com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.customerinfo.CustomerInfoConsentDecisionServiceTest.createAuthoriseCustomerInfoConsentDecision;
 import static com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.payment.domestic.DomesticPaymentConsentDecisionServiceTest.createAuthorisePaymentConsentDecision;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -36,10 +37,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.decision.ConsentDecisionDeserialized;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.account.AccountAccessConsentDecisionService;
+import com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.customerinfo.CustomerInfoConsentDecisionService;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.payment.domestic.DomesticPaymentConsentDecisionService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.ConsentStoreEnabledIntentTypes;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessAuthoriseConsentArgs;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessConsentService;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.customerinfo.CustomerInfoAuthoriseConsentArgs;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.customerinfo.CustomerInfoConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DomesticPaymentConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
@@ -60,18 +64,29 @@ class ConsentStoreDecisionServiceRegistryTest {
     @Mock
     private AccountAccessConsentService accountAccessConsentService;
 
+    @Mock
+    private CustomerInfoConsentService customerInfoConsentService;
+
     @InjectMocks
     private AccountAccessConsentDecisionService accountAccessConsentDecisionService;
 
     @InjectMocks
     private DomesticPaymentConsentDecisionService domesticPaymentConsentDecisionService;
 
+    @InjectMocks
+    private CustomerInfoConsentDecisionService customerInfoConsentDecisionService;
+
     private ConsentStoreDecisionServiceRegistry consentStoreDecisionServiceRegistry;
 
     @BeforeEach
     public void beforeEach() {
         consentStoreDecisionServiceRegistry = new ConsentStoreDecisionServiceRegistry(consentStoreEnabledIntentTypes,
-                List.of(accountAccessConsentDecisionService, domesticPaymentConsentDecisionService));
+                List.of(
+                        accountAccessConsentDecisionService,
+                        domesticPaymentConsentDecisionService,
+                        customerInfoConsentDecisionService
+                )
+        );
     }
 
     @Test
@@ -112,7 +127,19 @@ class ConsentStoreDecisionServiceRegistryTest {
         verifyNoMoreInteractions(accountAccessConsentService);
     }
 
+    @Test
+    public void testSubmitCustomerInfoConsentAuthoriseDecision() {
+        final IntentType customerInfoConsent = IntentType.CUSTOMER_INFO_CONSENT;
+        given(consentStoreEnabledIntentTypes.isIntentTypeSupported(eq(customerInfoConsent))).willReturn(Boolean.TRUE);
 
+        final String intentId = customerInfoConsent.generateIntentId();
+
+        final ConsentDecisionDeserialized consentDecision = createAuthoriseCustomerInfoConsentDecision();
+        consentStoreDecisionServiceRegistry.authoriseConsent(customerInfoConsent, intentId, TEST_API_CLIENT_ID, TEST_RESOURCE_OWNER_ID, consentDecision);
+
+        verify(customerInfoConsentService).authoriseConsent(refEq(new CustomerInfoAuthoriseConsentArgs(intentId, TEST_API_CLIENT_ID, TEST_RESOURCE_OWNER_ID)));
+        verifyNoMoreInteractions(customerInfoConsentService);
+    }
 
     @Test
     public void testSubmitDomesticPaymentRejectDecision() {
@@ -138,5 +165,18 @@ class ConsentStoreDecisionServiceRegistryTest {
 
         verify(accountAccessConsentService).rejectConsent(eq(intentId), eq(TEST_API_CLIENT_ID), eq(TEST_RESOURCE_OWNER_ID));
         verifyNoMoreInteractions(accountAccessConsentService);
+    }
+
+    @Test
+    public void testSubmitCustomerInfoRejectDecision() {
+        final IntentType customerInfoConsent = IntentType.CUSTOMER_INFO_CONSENT;
+        given(consentStoreEnabledIntentTypes.isIntentTypeSupported(eq(customerInfoConsent))).willReturn(Boolean.TRUE);
+
+        final String intentId = customerInfoConsent.generateIntentId();
+
+        consentStoreDecisionServiceRegistry.rejectConsent(customerInfoConsent, intentId, TEST_API_CLIENT_ID, TEST_RESOURCE_OWNER_ID);
+
+        verify(customerInfoConsentService).rejectConsent(eq(intentId), eq(TEST_API_CLIENT_ID), eq(TEST_RESOURCE_OWNER_ID));
+        verifyNoMoreInteractions(customerInfoConsentService);
     }
 }
