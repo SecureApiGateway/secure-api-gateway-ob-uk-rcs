@@ -28,6 +28,7 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.server.client.rs.AccountService;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.ApiProviderConfiguration;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.international.InternationalStandingOrderConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentService;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.forgerock.FRFrequency;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 @Component
@@ -50,6 +51,10 @@ public class InternationalStandingOrderConsentDetailsService extends BasePayment
 
         final FRWriteInternationalStandingOrderConsentData obConsentRequestData = consent.getRequestObj().getData();
         final FRWriteInternationalStandingOrderDataInitiation initiation = obConsentRequestData.getInitiation();
+        // Updating initiation.frequency with a readable value to be displayed in the UI
+        FRFrequency frFrequency = new FRFrequency(initiation.getFrequency());
+        initiation.setFrequency(frFrequency.getFormattedSentence());
+
         consentDetails.setPaymentReference(initiation.getReference());
         consentDetails.setInitiation(initiation);
         consentDetails.setCurrencyOfTransfer(initiation.getCurrencyOfTransfer());

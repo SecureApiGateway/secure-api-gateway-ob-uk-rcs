@@ -28,6 +28,8 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.server.client.rs.AccountService;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.ApiProviderConfiguration;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.domestic.DomesticStandingOrderConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentService;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.forgerock.FRFrequency;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.forgerock.FRFrequencyType;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 @Component
@@ -45,6 +47,10 @@ public class DomesticStandingOrderConsentDetailsService extends BasePaymentConse
 
         final FRWriteDomesticStandingOrderConsentData obConsentRequestData = consent.getRequestObj().getData();
         final FRWriteDomesticStandingOrderDataInitiation initiation = obConsentRequestData.getInitiation();
+        // Updating initiation.frequency with a readable value to be displayed in the UI
+        FRFrequency frFrequency = new FRFrequency(initiation.getFrequency());
+        initiation.setFrequency(frFrequency.getFormattedSentence());
+
         consentDetails.setInitiation(initiation);
         consentDetails.setPaymentReference(initiation.getReference());
 
