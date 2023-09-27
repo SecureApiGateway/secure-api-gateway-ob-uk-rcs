@@ -26,6 +26,7 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -46,6 +47,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.util.UriUtils;
 
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.RedirectionAction;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorClient;
@@ -332,6 +334,38 @@ public class ConsentDetailsApiControllerRcsConsentStoreTest {
         assertThat(redirectionAction.getErrorMessage()).isEqualTo("The resource owner or authorization server denied the request.");
         assertThat(redirectionAction.getRedirectUri()).isNotEmpty();
         assertThat(redirectionAction.getConsentJwt()).isNotEmpty();
+    }
+
+    @Test
+    public void shouldGetRedirectActionWhenNotPermissionedToAccessDebtorAccount() throws ExceptionClient {
+        final IntentType intentType = IntentType.PAYMENT_DOMESTIC_CONSENT;
+        final String consentId = intentType.generateIntentId();
+        ConsentClientDetailsRequest consentDetailsRequest = aValidConsentDetailsRequest(consentId);
+        User user = aValidUser();
+        consentDetailsRequest.setUser(user);
+        given(userServiceClient.getUser(anyString())).willReturn(user);
+        given(consentStoreDetailsServiceRegistry.isIntentTypeSupported(eq(intentType))).willReturn(Boolean.TRUE);
+
+        final ArgumentCaptor<ConsentClientDetailsRequest> consentDetailsArgCaptor = ArgumentCaptor.forClass(ConsentClientDetailsRequest.class);
+        given(consentStoreDetailsServiceRegistry.getDetailsFromConsentStore(eq(intentType), consentDetailsArgCaptor.capture())).willThrow(
+                new ConsentStoreException(ConsentStoreException.ErrorType.INVALID_DEBTOR_ACCOUNT, consentId));
+
+        String jwtRequest = JwtTestHelper.consentRequestJwt(
+                consentDetailsRequest.getClientId(),
+                consentDetailsRequest.getIntentId(),
+                consentDetailsRequest.getUser().getId()
+        );
+        HttpEntity<String> request = new HttpEntity<>(jwtRequest, headers());
+
+        ResponseEntity<RedirectionAction> response = restTemplate.postForEntity(consentDetailsUri, request, RedirectionAction.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+
+        final RedirectionAction redirectionAction = response.getBody();
+        assertThat(redirectionAction.getErrorMessage()).isEqualTo("The resource owner or authorization server denied the request.");
+        assertThat(redirectionAction.getRedirectUri()).isNotEmpty()
+                .contains(UriUtils.encode("User is not permissioned to make a payment from the debtorAccount specified", StandardCharsets.UTF_8));
+        assertThat(Objects.requireNonNull(redirectionAction).getRedirectUri()).isNotEmpty();
+        assertThat(Objects.requireNonNull(redirectionAction.getConsentJwt())).isNotEmpty();
     }
 
     private HttpHeaders headers() {

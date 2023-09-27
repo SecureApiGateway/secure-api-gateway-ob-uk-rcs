@@ -121,13 +121,17 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                 errorType = ErrorType.ACCESS_DENIED;
                 errorMessage = "Consent Re-Authentication not supported for this type of consent";
             }
+            case INVALID_DEBTOR_ACCOUNT -> {
+                errorType = ErrorType.ACCESS_DENIED;
+                errorMessage = "User is not permissioned to make a payment from the debtorAccount specified";
+            }
             default -> {
                 errorType = ErrorType.INTERNAL_SERVER_ERROR;
                 errorMessage = "Server Error";
             }
         }
         return new InvalidConsentException(consentRequestJws, errorType, OBRIErrorType.REQUEST_BINDING_FAILED,
-                errorMessage, apiClientId, intentId);
+                                           errorMessage, apiClientId, intentId);
     }
 
     private ConsentClientDetailsRequest buildConsentClientRequest(SignedJWT signedJWT) throws ExceptionClient {
