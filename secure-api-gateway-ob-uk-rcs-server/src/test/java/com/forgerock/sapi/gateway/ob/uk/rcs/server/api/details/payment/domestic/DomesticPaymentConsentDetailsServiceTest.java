@@ -144,4 +144,26 @@ class DomesticPaymentConsentDetailsServiceTest extends BasePaymentConsentDetails
         assertThat(consentStoreException.getErrorType()).isEqualTo(ErrorType.CONSENT_REAUTHENTICATION_NOT_SUPPORTED);
     }
 
+    @Test
+    public void failToGetDomesticPaymentDetailsWithDebtorAccountWhenAccountNotOwnedByUser() throws ExceptionClient {
+        final OBWriteDomestic2DataInitiationDebtorAccount debtorAccount = new OBWriteDomestic2DataInitiationDebtorAccount().name("Test Account").identification("account-id-123").schemeName("accountId");
+        mockApiClientServiceResponse();
+        mockApiProviderConfigurationGetName();
+
+        final String intentId = IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId();
+
+        final DomesticPaymentConsentEntity consentEntity = createValidConsentEntity(testApiClient.getId());
+
+        consentEntity.getRequestObj().getData().getInitiation().setDebtorAccount(FRAccountIdentifierConverter.toFRAccountIdentifier(debtorAccount));
+        consentEntity.setId(intentId);
+        given(domesticPaymentConsentService.getConsent(intentId, testApiClient.getId())).willReturn(consentEntity);
+        mockConsentServiceCanAuthorise(domesticPaymentConsentService);
+
+        final ConsentStoreException consentStoreException = Assertions.assertThrows(ConsentStoreException.class,
+                () -> consentDetailsService.getDetailsFromConsentStore(new ConsentClientDetailsRequest(intentId, Mockito.mock(SignedJWT.class), testUser, testApiClient.getId())));
+        assertThat(consentStoreException.getErrorType()).isEqualTo(ErrorType.INVALID_DEBTOR_ACCOUNT);
+        assertThat(consentStoreException.getMessage()).contains("DebtorAccount not found for user");
+    }
+
+
 }

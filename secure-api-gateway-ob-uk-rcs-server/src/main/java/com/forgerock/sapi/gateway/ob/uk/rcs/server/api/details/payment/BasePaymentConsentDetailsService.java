@@ -77,7 +77,7 @@ public abstract class BasePaymentConsentDetailsService<T extends BasePaymentCons
                                 "no account found for userId: {}, name:{}, identification: {}, schemeName: {}",
                         consentDetails.getConsentId(), consentDetails.getUserId(), debtorAccount.getName(),
                         debtorAccount.getIdentification(), debtorAccount.getSchemeName());
-                throw new ConsentStoreException(ErrorType.NOT_FOUND, consentDetails.getConsentId(), "DebtorAccount not found for user");
+                throw new ConsentStoreException(ErrorType.INVALID_DEBTOR_ACCOUNT, consentDetails.getConsentId(), "DebtorAccount not found for user");
             }
 
         } else {

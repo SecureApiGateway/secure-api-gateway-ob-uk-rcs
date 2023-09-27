@@ -42,6 +42,7 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.server.client.rs.AccountService;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.ApiProviderConfiguration;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.funds.FundsConfirmationConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException.ErrorType;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.funds.FundsConfirmationConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.funds.FundsConfirmationConsentStateModel;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
@@ -127,7 +128,7 @@ public class FundsConfirmationConsentDetailsServiceTest {
         ConsentStoreException exception = assertThrows(ConsentStoreException.class, () -> testCreateFundsConfirmationConsentDetails(consentEntity));
 
         assertThat(exception).isNotNull();
-        assertThat(exception.getErrorType()).isEqualTo(ConsentStoreException.ErrorType.NOT_FOUND);
+        assertThat(exception.getErrorType()).isEqualTo(ErrorType.INVALID_DEBTOR_ACCOUNT);
         assertThat(exception.getMessage()).contains("DebtorAccount not found for user");
     }
 
