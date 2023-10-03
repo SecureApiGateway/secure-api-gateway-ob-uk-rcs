@@ -14,10 +14,6 @@ spec:
       maxSurge: {{ .Values.deployment.rollingUpdate.maxSurge }}
       maxUnavailable: {{ .Values.deployment.rollingUpdate.maxUnavailable }}
     {{ end }}
-  template:
-    spec:
-      affinity:
-        {{- toYaml .Values.deployment.affinity | nindent 8 }}
   selector:
     matchLabels:
       app: {{ .Chart.Name }}
@@ -28,6 +24,8 @@ spec:
         appVersion: {{ .Chart.AppVersion }}
         helmVersion: {{ .Chart.Version }}
     spec:
+      affinity:
+        {{- toYaml .Values.deployment.affinity | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.deployment.image.repo }}:{{ default .Chart.AppVersion .Values.deployment.image.tag }}"
