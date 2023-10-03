@@ -49,6 +49,7 @@ deployment:
     maxSurge: 50%
     maxUnavailable: 25%
   strategyType: RollingUpdate
+  useAffinity: disabled
 
 service:
   # Version of the Kubernetes API to use

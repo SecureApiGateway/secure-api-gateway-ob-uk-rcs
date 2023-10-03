@@ -14,6 +14,18 @@ spec:
       maxSurge: {{ .Values.deployment.rollingUpdate.maxSurge }}
       maxUnavailable: {{ .Values.deployment.rollingUpdate.maxUnavailable }}
     {{ end }}
+    {{ if eq .Values.deployment.useAffinity "enabled" }}
+    affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - {{ .Chart.Name }}
+            topologyKey: "kubernetes.io/hostname"
+    {{ end }}
   selector:
     matchLabels:
       app: {{ .Chart.Name }}
