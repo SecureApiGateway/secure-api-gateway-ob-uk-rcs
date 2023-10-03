@@ -8,7 +8,7 @@ deployment:
           - key: app
             operator: In
             values:
-            - {{ .Chart.Name }}
+            - remote-consent-service
         topologyKey: "kubernetes.io/hostname"
   # Version of the Kubernetes API to use
   apiVersion: apps/v1
