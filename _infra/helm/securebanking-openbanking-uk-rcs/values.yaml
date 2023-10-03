@@ -1,4 +1,15 @@
 deployment:
+  # Affinity Settings
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: app
+            operator: In
+            values:
+            - {{ .Chart.Name }}
+        topologyKey: "kubernetes.io/hostname"
   # Version of the Kubernetes API to use
   apiVersion: apps/v1
   # Container port exposed by a pod or deployment
@@ -49,7 +60,6 @@ deployment:
     maxSurge: 50%
     maxUnavailable: 25%
   strategyType: RollingUpdate
-  useAffinity: disabled
 
 service:
   # Version of the Kubernetes API to use
