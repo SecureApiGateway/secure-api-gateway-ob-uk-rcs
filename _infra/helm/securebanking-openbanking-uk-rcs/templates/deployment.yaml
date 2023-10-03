@@ -14,8 +14,10 @@ spec:
       maxSurge: {{ .Values.deployment.rollingUpdate.maxSurge }}
       maxUnavailable: {{ .Values.deployment.rollingUpdate.maxUnavailable }}
     {{ end }}
-  affinity:
-    {{- toYaml .Values.deployment.affinity | nindent 4 }}
+  template:
+    spec:
+      affinity:
+        {{- toYaml .Values.deployment.affinity | nindent 8 }}
   selector:
     matchLabels:
       app: {{ .Chart.Name }}
