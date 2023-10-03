@@ -15,7 +15,7 @@ spec:
       maxUnavailable: {{ .Values.deployment.rollingUpdate.maxUnavailable }}
     {{ end }}
   affinity:
-    {{- toYaml .Values.deployment.resources | nindent 4 }}
+    {{- toYaml .Values.deployment.affinity | nindent 4 }}
   selector:
     matchLabels:
       app: {{ .Chart.Name }}
