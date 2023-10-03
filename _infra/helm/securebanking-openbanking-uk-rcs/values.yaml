@@ -1,4 +1,6 @@
 deployment:
+  # Affinity Configuration
+  affinity: {}
   # Version of the Kubernetes API to use
   apiVersion: apps/v1
   # Container port exposed by a pod or deployment
