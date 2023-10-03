@@ -16,15 +16,15 @@ spec:
     {{ end }}
   {{ if eq .Values.deployment.useAffinity "enabled" }}
   affinity:
-      podAntiAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-        - labelSelector:
-            matchExpressions:
-            - key: app
-              operator: In
-              values:
-              - {{ .Chart.Name }}
-          topologyKey: "kubernetes.io/hostname"
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: app
+            operator: In
+            values:
+            - {{ .Chart.Name }}
+        topologyKey: "kubernetes.io/hostname"
   {{ end }}
   selector:
     matchLabels:
