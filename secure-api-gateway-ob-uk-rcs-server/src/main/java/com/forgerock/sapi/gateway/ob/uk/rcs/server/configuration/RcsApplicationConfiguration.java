@@ -43,6 +43,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.jwt.RcsJwtSigner;
+import com.forgerock.sapi.gateway.uk.common.shared.spring.web.filter.FapiInteractionIdFilter;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSSigner;
@@ -114,4 +115,14 @@ public class RcsApplicationConfiguration {
         final JWSSigner signer = new RSASSASigner((RSAKey) jwk);
         return new RcsJwtSigner(signingKeyId, JWSAlgorithm.parse(signingAlgorithm), signer);
     }
+
+    /**
+     * Installs the {@link FapiInteractionIdFilter}, this filter adds the x-fapi-interaction-id header value to the
+     * logging context.
+     */
+    @Bean
+    FapiInteractionIdFilter fapInteractionIdFilter() {
+        return new FapiInteractionIdFilter();
+    }
+
 }

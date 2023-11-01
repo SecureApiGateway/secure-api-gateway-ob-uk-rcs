@@ -41,7 +41,7 @@
     </parent>
 
     <properties>
-        <uk.bom.version>2.1.0</uk.bom.version>
+        <uk.bom.version>2.1.1-SNAPSHOT</uk.bom.version>
         <mockito-inline.version>5.2.0</mockito-inline.version>
     </properties>
 
