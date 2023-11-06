@@ -35,14 +35,10 @@ import static org.springframework.http.HttpMethod.GET;
  */
 @Service
 @Slf4j
-public class ApiClientServiceClient {
-
-    private final RestTemplate restTemplate;
-    private final CloudClientConfiguration cloudClientConfiguration;
+public class ApiClientServiceClient extends BaseCloudClient {
 
     public ApiClientServiceClient(RestTemplate restTemplate, CloudClientConfiguration cloudClientConfiguration) {
-        this.restTemplate = restTemplate;
-        this.cloudClientConfiguration = cloudClientConfiguration;
+        super(restTemplate, cloudClientConfiguration);
     }
 
     public ApiClient getApiClient(String apiClientId) throws ExceptionClient {
@@ -73,7 +69,7 @@ public class ApiClientServiceClient {
             ResponseEntity<ApiClient> responseEntity = restTemplate.exchange(
                     apiClientURL,
                     GET,
-                    null,
+                    createRequestEntity(),
                     ApiClient.class);
 
             return responseEntity != null ? responseEntity.getBody() : null;

@@ -19,7 +19,10 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ExceptionClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.ApiClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.test.support.ApiClientTestDataFactory;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBHeaders;
+
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -43,10 +46,12 @@ public class ApiClientServiceClientTest extends BaseServiceClientTest {
         // Given
         ApiClient apiClient = ApiClientTestDataFactory.aValidApiClient();
 
+        final ArgumentCaptor<HttpEntity> entityArgumentCaptor = ArgumentCaptor.forClass(HttpEntity.class);
+
         when(restTemplate.exchange(
                 anyString(),
                 eq(GET),
-                nullable(HttpEntity.class),
+                entityArgumentCaptor.capture(),
                 eq(ApiClient.class))
         ).thenReturn(ResponseEntity.ok(apiClient));
 
@@ -55,6 +60,7 @@ public class ApiClientServiceClientTest extends BaseServiceClientTest {
 
         // Then
         assertThat(apiClientResponse).isNotNull();
+        assertThat(entityArgumentCaptor.getValue().getHeaders().get(OBHeaders.X_FAPI_INTERACTION_ID)).isNotNull();
     }
 
     @Test

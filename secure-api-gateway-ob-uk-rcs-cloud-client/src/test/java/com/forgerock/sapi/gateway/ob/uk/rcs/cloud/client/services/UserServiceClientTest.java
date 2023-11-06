@@ -19,7 +19,10 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ExceptionClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.User;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.test.support.UserTestDataFactory;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBHeaders;
+
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -43,10 +46,12 @@ public class UserServiceClientTest extends BaseServiceClientTest {
         // Given
         User user = UserTestDataFactory.aValidUser();
 
+        final ArgumentCaptor<HttpEntity> entityArgumentCaptor = ArgumentCaptor.forClass(HttpEntity.class);
+
         when(restTemplate.exchange(
                 anyString(),
                 eq(GET),
-                nullable(HttpEntity.class),
+                entityArgumentCaptor.capture(),
                 eq(User.class))
         ).thenReturn(ResponseEntity.ok(user));
 
@@ -61,6 +66,7 @@ public class UserServiceClientTest extends BaseServiceClientTest {
         assertThat(userResponse.getMail()).isEqualTo(user.getMail());
         assertThat(userResponse.getSurname()).isEqualTo(user.getSurname());
         assertThat(userResponse.getGivenName()).isEqualTo(user.getGivenName());
+        assertThat(entityArgumentCaptor.getValue().getHeaders().get(OBHeaders.X_FAPI_INTERACTION_ID)).isNotNull();
     }
 
     @Test
