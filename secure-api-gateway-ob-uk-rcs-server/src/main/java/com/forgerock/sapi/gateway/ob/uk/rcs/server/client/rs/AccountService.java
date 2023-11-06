@@ -36,10 +36,11 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class AccountService {
+public class AccountService extends BaseRsClient {
 
-    private final RestTemplate restTemplate;
-    private final RsConfiguration rsConfiguration;
+    private static final ParameterizedTypeReference<List<FRAccount>> ACCOUNT_LIST_TYPE = new ParameterizedTypeReference<>() {};
+    private static final ParameterizedTypeReference<List<FRAccountWithBalance>> ACCOUNT_WITH_BALANCE_LIST_TYPE = new ParameterizedTypeReference<>() {};
+
     private final RsBackofficeConfiguration rsBackofficeConfiguration;
 
     public AccountService(
@@ -47,8 +48,7 @@ public class AccountService {
             RsConfiguration rsConfiguration,
             RsBackofficeConfiguration rsBackofficeConfiguration
     ) {
-        this.restTemplate = restTemplate;
-        this.rsConfiguration = rsConfiguration;
+        super(restTemplate, rsConfiguration);
         this.rsBackofficeConfiguration = rsBackofficeConfiguration;
     }
 
@@ -57,8 +57,6 @@ public class AccountService {
         String lowercaseUserId = userID.toLowerCase();
         log.debug("Searching for accounts with user ID: {}", lowercaseUserId);
 
-        ParameterizedTypeReference<List<FRAccount>> ptr = new ParameterizedTypeReference<>() {
-        };
         UriComponentsBuilder builder = fromHttpUrl(
                 rsConfiguration.getBaseUri() +
                         rsBackofficeConfiguration.getAccounts().get(
@@ -68,7 +66,7 @@ public class AccountService {
         builder.queryParam("userId", lowercaseUserId);
 
         URI uri = builder.build().encode().toUri();
-        ResponseEntity<List<FRAccount>> entity = restTemplate.exchange(uri, GET, null, ptr);
+        ResponseEntity<List<FRAccount>> entity = restTemplate.exchange(uri, GET, createRequestEntity(), ACCOUNT_LIST_TYPE);
         return entity.getBody();
     }
 
@@ -77,8 +75,6 @@ public class AccountService {
         String lowercaseUserId = userID.toLowerCase();
         log.debug("Searching for accounts with balance for user ID: {}", lowercaseUserId);
 
-        ParameterizedTypeReference<List<FRAccountWithBalance>> ptr = new ParameterizedTypeReference<>() {
-        };
         UriComponentsBuilder builder = fromHttpUrl(
                 rsConfiguration.getBaseUri() +
                         rsBackofficeConfiguration.getAccounts().get(
@@ -89,7 +85,7 @@ public class AccountService {
         builder.queryParam("withBalance", true);
 
         URI uri = builder.build().encode().toUri();
-        ResponseEntity<List<FRAccountWithBalance>> entity = restTemplate.exchange(uri, GET, null, ptr);
+        ResponseEntity<List<FRAccountWithBalance>> entity = restTemplate.exchange(uri, GET, createRequestEntity(), ACCOUNT_WITH_BALANCE_LIST_TYPE);
         return entity.getBody();
     }
 
@@ -97,8 +93,6 @@ public class AccountService {
         // This is necessary as auth server always uses lowercase user id
         String lowercaseUserId = userID.toLowerCase();
         log.debug("Searching for accounts with balance for user ID: {}", lowercaseUserId);
-        ParameterizedTypeReference<FRAccountWithBalance> ptr = new ParameterizedTypeReference<>() {
-        };
 
         UriComponentsBuilder builder = fromHttpUrl(
                 rsConfiguration.getBaseUri() +
@@ -113,7 +107,7 @@ public class AccountService {
         builder.queryParam("schemeName", schemeName);
 
         URI uri = builder.build().encode().toUri();
-        ResponseEntity<FRAccountWithBalance> entity = restTemplate.exchange(uri, GET, null, ptr);
+        ResponseEntity<FRAccountWithBalance> entity = restTemplate.exchange(uri, GET, createRequestEntity(), FRAccountWithBalance.class);
         return entity.getBody();
     }
 
@@ -126,8 +120,6 @@ public class AccountService {
                 identification,
                 schemeName
         );
-        ParameterizedTypeReference<FRAccountWithBalance> ptr = new ParameterizedTypeReference<>() {
-        };
 
         UriComponentsBuilder builder = fromHttpUrl(
                 rsConfiguration.getBaseUri() +
@@ -142,7 +134,7 @@ public class AccountService {
         builder.queryParam("schemeName", schemeName);
 
         URI uri = builder.build().encode().toUri();
-        ResponseEntity<FRAccountWithBalance> entity = restTemplate.exchange(uri, GET, null, ptr);
+        ResponseEntity<FRAccountWithBalance> entity = restTemplate.exchange(uri, GET, createRequestEntity(), FRAccountWithBalance.class);
         return entity.getBody();
     }
 }

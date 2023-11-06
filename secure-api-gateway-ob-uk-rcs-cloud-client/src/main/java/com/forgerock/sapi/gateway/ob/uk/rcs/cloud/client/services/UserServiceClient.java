@@ -35,14 +35,11 @@ import static org.springframework.http.HttpMethod.GET;
  */
 @Service
 @Slf4j
-public class UserServiceClient {
+public class UserServiceClient extends BaseCloudClient {
 
-    private final RestTemplate restTemplate;
-    private final CloudClientConfiguration cloudClientConfiguration;
 
     public UserServiceClient(RestTemplate restTemplate, CloudClientConfiguration cloudClientConfiguration) {
-        this.restTemplate = restTemplate;
-        this.cloudClientConfiguration = cloudClientConfiguration;
+        super(restTemplate, cloudClientConfiguration);
     }
 
     public User getUser(String userId) throws ExceptionClient {
@@ -73,7 +70,7 @@ public class UserServiceClient {
             ResponseEntity<User> responseEntity = restTemplate.exchange(
                     userURL,
                     GET,
-                    null,
+                    createRequestEntity(),
                     User.class);
             return responseEntity != null ? responseEntity.getBody() : null;
         } catch (RestClientException e) {
