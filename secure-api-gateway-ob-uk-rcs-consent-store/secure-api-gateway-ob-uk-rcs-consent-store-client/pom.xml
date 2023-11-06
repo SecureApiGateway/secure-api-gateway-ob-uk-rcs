@@ -43,6 +43,10 @@
         </dependency>
         <dependency>
             <groupId>com.forgerock.sapi.gateway</groupId>
+            <artifactId>secure-api-gateway-ob-uk-common-shared</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.forgerock.sapi.gateway</groupId>
             <artifactId>secure-api-gateway-ob-uk-rcs-consent-store-datamodel</artifactId>
             <version>${project.version}</version>
         </dependency>

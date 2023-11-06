@@ -17,6 +17,7 @@ package com.forgerock.sapi.gateway.rcs.consent.store.client;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException.ErrorType;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBHeaders;
+import com.forgerock.sapi.gateway.uk.common.shared.fapi.FapiInteractionIdContext;
 
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
@@ -54,12 +57,16 @@ public abstract class BaseRestConsentStoreClient {
     protected HttpHeaders createHeaders(String apiClientId) {
         final HttpHeaders headers = new HttpHeaders();
         headers.add(API_CLIENT_ID_HEADER, apiClientId);
+        // Pass the x-fapi-interaction-id in the call to the RCS, if one is not found in context then generate one.
+        headers.add(OBHeaders.X_FAPI_INTERACTION_ID, FapiInteractionIdContext.getFapiInteractionId()
+                                                                             .orElseGet(() -> UUID.randomUUID().toString()));
         return headers;
     }
 
     protected <T> T doRestCall(String url, HttpMethod method, HttpEntity<?> entity, Class<T> responseType) throws ConsentStoreClientException {
         try {
             // TODO apply Java Bean validation to the response
+            logger.info("Making Consent Store API call - {} {} entity: {}", method, url, entity);
             final ResponseEntity<T> response = restTemplate.exchange(url, method, entity, responseType);
             return response.getBody();
         } catch (RestClientResponseException ex) {
