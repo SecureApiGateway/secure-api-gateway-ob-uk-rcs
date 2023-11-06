@@ -19,8 +19,6 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.customerinfo.FRCustomer
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.RsConfiguration;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.RsResourceApiConfiguration;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.nullness.Opt;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -37,10 +35,7 @@ import static org.springframework.web.util.UriComponentsBuilder.fromHttpUrl;
  */
 @Service
 @Slf4j
-public class CustomerInfoService {
-
-    private final RestTemplate restTemplate;
-    private final RsConfiguration rsConfiguration;
+public class CustomerInfoService extends BaseRsClient {
     private final RsResourceApiConfiguration rsResourceApiConfiguration;
 
     public CustomerInfoService(
@@ -48,8 +43,7 @@ public class CustomerInfoService {
             RsConfiguration rsConfiguration,
             RsResourceApiConfiguration rsResourceApiConfiguration
     ) {
-        this.restTemplate = restTemplate;
-        this.rsConfiguration = rsConfiguration;
+        super(restTemplate, rsConfiguration);
         this.rsResourceApiConfiguration = rsResourceApiConfiguration;
     }
 
@@ -59,7 +53,7 @@ public class CustomerInfoService {
         ResponseEntity<FRCustomerInfo> entity = restTemplate.exchange(
                 getFindByUserIdOperationUri(userId),
                 GET,
-                null,
+                createRequestEntity(),
                 FRCustomerInfo.class
         );
         return Optional.ofNullable(entity.getBody());
