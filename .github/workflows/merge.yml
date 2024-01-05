@@ -50,20 +50,16 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1.1.1
 
-      - name: Test Changes
-        run: |
-          make verify
-
-      - name: Check Code Coverage (not in use)
-        uses: codecov/codecov-action@v1
-        with:
-          token: ${{ secrets.CODECOV_ACCESS_TOKEN }}
-
   build:
     runs-on: ubuntu-latest
     name: Build Image
     needs: check
     steps:
+
+      - name: Build Changes
+        run: |
+          make verify
+      
       - name: Deploy Artifact Package
         run: mvn -B deploy -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip
         env:
@@ -85,6 +81,11 @@ jobs:
     name: Test Image
     needs: build
     steps:
+      - name: Check Code Coverage (not in use)
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_ACCESS_TOKEN }}
+
       - name: 'Update Environment'
         uses: codefresh-io/codefresh-pipeline-runner@master
         with:
