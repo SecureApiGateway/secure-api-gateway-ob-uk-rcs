@@ -70,6 +70,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     name: Build Image
+    needs: check
     steps:
       - name: Deploy Artifact Package
         run: mvn -B deploy -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip
@@ -88,6 +89,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     name: Test Image
+    needs: build
     steps:
       - name: Create Lowercase Github Username
         id: toLowerCase
