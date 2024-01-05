@@ -19,6 +19,20 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Template Helm
+        run: |
+          helm template $HELM_DIRECTORY/$SERVICE_NAME
+
+      - name: Check Copyright
+        run: mvn license:check
+
+  build:
+    runs-on: ubuntu-latest
+    name: Build Image
+    needs: check
+    steps:
+      - uses: actions/checkout@v3
+
       - name: Get Version
         id: get_version
         run: |
@@ -50,20 +64,6 @@ jobs:
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1.1.1
-
-      - name: Template Helm
-        run: |
-          helm template $HELM_DIRECTORY/$SERVICE_NAME
-
-      - name: Check Copyright
-        run: mvn license:check
-
-  build:
-    runs-on: ubuntu-latest
-    name: Build Image
-    needs: check
-    steps:
-
       - name: Test Changes
         run: |
           make verify
@@ -87,10 +87,6 @@ jobs:
     name: Test Image
     needs: build
     steps:
-      - name: Check Code Coverage (not in use)
-        uses: codecov/codecov-action@v1
-        with:
-          token: ${{ secrets.CODECOV_ACCESS_TOKEN }}
 
       - name: Create Lowercase Github Username
         id: toLowerCase
