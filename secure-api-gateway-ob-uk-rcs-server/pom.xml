@@ -221,7 +221,7 @@
                 <configuration>
                     <dockerfile>docker/Dockerfile</dockerfile>
                     <skipPush>false</skipPush>
-                    <repository>eu.gcr.io/${gcrRepo}/securebanking/securebanking-openbanking-uk-rcs</repository>
+                    <repository>europe-west4-docker.pkg.dev/${gcrRepo}/sapig-docker-artifact/securebanking/securebanking-openbanking-uk-rcs</repository>
                     <buildArgs>
                         <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
                     </buildArgs>

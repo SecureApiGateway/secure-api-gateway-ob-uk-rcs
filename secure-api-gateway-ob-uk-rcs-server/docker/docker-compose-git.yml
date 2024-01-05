@@ -3,7 +3,7 @@ services:
 
   securebanking-config-server:
     container_name: securebanking-config-server
-    image: eu.gcr.io/sbat-gcr-develop/securebanking/securebanking-spring-config-server
+    image: europe-west4-docker.pkg.dev/sbat-gcr-develop/sapig-docker-artifact/securebanking/securebanking-spring-config-server
     environment:
       - CONFIG_GIT_IGNORE_LOCAL_SSH=true
       - GIT_CONFIG_SSH_KEY=${GIT_SSH_KEY}
@@ -14,7 +14,7 @@ services:
 
   rcs-service:
     container_name: rcs-service
-    image: eu.gcr.io/sbat-gcr-develop/securebanking/securebanking-openbanking-uk-rcs
+    image: europe-west4-docker.pkg.dev/sbat-gcr-develop/sapig-docker-artifact/securebanking/securebanking-openbanking-uk-rcs
     ports:
       - 8080:8080
       - 9095:9095
@@ -35,7 +35,7 @@ services:
 
   rs-simulator:
     container_name: rs-simulator
-    image: eu.gcr.io/sbat-gcr-develop/securebanking/securebanking-openbanking-uk-rs
+    image: europe-west4-docker.pkg.dev/sbat-gcr-develop/sapig-docker-artifact/securebanking/securebanking-openbanking-uk-rs
     ports:
       - 8081:8080
       - 9095:9095
