@@ -67,8 +67,8 @@ jobs:
       - name: Build Docker Image
         run: |
           make docker tag=${{ env.GIT_SHA_SHORT }}
-          docker tag eu.gcr.io/${{ vars.GAR_DEV_REPO }}/securebanking/${{ env.SERVICE_NAME }}:${{ env.GIT_SHA_SHORT }} eu.gcr.io/${{ vars.GAR_DEV_REPO }}/securebanking/${{ env.SERVICE_NAME }}:latest
-          docker push eu.gcr.io/${{ vars.GAR_DEV_REPO }}/securebanking/${{ env.SERVICE_NAME }} --all-tags
+          docker tag ${{ vars.GAR_DEV_REPO }}/securebanking/${{ env.SERVICE_NAME }}:${{ env.GIT_SHA_SHORT }} ${{ vars.GAR_DEV_REPO }}/securebanking/${{ env.SERVICE_NAME }}:latest
+          docker push ${{ vars.GAR_DEV_REPO }}/securebanking/${{ env.SERVICE_NAME }} --all-tags
 
   test:
     runs-on: ubuntu-latest
