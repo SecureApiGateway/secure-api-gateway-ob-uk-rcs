@@ -1,4 +1,4 @@
-name: pull-request
+name: Pull Request - Build and Deploy
 
 on:
   pull_request:
@@ -31,7 +31,8 @@ jobs:
     name: Build Image
     needs: check
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
       - name: Get Version
         id: get_version
@@ -82,9 +83,9 @@ jobs:
         run: |
           make docker tag=${{ env.PR_NUMBER }}
 
-  test:
+  deploy:
     runs-on: ubuntu-latest
-    name: Test Image
+    name: Deploy
     needs: build
     steps:
 
@@ -94,6 +95,7 @@ jobs:
 
       - name: 'Update Environment'
         uses: codefresh-io/codefresh-pipeline-runner@master
+        if: github.actor != 'dependabot[bot]'
         with:
           args: '-v TAG=${{ env.PR_NUMBER }} -v ARGO_VALUES_PREFIX=remoteConsentServer -v SERVICE_NAME=remote-consent-server -v ENVIRONMENT=${{ env.GITHUB_USER }} -v BRANCH=${{ github.head_ref }}'
         env:
