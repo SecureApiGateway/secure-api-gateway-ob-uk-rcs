@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
+import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -59,7 +59,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
                 RestTemplate.class,
                 MappingJackson2HttpMessageConverter.class
         },
-        initializers = ConfigFileApplicationContextInitializer.class
+        initializers = ConfigDataApplicationContextInitializer.class
 )
 @EnableConfigurationProperties(value = {RsResourceApiConfiguration.class})
 @ActiveProfiles("test")
