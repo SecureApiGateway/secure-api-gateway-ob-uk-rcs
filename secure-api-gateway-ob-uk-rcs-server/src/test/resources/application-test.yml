@@ -16,3 +16,9 @@ rcs:
         privateKeyPath: src/test/resources/test-jwt-signing-key.pem
         issuer: secure-open-banking-rcs
         signingAlgorithm: PS256
+
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 4.4.0

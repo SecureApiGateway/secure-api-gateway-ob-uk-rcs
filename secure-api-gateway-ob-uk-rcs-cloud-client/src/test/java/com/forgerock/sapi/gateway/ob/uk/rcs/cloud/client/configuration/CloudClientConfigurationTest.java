@@ -20,7 +20,7 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.TestApplicationClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
+import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
@@ -33,7 +33,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 /**
  * Unit test for {@link CloudClientConfiguration}
  */
-@ContextConfiguration(classes = {CloudClientConfiguration.class}, initializers = ConfigFileApplicationContextInitializer.class)
+@ContextConfiguration(classes = {CloudClientConfiguration.class}, initializers = ConfigDataApplicationContextInitializer.class)
 @EnableConfigurationProperties(value = CloudClientConfiguration.class)
 @ActiveProfiles("test")
 @SpringBootTest(classes = TestApplicationClient.class, webEnvironment = MOCK)

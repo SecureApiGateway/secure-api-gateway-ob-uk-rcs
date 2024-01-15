@@ -18,8 +18,7 @@ package com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
+import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -30,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Unit test for {@link ApiProviderConfiguration}
  */
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = ApiProviderConfiguration.class, initializers = ConfigFileApplicationContextInitializer.class)
+@ContextConfiguration(classes = ApiProviderConfiguration.class, initializers = ConfigDataApplicationContextInitializer.class)
 @ActiveProfiles("test")
 public class ApiProviderConfigurationTest {
 

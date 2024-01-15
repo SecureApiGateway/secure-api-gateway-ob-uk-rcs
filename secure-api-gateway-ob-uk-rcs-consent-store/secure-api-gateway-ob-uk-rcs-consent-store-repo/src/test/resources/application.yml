@@ -3,3 +3,9 @@ consent:
   store:
     enabled:
       intentTypes:
+
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 4.4.0
