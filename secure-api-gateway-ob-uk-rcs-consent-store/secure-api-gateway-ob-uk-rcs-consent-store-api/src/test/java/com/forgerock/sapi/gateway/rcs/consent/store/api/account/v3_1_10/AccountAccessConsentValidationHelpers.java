@@ -17,7 +17,7 @@ package com.forgerock.sapi.gateway.rcs.consent.store.api.account.v3_1_10;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.joda.time.DateTime;
+import java.util.Date;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
@@ -45,7 +45,7 @@ public class AccountAccessConsentValidationHelpers {
         assertThat(consent.getResourceOwnerId()).isNull();
         assertThat(consent.getAuthorisedAccountIds()).isNull();
 
-        assertThat(consent.getCreationDateTime()).isLessThan(DateTime.now());
+        assertThat(consent.getCreationDateTime()).isBefore(new Date());
         assertThat(consent.getStatusUpdateDateTime()).isEqualTo(consent.getCreationDateTime());
     }
 
@@ -74,6 +74,6 @@ public class AccountAccessConsentValidationHelpers {
         assertThat(updatedConsent.getRequestObj()).isEqualTo(consent.getRequestObj());
         assertThat(updatedConsent.getRequestVersion()).isEqualTo(consent.getRequestVersion());
         assertThat(updatedConsent.getCreationDateTime()).isEqualTo(consent.getCreationDateTime());
-        assertThat(updatedConsent.getStatusUpdateDateTime()).isLessThanOrEqualTo(DateTime.now()).isGreaterThan(consent.getStatusUpdateDateTime());
+        assertThat(updatedConsent.getStatusUpdateDateTime()).isBeforeOrEqualTo(new Date()).isAfterOrEqualTo(consent.getStatusUpdateDateTime());
     }
 }

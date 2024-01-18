@@ -17,10 +17,10 @@ package com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment;
 
 import java.util.List;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 import org.joda.time.DateTime;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.BaseConsentEntity;

@@ -25,7 +25,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 @Validated
 @Api(tags = {"v3.1.10"})

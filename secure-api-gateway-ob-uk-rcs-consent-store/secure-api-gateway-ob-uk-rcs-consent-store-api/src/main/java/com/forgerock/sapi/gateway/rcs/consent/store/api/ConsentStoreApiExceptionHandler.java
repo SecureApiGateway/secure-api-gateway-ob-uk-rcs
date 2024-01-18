@@ -21,6 +21,7 @@ import java.util.UUID;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -72,10 +73,7 @@ public class ConsentStoreApiExceptionHandler extends ResponseEntityExceptionHand
     // This has been copied here so that when unit testing this module, the exception handling behaviour is consistent with the actual server
     // When this code is deployed with the RCS, then if we did not handle this exception here, it would bubble up to the GlobalExceptionHandler
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-                                                                HttpHeaders headers,
-                                                                HttpStatus status,
-                                                                WebRequest request) {
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 
         List<OBError1> errors = new ArrayList<>();
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {

@@ -125,7 +125,7 @@ public class RcsErrorService {
                                             invalidConsentException.getErrorType().getDescription() :
                                             null
                             )
-                            .requestMethod(HttpMethod.GET)
+                            .requestMethod(HttpMethod.GET.name())
                             .build());
         } catch (Exception e) {
             String message = String.format("Failed to turn error into a redirect back to TPP with and Exception. " +
@@ -172,7 +172,7 @@ public class RcsErrorService {
                     .status(obError.getObriErrorType().getHttpStatus())
                     .body(RedirectionAction.builder()
                             .redirectUri(uriComponents.toUriString())
-                            .requestMethod(HttpMethod.GET)
+                            .requestMethod(HttpMethod.GET.name())
                             .build());
         } catch (Exception e) {
             log.warn("Failed to turn error into a redirect back to TPP with and Exception. Falling back to just " +

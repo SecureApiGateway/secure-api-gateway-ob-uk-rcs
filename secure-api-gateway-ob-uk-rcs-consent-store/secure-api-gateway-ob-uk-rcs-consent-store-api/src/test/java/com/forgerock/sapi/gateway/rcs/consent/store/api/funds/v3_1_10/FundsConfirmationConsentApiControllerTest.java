@@ -17,7 +17,7 @@ package com.forgerock.sapi.gateway.rcs.consent.store.api.funds.v3_1_10;
 
 import java.util.UUID;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.joda.time.DateTime;
 

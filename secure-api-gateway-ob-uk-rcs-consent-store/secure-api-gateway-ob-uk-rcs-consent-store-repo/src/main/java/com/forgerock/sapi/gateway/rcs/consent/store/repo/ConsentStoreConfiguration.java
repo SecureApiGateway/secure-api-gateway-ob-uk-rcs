@@ -15,10 +15,9 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.repo;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-
-import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +31,11 @@ import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.MongoRepoPackageMarker;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.converter.JodaTimeConverters;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import com.forgerock.sapi.gateway.uk.common.shared.spring.converter.DateToUTCDateTimeConverter;
+
+import jakarta.annotation.PostConstruct;
 
 @Configuration
 @ComponentScan(basePackageClasses = ConsentStoreConfiguration.class)
@@ -69,7 +71,10 @@ public class ConsentStoreConfiguration {
      */
     @Bean
     public MongoCustomConversions mongoCustomConversions() {
-        final List<Converter> customConverters = List.of(new DateToUTCDateTimeConverter());
+        final List<Converter> customConverters = new ArrayList<>();
+        customConverters.add(new DateToUTCDateTimeConverter());
+        customConverters.addAll(JodaTimeConverters.getConvertersToRegister());
+
         logger.info("Installing custom converters for Mongo: {}", customConverters);
         return new MongoCustomConversions(customConverters);
     }

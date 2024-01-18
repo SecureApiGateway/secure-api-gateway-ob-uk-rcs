@@ -15,53 +15,42 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.client.rs;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.customerinfo.FRCustomerInfo;
-import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.RsConfiguration;
-import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.RsResourceApiConfiguration;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.client.ExpectedCount;
-import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.Optional;
-import java.util.UUID;
-
 import static com.forgerock.sapi.gateway.ob.uk.rcs.server.client.rs.FRCustomerInfoTestHelper.aValidFRCustomerInfo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 
+import java.util.Optional;
+import java.util.UUID;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.client.ExpectedCount;
+import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
+
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.customerinfo.FRCustomerInfo;
+import com.forgerock.sapi.gateway.ob.uk.rcs.server.RCSServerApplicationTestSupport;
+import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.RsConfiguration;
+import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.RsResourceApiConfiguration;
+
 /**
  * Unit test for {@link CustomerInfoService}
  */
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(
-        classes = {
-                RsConfiguration.class,
-                RsResourceApiConfiguration.class,
-                CustomerInfoService.class,
-                RestTemplate.class,
-                MappingJackson2HttpMessageConverter.class
-        },
-        initializers = ConfigDataApplicationContextInitializer.class
-)
-@EnableConfigurationProperties(value = {RsResourceApiConfiguration.class})
+
+@SpringBootTest(classes = RCSServerApplicationTestSupport.class, webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
 public class CustomerInfoServiceTest {
 

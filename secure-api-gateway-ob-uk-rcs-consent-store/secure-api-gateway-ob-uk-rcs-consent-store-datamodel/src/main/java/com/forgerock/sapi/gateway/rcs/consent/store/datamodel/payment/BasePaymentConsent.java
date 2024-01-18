@@ -17,8 +17,8 @@ package com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment;
 
 import java.util.List;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import org.joda.time.DateTime;
 import org.springframework.validation.annotation.Validated;

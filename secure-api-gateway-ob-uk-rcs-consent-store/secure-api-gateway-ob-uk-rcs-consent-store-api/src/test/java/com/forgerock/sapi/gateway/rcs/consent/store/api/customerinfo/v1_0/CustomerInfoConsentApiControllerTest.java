@@ -26,7 +26,7 @@ import uk.org.openbanking.datamodel.account.OBReadConsent1;
 import uk.org.openbanking.datamodel.account.OBReadData1;
 import uk.org.openbanking.datamodel.account.OBRisk2;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.util.List;
 
 public class CustomerInfoConsentApiControllerTest extends BaseControllerTest<CustomerInfoConsent, CreateCustomerInfoConsentRequest, AuthoriseCustomerInfoConsentRequest> {

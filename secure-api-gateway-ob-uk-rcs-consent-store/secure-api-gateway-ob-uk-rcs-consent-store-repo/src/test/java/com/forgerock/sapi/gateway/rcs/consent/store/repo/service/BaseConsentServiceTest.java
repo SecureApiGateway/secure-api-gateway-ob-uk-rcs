@@ -17,10 +17,11 @@ package com.forgerock.sapi.gateway.rcs.consent.store.repo.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import javax.validation.ConstraintViolationException;
+import java.util.Date;
+
+import jakarta.validation.ConstraintViolationException;
 
 import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,11 +63,11 @@ public abstract class BaseConsentServiceTest<T extends BaseConsentEntity<?>, A e
     void createConsent() {
         final T consentObj = getValidConsentEntity();
 
-        final DateTime timeBeforePersist = DateTime.now();
+        final Date timeBeforePersist = new Date();
         final T persistedConsent = consentService.createConsent(consentObj);
 
         assertThat(persistedConsent.getId()).isNotBlank();
-        assertThat(persistedConsent.getCreationDateTime()).isNotNull().isBetween(timeBeforePersist, DateTime.now());
+        assertThat(persistedConsent.getCreationDateTime()).isNotNull().isBetween(timeBeforePersist, new Date());
         assertThat(persistedConsent.getStatusUpdatedDateTime()).isEqualTo(persistedConsent.getCreationDateTime());
 
         assertThat(persistedConsent.getStatus()).isEqualTo(getConsentStateModel().getInitialConsentStatus());
@@ -118,8 +119,8 @@ public abstract class BaseConsentServiceTest<T extends BaseConsentEntity<?>, A e
 
         assertThat(authorisedConsent.getStatus()).isEqualTo(getConsentStateModel().getAuthorisedConsentStatus());
         assertThat(authorisedConsent.getResourceOwnerId()).isEqualTo(TEST_RESOURCE_OWNER);
-        assertThat(authorisedConsent.getStatusUpdatedDateTime()).isGreaterThan(consentToAuthorise.getStatusUpdatedDateTime())
-                                                                .isLessThanOrEqualTo(DateTime.now());
+        assertThat(authorisedConsent.getStatusUpdatedDateTime()).isAfter(consentToAuthorise.getStatusUpdatedDateTime())
+                                                                .isBeforeOrEqualTo(new Date());
 
         assertThat(authorisedConsent.getCreationDateTime()).isEqualTo(consentToAuthorise.getCreationDateTime());
         assertThat(authorisedConsent.getApiClientId()).isEqualTo(consentToAuthorise.getApiClientId());
@@ -149,8 +150,8 @@ public abstract class BaseConsentServiceTest<T extends BaseConsentEntity<?>, A e
         assertThat(rejectedConsent.getResourceOwnerId()).isEqualTo(TEST_RESOURCE_OWNER);
 
         // sometimes actions complete so fast that statusUpdatedTime is the same (to millisecond precision)
-        assertThat(rejectedConsent.getStatusUpdatedDateTime()).isGreaterThanOrEqualTo(consentBeforeRejectAction.getStatusUpdatedDateTime())
-                                                              .isLessThanOrEqualTo(DateTime.now());
+        assertThat(rejectedConsent.getStatusUpdatedDateTime()).isAfterOrEqualTo(consentBeforeRejectAction.getStatusUpdatedDateTime())
+                                                              .isBeforeOrEqualTo(new Date());
         assertThat(rejectedConsent.getEntityVersion()).isEqualTo(consentBeforeRejectAction.getEntityVersion() + 1);
     }
 

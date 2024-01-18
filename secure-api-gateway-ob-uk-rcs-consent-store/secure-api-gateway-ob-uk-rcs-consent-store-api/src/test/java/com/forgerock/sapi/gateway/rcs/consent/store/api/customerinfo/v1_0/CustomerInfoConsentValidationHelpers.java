@@ -20,12 +20,11 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.customerinfo.v1_0.
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.customerinfo.v1_0.CreateCustomerInfoConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.customerinfo.v1_0.CustomerInfoConsent;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
-import org.joda.time.DateTime;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-;
+;import java.util.Date;
 
 /**
  * Helper methods for validating {@link CustomerInfoConsent} objects as part of using the {@link CustomerInfoConsentApi}
@@ -40,7 +39,7 @@ public class CustomerInfoConsentValidationHelpers {
         assertThat(consent.getRequestObj()).isEqualTo(createCustomerInfoConsentRequest.getConsentRequest());
         assertThat(consent.getRequestVersion()).isEqualTo(OBVersion.v1_0);
         assertThat(consent.getResourceOwnerId()).isNull();
-        assertThat(consent.getCreationDateTime()).isLessThan(DateTime.now());
+        assertThat(consent.getCreationDateTime()).isBefore(new Date());
         assertThat(consent.getStatusUpdateDateTime()).isEqualTo(consent.getCreationDateTime());
     }
 
@@ -68,6 +67,6 @@ public class CustomerInfoConsentValidationHelpers {
         assertThat(updatedConsent.getRequestObj()).isEqualTo(consent.getRequestObj());
         assertThat(updatedConsent.getRequestVersion()).isEqualTo(consent.getRequestVersion());
         assertThat(updatedConsent.getCreationDateTime()).isEqualTo(consent.getCreationDateTime());
-        assertThat(updatedConsent.getStatusUpdateDateTime()).isLessThanOrEqualTo(DateTime.now()).isGreaterThan(consent.getStatusUpdateDateTime());
+        assertThat(updatedConsent.getStatusUpdateDateTime()).isBeforeOrEqualTo(new Date()).isAfterOrEqualTo(consent.getStatusUpdateDateTime());
     }
 }

@@ -16,7 +16,6 @@
 package com.forgerock.sapi.gateway.ob.uk.rcs.api.dto;
 
 import lombok.*;
-import org.springframework.http.HttpMethod;
 
 /**
  * Simple POJO to send the redirection information from the server side to the UI for RS accounts and payments.
@@ -30,6 +29,6 @@ public class RedirectionAction {
 
     private String consentJwt;
     private String redirectUri;
-    private HttpMethod requestMethod;
+    private String requestMethod;
     private String errorMessage;
 }

@@ -15,10 +15,11 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.repo.entity;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import java.util.Date;
 
-import org.joda.time.DateTime;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -82,14 +83,14 @@ public class BaseConsentEntity<T> {
      * Time at which the Consent was persisted
      */
     @CreatedDate
-    private DateTime creationDateTime;
+    private Date creationDateTime;
 
     /**
      * Time at which the Consent was last modified, once a Consent has been created then modifications are only
      * permitted as part of status transitions.
      */
     @LastModifiedDate
-    private DateTime statusUpdatedDateTime;
+    private Date statusUpdatedDateTime;
 
     public BaseConsentEntity() {
     }
@@ -143,11 +144,11 @@ public class BaseConsentEntity<T> {
         return resourceOwnerId;
     }
 
-    public DateTime getCreationDateTime() {
+    public Date getCreationDateTime() {
         return creationDateTime;
     }
 
-    public DateTime getStatusUpdatedDateTime() {
+    public Date getStatusUpdatedDateTime() {
         return statusUpdatedDateTime;
     }
 
