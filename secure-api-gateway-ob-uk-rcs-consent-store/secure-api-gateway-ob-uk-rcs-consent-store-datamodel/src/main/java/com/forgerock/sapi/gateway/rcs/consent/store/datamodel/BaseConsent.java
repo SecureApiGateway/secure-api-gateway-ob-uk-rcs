@@ -15,13 +15,14 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.datamodel;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import java.util.Date;
 
-import org.joda.time.DateTime;
 import org.springframework.validation.annotation.Validated;
 
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Base class representing a Consent DTO
@@ -43,9 +44,9 @@ public abstract class BaseConsent<T> {
     @NotNull
     private String apiClientId;
     @NotNull
-    private DateTime creationDateTime;
+    private Date creationDateTime;
     @NotNull
-    private DateTime statusUpdateDateTime;
+    private Date statusUpdateDateTime;
 
     private String resourceOwnerId;
 
@@ -97,19 +98,19 @@ public abstract class BaseConsent<T> {
         this.resourceOwnerId = resourceOwnerId;
     }
 
-    public DateTime getCreationDateTime() {
+    public Date getCreationDateTime() {
         return creationDateTime;
     }
 
-    public void setCreationDateTime(DateTime creationDateTime) {
+    public void setCreationDateTime(Date creationDateTime) {
         this.creationDateTime = creationDateTime;
     }
 
-    public DateTime getStatusUpdateDateTime() {
+    public Date getStatusUpdateDateTime() {
         return statusUpdateDateTime;
     }
 
-    public void setStatusUpdateDateTime(DateTime statusUpdateDateTime) {
+    public void setStatusUpdateDateTime(Date statusUpdateDateTime) {
         this.statusUpdateDateTime = statusUpdateDateTime;
     }
 

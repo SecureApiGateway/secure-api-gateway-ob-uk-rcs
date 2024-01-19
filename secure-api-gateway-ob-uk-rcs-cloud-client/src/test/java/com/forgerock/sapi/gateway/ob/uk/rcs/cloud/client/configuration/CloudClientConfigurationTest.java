@@ -34,7 +34,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  * Unit test for {@link CloudClientConfiguration}
  */
 @ContextConfiguration(classes = {CloudClientConfiguration.class}, initializers = ConfigDataApplicationContextInitializer.class)
-@EnableConfigurationProperties(value = CloudClientConfiguration.class)
 @ActiveProfiles("test")
 @SpringBootTest(classes = TestApplicationClient.class, webEnvironment = MOCK)
 public class CloudClientConfigurationTest {

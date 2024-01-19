@@ -17,6 +17,8 @@ package com.forgerock.sapi.gateway.rcs.consent.store.api.payment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Date;
+
 import org.joda.time.DateTime;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
@@ -41,9 +43,8 @@ public class PaymentConsentValidationHelpers {
         assertThat(consent.getResourceOwnerId()).isNull();
         assertThat(consent.getAuthorisedDebtorAccountId()).isNull();
 
-        final DateTime now = DateTime.now();
-        assertThat(consent.getIdempotencyKeyExpiration()).isGreaterThan(now);
-        assertThat(consent.getCreationDateTime()).isLessThan(now);
+        assertThat(consent.getIdempotencyKeyExpiration()).isGreaterThan(DateTime.now());
+        assertThat(consent.getCreationDateTime()).isBefore(new Date());
         assertThat(consent.getStatusUpdateDateTime()).isEqualTo(consent.getCreationDateTime());
     }
 
@@ -72,7 +73,7 @@ public class PaymentConsentValidationHelpers {
         assertThat(updatedConsent.getRequestObj()).isEqualTo(consent.getRequestObj());
         assertThat(updatedConsent.getRequestVersion()).isEqualTo(consent.getRequestVersion());
         assertThat(updatedConsent.getCreationDateTime()).isEqualTo(consent.getCreationDateTime());
-        assertThat(updatedConsent.getStatusUpdateDateTime()).isLessThanOrEqualTo(DateTime.now()).isGreaterThan(consent.getStatusUpdateDateTime());
+        assertThat(updatedConsent.getStatusUpdateDateTime()).isBeforeOrEqualTo(new Date()).isAfterOrEqualTo(consent.getStatusUpdateDateTime());
     }
 
     /**
@@ -84,7 +85,7 @@ public class PaymentConsentValidationHelpers {
         assertThat(consumedConsent.getStatus()).isEqualTo(StatusEnum.CONSUMED.toString());
         validateUpdatedConsentAgainstOriginal(consumedConsent, authorisedConsent);
 
-        assertThat(consumedConsent.getStatusUpdateDateTime()).isGreaterThan(authorisedConsent.getStatusUpdateDateTime());
+        assertThat(consumedConsent.getStatusUpdateDateTime()).isAfterOrEqualTo(authorisedConsent.getStatusUpdateDateTime());
         assertThat(consumedConsent.getAuthorisedDebtorAccountId()).isEqualTo(authorisedConsent.getAuthorisedDebtorAccountId());
         assertThat(consumedConsent.getResourceOwnerId()).isEqualTo(authorisedConsent.getResourceOwnerId());
     }

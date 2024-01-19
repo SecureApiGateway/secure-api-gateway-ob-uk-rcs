@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.repo;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.joda.time.DateTimeZone;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Import;
 
 @SpringBootApplication
 @Import(ConsentStoreConfiguration.class)
-public class TestApp {
+public class ConsentStoreRepoTestApp {
 
     @PostConstruct
     void postConstruct() {

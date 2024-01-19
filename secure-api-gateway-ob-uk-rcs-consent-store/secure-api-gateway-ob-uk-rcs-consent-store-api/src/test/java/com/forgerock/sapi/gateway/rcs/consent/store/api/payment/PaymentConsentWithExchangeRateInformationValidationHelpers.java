@@ -17,6 +17,8 @@ package com.forgerock.sapi.gateway.rcs.consent.store.api.payment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Date;
+
 import org.joda.time.DateTime;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.BaseCreateInternationalPaymentConsentRequest;
@@ -40,9 +42,8 @@ public class PaymentConsentWithExchangeRateInformationValidationHelpers {
         assertThat(consent.getResourceOwnerId()).isNull();
         assertThat(consent.getAuthorisedDebtorAccountId()).isNull();
 
-        final DateTime now = DateTime.now();
-        assertThat(consent.getIdempotencyKeyExpiration()).isGreaterThan(now);
-        assertThat(consent.getCreationDateTime()).isLessThan(now);
+        assertThat(consent.getIdempotencyKeyExpiration()).isGreaterThan(DateTime.now());
+        assertThat(consent.getCreationDateTime()).isBefore(new Date());
         assertThat(consent.getStatusUpdateDateTime()).isEqualTo(consent.getCreationDateTime());
     }
 

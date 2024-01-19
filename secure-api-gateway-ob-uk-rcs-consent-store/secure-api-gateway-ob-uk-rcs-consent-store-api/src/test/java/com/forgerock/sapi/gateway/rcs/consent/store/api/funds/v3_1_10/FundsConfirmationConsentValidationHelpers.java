@@ -20,10 +20,11 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.Auth
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.CreateFundsConfirmationConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.FundsConfirmationConsent;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
-import org.joda.time.DateTime;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Date;
 
 /**
  * Helper methods for validating {@link FundsConfirmationConsent} objects as part of using the {@link FundsConfirmationConsentApi}
@@ -38,7 +39,7 @@ public class FundsConfirmationConsentValidationHelpers {
         assertThat(consent.getRequestObj()).isEqualTo(createFundsConfirmationConsentRequest.getConsentRequest());
         assertThat(consent.getRequestVersion()).isEqualTo(OBVersion.v3_1_10);
         assertThat(consent.getResourceOwnerId()).isNull();
-        assertThat(consent.getCreationDateTime()).isLessThan(DateTime.now());
+        assertThat(consent.getCreationDateTime()).isBefore(new Date());
         assertThat(consent.getStatusUpdateDateTime()).isEqualTo(consent.getCreationDateTime());
     }
 
@@ -67,6 +68,6 @@ public class FundsConfirmationConsentValidationHelpers {
         assertThat(updatedConsent.getRequestObj()).isEqualTo(consent.getRequestObj());
         assertThat(updatedConsent.getRequestVersion()).isEqualTo(consent.getRequestVersion());
         assertThat(updatedConsent.getCreationDateTime()).isEqualTo(consent.getCreationDateTime());
-        assertThat(updatedConsent.getStatusUpdateDateTime()).isLessThanOrEqualTo(DateTime.now()).isGreaterThan(consent.getStatusUpdateDateTime());
+        assertThat(updatedConsent.getStatusUpdateDateTime()).isBeforeOrEqualTo(new Date()).isAfterOrEqualTo(consent.getStatusUpdateDateTime());
     }
 }
