@@ -34,7 +34,7 @@
 #
 
 server:
-  max-http-header-size: 16KB
+  max-http-request-header-size: 16KB
 
 logging:
   level:
