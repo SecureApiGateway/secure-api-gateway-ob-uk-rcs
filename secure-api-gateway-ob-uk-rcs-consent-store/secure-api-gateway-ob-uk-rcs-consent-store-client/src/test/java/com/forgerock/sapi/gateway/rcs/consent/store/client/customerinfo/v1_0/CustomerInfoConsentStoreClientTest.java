@@ -33,7 +33,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadConsent1;
-import uk.org.openbanking.datamodel.account.OBReadData1;
+import uk.org.openbanking.datamodel.account.OBReadConsent1Data;
 import uk.org.openbanking.datamodel.account.OBRisk2;
 
 import java.util.List;
@@ -134,7 +134,7 @@ public class CustomerInfoConsentStoreClientTest {
         final CreateCustomerInfoConsentRequest createConsentRequest = new CreateCustomerInfoConsentRequest();
         createConsentRequest.setApiClientId(API_CLIENT_ID);
         createConsentRequest.setConsentRequest(FRReadConsentConverter.toFRReadConsent(new OBReadConsent1()
-                .data(new OBReadData1().permissions(List.of(OBExternalPermissions1Code.READCUSTOMERINFO)))
+                .data(new OBReadConsent1Data().permissions(List.of(OBExternalPermissions1Code.READCUSTOMERINFO)))
                 .risk(new OBRisk2())));
         return createConsentRequest;
     }

@@ -44,7 +44,7 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadConsent1;
-import uk.org.openbanking.datamodel.account.OBReadData1;
+import uk.org.openbanking.datamodel.account.OBReadConsent1Data;
 import uk.org.openbanking.datamodel.account.OBRisk2;
 import uk.org.openbanking.datamodel.common.OBExternalRequestStatus1Code;
 
@@ -77,7 +77,7 @@ public class DefaultAccountAccessConsentServiceTest extends BaseConsentServiceTe
         accountAccessConsentEntity.setRequestVersion(OBVersion.v3_1_10);
 
         final OBReadConsent1 obReadConsent = new OBReadConsent1();
-        obReadConsent.setData(new OBReadData1().permissions(List.of(OBExternalPermissions1Code.READACCOUNTSBASIC))
+        obReadConsent.setData(new OBReadConsent1Data().permissions(List.of(OBExternalPermissions1Code.READACCOUNTSBASIC))
                                                .expirationDateTime(DateTime.now().plusDays(30)));
         obReadConsent.setRisk(new OBRisk2());
         accountAccessConsentEntity.setRequestObj(FRReadConsentConverter.toFRReadConsent(obReadConsent));

@@ -46,7 +46,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.Cr
 
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadConsent1;
-import uk.org.openbanking.datamodel.account.OBReadData1;
+import uk.org.openbanking.datamodel.account.OBReadConsent1Data;
 import uk.org.openbanking.datamodel.account.OBRisk2;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"rcs.consent.store.api.baseUri= 'ignored'"})
@@ -132,7 +132,7 @@ public class AccountAccessConsentStoreClientTest {
         final CreateAccountAccessConsentRequest createConsentRequest = new CreateAccountAccessConsentRequest();
         createConsentRequest.setApiClientId("test-client-1");
         createConsentRequest.setConsentRequest(FRReadConsentConverter.toFRReadConsent(new OBReadConsent1()
-                                                    .data(new OBReadData1().permissions(List.of(OBExternalPermissions1Code.READACCOUNTSBASIC)))
+                                                    .data(new OBReadConsent1Data().permissions(List.of(OBExternalPermissions1Code.READACCOUNTSBASIC)))
                                                     .risk(new OBRisk2())));
         return createConsentRequest;
     }

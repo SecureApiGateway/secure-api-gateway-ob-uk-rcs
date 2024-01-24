@@ -15,8 +15,22 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.customerinfo;
 
+import static com.forgerock.sapi.gateway.ob.uk.rcs.server.client.rs.FRCustomerInfoTestHelper.aValidFRCustomerInfo;
+import static com.forgerock.sapi.gateway.rcs.consent.store.repo.service.customerinfo.DefaultCustomerInfoAccessConsentServiceTest.createValidConsentEntity;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRReadConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.customerinfo.FRCustomerInfo;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.ConsentDetails;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.CustomerInfoConsentDetails;
@@ -27,34 +41,10 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.User;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services.ApiClientServiceClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.client.rs.CustomerInfoService;
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.ApiProviderConfiguration;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.account.AccountAccessConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.customerinfo.CustomerInfoConsentEntity;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessConsentStateModel;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.DefaultAccountAccessConsentServiceTest;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.customerinfo.CustomerInfoConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.customerinfo.CustomerInfoConsentStateModel;
-import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
-import org.joda.time.DateTime;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
-import uk.org.openbanking.datamodel.account.OBReadConsent1;
-import uk.org.openbanking.datamodel.account.OBReadData1;
-import uk.org.openbanking.datamodel.account.OBRisk2;
-import uk.org.openbanking.datamodel.common.OBExternalRequestStatus1Code;
-
-import java.util.List;
-import java.util.Optional;
-
-import static com.forgerock.sapi.gateway.ob.uk.rcs.server.client.rs.FRCustomerInfoTestHelper.aValidFRCustomerInfo;
-import static com.forgerock.sapi.gateway.rcs.consent.store.repo.service.customerinfo.DefaultCustomerInfoAccessConsentServiceTest.createValidConsentEntity;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
 
 /**
  * Test for {@link CustomerInfoConsentDetailsService}

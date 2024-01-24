@@ -31,7 +31,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadConsent1;
-import uk.org.openbanking.datamodel.account.OBReadData1;
+import uk.org.openbanking.datamodel.account.OBReadConsent1Data;
 import uk.org.openbanking.datamodel.account.OBRisk2;
 import uk.org.openbanking.datamodel.common.OBExternalRequestStatus1Code;
 
@@ -108,7 +108,7 @@ public class DefaultCustomerInfoAccessConsentServiceTest extends BaseConsentServ
         customerInfoConsentEntity.setRequestVersion(OBVersion.v1_0);
 
         final OBReadConsent1 obReadConsent = new OBReadConsent1();
-        obReadConsent.setData(new OBReadData1().permissions(List.of(OBExternalPermissions1Code.READCUSTOMERINFO))
+        obReadConsent.setData(new OBReadConsent1Data().permissions(List.of(OBExternalPermissions1Code.READCUSTOMERINFO))
                 .expirationDateTime(DateTime.now().plusDays(30)));
         obReadConsent.setRisk(new OBRisk2());
         customerInfoConsentEntity.setRequestObj(FRReadConsentConverter.toFRReadConsent(obReadConsent));
