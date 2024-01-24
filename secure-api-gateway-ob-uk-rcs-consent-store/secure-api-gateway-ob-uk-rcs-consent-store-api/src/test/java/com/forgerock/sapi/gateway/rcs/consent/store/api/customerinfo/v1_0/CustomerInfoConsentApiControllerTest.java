@@ -23,7 +23,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.customerinfo.v1_0.
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.customerinfo.v1_0.CustomerInfoConsent;
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadConsent1;
-import uk.org.openbanking.datamodel.account.OBReadData1;
+import uk.org.openbanking.datamodel.account.OBReadConsent1Data;
 import uk.org.openbanking.datamodel.account.OBRisk2;
 
 import jakarta.annotation.PostConstruct;
@@ -51,7 +51,7 @@ public class CustomerInfoConsentApiControllerTest extends BaseControllerTest<Cus
         final CreateCustomerInfoConsentRequest createRequest = new CreateCustomerInfoConsentRequest();
         createRequest.setApiClientId(apiClientId);
         createRequest.setConsentRequest(FRReadConsentConverter.toFRReadConsent(new OBReadConsent1()
-                .data(new OBReadData1().permissions(List.of(OBExternalPermissions1Code.READCUSTOMERINFO)))
+                .data(new OBReadConsent1Data().permissions(List.of(OBExternalPermissions1Code.READCUSTOMERINFO)))
                 .risk(new OBRisk2())));
         return createRequest;
     }

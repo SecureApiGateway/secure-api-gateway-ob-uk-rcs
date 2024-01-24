@@ -110,7 +110,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadConsent1;
-import uk.org.openbanking.datamodel.account.OBReadData1;
+import uk.org.openbanking.datamodel.account.OBReadConsent1Data;
 import uk.org.openbanking.datamodel.account.OBRisk2;
 import uk.org.openbanking.datamodel.common.OBCashAccount3;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1;
@@ -239,7 +239,7 @@ public class ConsentDecisionApiControllerRcsConsentStoreTest {
     }
 
     private static FRReadConsent createConsentRequestObj() {
-        return FRReadConsentConverter.toFRReadConsent(new OBReadConsent1().data(new OBReadData1().permissions(
+        return FRReadConsentConverter.toFRReadConsent(new OBReadConsent1().data(new OBReadConsent1Data().permissions(
                 List.of(OBExternalPermissions1Code.READACCOUNTSBASIC))).risk(new OBRisk2()));
     }
 

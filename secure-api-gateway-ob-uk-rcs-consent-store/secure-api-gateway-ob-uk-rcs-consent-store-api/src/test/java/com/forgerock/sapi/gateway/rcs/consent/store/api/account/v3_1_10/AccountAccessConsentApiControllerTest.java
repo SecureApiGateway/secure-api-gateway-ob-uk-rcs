@@ -32,7 +32,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.api.BaseControllerTest;
 
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadConsent1;
-import uk.org.openbanking.datamodel.account.OBReadData1;
+import uk.org.openbanking.datamodel.account.OBReadConsent1Data;
 import uk.org.openbanking.datamodel.account.OBRisk2;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 
@@ -54,7 +54,7 @@ public class AccountAccessConsentApiControllerTest extends BaseControllerTest<Ac
         final CreateAccountAccessConsentRequest createRequest = new CreateAccountAccessConsentRequest();
         createRequest.setApiClientId(apiClientId);
         createRequest.setConsentRequest(FRReadConsentConverter.toFRReadConsent(new OBReadConsent1()
-                .data(new OBReadData1().permissions(List.of(OBExternalPermissions1Code.READACCOUNTSBASIC)))
+                .data(new OBReadConsent1Data().permissions(List.of(OBExternalPermissions1Code.READACCOUNTSBASIC)))
                 .risk(new OBRisk2())));
         return createRequest;
     }
