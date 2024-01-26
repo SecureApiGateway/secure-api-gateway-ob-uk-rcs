@@ -31,8 +31,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -51,8 +51,8 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internatio
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.international.v3_1_10.InternationalPaymentConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.international.BasePaymentServiceWithExchangeRateInformationTest;
 
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent4;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse5Data.StatusEnum;
+import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent5;
 import uk.org.openbanking.testsupport.payment.OBWriteInternationalConsentTestDataFactory;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"rcs.consent.store.api.baseUri= 'ignored'"})
@@ -126,10 +126,10 @@ class InternationalPaymentConsentStoreClientTest {
 
         final AuthorisePaymentConsentRequest authRequest = buildAuthoriseConsentRequest(consent, "psu4test", "acc-12345");
         final InternationalPaymentConsent authResponse = apiClient.authoriseConsent(authRequest);
-        assertThat(authResponse.getStatus()).isEqualTo(StatusEnum.AUTHORISED.toString());
+        assertThat(authResponse.getStatus()).isEqualTo(OBPaymentConsentStatus.AUTHORISED.toString());
 
         final InternationalPaymentConsent consumedConsent = apiClient.consumeConsent(buildConsumeRequest(consent));
-        assertThat(consumedConsent.getStatus()).isEqualTo(StatusEnum.CONSUMED.toString());
+        assertThat(consumedConsent.getStatus()).isEqualTo(OBPaymentConsentStatus.CONSUMED.toString());
 
         validateConsumedConsent(consumedConsent, authResponse);
     }
@@ -146,7 +146,7 @@ class InternationalPaymentConsentStoreClientTest {
         final CreateInternationalPaymentConsentRequest createConsentRequest = new CreateInternationalPaymentConsentRequest();
         createConsentRequest.setIdempotencyKey(UUID.randomUUID().toString());
         createConsentRequest.setApiClientId("test-client-1");
-        final OBWriteInternationalConsent4 obConsent = OBWriteInternationalConsentTestDataFactory.aValidOBWriteInternationalConsent4();
+        final OBWriteInternationalConsent5 obConsent = OBWriteInternationalConsentTestDataFactory.aValidOBWriteInternationalConsent5();
         createConsentRequest.setConsentRequest(FRWriteInternationalConsentConverter.toFRWriteInternationalConsent(obConsent));
         createConsentRequest.setCharges(List.of(
                 FRCharge.builder().type("fee")

@@ -36,7 +36,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.Payment
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.international.InternationalStandingOrderConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse5Data.StatusEnum;
+import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
 
 /**
  * Implementation of InternationalStandingOrderConsentApi for OBIE version 3.1.10
@@ -76,7 +76,7 @@ public class InternationalStandingOrderConsentApiController implements Internati
         internationalPaymentConsent.setRequestVersion(obVersion);
         internationalPaymentConsent.setApiClientId(request.getApiClientId());
         internationalPaymentConsent.setRequestObj(request.getConsentRequest());
-        internationalPaymentConsent.setStatus(StatusEnum.AWAITINGAUTHORISATION.toString());
+        internationalPaymentConsent.setStatus(OBPaymentConsentStatus.AWAITINGAUTHORISATION.toString());
         internationalPaymentConsent.setCharges(request.getCharges());
         internationalPaymentConsent.setIdempotencyKey(request.getIdempotencyKey());
         internationalPaymentConsent.setIdempotencyKeyExpiration(idempotencyKeyExpirationSupplier.get());

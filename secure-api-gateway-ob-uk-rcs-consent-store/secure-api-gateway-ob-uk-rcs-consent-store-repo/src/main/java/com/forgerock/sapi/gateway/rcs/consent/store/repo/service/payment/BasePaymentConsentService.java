@@ -27,7 +27,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.payment.PaymentCo
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentStateModel;
 
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
+import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
 
 public class BasePaymentConsentService<T extends BasePaymentConsentEntity<?>, A extends PaymentAuthoriseConsentArgs> extends BaseConsentService<T, A> implements PaymentConsentService<T, A> {
 
@@ -60,7 +60,7 @@ public class BasePaymentConsentService<T extends BasePaymentConsentEntity<?>, A 
 
     public T consumeConsent(String consentId, String apiClientId) {
         final T consent = getConsent(consentId, apiClientId);
-        final String consumedStatus = StatusEnum.CONSUMED.toString();
+        final String consumedStatus = OBPaymentConsentStatus.CONSUMED.toString();
         validateStateTransition(consent, consumedStatus);
         consent.setStatus(consumedStatus);
         return repo.save(consent);

@@ -22,13 +22,13 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRExc
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.international.BasePaymentConsentEntityWithExchangeRateInformation;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.BasePaymentConsentServiceTest;
 
-import uk.org.openbanking.datamodel.payment.OBExchangeRateType2Code;
+import uk.org.openbanking.datamodel.payment.OBExchangeRateType;
 import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiationExchangeRateInformation;
 
 public abstract class BasePaymentServiceWithExchangeRateInformationTest<T extends BasePaymentConsentEntityWithExchangeRateInformation<?>> extends BasePaymentConsentServiceTest<T> {
 
     public static FRExchangeRateInformation getExchangeRateInformation(OBWriteInternational3DataInitiationExchangeRateInformation consentRequestExchangeRateInformation) {
-        if (consentRequestExchangeRateInformation.getRateType() == OBExchangeRateType2Code.AGREED) {
+        if (consentRequestExchangeRateInformation.getRateType() == OBExchangeRateType.AGREED) {
             return FRExchangeRateConverter.toFRExchangeRateInformation(consentRequestExchangeRateInformation);
         } else {
             throw new UnsupportedOperationException("Test data is only available for AGREED Exchange Rates at the moment");

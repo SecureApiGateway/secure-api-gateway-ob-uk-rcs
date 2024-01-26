@@ -33,11 +33,11 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentServ
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentStateModel;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import uk.org.openbanking.datamodel.common.OBCashAccount3;
-import uk.org.openbanking.datamodel.common.OBExternalAccountIdentification2Code;
+import uk.org.openbanking.datamodel.common.OBExternalAccountIdentification4Code;
 import uk.org.openbanking.datamodel.common.OBExternalRequestStatus1Code;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentData1;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1Data;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1DataDebtorAccount;
 
 /**
  * Test for {@link DefaultFundsConfirmationAccessConsentService}
@@ -84,7 +84,7 @@ public class DefaultFundsConfirmationAccessConsentServiceTest extends BaseConsen
         final FRAccountIdentifier accountIdentifier = FRAccountIdentifier.builder()
                 .accountId(UUID.randomUUID().toString())
                 .name("account-name")
-                .schemeName(OBExternalAccountIdentification2Code.SortCodeAccountNumber.toString())
+                .schemeName(OBExternalAccountIdentification4Code.SORTCODEACCOUNTNUMBER.toString())
                 .identification("08080021325698")
                 .secondaryIdentification("secondary-identification")
                 .build();
@@ -98,10 +98,10 @@ public class DefaultFundsConfirmationAccessConsentServiceTest extends BaseConsen
         fundsConfirmationConsentEntity.setRequestVersion(OBVersion.v3_1_10);
         final OBFundsConfirmationConsent1 fundsConfirmationConsent1 = new OBFundsConfirmationConsent1();
         fundsConfirmationConsent1.setData(
-                new OBFundsConfirmationConsentData1()
+                new OBFundsConfirmationConsent1Data()
                         .expirationDateTime(DateTime.now().plusDays(30))
                         .debtorAccount(
-                                new OBCashAccount3()
+                                new OBFundsConfirmationConsent1DataDebtorAccount()
                                         .schemeName(accountIdentifier.getSchemeName())
                                         .identification(accountIdentifier.getIdentification())
                                         .name(accountIdentifier.getName())

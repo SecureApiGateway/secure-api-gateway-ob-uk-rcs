@@ -15,16 +15,19 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.api.customerinfo.v1_0;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Date;
+
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.customerinfo.v1_0.AuthoriseCustomerInfoConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.customerinfo.v1_0.CreateCustomerInfoConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.customerinfo.v1_0.CustomerInfoConsent;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import uk.org.openbanking.datamodel.common.OBExternalRequestStatus1Code;
 
-;import java.util.Date;
+;
 
 /**
  * Helper methods for validating {@link CustomerInfoConsent} objects as part of using the {@link CustomerInfoConsentApi}
@@ -34,7 +37,7 @@ public class CustomerInfoConsentValidationHelpers {
     public static void validateCreateConsentAgainstCreateRequest(CustomerInfoConsent consent,
                                                                  CreateCustomerInfoConsentRequest createCustomerInfoConsentRequest) {
         assertThat(consent.getId()).isNotEmpty();
-        assertThat(consent.getStatus()).isEqualTo(StatusEnum.AWAITINGAUTHORISATION.toString());
+        assertThat(consent.getStatus()).isEqualTo(OBExternalRequestStatus1Code.AWAITINGAUTHORISATION.toString());
         assertThat(consent.getApiClientId()).isEqualTo(createCustomerInfoConsentRequest.getApiClientId());
         assertThat(consent.getRequestObj()).isEqualTo(createCustomerInfoConsentRequest.getConsentRequest());
         assertThat(consent.getRequestVersion()).isEqualTo(OBVersion.v1_0);
@@ -44,13 +47,13 @@ public class CustomerInfoConsentValidationHelpers {
     }
 
     public static void validateAuthorisedConsent(CustomerInfoConsent authorisedConsent, AuthoriseCustomerInfoConsentRequest authoriseReq, CustomerInfoConsent originalConsent) {
-        assertThat(authorisedConsent.getStatus()).isEqualTo(StatusEnum.AUTHORISED.toString());
+        assertThat(authorisedConsent.getStatus()).isEqualTo(OBExternalRequestStatus1Code.AUTHORISED.toString());
         assertThat(authorisedConsent.getResourceOwnerId()).isEqualTo(authoriseReq.getResourceOwnerId());
         validateUpdatedConsentAgainstOriginal(authorisedConsent, originalConsent);
     }
 
     public static void validateRejectedConsent(CustomerInfoConsent rejectedConsent, RejectConsentRequest rejectReq, CustomerInfoConsent originalConsent) {
-        assertThat(rejectedConsent.getStatus()).isEqualTo(StatusEnum.REJECTED.toString());
+        assertThat(rejectedConsent.getStatus()).isEqualTo(OBExternalRequestStatus1Code.REJECTED.toString());
         assertThat(rejectedConsent.getResourceOwnerId()).isEqualTo(rejectReq.getResourceOwnerId());
         validateUpdatedConsentAgainstOriginal(rejectedConsent, originalConsent);
     }

@@ -36,7 +36,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.Payment
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DomesticPaymentConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
+import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
 
 /**
  * Implementation of DomesticPaymentConsentApi for OBIE version 3.1.10
@@ -76,7 +76,7 @@ public class DomesticPaymentConsentApiController implements DomesticPaymentConse
         domesticPaymentConsent.setRequestVersion(obVersion);
         domesticPaymentConsent.setApiClientId(request.getApiClientId());
         domesticPaymentConsent.setRequestObj(request.getConsentRequest());
-        domesticPaymentConsent.setStatus(StatusEnum.AWAITINGAUTHORISATION.toString());
+        domesticPaymentConsent.setStatus(OBPaymentConsentStatus.AWAITINGAUTHORISATION.toString());
         domesticPaymentConsent.setCharges(request.getCharges());
         domesticPaymentConsent.setIdempotencyKey(request.getIdempotencyKey());
         domesticPaymentConsent.setIdempotencyKeyExpiration(idempotencyKeyExpirationSupplier.get());

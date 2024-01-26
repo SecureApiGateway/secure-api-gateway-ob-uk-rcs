@@ -31,8 +31,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -44,9 +44,9 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.Auth
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.CreateFundsConfirmationConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.FundsConfirmationConsent;
 
-import uk.org.openbanking.datamodel.common.OBCashAccount3;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentData1;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1Data;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1DataDebtorAccount;
 
 /**
  * Test for {@link FundsConfirmationConsentStoreClient}
@@ -138,10 +138,10 @@ public class FundsConfirmationConsentStoreClientTest {
         createConsentRequest.setApiClientId(API_CLIENT_ID);
         final OBFundsConfirmationConsent1 fundsConfirmationConsent1 = new OBFundsConfirmationConsent1();
         fundsConfirmationConsent1.setData(
-                new OBFundsConfirmationConsentData1()
+                new OBFundsConfirmationConsent1Data()
                         .expirationDateTime(DateTime.now().plusDays(30))
                         .debtorAccount(
-                                new OBCashAccount3()
+                                new OBFundsConfirmationConsent1DataDebtorAccount()
                                         .schemeName("UK.OBIE.SortCodeAccountNumber")
                                         .identification("40400422390112")
                                         .name("Mrs B Smith")

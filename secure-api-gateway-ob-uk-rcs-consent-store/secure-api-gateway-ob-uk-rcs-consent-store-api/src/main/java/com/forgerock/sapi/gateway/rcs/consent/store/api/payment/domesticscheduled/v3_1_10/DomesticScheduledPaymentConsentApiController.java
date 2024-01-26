@@ -32,11 +32,11 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePay
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticscheduled.v3_1_10.CreateDomesticScheduledPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticscheduled.v3_1_10.DomesticScheduledPaymentConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.domestic.DomesticScheduledPaymentConsentEntity;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DomesticScheduledPaymentConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DomesticScheduledPaymentConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
+import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
 
 /**
  * Implementation of DomesticScheduledPaymentConsentApi for OBIE version 3.1.10
@@ -77,7 +77,7 @@ public class DomesticScheduledPaymentConsentApiController implements DomesticSch
         domesticScheduledPaymentConsent.setRequestVersion(obVersion);
         domesticScheduledPaymentConsent.setApiClientId(request.getApiClientId());
         domesticScheduledPaymentConsent.setRequestObj(request.getConsentRequest());
-        domesticScheduledPaymentConsent.setStatus(StatusEnum.AWAITINGAUTHORISATION.toString());
+        domesticScheduledPaymentConsent.setStatus(OBPaymentConsentStatus.AWAITINGAUTHORISATION.toString());
         domesticScheduledPaymentConsent.setCharges(request.getCharges());
         domesticScheduledPaymentConsent.setIdempotencyKey(request.getIdempotencyKey());
         domesticScheduledPaymentConsent.setIdempotencyKeyExpiration(idempotencyKeyExpirationSupplier.get());

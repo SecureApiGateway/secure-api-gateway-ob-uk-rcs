@@ -22,7 +22,7 @@ import org.springframework.util.MultiValueMap;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentStateModel;
 
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
+import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
 
 /**
  * State model for Payment APIs: https://openbankinguk.github.io/read-write-api-site3/v3.1.10/resources-and-data-models/pisp/domestic-payment-consents.html#payment-order-consent
@@ -33,13 +33,13 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.
  */
 public class PaymentConsentStateModel implements ConsentStateModel {
 
-    public static final String AWAITING_AUTHORISATION = StatusEnum.AWAITINGAUTHORISATION.toString();
+    public static final String AWAITING_AUTHORISATION = OBPaymentConsentStatus.AWAITINGAUTHORISATION.toString();
 
-    public static final String AUTHORISED = StatusEnum.AUTHORISED.toString();
+    public static final String AUTHORISED = OBPaymentConsentStatus.AUTHORISED.toString();
 
-    public static final String CONSUMED = StatusEnum.CONSUMED.toString();
+    public static final String CONSUMED = OBPaymentConsentStatus.CONSUMED.toString();
 
-    public static final String REJECTED = StatusEnum.REJECTED.toString();
+    public static final String REJECTED = OBPaymentConsentStatus.REJECTED.toString();
 
     private static final PaymentConsentStateModel INSTANCE = new PaymentConsentStateModel();
 

@@ -38,7 +38,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.file.Fi
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.file.FileUploadArgs;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4Data.StatusEnum;
+import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4DataStatus;
 
 /**
  * Implementation of FilePaymentConsentApi for OBIE version 3.1.10
@@ -80,7 +80,7 @@ public class FilePaymentConsentApiController implements FilePaymentConsentApi {
         domesticPaymentConsent.setRequestVersion(obVersion);
         domesticPaymentConsent.setApiClientId(request.getApiClientId());
         domesticPaymentConsent.setRequestObj(request.getConsentRequest());
-        domesticPaymentConsent.setStatus(StatusEnum.AWAITINGUPLOAD.toString());
+        domesticPaymentConsent.setStatus(OBWriteFileConsentResponse4DataStatus.AWAITINGUPLOAD.toString());
         domesticPaymentConsent.setCharges(request.getCharges());
         domesticPaymentConsent.setIdempotencyKey(request.getIdempotencyKey());
         domesticPaymentConsent.setIdempotencyKeyExpiration(idempotencyKeyExpirationSupplier.get());

@@ -23,8 +23,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import jakarta.validation.ConstraintViolationException;
-
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
@@ -46,8 +44,9 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.BasePay
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
+import jakarta.validation.ConstraintViolationException;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4Data.StatusEnum;
+import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4DataStatus;
 import uk.org.openbanking.testsupport.payment.OBWriteFileConsentTestDataFactory;
 
 @ExtendWith(SpringExtension.class)
@@ -90,7 +89,7 @@ public class DefaultFilePaymentConsentServiceTest extends BasePaymentConsentServ
         domesticPaymentConsent.setRequestVersion(OBVersion.v3_1_10);
         domesticPaymentConsent.setApiClientId(apiClientId);
         domesticPaymentConsent.setRequestObj(FRWriteFileConsentConverter.toFRWriteFileConsent(obConsent));
-        domesticPaymentConsent.setStatus(StatusEnum.AWAITINGUPLOAD.toString());
+        domesticPaymentConsent.setStatus(OBWriteFileConsentResponse4DataStatus.AWAITINGUPLOAD.toString());
         domesticPaymentConsent.setIdempotencyKey(UUID.randomUUID().toString());
         domesticPaymentConsent.setIdempotencyKeyExpiration(DateTime.now().plusDays(1));
         domesticPaymentConsent.setCharges(List.of(
@@ -114,7 +113,7 @@ public class DefaultFilePaymentConsentServiceTest extends BasePaymentConsentServ
         final FileUploadArgs fileUploadArgs = createValidFileUploadArgs(persistedConsent);
         final FilePaymentConsentEntity consentWithFile = service.uploadFile(fileUploadArgs);
 
-        assertThat(consentWithFile.getStatus()).isEqualTo(StatusEnum.AWAITINGAUTHORISATION.toString());
+        assertThat(consentWithFile.getStatus()).isEqualTo(OBWriteFileConsentResponse4DataStatus.AWAITINGAUTHORISATION.toString());
         assertThat(consentWithFile.getFileContent()).isEqualTo(fileUploadArgs.getFileContents());
         assertThat(consentWithFile.getFileUploadIdempotencyKey()).isEqualTo(fileUploadArgs.getFileUploadIdempotencyKey());
         assertThat(consentWithFile.getId()).isEqualTo(persistedConsent.getId());
