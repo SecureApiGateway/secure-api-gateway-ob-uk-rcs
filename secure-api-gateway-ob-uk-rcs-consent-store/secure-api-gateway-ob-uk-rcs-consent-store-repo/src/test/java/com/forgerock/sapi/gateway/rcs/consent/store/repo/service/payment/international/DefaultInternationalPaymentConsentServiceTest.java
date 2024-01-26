@@ -33,7 +33,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentServ
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
+import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent5;
 import uk.org.openbanking.testsupport.payment.OBWriteInternationalConsentTestDataFactory;
 
@@ -65,7 +65,7 @@ class DefaultInternationalPaymentConsentServiceTest extends BasePaymentServiceWi
         consent.setRequestVersion(OBVersion.v3_1_10);
         consent.setApiClientId(apiClientId);
         consent.setRequestObj(FRWriteInternationalConsentConverter.toFRWriteInternationalConsent(obConsent));
-        consent.setStatus(StatusEnum.AWAITINGAUTHORISATION.toString());
+        consent.setStatus(OBPaymentConsentStatus.AWAITINGAUTHORISATION.toString());
         consent.setIdempotencyKey(UUID.randomUUID().toString());
         consent.setIdempotencyKeyExpiration(DateTime.now().plusDays(1));
         consent.setCharges(List.of(

@@ -32,8 +32,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -42,6 +42,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRChargeBearerType;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteFileConsentConverter;
+import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.file.v3_1_10.FilePaymentConsentValidationHelpers;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException.ErrorType;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.TestConsentStoreClientConfigurationFactory;
@@ -51,9 +52,8 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePay
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.CreateFilePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.FilePaymentConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.FileUploadRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.file.v3_1_10.FilePaymentConsentValidationHelpers;
 
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4Data.StatusEnum;
+import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4DataStatus;
 import uk.org.openbanking.testsupport.payment.OBWriteFileConsentTestDataFactory;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"rcs.consent.store.api.baseUri= 'ignored'"})
@@ -146,10 +146,10 @@ class FilePaymentConsentStoreClientTest {
 
         final AuthorisePaymentConsentRequest authRequest = buildAuthoriseConsentRequest(consent, "psu4test", "acc-12345");
         final FilePaymentConsent authResponse = apiClient.authoriseConsent(authRequest);
-        assertThat(authResponse.getStatus()).isEqualTo(StatusEnum.AUTHORISED.toString());
+        assertThat(authResponse.getStatus()).isEqualTo(OBWriteFileConsentResponse4DataStatus.AUTHORISED.toString());
 
         final FilePaymentConsent consumedConsent = apiClient.consumeConsent(buildConsumeRequest(consent));
-        assertThat(consumedConsent.getStatus()).isEqualTo(StatusEnum.CONSUMED.toString());
+        assertThat(consumedConsent.getStatus()).isEqualTo(OBWriteFileConsentResponse4DataStatus.CONSUMED.toString());
 
         validateConsumedConsent(consumedConsent, authResponse);
     }

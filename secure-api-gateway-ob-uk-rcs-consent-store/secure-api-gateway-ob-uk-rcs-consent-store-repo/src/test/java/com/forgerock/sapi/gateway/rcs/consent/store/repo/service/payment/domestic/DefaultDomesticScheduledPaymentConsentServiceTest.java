@@ -34,7 +34,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.BasePay
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
+import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4;
 import uk.org.openbanking.testsupport.payment.OBWriteDomesticScheduledConsentTestDataFactory;
 
@@ -65,7 +65,7 @@ public class DefaultDomesticScheduledPaymentConsentServiceTest extends BasePayme
         domesticScheduledPaymentConsent.setRequestVersion(OBVersion.v3_1_10);
         domesticScheduledPaymentConsent.setApiClientId(apiClientId);
         domesticScheduledPaymentConsent.setRequestObj(FRWriteDomesticScheduledConsentConverter.toFRWriteDomesticScheduledConsent(obConsent));
-        domesticScheduledPaymentConsent.setStatus(StatusEnum.AWAITINGAUTHORISATION.toString());
+        domesticScheduledPaymentConsent.setStatus(OBPaymentConsentStatus.AWAITINGAUTHORISATION.toString());
         domesticScheduledPaymentConsent.setIdempotencyKey(UUID.randomUUID().toString());
         domesticScheduledPaymentConsent.setIdempotencyKeyExpiration(DateTime.now().plusDays(1));
         domesticScheduledPaymentConsent.setCharges(List.of(

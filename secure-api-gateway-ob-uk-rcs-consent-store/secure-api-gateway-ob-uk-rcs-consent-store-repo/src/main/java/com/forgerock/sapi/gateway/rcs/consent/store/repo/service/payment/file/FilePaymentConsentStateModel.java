@@ -22,18 +22,18 @@ import org.springframework.util.MultiValueMap;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentStateModel;
 
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4Data.StatusEnum;
+import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4DataStatus;
 
 /**
  * State Model for File Payment Consents: https://openbankinguk.github.io/read-write-api-site3/v3.1.10/resources-and-data-models/pisp/file-payment-consents.html#state-model
  */
 public class FilePaymentConsentStateModel implements ConsentStateModel {
 
-    public static final String AWAITING_UPLOAD = StatusEnum.AWAITINGUPLOAD.toString();
-    public static final String AWAITING_AUTHORISATION = StatusEnum.AWAITINGAUTHORISATION.toString();
-    public static final String AUTHORISED = StatusEnum.AUTHORISED.toString();
-    public static final String CONSUMED = StatusEnum.CONSUMED.toString();
-    public static final String REJECTED = StatusEnum.REJECTED.toString();
+    public static final String AWAITING_UPLOAD = OBWriteFileConsentResponse4DataStatus.AWAITINGUPLOAD.toString();
+    public static final String AWAITING_AUTHORISATION = OBWriteFileConsentResponse4DataStatus.AWAITINGAUTHORISATION.toString();
+    public static final String AUTHORISED = OBWriteFileConsentResponse4DataStatus.AUTHORISED.toString();
+    public static final String CONSUMED = OBWriteFileConsentResponse4DataStatus.CONSUMED.toString();
+    public static final String REJECTED = OBWriteFileConsentResponse4DataStatus.REJECTED.toString();
 
     private static final FilePaymentConsentStateModel INSTANCE = new FilePaymentConsentStateModel();
 

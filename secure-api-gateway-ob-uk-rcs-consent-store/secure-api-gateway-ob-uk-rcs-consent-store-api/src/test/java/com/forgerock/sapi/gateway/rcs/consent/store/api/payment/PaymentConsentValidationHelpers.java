@@ -27,14 +27,14 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.BaseCreate
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.BasePaymentConsent;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
+import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
 
 public class PaymentConsentValidationHelpers {
 
     public static void validateCreateConsentAgainstCreateRequest(BasePaymentConsent<?> consent,
                                                                  BaseCreatePaymentConsentRequest<?> createConsentRequest) {
         assertThat(consent.getId()).isNotEmpty();
-        assertThat(consent.getStatus()).isEqualTo(StatusEnum.AWAITINGAUTHORISATION.toString());
+        assertThat(consent.getStatus()).isEqualTo(OBPaymentConsentStatus.AWAITINGAUTHORISATION.toString());
         assertThat(consent.getApiClientId()).isEqualTo(createConsentRequest.getApiClientId());
         assertThat(consent.getRequestObj()).isEqualTo(createConsentRequest.getConsentRequest());
         assertThat(consent.getRequestVersion()).isEqualTo(OBVersion.v3_1_10);
@@ -49,14 +49,14 @@ public class PaymentConsentValidationHelpers {
     }
 
     public static void validateAuthorisedConsent(BasePaymentConsent<?> authorisedConsent, AuthorisePaymentConsentRequest authoriseReq, BasePaymentConsent<?> originalConsent) {
-        assertThat(authorisedConsent.getStatus()).isEqualTo(StatusEnum.AUTHORISED.toString());
+        assertThat(authorisedConsent.getStatus()).isEqualTo(OBPaymentConsentStatus.AUTHORISED.toString());
         assertThat(authorisedConsent.getResourceOwnerId()).isEqualTo(authoriseReq.getResourceOwnerId());
         assertThat(authorisedConsent.getAuthorisedDebtorAccountId()).isEqualTo(authoriseReq.getAuthorisedDebtorAccountId());
         validateUpdatedConsentAgainstOriginal(authorisedConsent, originalConsent);
     }
 
     public static void validateRejectedConsent(BasePaymentConsent<?> rejectedConsent, RejectConsentRequest rejectReq, BasePaymentConsent<?> originalConsent) {
-        assertThat(rejectedConsent.getStatus()).isEqualTo(StatusEnum.REJECTED.toString());
+        assertThat(rejectedConsent.getStatus()).isEqualTo(OBPaymentConsentStatus.REJECTED.toString());
         assertThat(rejectedConsent.getResourceOwnerId()).isEqualTo(rejectReq.getResourceOwnerId());
         validateUpdatedConsentAgainstOriginal(rejectedConsent, originalConsent);
     }
@@ -82,7 +82,7 @@ public class PaymentConsentValidationHelpers {
      * Checks that data added to the consent during authorisation is present in the consumedConsent
      */
     public static void validateConsumedConsent(BasePaymentConsent<?> consumedConsent, BasePaymentConsent<?> authorisedConsent) {
-        assertThat(consumedConsent.getStatus()).isEqualTo(StatusEnum.CONSUMED.toString());
+        assertThat(consumedConsent.getStatus()).isEqualTo(OBPaymentConsentStatus.CONSUMED.toString());
         validateUpdatedConsentAgainstOriginal(consumedConsent, authorisedConsent);
 
         assertThat(consumedConsent.getStatusUpdateDateTime()).isAfterOrEqualTo(authorisedConsent.getStatusUpdateDateTime());

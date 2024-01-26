@@ -25,14 +25,14 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.BaseCreate
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.BasePaymentConsentWithExchangeRateInformation;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
+import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
 
 public class PaymentConsentWithExchangeRateInformationValidationHelpers {
 
     public static void validateCreateConsentAgainstCreateRequest(BasePaymentConsentWithExchangeRateInformation<?> consent,
                                                                  BaseCreateInternationalPaymentConsentRequest<?> createConsentRequest) {
         assertThat(consent.getId()).isNotEmpty();
-        assertThat(consent.getStatus()).isEqualTo(StatusEnum.AWAITINGAUTHORISATION.toString());
+        assertThat(consent.getStatus()).isEqualTo(OBPaymentConsentStatus.AWAITINGAUTHORISATION.toString());
         assertThat(consent.getApiClientId()).isEqualTo(createConsentRequest.getApiClientId());
         assertThat(consent.getRequestObj()).isEqualTo(createConsentRequest.getConsentRequest());
         assertThat(consent.getRequestVersion()).isEqualTo(OBVersion.v3_1_10);

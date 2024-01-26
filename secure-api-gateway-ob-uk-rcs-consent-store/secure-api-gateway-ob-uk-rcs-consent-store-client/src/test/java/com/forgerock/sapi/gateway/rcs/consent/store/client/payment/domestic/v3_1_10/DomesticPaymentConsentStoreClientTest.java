@@ -50,7 +50,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePay
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v3_1_10.CreateDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
 
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
+import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
 import uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"rcs.consent.store.api.baseUri= 'ignored'"})
@@ -124,10 +124,10 @@ class DomesticPaymentConsentStoreClientTest {
 
         final AuthorisePaymentConsentRequest authRequest = buildAuthoriseConsentRequest(consent, "psu4test", "acc-12345");
         final DomesticPaymentConsent authResponse = apiClient.authoriseConsent(authRequest);
-        assertThat(authResponse.getStatus()).isEqualTo(StatusEnum.AUTHORISED.toString());
+        assertThat(authResponse.getStatus()).isEqualTo(OBPaymentConsentStatus.AUTHORISED.toString());
 
         final DomesticPaymentConsent consumedConsent = apiClient.consumeConsent(buildConsumeRequest(consent));
-        assertThat(consumedConsent.getStatus()).isEqualTo(StatusEnum.CONSUMED.toString());
+        assertThat(consumedConsent.getStatus()).isEqualTo(OBPaymentConsentStatus.CONSUMED.toString());
 
         validateConsumedConsent(consumedConsent, authResponse);
     }

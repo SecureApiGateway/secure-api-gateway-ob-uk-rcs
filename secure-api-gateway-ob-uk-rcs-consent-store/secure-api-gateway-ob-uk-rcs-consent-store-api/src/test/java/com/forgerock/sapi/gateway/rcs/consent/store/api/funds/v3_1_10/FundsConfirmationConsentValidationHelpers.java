@@ -15,16 +15,17 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.api.funds.v3_1_10;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Date;
+
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.AuthoriseFundsConfirmationConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.CreateFundsConfirmationConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.FundsConfirmationConsent;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.Date;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum;
 
 /**
  * Helper methods for validating {@link FundsConfirmationConsent} objects as part of using the {@link FundsConfirmationConsentApi}

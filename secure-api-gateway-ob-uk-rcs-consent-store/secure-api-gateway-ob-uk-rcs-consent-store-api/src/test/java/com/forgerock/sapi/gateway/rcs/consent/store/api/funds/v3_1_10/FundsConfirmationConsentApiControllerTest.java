@@ -17,8 +17,6 @@ package com.forgerock.sapi.gateway.rcs.consent.store.api.funds.v3_1_10;
 
 import java.util.UUID;
 
-import jakarta.annotation.PostConstruct;
-
 import org.joda.time.DateTime;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.funds.FRFundsConfirmationConsentConverter;
@@ -28,9 +26,10 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.Auth
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.CreateFundsConfirmationConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.FundsConfirmationConsent;
 
-import uk.org.openbanking.datamodel.common.OBCashAccount3;
+import jakarta.annotation.PostConstruct;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentData1;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1Data;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1DataDebtorAccount;
 
 /**
  * Test for {@link FundsConfirmationConsentApiController}
@@ -58,10 +57,10 @@ public class FundsConfirmationConsentApiControllerTest extends BaseControllerTes
         createRequest.setApiClientId(apiClientId);
         final OBFundsConfirmationConsent1 fundsConfirmationConsent1 = new OBFundsConfirmationConsent1();
         fundsConfirmationConsent1.setData(
-                new OBFundsConfirmationConsentData1()
+                new OBFundsConfirmationConsent1Data()
                         .expirationDateTime(DateTime.now().plusDays(30))
                         .debtorAccount(
-                                new OBCashAccount3()
+                                new OBFundsConfirmationConsent1DataDebtorAccount()
                                         .schemeName("UK.OBIE.SortCodeAccountNumber")
                                         .identification("40400422390112")
                                         .name("Mrs B Smith")

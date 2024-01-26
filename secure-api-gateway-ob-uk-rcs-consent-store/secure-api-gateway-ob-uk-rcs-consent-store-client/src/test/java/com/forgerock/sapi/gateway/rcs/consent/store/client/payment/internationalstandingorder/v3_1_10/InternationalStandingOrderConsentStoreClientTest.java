@@ -15,11 +15,11 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.internationalstandingorder.v3_1_10;
 
-import static com.forgerock.sapi.gateway.rcs.consent.store.client.TestConsentStoreClientConfigurationFactory.createConsentStoreClientConfiguration;
 import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.PaymentConsentValidationHelpers.validateAuthorisedConsent;
 import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.PaymentConsentValidationHelpers.validateConsumedConsent;
 import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.PaymentConsentValidationHelpers.validateCreateConsentAgainstCreateRequest;
 import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.PaymentConsentValidationHelpers.validateRejectedConsent;
+import static com.forgerock.sapi.gateway.rcs.consent.store.client.TestConsentStoreClientConfigurationFactory.createConsentStoreClientConfiguration;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -32,8 +32,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -50,7 +50,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePay
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internationalstandingorder.v3_1_10.CreateInternationalStandingOrderConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internationalstandingorder.v3_1_10.InternationalStandingOrderConsent;
 
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse5Data.StatusEnum;
+import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
 import uk.org.openbanking.testsupport.payment.OBWriteInternationalStandingOrderConsentTestDataFactory;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"rcs.consent.store.api.baseUri= 'ignored'"})
@@ -124,10 +124,10 @@ class InternationalStandingOrderConsentStoreClientTest {
 
         final AuthorisePaymentConsentRequest authRequest = buildAuthoriseConsentRequest(consent, "psu4test", "acc-12345");
         final InternationalStandingOrderConsent authResponse = apiClient.authoriseConsent(authRequest);
-        assertThat(authResponse.getStatus()).isEqualTo(StatusEnum.AUTHORISED.toString());
+        assertThat(authResponse.getStatus()).isEqualTo(OBPaymentConsentStatus.AUTHORISED.toString());
 
         final InternationalStandingOrderConsent consumedConsent = apiClient.consumeConsent(buildConsumeRequest(consent));
-        assertThat(consumedConsent.getStatus()).isEqualTo(StatusEnum.CONSUMED.toString());
+        assertThat(consumedConsent.getStatus()).isEqualTo(OBPaymentConsentStatus.CONSUMED.toString());
 
         validateConsumedConsent(consumedConsent, authResponse);
     }
@@ -149,7 +149,7 @@ class InternationalStandingOrderConsentStoreClientTest {
                         .chargeBearer(FRChargeBearerType.BORNEBYCREDITOR)
                         .amount(new FRAmount("1.25","GBP"))
                         .build()));
-        createConsentRequest.setConsentRequest(FRWriteInternationalStandingOrderConsentConverter.toFRWriteInternationalStandingOrderConsent(OBWriteInternationalStandingOrderConsentTestDataFactory.aValidOBWriteInternationalStandingOrderConsent5()));
+        createConsentRequest.setConsentRequest(FRWriteInternationalStandingOrderConsentConverter.toFRWriteInternationalStandingOrderConsent(OBWriteInternationalStandingOrderConsentTestDataFactory.aValidOBWriteInternationalStandingOrderConsent6()));
         return createConsentRequest;
     }
 

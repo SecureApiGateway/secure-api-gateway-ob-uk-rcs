@@ -20,8 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.UUID;
 
-import jakarta.validation.ConstraintViolationException;
-
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 
@@ -31,7 +29,8 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreE
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentServiceTest;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentStateModel;
 
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
+import jakarta.validation.ConstraintViolationException;
+import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
 
 public abstract class BasePaymentConsentServiceTest<T extends BasePaymentConsentEntity<?>> extends BaseConsentServiceTest<T, PaymentAuthoriseConsentArgs> {
 
@@ -102,7 +101,7 @@ public abstract class BasePaymentConsentServiceTest<T extends BasePaymentConsent
     void consumeConsent() {
         final T consentInStateToConsume = getConsentInStateToConsume();
         final T consumedConsent = getPaymentConsentService().consumeConsent(consentInStateToConsume.getId(), consentInStateToConsume.getApiClientId());
-        assertThat(consumedConsent.getStatus()).isEqualTo(StatusEnum.CONSUMED.toString());
+        assertThat(consumedConsent.getStatus()).isEqualTo(OBPaymentConsentStatus.CONSUMED.toString());
     }
 
     @Test

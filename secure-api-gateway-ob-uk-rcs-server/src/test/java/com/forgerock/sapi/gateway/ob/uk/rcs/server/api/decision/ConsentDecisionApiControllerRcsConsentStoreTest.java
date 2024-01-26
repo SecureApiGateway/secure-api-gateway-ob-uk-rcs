@@ -112,9 +112,9 @@ import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadConsent1;
 import uk.org.openbanking.datamodel.account.OBReadConsent1Data;
 import uk.org.openbanking.datamodel.account.OBRisk2;
-import uk.org.openbanking.datamodel.common.OBCashAccount3;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentData1;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1Data;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1DataDebtorAccount;
 import uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory;
 import uk.org.openbanking.testsupport.payment.OBWriteDomesticScheduledConsentTestDataFactory;
 import uk.org.openbanking.testsupport.payment.OBWriteDomesticStandingOrderConsentTestDataFactory;
@@ -466,10 +466,10 @@ public class ConsentDecisionApiControllerRcsConsentStoreTest {
         entity.setStatus(PaymentConsentStateModel.AWAITING_AUTHORISATION);
         final OBFundsConfirmationConsent1 fundsConfirmationConsent1 = new OBFundsConfirmationConsent1();
         fundsConfirmationConsent1.setData(
-                new OBFundsConfirmationConsentData1()
+                new OBFundsConfirmationConsent1Data()
                         .expirationDateTime(DateTime.now().plusDays(30))
                         .debtorAccount(
-                                new OBCashAccount3()
+                                new OBFundsConfirmationConsent1DataDebtorAccount()
                                         .schemeName("UK.OBIE.SortCodeAccountNumber")
                                         .identification("40400422390112")
                                         .name("Mrs B Smith")

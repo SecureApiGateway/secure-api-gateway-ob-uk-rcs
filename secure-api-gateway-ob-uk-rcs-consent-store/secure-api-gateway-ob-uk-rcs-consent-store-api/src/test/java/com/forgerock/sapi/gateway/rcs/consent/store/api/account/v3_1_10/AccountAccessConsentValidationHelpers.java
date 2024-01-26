@@ -25,7 +25,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.Au
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.CreateAccountAccessConsentRequest;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
+import uk.org.openbanking.datamodel.common.OBExternalRequestStatus1Code;
 
 /**
  * Helper methods for validating {@link AccountAccessConsent} objects as part of using the {@link AccountAccessConsentApi}
@@ -38,7 +38,7 @@ public class AccountAccessConsentValidationHelpers {
     public static void validateCreateConsentAgainstCreateRequest(AccountAccessConsent consent,
                                                                  CreateAccountAccessConsentRequest createAccountAccessConsentRequest) {
         assertThat(consent.getId()).isNotEmpty();
-        assertThat(consent.getStatus()).isEqualTo(StatusEnum.AWAITINGAUTHORISATION.toString());
+        assertThat(consent.getStatus()).isEqualTo(OBExternalRequestStatus1Code.AWAITINGAUTHORISATION.toString());
         assertThat(consent.getApiClientId()).isEqualTo(createAccountAccessConsentRequest.getApiClientId());
         assertThat(consent.getRequestObj()).isEqualTo(createAccountAccessConsentRequest.getConsentRequest());
         assertThat(consent.getRequestVersion()).isEqualTo(OBVersion.v3_1_10);
@@ -50,14 +50,14 @@ public class AccountAccessConsentValidationHelpers {
     }
 
     public static void validateAuthorisedConsent(AccountAccessConsent authorisedConsent, AuthoriseAccountAccessConsentRequest authoriseReq, AccountAccessConsent originalConsent) {
-        assertThat(authorisedConsent.getStatus()).isEqualTo(StatusEnum.AUTHORISED.toString());
+        assertThat(authorisedConsent.getStatus()).isEqualTo(OBExternalRequestStatus1Code.AUTHORISED.toString());
         assertThat(authorisedConsent.getResourceOwnerId()).isEqualTo(authoriseReq.getResourceOwnerId());
         assertThat(authorisedConsent.getAuthorisedAccountIds()).isEqualTo(authoriseReq.getAuthorisedAccountIds());
         validateUpdatedConsentAgainstOriginal(authorisedConsent, originalConsent);
     }
 
     public static void validateRejectedConsent(AccountAccessConsent rejectedConsent, RejectConsentRequest rejectReq, AccountAccessConsent originalConsent) {
-        assertThat(rejectedConsent.getStatus()).isEqualTo(StatusEnum.REJECTED.toString());
+        assertThat(rejectedConsent.getStatus()).isEqualTo(OBExternalRequestStatus1Code.REJECTED.toString());
         assertThat(rejectedConsent.getResourceOwnerId()).isEqualTo(rejectReq.getResourceOwnerId());
         validateUpdatedConsentAgainstOriginal(rejectedConsent, originalConsent);
     }

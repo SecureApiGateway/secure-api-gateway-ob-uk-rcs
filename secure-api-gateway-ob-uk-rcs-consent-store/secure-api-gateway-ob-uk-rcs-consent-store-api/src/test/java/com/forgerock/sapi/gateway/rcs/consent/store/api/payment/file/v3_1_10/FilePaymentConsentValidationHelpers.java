@@ -28,8 +28,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.FileUploadRequest;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data;
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4Data.StatusEnum;
+import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4DataStatus;
 
 
 public class FilePaymentConsentValidationHelpers {
@@ -37,7 +36,7 @@ public class FilePaymentConsentValidationHelpers {
     public static void validateCreateConsentAgainstCreateRequest(FilePaymentConsent consent,
                                                                  CreateFilePaymentConsentRequest createConsentRequest) {
         assertThat(consent.getId()).isNotEmpty();
-        assertThat(consent.getStatus()).isEqualTo(StatusEnum.AWAITINGUPLOAD.toString());
+        assertThat(consent.getStatus()).isEqualTo(OBWriteFileConsentResponse4DataStatus.AWAITINGUPLOAD.toString());
         assertThat(consent.getApiClientId()).isEqualTo(createConsentRequest.getApiClientId());
         assertThat(consent.getRequestObj()).isEqualTo(createConsentRequest.getConsentRequest());
         assertThat(consent.getRequestVersion()).isEqualTo(OBVersion.v3_1_10);
@@ -54,7 +53,7 @@ public class FilePaymentConsentValidationHelpers {
     }
 
     public static void validateConsentAgainstFileUploadRequest(FilePaymentConsent consentWithFile, FileUploadRequest fileUploadRequest, FilePaymentConsent originalConsent) {
-        assertThat(consentWithFile.getStatus()).isEqualTo(StatusEnum.AWAITINGAUTHORISATION.toString());
+        assertThat(consentWithFile.getStatus()).isEqualTo(OBWriteFileConsentResponse4DataStatus.AWAITINGAUTHORISATION.toString());
         assertThat(consentWithFile.getFileContent()).isEqualTo(fileUploadRequest.getFileContents());
         assertThat(consentWithFile.getFileUploadIdempotencyKey()).isEqualTo(fileUploadRequest.getFileUploadIdempotencyKey());
 
@@ -67,14 +66,14 @@ public class FilePaymentConsentValidationHelpers {
     }
 
     public static void validateAuthorisedConsent(FilePaymentConsent authorisedConsent, AuthorisePaymentConsentRequest authoriseReq, FilePaymentConsent originalConsent) {
-        assertThat(authorisedConsent.getStatus()).isEqualTo(StatusEnum.AUTHORISED.toString());
+        assertThat(authorisedConsent.getStatus()).isEqualTo(OBWriteFileConsentResponse4DataStatus.AUTHORISED.toString());
         assertThat(authorisedConsent.getResourceOwnerId()).isEqualTo(authoriseReq.getResourceOwnerId());
         assertThat(authorisedConsent.getAuthorisedDebtorAccountId()).isEqualTo(authoriseReq.getAuthorisedDebtorAccountId());
         validateUpdatedConsentAgainstOriginal(authorisedConsent, originalConsent);
     }
 
     public static void validateRejectedConsent(FilePaymentConsent rejectedConsent, RejectConsentRequest rejectReq, FilePaymentConsent originalConsent) {
-        assertThat(rejectedConsent.getStatus()).isEqualTo(StatusEnum.REJECTED.toString());
+        assertThat(rejectedConsent.getStatus()).isEqualTo(OBWriteFileConsentResponse4DataStatus.REJECTED.toString());
         assertThat(rejectedConsent.getResourceOwnerId()).isEqualTo(rejectReq.getResourceOwnerId());
         validateUpdatedConsentAgainstOriginal(rejectedConsent, originalConsent);
     }
@@ -103,7 +102,7 @@ public class FilePaymentConsentValidationHelpers {
      * Checks that data added to the consent during authorisation is present in the consumedConsent
      */
     public static void validateConsumedConsent(FilePaymentConsent consumedConsent, FilePaymentConsent authorisedConsent) {
-        assertThat(consumedConsent.getStatus()).isEqualTo(OBWriteDomesticConsentResponse5Data.StatusEnum.CONSUMED.toString());
+        assertThat(consumedConsent.getStatus()).isEqualTo(OBWriteFileConsentResponse4DataStatus.CONSUMED.toString());
         validateUpdatedConsentAgainstOriginal(consumedConsent, authorisedConsent);
 
         assertThat(consumedConsent.getStatusUpdateDateTime()).isAfterOrEqualTo(authorisedConsent.getStatusUpdateDateTime());

@@ -22,7 +22,7 @@ import org.springframework.util.MultiValueMap;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentStateModel;
 
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponseData.StatusEnum;
 
 /**
  * State model for VRP Payment APIs: https://openbankinguk.github.io/read-write-api-site3/v3.1.10/resources-and-data-models/vrp/domestic-vrp-consents.html#state-model-vrp-consents
@@ -35,8 +35,6 @@ public class VRPConsentStateModel implements ConsentStateModel {
     public static final String AWAITING_AUTHORISATION = StatusEnum.AWAITINGAUTHORISATION.toString();
 
     public static final String AUTHORISED = StatusEnum.AUTHORISED.toString();
-
-    public static final String CONSUMED = StatusEnum.CONSUMED.toString();
 
     public static final String REJECTED = StatusEnum.REJECTED.toString();
 

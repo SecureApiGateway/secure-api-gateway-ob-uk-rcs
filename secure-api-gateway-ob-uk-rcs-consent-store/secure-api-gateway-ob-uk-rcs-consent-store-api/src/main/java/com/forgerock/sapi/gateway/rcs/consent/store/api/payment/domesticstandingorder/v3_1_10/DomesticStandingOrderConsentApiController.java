@@ -32,11 +32,11 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePay
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticstandingorder.v3_1_10.CreateDomesticStandingOrderConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticstandingorder.v3_1_10.DomesticStandingOrderConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.domestic.DomesticStandingOrderConsentEntity;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DomesticStandingOrderConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DomesticStandingOrderConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
+import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
 
 /**
  * Implementation of DomesticStandingOrderPaymentConsentApi for OBIE version 3.1.10
@@ -77,7 +77,7 @@ public class DomesticStandingOrderConsentApiController implements DomesticStandi
         domesticStandingOrderConsent.setRequestVersion(obVersion);
         domesticStandingOrderConsent.setApiClientId(request.getApiClientId());
         domesticStandingOrderConsent.setRequestObj(request.getConsentRequest());
-        domesticStandingOrderConsent.setStatus(StatusEnum.AWAITINGAUTHORISATION.toString());
+        domesticStandingOrderConsent.setStatus(OBPaymentConsentStatus.AWAITINGAUTHORISATION.toString());
         domesticStandingOrderConsent.setCharges(request.getCharges());
         domesticStandingOrderConsent.setIdempotencyKey(request.getIdempotencyKey());
         domesticStandingOrderConsent.setIdempotencyKeyExpiration(idempotencyKeyExpirationSupplier.get());

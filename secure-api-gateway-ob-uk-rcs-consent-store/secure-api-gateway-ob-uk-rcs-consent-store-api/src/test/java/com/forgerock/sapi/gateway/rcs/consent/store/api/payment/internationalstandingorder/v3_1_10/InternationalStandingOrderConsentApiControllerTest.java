@@ -22,7 +22,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internatio
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internationalstandingorder.v3_1_10.InternationalStandingOrderConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.BasePaymentConsentApiControllerTest;
 
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent5;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent6;
 import uk.org.openbanking.testsupport.payment.OBWriteInternationalStandingOrderConsentTestDataFactory;
 
 public class InternationalStandingOrderConsentApiControllerTest extends BasePaymentConsentApiControllerTest<InternationalStandingOrderConsent, CreateInternationalStandingOrderConsentRequest> {
@@ -43,7 +43,7 @@ public class InternationalStandingOrderConsentApiControllerTest extends BasePaym
 
     private static CreateInternationalStandingOrderConsentRequest buildCreateInternationalStandingOrderConsentRequest(String apiClientId, String idempotencyKey) {
         final CreateInternationalStandingOrderConsentRequest createInternationalStandingOrderConsentRequest = new CreateInternationalStandingOrderConsentRequest();
-        final OBWriteInternationalStandingOrderConsent5 paymentConsent = OBWriteInternationalStandingOrderConsentTestDataFactory.aValidOBWriteInternationalStandingOrderConsent5();
+        final OBWriteInternationalStandingOrderConsent6 paymentConsent = OBWriteInternationalStandingOrderConsentTestDataFactory.aValidOBWriteInternationalStandingOrderConsent6();
         createInternationalStandingOrderConsentRequest.setConsentRequest(FRWriteInternationalStandingOrderConsentConverter.toFRWriteInternationalStandingOrderConsent(paymentConsent));
         createInternationalStandingOrderConsentRequest.setApiClientId(apiClientId);
         createInternationalStandingOrderConsentRequest.setIdempotencyKey(idempotencyKey);
