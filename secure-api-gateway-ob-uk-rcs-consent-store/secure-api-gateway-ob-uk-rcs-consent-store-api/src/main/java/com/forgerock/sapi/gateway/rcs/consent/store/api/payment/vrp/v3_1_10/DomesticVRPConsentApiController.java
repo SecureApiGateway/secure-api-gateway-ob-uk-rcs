@@ -35,7 +35,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.Payment
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.vrp.DomesticVRPConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponseData.StatusEnum;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponseDataStatus;
 
 /**
  * Implementation of DomesticVRPConsentApi for OBIE version 3.1.10
@@ -75,7 +75,7 @@ public class DomesticVRPConsentApiController implements DomesticVRPConsentApi {
         domesticPaymentConsent.setRequestVersion(obVersion);
         domesticPaymentConsent.setApiClientId(request.getApiClientId());
         domesticPaymentConsent.setRequestObj(request.getConsentRequest());
-        domesticPaymentConsent.setStatus(StatusEnum.AWAITINGAUTHORISATION.toString());
+        domesticPaymentConsent.setStatus(OBDomesticVRPConsentResponseDataStatus.AWAITINGAUTHORISATION.toString());
         domesticPaymentConsent.setCharges(request.getCharges());
         domesticPaymentConsent.setIdempotencyKey(request.getIdempotencyKey());
         domesticPaymentConsent.setIdempotencyKeyExpiration(idempotencyKeyExpirationSupplier.get());

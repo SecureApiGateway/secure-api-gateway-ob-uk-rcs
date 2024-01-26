@@ -43,7 +43,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.Payment
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponseData.StatusEnum;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponseDataStatus;
 import uk.org.openbanking.testsupport.vrp.OBDomesticVrpConsentRequestTestDataFactory;
 
 @ExtendWith(SpringExtension.class)
@@ -95,7 +95,7 @@ public class DefaultDomesticVRPConsentServiceTest extends BaseConsentServiceTest
         vrpConsent.setRequestVersion(OBVersion.v3_1_10);
         vrpConsent.setApiClientId(apiClientId);
         vrpConsent.setRequestObj(FRDomesticVRPConsentConverters.toFRDomesticVRPConsent(obConsent));
-        vrpConsent.setStatus(StatusEnum.AWAITINGAUTHORISATION.toString());
+        vrpConsent.setStatus(OBDomesticVRPConsentResponseDataStatus.AWAITINGAUTHORISATION.toString());
         vrpConsent.setIdempotencyKey(UUID.randomUUID().toString());
         vrpConsent.setIdempotencyKeyExpiration(DateTime.now().plusDays(1));
         vrpConsent.setCharges(List.of(
