@@ -108,10 +108,10 @@ import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jwt.JWTClaimsSet;
 
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadConsent1;
 import uk.org.openbanking.datamodel.account.OBReadConsent1Data;
 import uk.org.openbanking.datamodel.account.OBRisk2;
+import uk.org.openbanking.datamodel.common.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1Data;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1DataDebtorAccount;

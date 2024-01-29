@@ -21,12 +21,13 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentReque
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.customerinfo.v1_0.AuthoriseCustomerInfoConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.customerinfo.v1_0.CreateCustomerInfoConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.customerinfo.v1_0.CustomerInfoConsent;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadConsent1;
 import uk.org.openbanking.datamodel.account.OBReadConsent1Data;
 import uk.org.openbanking.datamodel.account.OBRisk2;
 
 import jakarta.annotation.PostConstruct;
+import uk.org.openbanking.datamodel.common.OBExternalPermissions1Code;
+
 import java.util.List;
 
 public class CustomerInfoConsentApiControllerTest extends BaseControllerTest<CustomerInfoConsent, CreateCustomerInfoConsentRequest, AuthoriseCustomerInfoConsentRequest> {
