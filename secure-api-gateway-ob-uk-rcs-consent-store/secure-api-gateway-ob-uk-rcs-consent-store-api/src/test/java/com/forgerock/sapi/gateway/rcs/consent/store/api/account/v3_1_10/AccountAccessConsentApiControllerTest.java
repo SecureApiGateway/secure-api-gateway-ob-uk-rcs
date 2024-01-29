@@ -30,10 +30,10 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.Au
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.CreateAccountAccessConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.api.BaseControllerTest;
 
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadConsent1;
 import uk.org.openbanking.datamodel.account.OBReadConsent1Data;
 import uk.org.openbanking.datamodel.account.OBRisk2;
+import uk.org.openbanking.datamodel.common.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 
 public class AccountAccessConsentApiControllerTest extends BaseControllerTest<AccountAccessConsent, CreateAccountAccessConsentRequest, AuthoriseAccountAccessConsentRequest> {
