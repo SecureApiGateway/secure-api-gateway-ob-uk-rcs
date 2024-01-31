@@ -37,7 +37,7 @@
     <properties>
 
         <tag>latest</tag>
-        <gcrRepo>sbat-gcr-develop</gcrRepo>
+        <gcrRepo>europe-west4-docker.pkg.dev/sbat-gcr-develop/sapig-docker-artifact</gcrRepo>
         <!-- property to run individualy the module with no license issues -->
         <legal.path.header>../legal/LICENSE-HEADER.txt</legal.path.header>
         <logback.contrib.version>0.1.5</logback.contrib.version>
@@ -227,7 +227,7 @@
                 <configuration>
                     <dockerfile>docker/Dockerfile</dockerfile>
                     <skipPush>false</skipPush>
-                    <repository>europe-west4-docker.pkg.dev/${gcrRepo}/sapig-docker-artifact/securebanking/securebanking-openbanking-uk-rcs</repository>
+                    <repository>${gcrRepo}/securebanking/securebanking-openbanking-uk-rcs</repository>
                     <buildArgs>
                         <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
                     </buildArgs>
