@@ -15,67 +15,73 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
+import static org.springframework.test.web.client.ExpectedCount.once;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
+import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.client.MockRestServiceServer;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.configuration.CloudClientConfiguration;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ExceptionClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.User;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.test.support.UserTestDataFactory;
-import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBHeaders;
-
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.ResponseEntity;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowableOfType;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpMethod.GET;
 
 /**
  * Unit test for {@link UserServiceClient}
  */
-public class UserServiceClientTest extends BaseServiceClientTest {
+@ActiveProfiles("test")
+@RestClientTest(UserServiceClient.class)
+@AutoConfigureWebClient(registerRestTemplate = true)
+@Import(CloudClientConfiguration.class)
+public class UserServiceClientTest {
 
-    @InjectMocks
+    @Autowired
     private UserServiceClient userServiceClient;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private MockRestServiceServer mockServer;
+
     @Test
-    public void shouldGetUser() throws ExceptionClient {
+    public void shouldGetUser() throws Exception {
         // Given
         User user = UserTestDataFactory.aValidUser();
 
-        final ArgumentCaptor<HttpEntity> entityArgumentCaptor = ArgumentCaptor.forClass(HttpEntity.class);
-
-        when(restTemplate.exchange(
-                anyString(),
-                eq(GET),
-                entityArgumentCaptor.capture(),
-                eq(User.class))
-        ).thenReturn(ResponseEntity.ok(user));
+        mockServer.expect(once(), requestTo("http://ig:80/repo/users/" + user.getId()))
+                  .andRespond(withStatus(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(objectMapper.writeValueAsString(user)));
 
         // When
         User userResponse = userServiceClient.getUser(user.getId());
 
         // Then
-        assertThat(userResponse).isNotNull();
-        assertThat(userResponse.getId()).isEqualTo(user.getId());
-        assertThat(userResponse.getUserName()).isEqualTo(user.getUserName());
-        assertThat(userResponse.getAccountStatus()).isEqualTo(user.getAccountStatus());
-        assertThat(userResponse.getMail()).isEqualTo(user.getMail());
-        assertThat(userResponse.getSurname()).isEqualTo(user.getSurname());
-        assertThat(userResponse.getGivenName()).isEqualTo(user.getGivenName());
-        assertThat(entityArgumentCaptor.getValue().getHeaders().get(OBHeaders.X_FAPI_INTERACTION_ID)).isNotNull();
+        assertThat(userResponse).isEqualTo(user);
     }
 
     @Test
     public void shouldGetNotFoundApiClient() {
         // Given
-        User user = UserTestDataFactory.aValidUser();
+        final String testUserId = "user-234324";
+        mockServer.expect(once(), requestTo("http://ig:80/repo/users/" + testUserId))
+                  .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
         // When
-        ExceptionClient exception = catchThrowableOfType(() -> userServiceClient.getUser(user.getId()), ExceptionClient.class);
+        ExceptionClient exception = catchThrowableOfType(() -> userServiceClient.getUser(testUserId), ExceptionClient.class);
 
         // Then
         assertThat(exception.getErrorClient().getErrorType()).isEqualTo(ErrorType.NOT_FOUND);

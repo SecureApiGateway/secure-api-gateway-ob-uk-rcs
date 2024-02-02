@@ -19,9 +19,14 @@ import java.util.UUID;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.web.client.HttpClientErrorException.NotFound;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.configuration.CloudClientConfiguration;
+import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorClient;
+import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorType;
+import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ExceptionClient;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBHeaders;
 import com.forgerock.sapi.gateway.uk.common.shared.fapi.FapiInteractionIdContext;
 
@@ -40,5 +45,21 @@ public class BaseCloudClient {
         httpHeaders.add(OBHeaders.X_FAPI_INTERACTION_ID, FapiInteractionIdContext.getFapiInteractionId()
                                                                                  .orElseGet(() -> UUID.randomUUID().toString()));
         return new HttpEntity<>(httpHeaders);
+    }
+
+    protected ExceptionClient createClientException(String userId, RestClientException e) {
+        final ErrorType errorType;
+        if (e instanceof NotFound) {
+            errorType = ErrorType.NOT_FOUND;
+        } else {
+            errorType = ErrorType.SERVER_ERROR;
+        }
+        return new ExceptionClient(
+                ErrorClient.builder()
+                        .errorType(errorType)
+                        .clientId(userId)
+                        .build(),
+                e.getMessage()
+        );
     }
 }

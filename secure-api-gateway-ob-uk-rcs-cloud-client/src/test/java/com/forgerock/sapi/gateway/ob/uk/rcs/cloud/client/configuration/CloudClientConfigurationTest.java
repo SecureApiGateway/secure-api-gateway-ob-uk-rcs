@@ -15,11 +15,13 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.configuration;
 
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.TestApplicationClient;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
+
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -27,52 +29,36 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.client.RestTemplate;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
+import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.TestApplicationClient;
 
 /**
  * Unit test for {@link CloudClientConfiguration}
+ *
+ * See application-test.yml for configuration values
  */
 @ContextConfiguration(classes = {CloudClientConfiguration.class}, initializers = ConfigDataApplicationContextInitializer.class)
 @ActiveProfiles("test")
 @SpringBootTest(classes = TestApplicationClient.class, webEnvironment = MOCK)
 public class CloudClientConfigurationTest {
 
-    // values to get the proper context from the http verb that match with key mapping in the context, case-insensitive.
-    private static final String GET = "GeT";
-    private static final String PUT = "pUT";
-    private static final String PATCH = "PaTCh";
-    private static final String DELETE = "dElETe";
     @MockBean // mandatory to satisfied dependency for beans definitions
     private RestTemplate restTemplate;
     @Autowired
     private CloudClientConfiguration cloudClientConfiguration;
 
     @Test
-    public void shouldConfigureIgBaseUri(){
-        assertThat(cloudClientConfiguration.getBaseUri()).isEqualTo("http://ig:80");
+    public void testApiClientUri() {
+        final String apiClientUri = cloudClientConfiguration.getApiClientUri()
+                                                            .expand(Map.of("apiClientId", 123))
+                                                            .toUriString();
+        assertThat(apiClientUri).isEqualTo("http://ig:80/repo/apiclients/123");
     }
 
     @Test
-    public void shouldHaveAllPropertiesSet() {
-        assertThat(cloudClientConfiguration.getBaseUri()).isNotNull();
-        assertThat(cloudClientConfiguration.getContextsApiClient()).isNotNull();
-        assertThat(cloudClientConfiguration.getContextsUser()).isNotNull();
-    }
-
-    @Test
-    public void shouldHaveApiClientContextVerbProperties() {
-        assertThat(cloudClientConfiguration.getContextsApiClient().get(GET)).isNotNull();
-        assertThat(cloudClientConfiguration.getContextsApiClient().get(PUT)).isNotNull();
-        assertThat(cloudClientConfiguration.getContextsApiClient().get(PATCH)).isNotNull();
-        assertThat(cloudClientConfiguration.getContextsApiClient().get(DELETE)).isNotNull();
-    }
-
-    @Test
-    public void shouldHaveUserContextVerbProperties() {
-        assertThat(cloudClientConfiguration.getContextsUser().get(GET)).isNotNull();
-        assertThat(cloudClientConfiguration.getContextsUser().get(PUT)).isNotNull();
-        assertThat(cloudClientConfiguration.getContextsUser().get(PATCH)).isNotNull();
-        assertThat(cloudClientConfiguration.getContextsUser().get(DELETE)).isNotNull();
+    public void testUsersUri() {
+        final String usersUri = cloudClientConfiguration.getUsersUri()
+                                                        .expand(Map.of("userId", "user999"))
+                                                        .toUriString();
+        assertThat(usersUri).isEqualTo("http://ig:80/repo/users/user999");
     }
 }

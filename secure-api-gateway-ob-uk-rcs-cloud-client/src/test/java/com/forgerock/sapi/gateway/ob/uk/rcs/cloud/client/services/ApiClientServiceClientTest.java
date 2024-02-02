@@ -15,58 +15,70 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
+import static org.springframework.test.web.client.ExpectedCount.once;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
+import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.client.MockRestServiceServer;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.configuration.CloudClientConfiguration;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ExceptionClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.ApiClient;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.test.support.ApiClientTestDataFactory;
-import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBHeaders;
-
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.ResponseEntity;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowableOfType;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpMethod.GET;
 
 /**
  * Unit test for {@link ApiClientServiceClient}
  */
-public class ApiClientServiceClientTest extends BaseServiceClientTest {
+@ActiveProfiles("test")
+@RestClientTest(ApiClientServiceClient.class)
+@AutoConfigureWebClient(registerRestTemplate = true)
+@Import(CloudClientConfiguration.class)
+public class ApiClientServiceClientTest {
 
-    @InjectMocks
+    @Autowired
     private ApiClientServiceClient apiClientServiceClient;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private MockRestServiceServer mockServer;
+
     @Test
-    public void shouldGetApiClient() throws ExceptionClient {
+    public void shouldGetApiClient() throws ExceptionClient, JsonProcessingException {
         // Given
         ApiClient apiClient = ApiClientTestDataFactory.aValidApiClient();
-
-        final ArgumentCaptor<HttpEntity> entityArgumentCaptor = ArgumentCaptor.forClass(HttpEntity.class);
-
-        when(restTemplate.exchange(
-                anyString(),
-                eq(GET),
-                entityArgumentCaptor.capture(),
-                eq(ApiClient.class))
-        ).thenReturn(ResponseEntity.ok(apiClient));
+        mockServer.expect(once(), requestTo("http://ig:80/repo/apiclients/" + apiClient.getOauth2ClientId()))
+                  .andRespond(withStatus(HttpStatus.OK)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .body(objectMapper.writeValueAsString(apiClient)));
 
         // When
         ApiClient apiClientResponse = apiClientServiceClient.getApiClient(apiClient.getOauth2ClientId());
 
         // Then
-        assertThat(apiClientResponse).isNotNull();
-        assertThat(entityArgumentCaptor.getValue().getHeaders().get(OBHeaders.X_FAPI_INTERACTION_ID)).isNotNull();
+        assertThat(apiClientResponse).isEqualTo(apiClient);
     }
 
     @Test
     public void shouldGetNotFoundApiClient() {
         // Given
         ApiClient apiClient = ApiClientTestDataFactory.aValidApiClient();
+        mockServer.expect(once(), requestTo("http://ig:80/repo/apiclients/" + apiClient.getOauth2ClientId()))
+                  .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
         // When
         ExceptionClient exception = catchThrowableOfType(() -> apiClientServiceClient.getApiClient(apiClient.getOauth2ClientId()), ExceptionClient.class);
