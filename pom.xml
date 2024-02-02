@@ -42,7 +42,6 @@
 
     <properties>
         <uk.bom.version>2.3.0</uk.bom.version>
-        <mockito-inline.version>5.2.0</mockito-inline.version>
     </properties>
 
     <dependencyManagement>
