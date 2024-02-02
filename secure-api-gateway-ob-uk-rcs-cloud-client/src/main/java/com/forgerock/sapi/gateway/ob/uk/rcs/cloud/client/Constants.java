@@ -36,7 +36,7 @@ public class Constants {
     }
 
     public static class URLParameters {
-        public static final String CLIENT_ID = "@ClientId@";
-        public static final String USER_ID = "@UserId@";
+        public static final String API_CLIENT_ID = "apiClientId";
+        public static final String USER_ID = "userId";
     }
 }

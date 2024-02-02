@@ -15,44 +15,62 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.configuration;
 
-import lombok.Data;
+import static org.springframework.util.StringUtils.hasText;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.LinkedCaseInsensitiveMap;
-
-import java.util.Map;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import jakarta.annotation.PostConstruct;
 
 @Configuration
 @ConfigurationProperties(prefix = "cloud.client")
-@Data
 public class CloudClientConfiguration {
 
     private String baseUri;
 
-    /*
-     * Spring maps the properties, the keys from file will be the map keys
-     * @see: application-test.yml
-     * case-insensitive map's keys
-     * @Use pattern: contextMap.get(http-verb-any-case)
-     * @Use: contextAccountsConsent.get("GeT")
-     */
-    private Map<String, String> contextsApiClient = new LinkedCaseInsensitiveMap<>();
-    private Map<String, String> contextsUser = new LinkedCaseInsensitiveMap<>();
+    private String apiClientPath;
+
+    private String usersPath;
+
+    private UriComponents apiClientUri;
+
+    private  UriComponents usersUri;
 
     @PostConstruct
     private void validateConfig() {
-        if (baseUri == null || baseUri.isBlank()) {
+        if (!hasText(baseUri)) {
             throw new IllegalStateException("Required configuration: cloud.client.baseUri is missing");
         }
-        if (contextsApiClient.isEmpty()) {
-            throw new IllegalStateException("Required configuration: cloud.client.contextsApiClient map is missing");
+        if (!hasText(apiClientPath)) {
+            throw new IllegalStateException("Required configuration: cloud.client.apiClientPath is missing");
         }
-        if (contextsUser.isEmpty()) {
-            throw new IllegalStateException("Required configuration: cloud.client.contextsUser map is missing");
+        if (!hasText(usersPath)) {
+            throw new IllegalStateException("Required configuration: cloud.client.usersPath is missing");
         }
+
+        apiClientUri = UriComponentsBuilder.fromUriString(baseUri).path(apiClientPath).encode().build();
+        usersUri = UriComponentsBuilder.fromUriString(baseUri).path(usersPath).encode().build();
     }
 
+    public void setBaseUri(String baseUri) {
+        this.baseUri = baseUri;
+    }
+
+    public void setApiClientPath(String apiClientPath) {
+        this.apiClientPath = apiClientPath;
+    }
+
+    public void setUsersPath(String usersPath) {
+        this.usersPath = usersPath;
+    }
+
+    public UriComponents getApiClientUri() {
+        return apiClientUri;
+    }
+
+    public UriComponents getUsersUri() {
+        return usersUri;
+    }
 }

@@ -1,18 +1,5 @@
 cloud:
   client:
     baseUri: http://ig:80
-    contexts_api_client:
-      get: /repo/apiclients/@ClientId@
-      put: /repo/apiclients/@ClientId@
-      patch: /repo/apiclients/@ClientId@
-      delete: /repo/apiclients/@ClientId@
-    contexts_user:
-      get: /repo/users/@UserId@
-      put: /repo/users/@UserId@
-      patch: /repo/users/@UserId@
-      delete: /repo/users/@UserId@
-    contexts_repo_consent:
-      get: /repo/consents/@IntentId@
-      put: /repo/consents/@IntentId@
-      patch: /repo/consents/@IntentId@
-      delete: /repo/consents/@IntentId@
+    api-client-path: /repo/apiclients/{apiClientId}
+    users-path: /repo/users/{userId}

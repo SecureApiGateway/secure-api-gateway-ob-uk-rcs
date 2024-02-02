@@ -58,18 +58,9 @@ api:
 # com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.configuration.CloudClientConfiguration
 cloud:
   client:
-    # Context to build the URI to make a request against the repository endpoint to obtain the client object by clientId
-    contexts_api_client:
-      get: /repo/apiclients/@ClientId@
-      put: /repo/apiclients/@ClientId@
-      patch: /repo/apiclients/@ClientId@
-      delete: /repo/apiclients/@ClientId@
-    # Context to build the URI to make a request against the repository endpoint to obtain the user object by userId
-    contexts_user:
-      get: /repo/users/@UserId@
-      put: /repo/users/@UserId@
-      patch: /repo/users/@UserId@
-      delete: /repo/users/@UserId@
+    api-client-path: /repo/apiclients/{apiClientId}
+    users-path: /repo/users/{userId}
+
 
 # RCS Consent Store config
 consent:

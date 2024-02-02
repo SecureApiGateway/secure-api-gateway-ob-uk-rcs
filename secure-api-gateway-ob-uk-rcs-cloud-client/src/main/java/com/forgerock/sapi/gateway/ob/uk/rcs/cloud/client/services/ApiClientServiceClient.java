@@ -15,20 +15,22 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services;
 
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.Constants;
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.configuration.CloudClientConfiguration;
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorClient;
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorType;
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ExceptionClient;
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.ApiClient;
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.utils.url.UrlContext;
-import lombok.extern.slf4j.Slf4j;
+import static org.springframework.http.HttpMethod.GET;
+
+import java.net.URI;
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import static org.springframework.http.HttpMethod.GET;
+import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.Constants.URLParameters;
+import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.configuration.CloudClientConfiguration;
+import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ExceptionClient;
+import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.ApiClient;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Specific service to retrieve the Api client data from the platform
@@ -42,46 +44,18 @@ public class ApiClientServiceClient extends BaseCloudClient {
     }
 
     public ApiClient getApiClient(String apiClientId) throws ExceptionClient {
-        ApiClient apiClient = request(apiClientId);
-        if (apiClient == null) {
-            String message = String.format("ClientId '%s' not found.", apiClientId);
-            log.error(message);
-            throw new ExceptionClient(
-                    ErrorClient.builder()
-                            .errorType(ErrorType.NOT_FOUND)
-                            .clientId(apiClientId)
-                            .build(),
-                    message
-            );
-        }
-        return apiClient;
-    }
+        final URI apiClientUri = cloudClientConfiguration.getApiClientUri()
+                                                         .expand(Map.of(URLParameters.API_CLIENT_ID, apiClientId))
+                                                         .toUri();
 
-    private ApiClient request(String apiClientId) throws ExceptionClient {
-        String apiClientURL = cloudClientConfiguration.getBaseUri() +
-                UrlContext.replaceParameterContextValue(
-                        cloudClientConfiguration.getContextsApiClient().get(GET.name()),
-                        Constants.URLParameters.CLIENT_ID,
-                        apiClientId
-                );
-        log.debug("(ApiClientServiceClient#request) request the api client details from platform: {}", apiClientURL);
+        log.debug("(ApiClientServiceClient#request) request the api client details from platform: {}", apiClientUri);
         try {
-            ResponseEntity<ApiClient> responseEntity = restTemplate.exchange(
-                    apiClientURL,
-                    GET,
-                    createRequestEntity(),
-                    ApiClient.class);
+            ResponseEntity<ApiClient> responseEntity = restTemplate.exchange(apiClientUri, GET, createRequestEntity(),
+                                                                             ApiClient.class);
 
-            return responseEntity != null ? responseEntity.getBody() : null;
+            return responseEntity.getBody();
         } catch (RestClientException e) {
-            log.error(ErrorType.SERVER_ERROR.getDescription(), e);
-            throw new ExceptionClient(
-                    ErrorClient.builder()
-                            .errorType(ErrorType.SERVER_ERROR)
-                            .clientId(apiClientId)
-                            .build(),
-                    e.getMessage()
-            );
+            throw createClientException(apiClientId, e);
         }
     }
 }

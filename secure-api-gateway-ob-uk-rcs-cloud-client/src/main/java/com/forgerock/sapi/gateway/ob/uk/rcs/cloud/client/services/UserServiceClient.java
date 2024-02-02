@@ -15,20 +15,22 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.services;
 
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.Constants;
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.configuration.CloudClientConfiguration;
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorClient;
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorType;
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ExceptionClient;
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.User;
-import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.utils.url.UrlContext;
-import lombok.extern.slf4j.Slf4j;
+import static org.springframework.http.HttpMethod.GET;
+
+import java.net.URI;
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import static org.springframework.http.HttpMethod.GET;
+import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.Constants.URLParameters;
+import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.configuration.CloudClientConfiguration;
+import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ExceptionClient;
+import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models.User;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Specific service to retrieve the user data from the platform
@@ -43,45 +45,20 @@ public class UserServiceClient extends BaseCloudClient {
     }
 
     public User getUser(String userId) throws ExceptionClient {
-        User user = request(userId);
-        if (user == null) {
-            String message = String.format("UserId '%s' not found.", userId);
-            log.error(message);
-            throw new ExceptionClient(
-                    ErrorClient.builder()
-                            .errorType(ErrorType.NOT_FOUND)
-                            .userId(userId)
-                            .build(),
-                    message
-            );
-        }
-        return user;
-    }
-
-    private User request(String userId) throws ExceptionClient {
-        String userURL = cloudClientConfiguration.getBaseUri() +
-                UrlContext.replaceParameterContextValue(
-                        cloudClientConfiguration.getContextsUser().get(GET.name()),
-                        Constants.URLParameters.USER_ID,
-                        userId
-                );
-        log.debug("(UserServiceClient#request) request the user details from platform: {}", userURL);
+        final URI userUri = cloudClientConfiguration.getUsersUri()
+                                                    .expand(Map.of(URLParameters.USER_ID, userId))
+                                                    .toUri();
+        log.debug("(UserServiceClient#request) request the user details from platform: {}", userUri);
         try {
             ResponseEntity<User> responseEntity = restTemplate.exchange(
-                    userURL,
+                    userUri,
                     GET,
                     createRequestEntity(),
                     User.class);
-            return responseEntity != null ? responseEntity.getBody() : null;
+            return responseEntity.getBody();
         } catch (RestClientException e) {
-            log.error(ErrorType.SERVER_ERROR.getDescription(), e);
-            throw new ExceptionClient(
-                    ErrorClient.builder()
-                            .errorType(ErrorType.SERVER_ERROR)
-                            .userId(userId)
-                            .build(),
-                    e.getMessage()
-            );
+            throw createClientException(userId, e);
         }
     }
+
 }
