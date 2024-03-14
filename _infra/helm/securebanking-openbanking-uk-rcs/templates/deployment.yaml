@@ -80,7 +80,7 @@ spec:
           - name: RS_API_URI
             valueFrom:
               configMapKeyRef:
-                name: core-deployment-config
+                name: ob-deployment-config
                 key: RS_API_URI
           - name: SERVER_PORT
             value: {{ .Values.deployment.containerPort | quote }}
@@ -93,12 +93,12 @@ spec:
           - name: RCS_CONSENT_RESPONSE_JWT_SIGNINGKEYID
             valueFrom:
               configMapKeyRef:
-                name: core-deployment-config
+                name: ob-deployment-config
                 key: RCS_CONSENT_RESPONSE_JWT_SIGNINGKEYID
           - name: RCS_CONSENT_RESPONSE_JWT_ISSUER
             valueFrom:
               configMapKeyRef:
-                name: core-deployment-config
+                name: ob-deployment-config
                 key: RCS_CONSENT_RESPONSE_JWT_ISSUER
           resources:
             {{- toYaml .Values.deployment.resources | nindent 12 }}
