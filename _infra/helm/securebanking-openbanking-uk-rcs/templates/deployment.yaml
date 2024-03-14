@@ -60,17 +60,17 @@ spec:
           - name: SPRING_DATA_MONGODB_DATABASE
             valueFrom:
               secretKeyRef:
-                name: core-secrets
+                name: ob-secrets
                 key: MONGODB_CONSENT_USERNAME
           - name: SPRING_DATA_MONGODB_USERNAME
             valueFrom:
               secretKeyRef:
-                name: core-secrets
+                name: ob-secrets
                 key: MONGODB_CONSENT_USERNAME
           - name: SPRING_DATA_MONGODB_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: core-secrets
+                name: ob-secrets
                 key: MONGODB_CONSENT_PASSWORD
           - name: CLOUD_CLIENT_BASE_URI
             valueFrom:
