@@ -99,7 +99,7 @@ jobs:
         with:
           args: '-v TAG=${{ env.PR_NUMBER }} -v ARGO_VALUES_PREFIX=remoteConsentServer -v SERVICE_NAME=remote-consent-server -v ENVIRONMENT=${{ env.GITHUB_USER }}-ob -v NEWBRANCH=${{ github.head_ref }}'
         env:
-          PIPELINE_NAME: 'ForgeCloud/sbat-infra/dev-ob-service-build'
+          PIPELINE_NAME: 'SAPIG-devenv/dev-ob-service-build'
           CF_API_KEY: ${{ secrets.CF_API_KEY }}
           TRIGGER_NAME: github-actions-trigger-rcs
         id: run-pipeline
