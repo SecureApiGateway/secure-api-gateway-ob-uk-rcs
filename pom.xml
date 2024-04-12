@@ -37,11 +37,11 @@
     <parent>
         <groupId>com.forgerock.sapi.gateway</groupId>
         <artifactId>secure-api-gateway-parent</artifactId>
-        <version>2.3.0</version>
+        <version>2.3.2-SNAPSHOT</version>
     </parent>
 
     <properties>
-        <uk.bom.version>2.3.0</uk.bom.version>
+        <uk.bom.version>2.3.1-SNAPSHOT</uk.bom.version>
     </properties>
 
     <dependencyManagement>
