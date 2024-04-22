@@ -1,0 +1,13 @@
+name: PR - Build and Deploy
+on:
+  push:
+    paths:
+      - '_infra/helm/**'
+jobs:
+  run_pr-template:
+    name: PR - Check Helm
+    uses: SecureApiGateway/secure-api-gateway-ci/.github/workflows/helm-changes-template.yml@1389-standard-steps-for-workflows
+    secrets: inherit
+    with:
+      componentName: secure-api-gateway-ob-uk-fidc-initializer
+      helmLocation: _infra/helm
