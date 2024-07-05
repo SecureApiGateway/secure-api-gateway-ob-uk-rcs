@@ -22,8 +22,8 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRExc
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.international.BasePaymentConsentEntityWithExchangeRateInformation;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.BasePaymentConsentServiceTest;
 
-import uk.org.openbanking.datamodel.payment.OBExchangeRateType;
-import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiationExchangeRateInformation;
+import uk.org.openbanking.datamodel.v3.payment.OBExchangeRateType;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternational3DataInitiationExchangeRateInformation;
 
 public abstract class BasePaymentServiceWithExchangeRateInformationTest<T extends BasePaymentConsentEntityWithExchangeRateInformation<?>> extends BasePaymentConsentServiceTest<T> {
 

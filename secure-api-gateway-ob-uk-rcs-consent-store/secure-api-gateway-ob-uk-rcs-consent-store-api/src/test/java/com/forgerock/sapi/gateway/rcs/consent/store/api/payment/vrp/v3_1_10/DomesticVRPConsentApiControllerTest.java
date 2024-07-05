@@ -31,8 +31,8 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_1
 import com.forgerock.sapi.gateway.rcs.consent.store.api.BaseControllerTest;
 import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.PaymentConsentValidationHelpers;
 
-import uk.org.openbanking.datamodel.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
+import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPConsentRequest;
 import uk.org.openbanking.testsupport.vrp.OBDomesticVrpConsentRequestTestDataFactory;
 
 

@@ -41,7 +41,7 @@
     </parent>
 
     <properties>
-        <uk.bom.version>3.1.0</uk.bom.version>
+        <uk.bom.version>4.0.0-SNAPSHOT</uk.bom.version>
     </properties>
 
     <dependencyManagement>

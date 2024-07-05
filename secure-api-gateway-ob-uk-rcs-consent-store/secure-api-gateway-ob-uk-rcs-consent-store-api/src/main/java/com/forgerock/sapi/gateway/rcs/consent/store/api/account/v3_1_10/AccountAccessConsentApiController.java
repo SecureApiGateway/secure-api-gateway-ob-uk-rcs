@@ -33,7 +33,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.Account
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import uk.org.openbanking.datamodel.common.OBExternalRequestStatus1Code;
+import uk.org.openbanking.datamodel.v3.common.OBExternalRequestStatus1Code;
 
 @Controller
 public class AccountAccessConsentApiController implements AccountAccessConsentApi {

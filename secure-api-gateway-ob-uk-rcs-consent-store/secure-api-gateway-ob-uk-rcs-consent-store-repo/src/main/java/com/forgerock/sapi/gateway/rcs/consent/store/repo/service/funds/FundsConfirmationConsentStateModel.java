@@ -18,7 +18,7 @@ package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.funds;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentStateModel;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import uk.org.openbanking.datamodel.common.OBExternalRequestStatus1Code;
+import uk.org.openbanking.datamodel.v3.common.OBExternalRequestStatus1Code;
 
 import java.util.List;
 

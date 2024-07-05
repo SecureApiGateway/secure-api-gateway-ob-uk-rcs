@@ -27,7 +27,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.BaseCreate
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.BasePaymentConsent;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
+import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
 
 public class PaymentConsentValidationHelpers {
 

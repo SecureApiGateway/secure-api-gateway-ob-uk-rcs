@@ -44,7 +44,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domesti
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import com.nimbusds.jwt.SignedJWT;
 
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationDebtorAccount;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomestic2DataInitiationDebtorAccount;
 
 @ExtendWith(MockitoExtension.class)
 class DomesticScheduledPaymentConsentDetailsServiceTest extends BasePaymentConsentDetailsServiceTest {

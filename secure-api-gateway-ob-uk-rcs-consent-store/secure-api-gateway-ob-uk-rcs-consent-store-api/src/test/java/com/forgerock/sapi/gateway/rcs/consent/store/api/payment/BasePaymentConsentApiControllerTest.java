@@ -34,7 +34,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.BasePaymen
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.api.BaseControllerTest;
 
-import uk.org.openbanking.datamodel.error.OBErrorResponse1;
+import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
 
 public abstract class BasePaymentConsentApiControllerTest<T extends BasePaymentConsent, C extends BaseCreatePaymentConsentRequest> extends BaseControllerTest<T, C, AuthorisePaymentConsentRequest> {
 

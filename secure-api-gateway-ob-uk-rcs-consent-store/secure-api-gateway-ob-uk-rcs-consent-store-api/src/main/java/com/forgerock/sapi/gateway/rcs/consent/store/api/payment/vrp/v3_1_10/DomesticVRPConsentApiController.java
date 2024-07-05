@@ -35,7 +35,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.Payment
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.vrp.DomesticVRPConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponseDataStatus;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPConsentResponseDataStatus;
 
 /**
  * Implementation of DomesticVRPConsentApi for OBIE version 3.1.10
