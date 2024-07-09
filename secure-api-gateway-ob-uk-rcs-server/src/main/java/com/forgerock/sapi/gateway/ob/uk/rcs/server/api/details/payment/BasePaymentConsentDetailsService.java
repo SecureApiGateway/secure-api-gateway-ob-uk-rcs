@@ -67,7 +67,7 @@ public abstract class BasePaymentConsentDetailsService<T extends BasePaymentCons
         final FRAccountIdentifier debtorAccount = consentDetails.getDebtorAccount();
         if (Objects.nonNull(debtorAccount)) {
             FRAccountWithBalance accountWithBalance = accountService.getAccountWithBalanceByIdentifiers(
-                    consentDetails.getUserId(), debtorAccount.getName(), debtorAccount.getIdentification(), debtorAccount.getSchemeName());
+                    consentDetails.getUserId(), debtorAccount.getIdentification(), debtorAccount.getSchemeName());
 
             if (Objects.nonNull(accountWithBalance)) {
                 debtorAccount.setAccountId(accountWithBalance.getAccount().getAccountId());

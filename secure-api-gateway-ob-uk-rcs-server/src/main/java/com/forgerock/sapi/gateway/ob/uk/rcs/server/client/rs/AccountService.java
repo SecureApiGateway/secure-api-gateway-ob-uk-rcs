@@ -89,7 +89,7 @@ public class AccountService extends BaseRsClient {
         return entity.getBody();
     }
 
-    public FRAccountWithBalance getAccountWithBalanceByIdentifiers(String userID, String name, String identification, String schemeName) {
+    public FRAccountWithBalance getAccountWithBalanceByIdentifiers(String userID, String identification, String schemeName) {
         // This is necessary as auth server always uses lowercase user id
         String lowercaseUserId = userID.toLowerCase();
         log.debug("Searching for accounts with balance for user ID: {}", lowercaseUserId);
@@ -102,7 +102,6 @@ public class AccountService extends BaseRsClient {
         );
 
         builder.queryParam("userId", lowercaseUserId);
-        builder.queryParam("name", name);
         builder.queryParam("identification", identification);
         builder.queryParam("schemeName", schemeName);
 
@@ -111,30 +110,4 @@ public class AccountService extends BaseRsClient {
         return entity.getBody();
     }
 
-    public FRAccountWithBalance getAccountIdentifier(String userID, String name, String identification, String schemeName) {
-        // This is necessary as auth server always uses lowercase user id
-        String lowercaseUserId = userID.toLowerCase();
-        log.debug("Searching for accounts by identifiers user {}, name {}, identification {}, schemeName {}",
-                lowercaseUserId,
-                name,
-                identification,
-                schemeName
-        );
-
-        UriComponentsBuilder builder = fromHttpUrl(
-                rsConfiguration.getBaseUri() +
-                        rsBackofficeConfiguration.getAccounts().get(
-                                RsBackofficeConfiguration.UriContexts.FIND_BY_ACCOUNT_IDENTIFIERS.toString()
-                        )
-        );
-
-        builder.queryParam("userId", lowercaseUserId);
-        builder.queryParam("name", name);
-        builder.queryParam("identification", identification);
-        builder.queryParam("schemeName", schemeName);
-
-        URI uri = builder.build().encode().toUri();
-        ResponseEntity<FRAccountWithBalance> entity = restTemplate.exchange(uri, GET, createRequestEntity(), FRAccountWithBalance.class);
-        return entity.getBody();
-    }
 }
