@@ -129,7 +129,7 @@ public class BasePaymentConsentDetailsServiceTest {
     }
 
     protected void mockAccountServiceGetByIdentifiersResponse(OBWriteDomestic2DataInitiationDebtorAccount debtorAccount, FRAccountWithBalance accountWithBalance) {
-        given(accountService.getAccountWithBalanceByIdentifiers(eq(testUser.getId()), eq(debtorAccount.getName()),
-                eq(debtorAccount.getIdentification()), eq(debtorAccount.getSchemeName()))).willReturn(accountWithBalance);
+        given(accountService.getAccountWithBalanceByIdentifiers(eq(testUser.getId()), eq(debtorAccount.getIdentification()),
+                eq(debtorAccount.getSchemeName()))).willReturn(accountWithBalance);
     }
 }

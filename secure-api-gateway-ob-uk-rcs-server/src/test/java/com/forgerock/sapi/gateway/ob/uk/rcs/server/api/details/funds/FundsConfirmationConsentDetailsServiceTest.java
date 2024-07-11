@@ -160,10 +160,8 @@ public class FundsConfirmationConsentDetailsServiceTest {
     }
 
     private void mockAccountService(String userId, FRAccountWithBalance willReturn) {
-        given(accountService.getAccountWithBalanceByIdentifiers(
-                        eq(userId), eq(accountIdentifier.getName()),
-                        eq(accountIdentifier.getIdentification()), eq(accountIdentifier.getSchemeName())
-                )
+        given(accountService.getAccountWithBalanceByIdentifiers(eq(userId), eq(accountIdentifier.getIdentification()),
+                eq(accountIdentifier.getSchemeName()))
         ).willReturn(willReturn);
     }
 }

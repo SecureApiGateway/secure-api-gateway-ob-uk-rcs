@@ -94,7 +94,7 @@ class DomesticScheduledPaymentConsentDetailsServiceTest extends BasePaymentConse
         final OBWriteDomestic2DataInitiationDebtorAccount debtorAccount = new OBWriteDomestic2DataInitiationDebtorAccount().name("Test Account").identification("account-id-123").schemeName("accountId");
         mockApiClientServiceResponse();
         final FRAccountWithBalance accountWithBalance = FRAccountWithBalanceTestDataFactory.aValidFRAccountWithBalance();
-        given(accountService.getAccountWithBalanceByIdentifiers(eq(testUser.getId()), eq(debtorAccount.getName()),
+        given(accountService.getAccountWithBalanceByIdentifiers(eq(testUser.getId()),
                 eq(debtorAccount.getIdentification()), eq(debtorAccount.getSchemeName()))).willReturn(accountWithBalance);
         mockApiProviderConfigurationGetName();
 

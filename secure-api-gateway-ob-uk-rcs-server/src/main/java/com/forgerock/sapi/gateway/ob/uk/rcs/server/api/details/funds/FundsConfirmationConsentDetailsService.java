@@ -72,7 +72,7 @@ public class FundsConfirmationConsentDetailsService extends BaseConsentDetailsSe
         final FRAccountIdentifier debtorAccount = consentDetails.getDebtorAccount();
         Objects.requireNonNull(debtorAccount, "The debtor account must be not null to check funds availability.");
         FRAccountWithBalance accountWithBalance = accountService.getAccountWithBalanceByIdentifiers(
-                consentDetails.getUserId(), debtorAccount.getName(), debtorAccount.getIdentification(), debtorAccount.getSchemeName());
+                consentDetails.getUserId(), debtorAccount.getIdentification(), debtorAccount.getSchemeName());
 
         if (Objects.nonNull(accountWithBalance)) {
             debtorAccount.setAccountId(accountWithBalance.getAccount().getAccountId());
