@@ -10,6 +10,7 @@ on:
       - '_infra/helm/**'
 env:
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+
 jobs:
   run_pr-template:
     name: Merge - Build and Deploy
