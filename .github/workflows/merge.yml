@@ -19,4 +19,4 @@ jobs:
     with:
       componentName: secure-api-gateway-ob-uk-rcs
       dockerTag: $(echo ${{ github.sha }} | cut -c1-7)
-      branch: ${{ env.BRANCH_NAME }}
+      branch: $BRANCH_NAME
