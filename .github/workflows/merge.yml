@@ -10,12 +10,13 @@ on:
       - '_infra/helm/**'
 env:
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+
 jobs:
   run_pr-template:
     name: Merge - Build and Deploy
     uses: SecureApiGateway/secure-api-gateway-ci/.github/workflows/reusable-merge.yml@main
     secrets: inherit
     with:
+      componentBranch: $BRANCH_NAME
       componentName: secure-api-gateway-ob-uk-rcs
       dockerTag: $(echo ${{ github.sha }} | cut -c1-7)
-      branch: ${{ env.BRANCH_NAME }}
