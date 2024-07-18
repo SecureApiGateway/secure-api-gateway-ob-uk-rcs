@@ -25,7 +25,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.Au
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.CreateAccountAccessConsentRequest;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import uk.org.openbanking.datamodel.common.OBExternalRequestStatus1Code;
+import uk.org.openbanking.datamodel.v3.common.OBExternalRequestStatus1Code;
 
 /**
  * Helper methods for validating {@link AccountAccessConsent} objects as part of using the {@link AccountAccessConsentApi}

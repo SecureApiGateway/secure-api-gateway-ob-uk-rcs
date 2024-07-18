@@ -22,7 +22,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import uk.org.openbanking.datamodel.customerinfo.CustomerInfo;
+import uk.org.openbanking.datamodel.v3.customerinfo.CustomerInfo;
 
 import java.util.List;
 

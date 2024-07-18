@@ -27,7 +27,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.payment.PaymentCo
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentStateModel;
 
-import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
+import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
 
 public class BasePaymentConsentService<T extends BasePaymentConsentEntity<?>, A extends PaymentAuthoriseConsentArgs> extends BaseConsentService<T, A> implements PaymentConsentService<T, A> {
 

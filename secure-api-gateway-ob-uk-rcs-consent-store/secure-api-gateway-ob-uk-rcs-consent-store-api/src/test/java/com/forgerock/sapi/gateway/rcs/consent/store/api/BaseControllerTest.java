@@ -39,8 +39,8 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.BaseConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.BaseCreateConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
 
-import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.error.OBErrorResponse1;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
+import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")

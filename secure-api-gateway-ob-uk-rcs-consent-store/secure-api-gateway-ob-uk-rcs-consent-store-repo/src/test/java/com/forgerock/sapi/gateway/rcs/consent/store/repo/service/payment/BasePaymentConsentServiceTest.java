@@ -30,7 +30,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentServ
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentStateModel;
 
 import jakarta.validation.ConstraintViolationException;
-import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
+import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
 
 public abstract class BasePaymentConsentServiceTest<T extends BasePaymentConsentEntity<?>> extends BaseConsentServiceTest<T, PaymentAuthoriseConsentArgs> {
 
