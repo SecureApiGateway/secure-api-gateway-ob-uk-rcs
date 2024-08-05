@@ -13,29 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.api.customerinfo.v1_0;
+package com.forgerock.sapi.gateway.rcs.consent.store.api.account;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.customerinfo.v1_0.AuthoriseCustomerInfoConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.customerinfo.v1_0.CreateCustomerInfoConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.customerinfo.v1_0.CustomerInfoConsent;
-import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AuthoriseAccountAccessConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.CreateAccountAccessConsentRequest;
+
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import jakarta.validation.Valid;
 import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
 
-import jakarta.validation.Valid;
-
 @Validated
-@Api(tags = {"v1.0"})
-@RequestMapping(value = "/consent/store/v1.0")
-public interface CustomerInfoConsentApi {
+public interface AccountAccessConsentApi {
 
-    @ApiOperation(value = "Create Customer Info Consent")
+    @ApiOperation(value = "Create Account Access Consent")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "CustomerInfoConsent object representing the consent created",
-                    response = CustomerInfoConsent.class),
+            @ApiResponse(code = 201, message = "AccountAccessConsent object representing the consent created",
+                    response = AccountAccessConsent.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
             @ApiResponse(code = 403, message = "Forbidden", response = OBErrorResponse1.class),
             @ApiResponse(code = 404, message = "Not found"),
@@ -43,19 +49,19 @@ public interface CustomerInfoConsentApi {
             @ApiResponse(code = 406, message = "Not Acceptable"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)
     })
-    @RequestMapping(value = "/customer-info-consents",
+    @RequestMapping(value = "/account-access-consents",
             consumes = {"application/json; charset=utf-8"},
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
-    ResponseEntity<CustomerInfoConsent> createConsent(@ApiParam(value = "Create Consent Request", required = true)
-                                                      @Valid
-                                                      @RequestBody CreateCustomerInfoConsentRequest request);
+    ResponseEntity<AccountAccessConsent> createConsent(@ApiParam(value = "Create Consent Request", required = true)
+                                                       @Valid
+                                                       @RequestBody CreateAccountAccessConsentRequest request);
 
 
-    @ApiOperation(value = "Get Customer Info Consent")
+    @ApiOperation(value = "Get Account Access Consent")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "CustomerInfoConsent object representing the consent created",
-                    response = CustomerInfoConsent.class),
+            @ApiResponse(code = 200, message = "AccountAccessConsent object representing the consent created",
+                    response = AccountAccessConsent.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
             @ApiResponse(code = 403, message = "Forbidden", response = OBErrorResponse1.class),
             @ApiResponse(code = 404, message = "Not found"),
@@ -63,17 +69,17 @@ public interface CustomerInfoConsentApi {
             @ApiResponse(code = 406, message = "Not Acceptable"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)
     })
-    @RequestMapping(value = "/customer-info-consents/{consentId}",
+    @RequestMapping(value = "/account-access-consents/{consentId}",
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
-    ResponseEntity<CustomerInfoConsent> getConsent(@PathVariable(value = "consentId") String consentId,
-                                                   @RequestHeader(value = "x-api-client-id") String apiClientId);
+    ResponseEntity<AccountAccessConsent> getConsent(@PathVariable(value = "consentId") String consentId,
+                                                    @RequestHeader(value = "x-api-client-id") String apiClientId);
 
 
-    @ApiOperation(value = "Authorise Customer Info Consent")
+    @ApiOperation(value = "Authorise Account Access Consent")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "CustomerInfoConsent object representing the consent created",
-                    response = CustomerInfoConsent.class),
+            @ApiResponse(code = 200, message = "AccountAccessConsent object representing the consent created",
+                    response = AccountAccessConsent.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
             @ApiResponse(code = 403, message = "Forbidden", response = OBErrorResponse1.class),
             @ApiResponse(code = 404, message = "Not found"),
@@ -81,20 +87,20 @@ public interface CustomerInfoConsentApi {
             @ApiResponse(code = 406, message = "Not Acceptable"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)
     })
-    @RequestMapping(value = "/customer-info-consents/{consentId}/authorise",
+    @RequestMapping(value = "/account-access-consents/{consentId}/authorise",
             consumes = {"application/json; charset=utf-8"},
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
-    ResponseEntity<CustomerInfoConsent> authoriseConsent(@PathVariable(value = "consentId") String consentId,
-                                                         @ApiParam(value = "Authorise Consent Request", required = true)
-                                                         @Valid
-                                                         @RequestBody AuthoriseCustomerInfoConsentRequest request);
+    ResponseEntity<AccountAccessConsent> authoriseConsent(@PathVariable(value = "consentId") String consentId,
+                                                          @ApiParam(value = "Authorise Consent Request", required = true)
+                                                          @Valid
+                                                          @RequestBody AuthoriseAccountAccessConsentRequest request);
 
 
-    @ApiOperation(value = "Reject Customer Info Consent")
+    @ApiOperation(value = "Reject Account Access Consent")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "CustomerInfoConsent object representing the consent created",
-                    response = CustomerInfoConsent.class),
+            @ApiResponse(code = 200, message = "AccountAccessConsent object representing the consent created",
+                    response = AccountAccessConsent.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
             @ApiResponse(code = 403, message = "Forbidden", response = OBErrorResponse1.class),
             @ApiResponse(code = 404, message = "Not found"),
@@ -102,17 +108,17 @@ public interface CustomerInfoConsentApi {
             @ApiResponse(code = 406, message = "Not Acceptable"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)
     })
-    @RequestMapping(value = "/customer-info-consents/{consentId}/reject",
+    @RequestMapping(value = "/account-access-consents/{consentId}/reject",
             consumes = {"application/json; charset=utf-8"},
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
-    ResponseEntity<CustomerInfoConsent> rejectConsent(@PathVariable(value = "consentId") String consentId,
-                                                      @ApiParam(value = "Reject Consent Request", required = true)
-                                                      @Valid
-                                                      @RequestBody RejectConsentRequest request);
+    ResponseEntity<AccountAccessConsent> rejectConsent(@PathVariable(value = "consentId") String consentId,
+                                                       @ApiParam(value = "Reject Consent Request", required = true)
+                                                       @Valid
+                                                       @RequestBody RejectConsentRequest request);
 
 
-    @ApiOperation(value = "Delete Customer Info Consent")
+    @ApiOperation(value = "Delete Account Access Consent")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Delete successful"),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
@@ -122,7 +128,7 @@ public interface CustomerInfoConsentApi {
             @ApiResponse(code = 406, message = "Not Acceptable"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)
     })
-    @RequestMapping(value = "/customer-info-consents/{consentId}",
+    @RequestMapping(value = "/account-access-consents/{consentId}",
             method = RequestMethod.DELETE)
     ResponseEntity<Void> deleteConsent(@PathVariable(value = "consentId") String consentId,
                                        @RequestHeader(value = "x-api-client-id") String apiClientId);

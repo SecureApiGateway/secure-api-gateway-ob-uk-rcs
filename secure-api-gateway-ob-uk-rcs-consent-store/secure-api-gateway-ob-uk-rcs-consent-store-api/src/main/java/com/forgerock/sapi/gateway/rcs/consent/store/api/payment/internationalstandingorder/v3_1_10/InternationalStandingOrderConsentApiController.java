@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.internationalstandingorder.BaseInternationalStandingOrderConsentApiController;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.international.InternationalStandingOrderConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
@@ -33,7 +34,7 @@ import io.swagger.annotations.Api;
 @Controller
 @Api(tags = {"v3.1.10"})
 @RequestMapping(value = "/consent/store/v3.1.10")
-public class InternationalStandingOrderConsentApiController extends com.forgerock.sapi.gateway.rcs.consent.store.api.payment.internationalstandingorder.BaseInternationalStandingOrderConsentApiController {
+public class InternationalStandingOrderConsentApiController extends BaseInternationalStandingOrderConsentApiController {
 
     @Autowired
     public InternationalStandingOrderConsentApiController(InternationalStandingOrderConsentService consentService,
