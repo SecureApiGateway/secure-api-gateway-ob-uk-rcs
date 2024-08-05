@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic;
 
 import jakarta.validation.Valid;
 
@@ -31,7 +31,6 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePay
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v3_1_10.CreateDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
 
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -39,8 +38,6 @@ import io.swagger.annotations.ApiResponses;
 import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
 
 @Validated
-@Api(tags = {"v3.1.10"})
-@RequestMapping(value = "/consent/store/v3.1.10")
 public interface DomesticPaymentConsentApi {
 
     @ApiOperation(value = "Create Domestic Payment Consent")
