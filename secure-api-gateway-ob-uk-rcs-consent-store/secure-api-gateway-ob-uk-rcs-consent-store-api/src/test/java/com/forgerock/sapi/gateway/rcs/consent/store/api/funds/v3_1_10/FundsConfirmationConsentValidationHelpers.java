@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Date;
 
+import com.forgerock.sapi.gateway.rcs.consent.store.api.funds.FundsConfirmationConsentApi;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.AuthoriseFundsConfirmationConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.CreateFundsConfirmationConsentRequest;

@@ -22,7 +22,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.Au
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.CreateAccountAccessConsentRequest;
 
 /**
- * Client for interacting with com.forgerock.sapi.gateway.rcs.consent.store.api.account.v3_1_10.AccountAccessConsentApi
+ * Client for interacting with com.forgerock.sapi.gateway.rcs.consent.store.api.account.AccountAccessConsentApi
  */
 public interface AccountAccessConsentStoreClient {
 

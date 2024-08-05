@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Date;
 
+import com.forgerock.sapi.gateway.rcs.consent.store.api.customerinfo.CustomerInfoConsentApi;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.customerinfo.v1_0.AuthoriseCustomerInfoConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.customerinfo.v1_0.CreateCustomerInfoConsentRequest;
@@ -26,8 +27,6 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.customerinfo.v1_0.
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import uk.org.openbanking.datamodel.v3.common.OBExternalRequestStatus1Code;
-
-;
 
 /**
  * Helper methods for validating {@link CustomerInfoConsent} objects as part of using the {@link CustomerInfoConsentApi}

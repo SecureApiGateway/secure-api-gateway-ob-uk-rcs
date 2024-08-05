@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.international.v3_1_10;
-
-import jakarta.validation.Valid;
+package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.international;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -31,16 +29,14 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePay
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.international.v3_1_10.CreateInternationalPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.international.v3_1_10.InternationalPaymentConsent;
 
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import jakarta.validation.Valid;
 import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
 
 @Validated
-@Api(tags = {"v3.1.10"})
-@RequestMapping(value = "/consent/store/v3.1.10")
 public interface InternationalPaymentConsentApi {
 
     @ApiOperation(value = "Create International Payment Consent")

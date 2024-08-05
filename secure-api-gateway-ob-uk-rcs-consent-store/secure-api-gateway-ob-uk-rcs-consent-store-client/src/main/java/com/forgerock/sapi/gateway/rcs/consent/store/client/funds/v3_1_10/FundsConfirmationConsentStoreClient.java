@@ -22,7 +22,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.Crea
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.FundsConfirmationConsent;
 
 /**
- * Client for interacting with com.forgerock.sapi.gateway.rcs.consent.store.api.funds.v3_1_10.FundsConfirmationConsentApi
+ * Client for interacting with com.forgerock.sapi.gateway.rcs.consent.store.api.funds.FundsConfirmationConsentApi
  */
 public interface FundsConfirmationConsentStoreClient {
     FundsConfirmationConsent createConsent(CreateFundsConfirmationConsentRequest createConsentRequest) throws ConsentStoreClientException;

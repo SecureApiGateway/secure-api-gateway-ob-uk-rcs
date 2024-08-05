@@ -22,7 +22,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.customerinfo.v1_0.
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.customerinfo.v1_0.CustomerInfoConsent;
 
 /**
- * Client for interacting with com.forgerock.sapi.gateway.rcs.consent.store.api.customerinfo.v1_0.CustomerInfoConsentApi
+ * Client for interacting with com.forgerock.sapi.gateway.rcs.consent.store.api.customerinfo.CustomerInfoConsentApi
  */
 public interface CustomerInfoConsentStoreClient {
     CustomerInfoConsent createConsent(CreateCustomerInfoConsentRequest createConsentRequest) throws ConsentStoreClientException;
