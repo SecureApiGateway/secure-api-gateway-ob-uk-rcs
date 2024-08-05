@@ -29,9 +29,6 @@ import io.swagger.annotations.Api;
 
 /**
  * Implementation of DomesticScheduledPaymentConsentApi for OBIE version 3.1.10
- *
- * Note: the obVersion field is pluggable, so if there are no changes to the OBIE schema in later versions, then
- * these controllers can extend this and configure the
  */
 @Controller
 @Api(tags = {"v3.1.10"})

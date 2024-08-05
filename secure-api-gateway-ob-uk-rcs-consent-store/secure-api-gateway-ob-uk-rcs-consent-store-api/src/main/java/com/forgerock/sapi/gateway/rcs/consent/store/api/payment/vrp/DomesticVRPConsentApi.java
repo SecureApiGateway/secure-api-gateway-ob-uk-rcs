@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.vrp.v3_1_10;
-
-import jakarta.validation.Valid;
+package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.vrp;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -30,16 +28,14 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.AuthoriseP
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_10.CreateDomesticVRPConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_10.DomesticVRPConsent;
 
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import jakarta.validation.Valid;
 import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
 
 @Validated
-@Api(tags = {"v3.1.10"})
-@RequestMapping(value = "/consent/store/v3.1.10")
 public interface DomesticVRPConsentApi {
 
     @ApiOperation(value = "Create Domestic VRP Consent")

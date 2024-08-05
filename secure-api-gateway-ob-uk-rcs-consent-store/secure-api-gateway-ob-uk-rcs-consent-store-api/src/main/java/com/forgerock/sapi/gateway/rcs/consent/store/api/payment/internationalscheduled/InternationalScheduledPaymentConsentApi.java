@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.internationalstandingorder.v3_1_10;
-
-import jakarta.validation.Valid;
+package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.internationalscheduled;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -28,25 +26,23 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.AuthorisePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internationalstandingorder.v3_1_10.CreateInternationalStandingOrderConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internationalstandingorder.v3_1_10.InternationalStandingOrderConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internationalscheduled.v3_1_10.CreateInternationalScheduledPaymentConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internationalscheduled.v3_1_10.InternationalScheduledPaymentConsent;
 
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import jakarta.validation.Valid;
 import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
 
 @Validated
-@Api(tags = {"v3.1.10"})
-@RequestMapping(value = "/consent/store/v3.1.10")
-public interface InternationalStandingOrderConsentApi {
+public interface InternationalScheduledPaymentConsentApi {
 
-    @ApiOperation(value = "Create International Standing Order Consent")
+    @ApiOperation(value = "Create International Scheduled Payment Consent")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "InternationalStandingOrderConsent object representing the consent created",
-                         response = InternationalStandingOrderConsent.class),
+            @ApiResponse(code = 201, message = "InternationalScheduledPaymentConsent object representing the consent created",
+                         response = InternationalScheduledPaymentConsent.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
             @ApiResponse(code = 403, message = "Forbidden", response = OBErrorResponse1.class),
             @ApiResponse(code = 404, message = "Not found"),
@@ -54,19 +50,19 @@ public interface InternationalStandingOrderConsentApi {
             @ApiResponse(code = 406, message = "Not Acceptable"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)
     })
-    @RequestMapping(value = "/international-standing-order-consents",
+    @RequestMapping(value = "/international-scheduled-payment-consents",
             consumes = {"application/json; charset=utf-8"},
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
-    ResponseEntity<InternationalStandingOrderConsent> createConsent(@ApiParam(value = "Create Consent Request", required = true)
-                                                                    @Valid
-                                                                    @RequestBody CreateInternationalStandingOrderConsentRequest request);
+    ResponseEntity<InternationalScheduledPaymentConsent> createConsent(@ApiParam(value = "Create Consent Request", required = true)
+                                                                       @Valid
+                                                                       @RequestBody CreateInternationalScheduledPaymentConsentRequest request);
 
 
-    @ApiOperation(value = "Get International Standing Order Consent")
+    @ApiOperation(value = "Get International Scheduled Payment Consent")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "InternationalStandingOrderConsent object representing the consent created",
-                         response = InternationalStandingOrderConsent.class),
+            @ApiResponse(code = 200, message = "InternationalScheduledPaymentConsent object representing the consent created",
+                         response = InternationalScheduledPaymentConsent.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
             @ApiResponse(code = 403, message = "Forbidden", response = OBErrorResponse1.class),
             @ApiResponse(code = 404, message = "Not found"),
@@ -74,17 +70,17 @@ public interface InternationalStandingOrderConsentApi {
             @ApiResponse(code = 406, message = "Not Acceptable"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)
     })
-    @RequestMapping(value = "/international-standing-order-consents/{consentId}",
+    @RequestMapping(value = "/international-scheduled-payment-consents/{consentId}",
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
-    ResponseEntity<InternationalStandingOrderConsent> getConsent(@PathVariable(value = "consentId") String consentId,
-                                                                 @RequestHeader(value = "x-api-client-id") String apiClientId);
+    ResponseEntity<InternationalScheduledPaymentConsent> getConsent(@PathVariable(value = "consentId") String consentId,
+                                                                    @RequestHeader(value = "x-api-client-id") String apiClientId);
 
 
-    @ApiOperation(value = "Authorise International Standing Order Consent")
+    @ApiOperation(value = "Authorise International Scheduled Payment Consent")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "InternationalStandingOrderConsent object representing the consent created",
-                         response = InternationalStandingOrderConsent.class),
+            @ApiResponse(code = 200, message = "InternationalScheduledPaymentConsent object representing the consent created",
+                         response = InternationalScheduledPaymentConsent.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
             @ApiResponse(code = 403, message = "Forbidden", response = OBErrorResponse1.class),
             @ApiResponse(code = 404, message = "Not found"),
@@ -92,20 +88,42 @@ public interface InternationalStandingOrderConsentApi {
             @ApiResponse(code = 406, message = "Not Acceptable"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)
     })
-    @RequestMapping(value = "/international-standing-order-consents/{consentId}/authorise",
+    @RequestMapping(value = "/international-scheduled-payment-consents/{consentId}/authorise",
             consumes = {"application/json; charset=utf-8"},
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
-    ResponseEntity<InternationalStandingOrderConsent> authoriseConsent(@PathVariable(value = "consentId") String consentId,
-                                                                       @ApiParam(value = "Authorise Consent Request", required = true)
+    ResponseEntity<InternationalScheduledPaymentConsent> authoriseConsent(@PathVariable(value = "consentId") String consentId,
+                                                                          @ApiParam(value = "Authorise Consent Request", required = true)
+                                                                          @Valid
+                                                                          @RequestBody AuthorisePaymentConsentRequest request);
+
+
+    @ApiOperation(value = "Reject International Scheduled Payment Consent")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "InternationalScheduledPaymentConsent object representing the consent created",
+                         response = InternationalScheduledPaymentConsent.class),
+            @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
+            @ApiResponse(code = 403, message = "Forbidden", response = OBErrorResponse1.class),
+            @ApiResponse(code = 404, message = "Not found"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 406, message = "Not Acceptable"),
+            @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)
+    })
+    @RequestMapping(value = "/international-scheduled-payment-consents/{consentId}/reject",
+            consumes = {"application/json; charset=utf-8"},
+            produces = {"application/json; charset=utf-8"},
+            method = RequestMethod.POST)
+    ResponseEntity<InternationalScheduledPaymentConsent> rejectConsent(@PathVariable(value = "consentId") String consentId,
+                                                                       @ApiParam(value = "Reject Consent Request", required = true)
                                                                        @Valid
-                                                                       @RequestBody AuthorisePaymentConsentRequest request);
+                                                                       @RequestBody RejectConsentRequest request);
 
 
-    @ApiOperation(value = "Reject International Standing Order Consent")
+
+    @ApiOperation(value = "Consume International Scheduled Payment Consent")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "InternationalStandingOrderConsent object representing the consent created",
-                         response = InternationalStandingOrderConsent.class),
+            @ApiResponse(code = 200, message = "InternationalScheduledPaymentConsent object representing the consent created",
+                         response = InternationalScheduledPaymentConsent.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
             @ApiResponse(code = 403, message = "Forbidden", response = OBErrorResponse1.class),
             @ApiResponse(code = 404, message = "Not found"),
@@ -113,35 +131,13 @@ public interface InternationalStandingOrderConsentApi {
             @ApiResponse(code = 406, message = "Not Acceptable"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)
     })
-    @RequestMapping(value = "/international-standing-order-consents/{consentId}/reject",
+    @RequestMapping(value = "/international-scheduled-payment-consents/{consentId}/consume",
             consumes = {"application/json; charset=utf-8"},
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
-    ResponseEntity<InternationalStandingOrderConsent> rejectConsent(@PathVariable(value = "consentId") String consentId,
-                                                                    @ApiParam(value = "Reject Consent Request", required = true)
-                                                                    @Valid
-                                                                    @RequestBody RejectConsentRequest request);
-
-
-
-    @ApiOperation(value = "Consume International Standing Order Consent")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "InternationalStandingOrderConsent object representing the consent created",
-                         response = InternationalStandingOrderConsent.class),
-            @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
-            @ApiResponse(code = 403, message = "Forbidden", response = OBErrorResponse1.class),
-            @ApiResponse(code = 404, message = "Not found"),
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 406, message = "Not Acceptable"),
-            @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)
-    })
-    @RequestMapping(value = "/international-standing-order-consents/{consentId}/consume",
-            consumes = {"application/json; charset=utf-8"},
-            produces = {"application/json; charset=utf-8"},
-            method = RequestMethod.POST)
-    ResponseEntity<InternationalStandingOrderConsent> consumeConsent(@PathVariable(value = "consentId") String consentId,
-                                                                     @ApiParam(value = "Consume Consent Request", required = true)
-                                                                     @Valid
-                                                                     @RequestBody ConsumePaymentConsentRequest request);
+    ResponseEntity<InternationalScheduledPaymentConsent> consumeConsent(@PathVariable(value = "consentId") String consentId,
+                                                                        @ApiParam(value = "Consume Consent Request", required = true)
+                                                                        @Valid
+                                                                        @RequestBody ConsumePaymentConsentRequest request);
 
 }

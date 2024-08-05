@@ -24,7 +24,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.FileUploadRequest;
 
 /**
- * Client for interacting with com.forgerock.sapi.gateway.rcs.consent.store.api.payment.file.v3_1_10.FilePaymentConsentApi
+ * Client for interacting with com.forgerock.sapi.gateway.rcs.consent.store.api.payment.file.FilePaymentConsentApi
  */
 public interface FilePaymentConsentStoreClient {
 
