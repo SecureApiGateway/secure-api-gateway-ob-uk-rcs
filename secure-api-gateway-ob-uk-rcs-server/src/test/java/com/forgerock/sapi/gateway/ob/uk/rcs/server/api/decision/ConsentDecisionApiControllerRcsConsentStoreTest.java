@@ -34,8 +34,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import jakarta.annotation.PostConstruct;
-
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
@@ -43,11 +41,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -108,6 +108,7 @@ import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jwt.JWTClaimsSet;
 
+import jakarta.annotation.PostConstruct;
 import uk.org.openbanking.datamodel.v3.account.OBReadConsent1;
 import uk.org.openbanking.datamodel.v3.account.OBReadConsent1Data;
 import uk.org.openbanking.datamodel.v3.account.OBRisk2;
@@ -130,6 +131,7 @@ import uk.org.openbanking.testsupport.vrp.OBDomesticVrpConsentRequestTestDataFac
 @EnableConfigurationProperties
 @ActiveProfiles("test")
 @SpringBootTest(classes = RCSServerApplicationTestSupport.class, webEnvironment = RANDOM_PORT)
+@DependsOn({"internalConsentServices"})
 public class ConsentDecisionApiControllerRcsConsentStoreTest {
 
     private static final String TEST_API_CLIENT_ID = "test-api-client-1";
@@ -154,33 +156,43 @@ public class ConsentDecisionApiControllerRcsConsentStoreTest {
     private ConsentStoreEnabledIntentTypes consentStoreEnabledIntentTypes;
 
     @Autowired
+    @Qualifier("internalAccountAccessConsentService")
     private AccountAccessConsentService accountAccessConsentService;
 
     @Autowired
+    @Qualifier("internalDomesticPaymentConsentService")
     private DomesticPaymentConsentService domesticPaymentConsentService;
 
     @Autowired
+    @Qualifier("internalDomesticScheduledPaymentConsentService")
     private DomesticScheduledPaymentConsentService domesticScheduledPaymentConsentService;
 
     @Autowired
+    @Qualifier("internalDomesticStandingOrderConsentService")
     private DomesticStandingOrderConsentService domesticStandingOrderConsentService;
 
     @Autowired
+    @Qualifier("internalInternationalPaymentConsentService")
     private InternationalPaymentConsentService internationalPaymentConsentService;
 
     @Autowired
+    @Qualifier("internalInternationalScheduledPaymentConsentService")
     private InternationalScheduledPaymentConsentService internationalScheduledPaymentConsentService;
 
     @Autowired
+    @Qualifier("internalInternationalStandingOrderConsentService")
     private InternationalStandingOrderConsentService internationalStandingOrderConsentService;
 
     @Autowired
+    @Qualifier("internalFilePaymentConsentService")
     private FilePaymentConsentService filePaymentConsentService;
 
     @Autowired
+    @Qualifier("internalDomesticVRPConsentService")
     private DomesticVRPConsentService domesticVRPConsentService;
 
     @Autowired
+    @Qualifier("internalFundsConfirmationConsentService")
     private FundsConfirmationConsentService fundsConfirmationConsentService;
 
     @Autowired

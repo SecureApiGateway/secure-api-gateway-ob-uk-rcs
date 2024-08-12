@@ -16,6 +16,8 @@
 package com.forgerock.sapi.gateway.rcs.consent.store.api.customerinfo.v1_0;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -28,10 +30,11 @@ import io.swagger.annotations.Api;
 @Controller
 @Api(tags = {"v1.0"})
 @RequestMapping(value = "/consent/store/v1.0")
+@DependsOn({"versionedConsentServices"})
 public class CustomerInfoConsentApiController extends BaseCustomerInfoConsentApiController {
 
     @Autowired
-    public CustomerInfoConsentApiController(CustomerInfoConsentService consentService) {
+    public CustomerInfoConsentApiController(@Qualifier("v3.1.10CustomerInfoConsentService") CustomerInfoConsentService consentService) {
         super(consentService, OBVersion.v1_0);
     }
 }

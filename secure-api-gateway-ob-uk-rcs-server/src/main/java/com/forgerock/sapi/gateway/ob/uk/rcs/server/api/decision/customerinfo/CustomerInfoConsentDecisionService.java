@@ -15,6 +15,8 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.customerinfo;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.decision.ConsentDecisionDeserialized;
@@ -25,9 +27,10 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.customerinfo.Cu
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 @Component
+@DependsOn({"internalConsentServices"})
 public class CustomerInfoConsentDecisionService extends BaseConsentDecisionService<CustomerInfoConsentEntity, CustomerInfoAuthoriseConsentArgs> {
 
-    public CustomerInfoConsentDecisionService(CustomerInfoConsentService customerInfoConsentService) {
+    public CustomerInfoConsentDecisionService(@Qualifier("internalCustomerInfoConsentService")CustomerInfoConsentService customerInfoConsentService) {
         super(IntentType.CUSTOMER_INFO_CONSENT, customerInfoConsentService);
     }
 

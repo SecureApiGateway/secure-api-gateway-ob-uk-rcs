@@ -15,20 +15,27 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.api.account.v3_1_10;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRReadConsent;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRReadConsentConverter;
+import com.forgerock.sapi.gateway.rcs.consent.store.api.BaseControllerTest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AuthoriseAccountAccessConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.CreateAccountAccessConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.api.BaseControllerTest;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.account.AccountAccessConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessConsentService;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessConsentStateModel;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import uk.org.openbanking.datamodel.v3.account.OBReadConsent1;
 import uk.org.openbanking.datamodel.v3.account.OBReadConsent1Data;
@@ -40,6 +47,10 @@ public class AccountAccessConsentApiControllerTest extends BaseControllerTest<Ac
 
     public static final List<String> TEST_AUTHORISED_ACCS = List.of("acc-1", "acc-2");
 
+    @Autowired
+    @Qualifier("internalAccountAccessConsentService")
+    private AccountAccessConsentService accountAccessConsentService;
+
     protected AccountAccessConsentApiControllerTest() {
         super(AccountAccessConsent.class);
     }
@@ -50,13 +61,27 @@ public class AccountAccessConsentApiControllerTest extends BaseControllerTest<Ac
     }
 
     @Override
+    protected String createConsentEntityForVersionValidation(String apiClient, OBVersion version) {
+        final AccountAccessConsentEntity consent = new AccountAccessConsentEntity();
+        consent.setApiClientId(apiClient);
+        consent.setRequestVersion(version);
+        consent.setRequestObj(createFRConsent());
+        consent.setStatus(AccountAccessConsentStateModel.AWAITING_AUTHORISATION);
+        return accountAccessConsentService.createConsent(consent).getId();
+    }
+
+    @Override
     protected CreateAccountAccessConsentRequest buildCreateConsentRequest(String apiClientId) {
         final CreateAccountAccessConsentRequest createRequest = new CreateAccountAccessConsentRequest();
         createRequest.setApiClientId(apiClientId);
-        createRequest.setConsentRequest(FRReadConsentConverter.toFRReadConsent(new OBReadConsent1()
-                .data(new OBReadConsent1Data().permissions(List.of(OBExternalPermissions1Code.READACCOUNTSBASIC)))
-                .risk(new OBRisk2())));
+        createRequest.setConsentRequest(createFRConsent());
         return createRequest;
+    }
+
+    private static FRReadConsent createFRConsent() {
+        return FRReadConsentConverter.toFRReadConsent(new OBReadConsent1()
+                .data(new OBReadConsent1Data().permissions(List.of(OBExternalPermissions1Code.READACCOUNTSBASIC)))
+                .risk(new OBRisk2()));
     }
 
     @Override

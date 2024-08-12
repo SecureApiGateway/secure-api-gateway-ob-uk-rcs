@@ -19,6 +19,8 @@ import java.util.function.Supplier;
 
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -34,11 +36,13 @@ import io.swagger.annotations.Api;
 @Controller
 @Api(tags = {"v3.1.10"})
 @RequestMapping(value = "/consent/store/v3.1.10")
+@DependsOn({"versionedConsentServices"})
 public class InternationalScheduledPaymentConsentApiController extends BaseInternationalScheduledPaymentConsentApiController {
 
     @Autowired
-    public InternationalScheduledPaymentConsentApiController(InternationalScheduledPaymentConsentService consentService,
-                                                            Supplier<DateTime> idempotencyKeyExpirationSupplier) {
+    public InternationalScheduledPaymentConsentApiController(
+            @Qualifier("v3.1.10InternationalScheduledPaymentConsentService") InternationalScheduledPaymentConsentService consentService,
+            Supplier<DateTime> idempotencyKeyExpirationSupplier) {
         super(consentService, idempotencyKeyExpirationSupplier, OBVersion.v3_1_10);
     }
 

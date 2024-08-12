@@ -15,18 +15,15 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic;
 
-import org.springframework.stereotype.Service;
-
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.domestic.DomesticPaymentConsentEntity;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.payment.domestic.DomesticPaymentConsentRepository;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.payment.PaymentConsentRepository;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.BasePaymentConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
-@Service
 public class DefaultDomesticPaymentConsentService extends BasePaymentConsentService<DomesticPaymentConsentEntity, PaymentAuthoriseConsentArgs> implements DomesticPaymentConsentService {
 
-    public DefaultDomesticPaymentConsentService(DomesticPaymentConsentRepository repo) {
+    public DefaultDomesticPaymentConsentService(PaymentConsentRepository<DomesticPaymentConsentEntity> repo) {
         super(repo, IntentType.PAYMENT_DOMESTIC_CONSENT::generateIntentId);
     }
 }

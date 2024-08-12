@@ -18,7 +18,6 @@ package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.vrp;
 import java.util.Optional;
 
 import org.joda.time.DateTime;
-import org.springframework.stereotype.Service;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.vrp.DomesticVRPConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException;
@@ -28,7 +27,6 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentServ
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
-@Service
 public class DefaultDomesticVRPConsentService extends BaseConsentService<DomesticVRPConsentEntity, PaymentAuthoriseConsentArgs> implements DomesticVRPConsentService {
 
     public DefaultDomesticVRPConsentService(PaymentConsentRepository<DomesticVRPConsentEntity> repo) {

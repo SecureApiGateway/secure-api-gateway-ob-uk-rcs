@@ -17,16 +17,29 @@ package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domesticschedul
 
 import java.util.UUID;
 
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticScheduledConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticScheduledConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.BasePaymentConsentApiControllerTest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticscheduled.v3_1_10.CreateDomesticScheduledPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticscheduled.v3_1_10.DomesticScheduledPaymentConsent;
-import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.BasePaymentConsentApiControllerTest;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.domestic.DomesticScheduledPaymentConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessConsentStateModel;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DomesticScheduledPaymentConsentService;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticScheduledConsent4;
 import uk.org.openbanking.testsupport.payment.OBWriteDomesticScheduledConsentTestDataFactory;
 
 
 public class DomesticScheduledPaymentConsentApiControllerTest extends BasePaymentConsentApiControllerTest<DomesticScheduledPaymentConsent, CreateDomesticScheduledPaymentConsentRequest> {
+
+    @Autowired
+    @Qualifier("internalDomesticScheduledPaymentConsentService")
+    private DomesticScheduledPaymentConsentService consentService;
 
     public DomesticScheduledPaymentConsentApiControllerTest() {
         super(DomesticScheduledPaymentConsent.class);
@@ -38,16 +51,34 @@ public class DomesticScheduledPaymentConsentApiControllerTest extends BasePaymen
     }
 
     @Override
+    protected String createConsentEntityForVersionValidation(String apiClient, OBVersion version) {
+        final DomesticScheduledPaymentConsentEntity consent = new DomesticScheduledPaymentConsentEntity();
+        consent.setApiClientId(apiClient);
+        consent.setRequestVersion(version);
+        consent.setRequestObj(createFRConsent());
+        consent.setIdempotencyKey(UUID.randomUUID().toString());
+        consent.setIdempotencyKeyExpiration(DateTime.now().plusMinutes(5));
+        consent.setStatus(AccountAccessConsentStateModel.AWAITING_AUTHORISATION);
+        return consentService.createConsent(consent).getId();
+    }
+
+    @Override
     protected CreateDomesticScheduledPaymentConsentRequest buildCreateConsentRequest(String apiClientId) {
         return buildCreateDomesticScheduledPaymentConsentRequest(apiClientId, UUID.randomUUID().toString());
     }
 
     private static CreateDomesticScheduledPaymentConsentRequest buildCreateDomesticScheduledPaymentConsentRequest(String apiClientId, String idempotencyKey) {
         final CreateDomesticScheduledPaymentConsentRequest createDomesticScheduledPaymentConsentRequest = new CreateDomesticScheduledPaymentConsentRequest();
-        final OBWriteDomesticScheduledConsent4 paymentConsent = OBWriteDomesticScheduledConsentTestDataFactory.aValidOBWriteDomesticScheduledConsent4();
-        createDomesticScheduledPaymentConsentRequest.setConsentRequest(FRWriteDomesticScheduledConsentConverter.toFRWriteDomesticScheduledConsent(paymentConsent));
+        final FRWriteDomesticScheduledConsent frWriteDomesticScheduledConsent = createFRConsent();
+        createDomesticScheduledPaymentConsentRequest.setConsentRequest(frWriteDomesticScheduledConsent);
         createDomesticScheduledPaymentConsentRequest.setApiClientId(apiClientId);
         createDomesticScheduledPaymentConsentRequest.setIdempotencyKey(idempotencyKey);
         return createDomesticScheduledPaymentConsentRequest;
+    }
+
+    private static FRWriteDomesticScheduledConsent createFRConsent() {
+        final OBWriteDomesticScheduledConsent4 paymentConsent = OBWriteDomesticScheduledConsentTestDataFactory.aValidOBWriteDomesticScheduledConsent4();
+        final FRWriteDomesticScheduledConsent frWriteDomesticScheduledConsent = FRWriteDomesticScheduledConsentConverter.toFRWriteDomesticScheduledConsent(paymentConsent);
+        return frWriteDomesticScheduledConsent;
     }
 }

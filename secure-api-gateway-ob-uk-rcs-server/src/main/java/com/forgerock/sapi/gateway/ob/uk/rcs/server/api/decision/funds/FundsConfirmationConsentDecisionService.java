@@ -15,6 +15,8 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.funds;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
@@ -27,8 +29,9 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.funds.FundsConf
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 @Component
+@DependsOn({"internalConsentServices"})
 public class FundsConfirmationConsentDecisionService extends BaseConsentDecisionService<FundsConfirmationConsentEntity, FundsConfirmationAuthoriseConsentArgs> {
-    public FundsConfirmationConsentDecisionService(FundsConfirmationConsentService consentService) {
+    public FundsConfirmationConsentDecisionService(@Qualifier("internalFundsConfirmationConsentService") FundsConfirmationConsentService consentService) {
         super(IntentType.FUNDS_CONFIRMATION_CONSENT, consentService);
     }
 

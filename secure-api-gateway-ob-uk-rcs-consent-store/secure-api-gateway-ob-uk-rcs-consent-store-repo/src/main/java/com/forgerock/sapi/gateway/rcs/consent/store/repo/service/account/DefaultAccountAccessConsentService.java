@@ -15,19 +15,17 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account;
 
-import org.springframework.stereotype.Service;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.account.AccountAccessConsentEntity;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.account.AccountAccessConsentRepository;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
-@Service
 public class DefaultAccountAccessConsentService extends BaseConsentService<AccountAccessConsentEntity, AccountAccessAuthoriseConsentArgs> implements AccountAccessConsentService {
 
     private final String revokedStatus;
 
-    public DefaultAccountAccessConsentService(AccountAccessConsentRepository repo) {
+    public DefaultAccountAccessConsentService(MongoRepository<AccountAccessConsentEntity, String> repo) {
         super(repo, IntentType.ACCOUNT_ACCESS_CONSENT::generateIntentId, AccountAccessConsentStateModel.getInstance());
         revokedStatus = AccountAccessConsentStateModel.getInstance().getRevokedConsentStatus();
     }

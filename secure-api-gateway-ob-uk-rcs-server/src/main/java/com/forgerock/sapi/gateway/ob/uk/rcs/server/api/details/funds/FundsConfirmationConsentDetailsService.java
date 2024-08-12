@@ -18,6 +18,8 @@ package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.funds;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccountWithBalance;
@@ -38,12 +40,13 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
+@DependsOn({"internalConsentServices"})
 public class FundsConfirmationConsentDetailsService extends BaseConsentDetailsService<FundsConfirmationConsentEntity, FundsConfirmationConsentDetails> {
 
     private final AccountService accountService;
 
     public FundsConfirmationConsentDetailsService(
-            ConsentService<FundsConfirmationConsentEntity, ?> consentService,
+            @Qualifier("internalFundsConfirmationConsentService")ConsentService<FundsConfirmationConsentEntity, ?> consentService,
             ApiProviderConfiguration apiProviderConfiguration,
             ApiClientServiceClient apiClientService,
             AccountService accountService) {

@@ -15,6 +15,8 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.payment.file;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.payment.BasePaymentConsentDecisionService;
@@ -23,9 +25,12 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.file.Fi
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 @Component
+@DependsOn({"internalConsentServices"})
 public class FilePaymentConsentDecisionService extends BasePaymentConsentDecisionService<FilePaymentConsentEntity> {
 
-    public FilePaymentConsentDecisionService(FilePaymentConsentService consentService) {
+    public FilePaymentConsentDecisionService(
+            @Qualifier("internalFilePaymentConsentService") FilePaymentConsentService consentService) {
+
         super(IntentType.PAYMENT_FILE_CONSENT, consentService);
     }
 
