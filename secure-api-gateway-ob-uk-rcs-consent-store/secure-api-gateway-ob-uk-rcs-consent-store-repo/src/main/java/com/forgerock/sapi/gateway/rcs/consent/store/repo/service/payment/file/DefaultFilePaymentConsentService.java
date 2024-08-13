@@ -15,20 +15,17 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.file;
 
-import org.springframework.stereotype.Service;
-
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.file.FilePaymentConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException.ErrorType;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.payment.file.FilePaymentConsentRepository;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.payment.PaymentConsentRepository;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.BasePaymentConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
-@Service
 public class DefaultFilePaymentConsentService extends BasePaymentConsentService<FilePaymentConsentEntity, PaymentAuthoriseConsentArgs> implements FilePaymentConsentService {
 
-    public DefaultFilePaymentConsentService(FilePaymentConsentRepository repo) {
+    public DefaultFilePaymentConsentService(PaymentConsentRepository<FilePaymentConsentEntity> repo) {
         super(repo, IntentType.PAYMENT_FILE_CONSENT::generateIntentId, FilePaymentConsentStateModel.getInstance());
     }
 

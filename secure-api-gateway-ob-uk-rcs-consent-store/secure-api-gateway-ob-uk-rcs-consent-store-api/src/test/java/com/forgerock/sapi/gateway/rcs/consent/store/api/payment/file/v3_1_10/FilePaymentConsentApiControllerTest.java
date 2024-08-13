@@ -21,19 +21,27 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteFileConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteFileConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.BasePaymentConsentApiControllerTest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.AuthorisePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.CreateFilePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.FilePaymentConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.FileUploadRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.BasePaymentConsentApiControllerTest;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.file.FilePaymentConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessConsentStateModel;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.file.FilePaymentConsentService;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import uk.org.openbanking.datamodel.v3.error.OBError1;
 import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
@@ -42,6 +50,10 @@ import uk.org.openbanking.testsupport.payment.OBWriteFileConsentTestDataFactory;
 
 
 public class FilePaymentConsentApiControllerTest extends BasePaymentConsentApiControllerTest<FilePaymentConsent, CreateFilePaymentConsentRequest> {
+
+    @Autowired
+    @Qualifier("internalFilePaymentConsentService")
+    private FilePaymentConsentService consentService;
 
     public FilePaymentConsentApiControllerTest() {
         super(FilePaymentConsent.class);
@@ -53,17 +65,35 @@ public class FilePaymentConsentApiControllerTest extends BasePaymentConsentApiCo
     }
 
     @Override
+    protected String createConsentEntityForVersionValidation(String apiClient, OBVersion version) {
+        final FilePaymentConsentEntity consent = new FilePaymentConsentEntity();
+        consent.setApiClientId(apiClient);
+        consent.setRequestVersion(version);
+        consent.setRequestObj(createFRConsent());
+        consent.setIdempotencyKey(UUID.randomUUID().toString());
+        consent.setIdempotencyKeyExpiration(DateTime.now().plusMinutes(5));
+        consent.setStatus(AccountAccessConsentStateModel.AWAITING_AUTHORISATION);
+        return consentService.createConsent(consent).getId();
+    }
+
+    @Override
     protected CreateFilePaymentConsentRequest buildCreateConsentRequest(String apiClientId) {
         return buildCreateFilePaymentConsentRequest(apiClientId, UUID.randomUUID().toString());
     }
 
     private static CreateFilePaymentConsentRequest buildCreateFilePaymentConsentRequest(String apiClientId, String idempotencyKey) {
         final CreateFilePaymentConsentRequest createFilePaymentConsentRequest = new CreateFilePaymentConsentRequest();
-        final OBWriteFileConsent3 paymentConsent = OBWriteFileConsentTestDataFactory.aValidOBWriteFileConsent3("xml", "hash", "231", BigDecimal.ONE);
-        createFilePaymentConsentRequest.setConsentRequest(FRWriteFileConsentConverter.toFRWriteFileConsent(paymentConsent));
+        final FRWriteFileConsent frWriteFileConsent = createFRConsent();
+        createFilePaymentConsentRequest.setConsentRequest(frWriteFileConsent);
         createFilePaymentConsentRequest.setApiClientId(apiClientId);
         createFilePaymentConsentRequest.setIdempotencyKey(idempotencyKey);
         return createFilePaymentConsentRequest;
+    }
+
+    private static FRWriteFileConsent createFRConsent() {
+        final OBWriteFileConsent3 paymentConsent = OBWriteFileConsentTestDataFactory.aValidOBWriteFileConsent3("xml", "hash", "231", BigDecimal.ONE);
+        final FRWriteFileConsent frWriteFileConsent = FRWriteFileConsentConverter.toFRWriteFileConsent(paymentConsent);
+        return frWriteFileConsent;
     }
 
     @Override

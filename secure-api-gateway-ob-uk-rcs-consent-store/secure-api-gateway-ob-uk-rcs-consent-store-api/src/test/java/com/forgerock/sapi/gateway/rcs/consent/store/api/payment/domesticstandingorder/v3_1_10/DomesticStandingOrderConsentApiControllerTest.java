@@ -17,15 +17,28 @@ package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domesticstandin
 
 import java.util.UUID;
 
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticStandingOrderConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticStandingOrderConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.BasePaymentConsentApiControllerTest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticstandingorder.v3_1_10.CreateDomesticStandingOrderConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticstandingorder.v3_1_10.DomesticStandingOrderConsent;
-import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.BasePaymentConsentApiControllerTest;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.domestic.DomesticStandingOrderConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessConsentStateModel;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DomesticStandingOrderConsentService;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticStandingOrderConsent5;
 import uk.org.openbanking.testsupport.payment.OBWriteDomesticStandingOrderConsentTestDataFactory;
 
 public class DomesticStandingOrderConsentApiControllerTest extends BasePaymentConsentApiControllerTest<DomesticStandingOrderConsent, CreateDomesticStandingOrderConsentRequest> {
+
+    @Autowired
+    @Qualifier("internalDomesticStandingOrderConsentService")
+    private DomesticStandingOrderConsentService consentService;
 
     public DomesticStandingOrderConsentApiControllerTest() {
         super(DomesticStandingOrderConsent.class);
@@ -37,16 +50,34 @@ public class DomesticStandingOrderConsentApiControllerTest extends BasePaymentCo
     }
 
     @Override
+    protected String createConsentEntityForVersionValidation(String apiClient, OBVersion version) {
+        final DomesticStandingOrderConsentEntity consent = new DomesticStandingOrderConsentEntity();
+        consent.setApiClientId(apiClient);
+        consent.setRequestVersion(version);
+        consent.setRequestObj(createFRConsent());
+        consent.setIdempotencyKey(UUID.randomUUID().toString());
+        consent.setIdempotencyKeyExpiration(DateTime.now().plusMinutes(5));
+        consent.setStatus(AccountAccessConsentStateModel.AWAITING_AUTHORISATION);
+        return consentService.createConsent(consent).getId();
+    }
+
+    @Override
     protected CreateDomesticStandingOrderConsentRequest buildCreateConsentRequest(String apiClientId) {
         return buildCreateDomesticStandingOrderConsentRequest(apiClientId, UUID.randomUUID().toString());
     }
 
     private static CreateDomesticStandingOrderConsentRequest buildCreateDomesticStandingOrderConsentRequest(String apiClientId, String idempotencyKey) {
         final CreateDomesticStandingOrderConsentRequest createDomesticStandingOrderConsentRequest = new CreateDomesticStandingOrderConsentRequest();
-        final OBWriteDomesticStandingOrderConsent5 paymentConsent = OBWriteDomesticStandingOrderConsentTestDataFactory.aValidOBWriteDomesticStandingOrderConsent5();
-        createDomesticStandingOrderConsentRequest.setConsentRequest(FRWriteDomesticStandingOrderConsentConverter.toFRWriteDomesticStandingOrderConsent(paymentConsent));
+        final FRWriteDomesticStandingOrderConsent frWriteDomesticStandingOrderConsent = createFRConsent();
+        createDomesticStandingOrderConsentRequest.setConsentRequest(frWriteDomesticStandingOrderConsent);
         createDomesticStandingOrderConsentRequest.setApiClientId(apiClientId);
         createDomesticStandingOrderConsentRequest.setIdempotencyKey(idempotencyKey);
         return createDomesticStandingOrderConsentRequest;
+    }
+
+    private static FRWriteDomesticStandingOrderConsent createFRConsent() {
+        final OBWriteDomesticStandingOrderConsent5 paymentConsent = OBWriteDomesticStandingOrderConsentTestDataFactory.aValidOBWriteDomesticStandingOrderConsent5();
+        final FRWriteDomesticStandingOrderConsent frWriteDomesticStandingOrderConsent = FRWriteDomesticStandingOrderConsentConverter.toFRWriteDomesticStandingOrderConsent(paymentConsent);
+        return frWriteDomesticStandingOrderConsent;
     }
 }

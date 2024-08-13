@@ -15,6 +15,8 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.payment.international;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
@@ -32,11 +34,14 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.forgerock.FRFrequenc
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 @Component
+@DependsOn({"internalConsentServices"})
 public class InternationalStandingOrderConsentDetailsService extends BasePaymentConsentDetailsService<InternationalStandingOrderConsentEntity, InternationalStandingOrderConsentDetails> {
 
-    public InternationalStandingOrderConsentDetailsService(ConsentService<InternationalStandingOrderConsentEntity, ?> consentService,
-                                                     ApiProviderConfiguration apiProviderConfiguration, ApiClientServiceClient apiClientService,
-                                                     AccountService accountService) {
+    public InternationalStandingOrderConsentDetailsService(
+            @Qualifier("internalInternationalStandingOrderConsentService") ConsentService<InternationalStandingOrderConsentEntity, ?> consentService,
+            ApiProviderConfiguration apiProviderConfiguration,
+            ApiClientServiceClient apiClientService,
+            AccountService accountService) {
 
         super(IntentType.PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT, InternationalStandingOrderConsentDetails::new, consentService,
                 apiProviderConfiguration, apiClientService, accountService);

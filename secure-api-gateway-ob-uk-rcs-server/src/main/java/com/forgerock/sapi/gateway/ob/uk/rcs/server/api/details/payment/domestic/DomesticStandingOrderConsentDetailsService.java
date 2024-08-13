@@ -15,6 +15,8 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.payment.domestic;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
@@ -29,13 +31,18 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.ApiProviderConf
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.domestic.DomesticStandingOrderConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.forgerock.FRFrequency;
-import com.forgerock.sapi.gateway.uk.common.shared.api.meta.forgerock.FRFrequencyType;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 @Component
+@DependsOn({"internalConsentServices"})
 public class DomesticStandingOrderConsentDetailsService extends BasePaymentConsentDetailsService<DomesticStandingOrderConsentEntity, DomesticStandingOrderConsentDetails> {
 
-    public DomesticStandingOrderConsentDetailsService(ConsentService<DomesticStandingOrderConsentEntity, ?> consentService, ApiProviderConfiguration apiProviderConfiguration, ApiClientServiceClient apiClientService, AccountService accountService) {
+    public DomesticStandingOrderConsentDetailsService(
+            @Qualifier("internalDomesticStandingOrderConsentService") ConsentService<DomesticStandingOrderConsentEntity, ?> consentService,
+            ApiProviderConfiguration apiProviderConfiguration,
+            ApiClientServiceClient apiClientService,
+            AccountService accountService) {
+
         super(IntentType.PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT, DomesticStandingOrderConsentDetails::new, consentService,
               apiProviderConfiguration, apiClientService, accountService);
     }

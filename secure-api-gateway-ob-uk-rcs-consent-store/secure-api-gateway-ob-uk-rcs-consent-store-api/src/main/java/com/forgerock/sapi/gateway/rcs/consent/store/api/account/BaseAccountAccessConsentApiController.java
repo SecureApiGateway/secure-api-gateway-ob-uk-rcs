@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.api.account;
 
-import java.util.Objects;
+import static java.util.Objects.requireNonNull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,9 +40,11 @@ public class BaseAccountAccessConsentApiController implements AccountAccessConse
     private final AccountAccessConsentService consentService;
     private final OBVersion obVersion;
 
-    public BaseAccountAccessConsentApiController(AccountAccessConsentService consentService, OBVersion obVersion) {
-        this.consentService = Objects.requireNonNull(consentService, "consentService must be provided");
-        this.obVersion = Objects.requireNonNull(obVersion, "obVersion must be provided");
+    public BaseAccountAccessConsentApiController(AccountAccessConsentService accountAccessConsentService, OBVersion obVersion) {
+        requireNonNull(accountAccessConsentService, "accountAccessConsentService must be provided");
+        requireNonNull(obVersion, "obVersion must be provided");
+        this.consentService = accountAccessConsentService;
+        this.obVersion = obVersion;
     }
 
     @Override

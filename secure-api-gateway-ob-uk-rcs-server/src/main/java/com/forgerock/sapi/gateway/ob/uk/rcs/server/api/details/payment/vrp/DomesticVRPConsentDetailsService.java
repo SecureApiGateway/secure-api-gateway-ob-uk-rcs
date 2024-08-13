@@ -15,6 +15,8 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.payment.vrp;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.vrp.FRDomesticVRPConsentData;
@@ -30,10 +32,13 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 @Component
+@DependsOn({"internalConsentServices"})
 public class DomesticVRPConsentDetailsService extends BasePaymentConsentDetailsService<DomesticVRPConsentEntity, DomesticVrpPaymentConsentDetails> {
 
-    public DomesticVRPConsentDetailsService(ConsentService<DomesticVRPConsentEntity, ?> consentService,
-            ApiProviderConfiguration apiProviderConfiguration, ApiClientServiceClient apiClientService,
+    public DomesticVRPConsentDetailsService(
+            @Qualifier("internalDomesticVRPConsentService") ConsentService<DomesticVRPConsentEntity, ?> consentService,
+            ApiProviderConfiguration apiProviderConfiguration,
+            ApiClientServiceClient apiClientService,
             AccountService accountService) {
 
         super(IntentType.DOMESTIC_VRP_PAYMENT_CONSENT, DomesticVrpPaymentConsentDetails::new, consentService,

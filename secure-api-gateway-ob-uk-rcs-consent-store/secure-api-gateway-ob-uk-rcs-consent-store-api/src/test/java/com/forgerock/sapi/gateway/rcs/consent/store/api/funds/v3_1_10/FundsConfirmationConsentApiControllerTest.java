@@ -18,13 +18,20 @@ package com.forgerock.sapi.gateway.rcs.consent.store.api.funds.v3_1_10;
 import java.util.UUID;
 
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.funds.FRFundsConfirmationConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.funds.FRFundsConfirmationConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.api.BaseControllerTest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.AuthoriseFundsConfirmationConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.CreateFundsConfirmationConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.FundsConfirmationConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.funds.FundsConfirmationConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessConsentStateModel;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.funds.FundsConfirmationConsentService;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import jakarta.annotation.PostConstruct;
 import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsent1;
@@ -36,6 +43,9 @@ import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsent1DataDebto
  */
 public class FundsConfirmationConsentApiControllerTest extends BaseControllerTest<FundsConfirmationConsent, CreateFundsConfirmationConsentRequest, AuthoriseFundsConfirmationConsentRequest> {
 
+    @Autowired
+    @Qualifier("internalFundsConfirmationConsentService")
+    private FundsConfirmationConsentService fundsConfirmationConsentService;
 
     protected FundsConfirmationConsentApiControllerTest() {
         super(FundsConfirmationConsent.class);
@@ -52,9 +62,25 @@ public class FundsConfirmationConsentApiControllerTest extends BaseControllerTes
     }
 
     @Override
+    protected String createConsentEntityForVersionValidation(String apiClient, OBVersion version) {
+        final FundsConfirmationConsentEntity consent = new FundsConfirmationConsentEntity();
+        consent.setApiClientId(apiClient);
+        consent.setRequestVersion(version);
+        consent.setRequestObj(createFRConsent());
+        consent.setStatus(AccountAccessConsentStateModel.AWAITING_AUTHORISATION);
+        return fundsConfirmationConsentService.createConsent(consent).getId();
+    }
+
+    @Override
     protected CreateFundsConfirmationConsentRequest buildCreateConsentRequest(String apiClientId) {
         final CreateFundsConfirmationConsentRequest createRequest = new CreateFundsConfirmationConsentRequest();
         createRequest.setApiClientId(apiClientId);
+        final FRFundsConfirmationConsent frFundsConfirmationConsent = createFRConsent();
+        createRequest.setConsentRequest(frFundsConfirmationConsent);
+        return createRequest;
+    }
+
+    private static FRFundsConfirmationConsent createFRConsent() {
         final OBFundsConfirmationConsent1 fundsConfirmationConsent1 = new OBFundsConfirmationConsent1();
         fundsConfirmationConsent1.setData(
                 new OBFundsConfirmationConsent1Data()
@@ -66,8 +92,7 @@ public class FundsConfirmationConsentApiControllerTest extends BaseControllerTes
                                         .name("Mrs B Smith")
                         )
         );
-        createRequest.setConsentRequest(FRFundsConfirmationConsentConverter.toFRFundsConfirmationConsent(fundsConfirmationConsent1));
-        return createRequest;
+        return FRFundsConfirmationConsentConverter.toFRFundsConfirmationConsent(fundsConfirmationConsent1);
     }
 
     @Override

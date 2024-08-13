@@ -19,8 +19,6 @@ import static com.forgerock.sapi.gateway.rcs.consent.store.api.ApiTestUtils.crea
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-import jakarta.annotation.PostConstruct;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,12 +31,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.servlet.View;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.BaseAuthoriseConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.BaseConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.BaseCreateConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
+import jakarta.annotation.PostConstruct;
 import uk.org.openbanking.datamodel.v3.error.OBError1;
 import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
 
@@ -90,6 +91,14 @@ public abstract class BaseControllerTest<T extends BaseConsent, C extends BaseCr
         return createConsent(apiClientId);
     }
 
+    /**
+     * Creates a ConsentEntity directly in the database for use in version validation testing
+     *
+     * @param apiClient the id of the apiClient that owns the consent
+     * @param version OBVersion of the ConsentEntity to create
+     * @return the consentId
+     */
+    protected abstract String createConsentEntityForVersionValidation(String apiClient, OBVersion version);
 
     protected T createConsent(C createConsentRequest) {
         final ResponseEntity<T> consentResponseEntity = makePostRequest(createConsentRequest, consentClass);
@@ -213,6 +222,39 @@ public abstract class BaseControllerTest<T extends BaseConsent, C extends BaseCr
         validateInvalidPermissionsErrorResponse(consent.getId(), rejectResponse);
     }
 
+    @Test
+    public void shouldAccessConsentCreatedUsingOlderApiVersion() {
+        final String consentId = createConsentEntityForVersionValidation(TEST_API_CLIENT_1, OBVersion.v3_1_9);
+
+        final ResponseEntity<T> getConsentResponseEntity = makeGetRequest(consentId, TEST_API_CLIENT_1, consentClass);
+
+        assertThat(getConsentResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(getConsentResponseEntity.getBody().getId()).isEqualTo(consentId);
+        assertThat(getConsentResponseEntity.getBody().getApiClientId()).isEqualTo(TEST_API_CLIENT_1);
+        assertThat(getConsentResponseEntity.getBody().getRequestVersion()).isEqualTo(OBVersion.v3_1_9);
+    }
+
+    @Test
+    public void failToAccessConsentCreatedUsingNewerApiVersion() {
+        final String consentId = createConsentEntityForVersionValidation(TEST_API_CLIENT_1, OBVersion.v4_0_0);
+
+        final ResponseEntity<OBErrorResponse1> errorResponseEntity = makeGetRequest(consentId,
+                TEST_API_CLIENT_1, OBErrorResponse1.class);
+
+        validateInvalidApiVersionErrorResponse(consentId, errorResponseEntity);
+    }
+
+    protected static void validateInvalidApiVersionErrorResponse(String consentId, ResponseEntity<OBErrorResponse1> errorResponse) {
+        assertThat(errorResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        final OBErrorResponse1 obErrorResponse1 = errorResponse.getBody();
+        assertThat(obErrorResponse1.getCode()).isEqualTo("OBRI.Consent.Store.Error");
+        assertThat(obErrorResponse1.getId()).isNotNull();
+        assertThat(obErrorResponse1.getErrors()).hasSize(1);
+        final OBError1 obError = obErrorResponse1.getErrors().get(0);
+        assertThat(obError.getErrorCode()).isEqualTo("INVALID_API_VERSION");
+        assertThat(obError.getMessage()).isEqualTo("INVALID_API_VERSION for consentId: " + consentId
+                + ", additional details: Consent created using API version: 4.0.0 cannot be accessed using version: 3.1.10");
+    }
 
     protected <T> ResponseEntity<T> makeGetRequest(String consentId, String apiClientId, Class<T> responseClass) {
         return restTemplate.exchange(apiBaseUrl + "/" + consentId,

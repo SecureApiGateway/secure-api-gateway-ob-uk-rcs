@@ -15,6 +15,8 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.payment.domestic;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
@@ -31,10 +33,13 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 @Component
+@DependsOn({"internalConsentServices"})
 public class DomesticPaymentConsentDetailsService extends BasePaymentConsentDetailsService<DomesticPaymentConsentEntity, DomesticPaymentConsentDetails> {
 
-    public DomesticPaymentConsentDetailsService(ConsentService<DomesticPaymentConsentEntity, ?> consentService,
-            ApiProviderConfiguration apiProviderConfiguration, ApiClientServiceClient apiClientService,
+    public DomesticPaymentConsentDetailsService(
+            @Qualifier("internalDomesticPaymentConsentService") ConsentService<DomesticPaymentConsentEntity, ?> consentService,
+            ApiProviderConfiguration apiProviderConfiguration,
+            ApiClientServiceClient apiClientService,
             AccountService accountService) {
 
         super(IntentType.PAYMENT_DOMESTIC_CONSENT, DomesticPaymentConsentDetails::new, consentService,

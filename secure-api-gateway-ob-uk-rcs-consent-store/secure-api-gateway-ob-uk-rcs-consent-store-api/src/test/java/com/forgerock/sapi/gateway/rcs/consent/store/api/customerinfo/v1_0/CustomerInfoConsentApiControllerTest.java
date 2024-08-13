@@ -15,23 +15,34 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.api.customerinfo.v1_0;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRReadConsent;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRReadConsentConverter;
 import com.forgerock.sapi.gateway.rcs.consent.store.api.BaseControllerTest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.customerinfo.v1_0.AuthoriseCustomerInfoConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.customerinfo.v1_0.CreateCustomerInfoConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.customerinfo.v1_0.CustomerInfoConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.customerinfo.CustomerInfoConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessConsentStateModel;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.customerinfo.CustomerInfoConsentService;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
+
+import jakarta.annotation.PostConstruct;
 import uk.org.openbanking.datamodel.v3.account.OBReadConsent1;
 import uk.org.openbanking.datamodel.v3.account.OBReadConsent1Data;
 import uk.org.openbanking.datamodel.v3.account.OBRisk2;
-
-import jakarta.annotation.PostConstruct;
 import uk.org.openbanking.datamodel.v3.common.OBExternalPermissions1Code;
-
-import java.util.List;
 
 public class CustomerInfoConsentApiControllerTest extends BaseControllerTest<CustomerInfoConsent, CreateCustomerInfoConsentRequest, AuthoriseCustomerInfoConsentRequest> {
 
+    @Autowired
+    @Qualifier("internalCustomerInfoConsentService")
+    private CustomerInfoConsentService customerInfoConsentService;
 
     protected CustomerInfoConsentApiControllerTest() {
         super(CustomerInfoConsent.class);
@@ -48,13 +59,27 @@ public class CustomerInfoConsentApiControllerTest extends BaseControllerTest<Cus
     }
 
     @Override
+    protected String createConsentEntityForVersionValidation(String apiClient, OBVersion version) {
+        final CustomerInfoConsentEntity consent = new CustomerInfoConsentEntity();
+        consent.setApiClientId(apiClient);
+        consent.setRequestVersion(version);
+        consent.setRequestObj(createFRConsent());
+        consent.setStatus(AccountAccessConsentStateModel.AWAITING_AUTHORISATION);
+        return customerInfoConsentService.createConsent(consent).getId();
+    }
+
+    @Override
     protected CreateCustomerInfoConsentRequest buildCreateConsentRequest(String apiClientId) {
         final CreateCustomerInfoConsentRequest createRequest = new CreateCustomerInfoConsentRequest();
         createRequest.setApiClientId(apiClientId);
-        createRequest.setConsentRequest(FRReadConsentConverter.toFRReadConsent(new OBReadConsent1()
-                .data(new OBReadConsent1Data().permissions(List.of(OBExternalPermissions1Code.READCUSTOMERINFO)))
-                .risk(new OBRisk2())));
+        createRequest.setConsentRequest(createFRConsent());
         return createRequest;
+    }
+
+    private static FRReadConsent createFRConsent() {
+        return FRReadConsentConverter.toFRReadConsent(new OBReadConsent1()
+                .data(new OBReadConsent1Data().permissions(List.of(OBExternalPermissions1Code.READCUSTOMERINFO)))
+                .risk(new OBRisk2()));
     }
 
     @Override

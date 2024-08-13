@@ -21,16 +21,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Path;
-
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRReadConsentConverter;
@@ -42,6 +39,9 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentServ
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentStateModel;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Path;
 import uk.org.openbanking.datamodel.v3.account.OBReadConsent1;
 import uk.org.openbanking.datamodel.v3.account.OBReadConsent1Data;
 import uk.org.openbanking.datamodel.v3.account.OBRisk2;
@@ -50,10 +50,11 @@ import uk.org.openbanking.datamodel.v3.common.OBExternalRequestStatus1Code;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
+@DependsOn({"internalConsentServices"})
 public class DefaultAccountAccessConsentServiceTest extends BaseConsentServiceTest<AccountAccessConsentEntity, AccountAccessAuthoriseConsentArgs> {
 
     @Autowired
-    private DefaultAccountAccessConsentService accountAccessConsentService;
+    private AccountAccessConsentService accountAccessConsentService;
 
     @Override
     protected ConsentStateModel getConsentStateModel() {
@@ -62,7 +63,7 @@ public class DefaultAccountAccessConsentServiceTest extends BaseConsentServiceTe
 
     @Override
     protected BaseConsentService<AccountAccessConsentEntity, AccountAccessAuthoriseConsentArgs> getConsentServiceToTest() {
-        return accountAccessConsentService;
+        return (BaseConsentService<AccountAccessConsentEntity, AccountAccessAuthoriseConsentArgs>) accountAccessConsentService;
     }
 
     @Override

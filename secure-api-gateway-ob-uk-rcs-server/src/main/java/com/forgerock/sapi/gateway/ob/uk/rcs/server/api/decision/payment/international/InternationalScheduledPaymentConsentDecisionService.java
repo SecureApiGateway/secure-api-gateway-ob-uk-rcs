@@ -15,6 +15,8 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.payment.international;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.payment.BasePaymentConsentDecisionService;
@@ -23,9 +25,11 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.interna
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 @Component
+@DependsOn({"internalConsentServices"})
 public class InternationalScheduledPaymentConsentDecisionService extends BasePaymentConsentDecisionService<InternationalScheduledPaymentConsentEntity> {
 
-    public InternationalScheduledPaymentConsentDecisionService(InternationalScheduledPaymentConsentService consentService) {
+    public InternationalScheduledPaymentConsentDecisionService(
+            @Qualifier("internalInternationalScheduledPaymentConsentService") InternationalScheduledPaymentConsentService consentService) {
         super(IntentType.PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT, consentService);
     }
 
