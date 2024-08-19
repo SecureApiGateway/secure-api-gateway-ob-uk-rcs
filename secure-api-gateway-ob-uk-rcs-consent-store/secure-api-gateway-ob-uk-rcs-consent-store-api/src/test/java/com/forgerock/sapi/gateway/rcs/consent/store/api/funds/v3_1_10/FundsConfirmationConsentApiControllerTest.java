@@ -33,7 +33,6 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.Account
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.funds.FundsConfirmationConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import jakarta.annotation.PostConstruct;
 import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsent1;
 import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsent1Data;
 import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsent1DataDebtorAccount;
@@ -51,9 +50,9 @@ public class FundsConfirmationConsentApiControllerTest extends BaseControllerTes
         super(FundsConfirmationConsent.class);
     }
 
-    @PostConstruct
-    public void postConstruct() {
-        apiBaseUrl = "http://localhost:" + port + "/consent/store/v3.1.10/" + getControllerEndpointName();
+    @Override
+    protected OBVersion getControllerVersion() {
+        return OBVersion.v3_1_10;
     }
 
     @Override

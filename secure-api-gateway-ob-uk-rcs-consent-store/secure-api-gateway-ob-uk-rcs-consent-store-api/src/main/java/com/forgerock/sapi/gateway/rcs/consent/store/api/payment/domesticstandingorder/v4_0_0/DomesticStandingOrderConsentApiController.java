@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domesticstandingorder.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domesticstandingorder.v4_0_0;
 
 import java.util.function.Supplier;
 
@@ -31,20 +31,20 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import io.swagger.annotations.Api;
 
 /**
- * Implementation of DomesticStandingOrderPaymentConsentApi for OBIE version 3.1.10
+ * Implementation of DomesticStandingOrderPaymentConsentApi for OBIE version 4.0.0
  */
-@Controller("v3.1.10DomesticStandingOrderConsentApiController")
-@Api(tags = {"v3.1.10"})
-@RequestMapping(value = "/consent/store/v3.1.10")
+@Controller("v4.0.0DomesticStandingOrderConsentApiController")
+@Api(tags = {"v4.0.0"})
+@RequestMapping(value = "/consent/store/v4.0.0")
 @DependsOn({"versionedConsentServices"})
 public class DomesticStandingOrderConsentApiController extends BaseDomesticStandingOrderConsentApiController {
 
     @Autowired
     public DomesticStandingOrderConsentApiController(
-            @Qualifier("v3.1.10DomesticStandingOrderConsentService") DomesticStandingOrderConsentService consentService,
+            @Qualifier("v4.0.0DomesticStandingOrderConsentService") DomesticStandingOrderConsentService consentService,
             Supplier<DateTime> idempotencyKeyExpirationSupplier) {
 
-        super(consentService, idempotencyKeyExpirationSupplier, OBVersion.v3_1_10);
+        super(consentService, idempotencyKeyExpirationSupplier, OBVersion.v4_0_0);
     }
 
 }

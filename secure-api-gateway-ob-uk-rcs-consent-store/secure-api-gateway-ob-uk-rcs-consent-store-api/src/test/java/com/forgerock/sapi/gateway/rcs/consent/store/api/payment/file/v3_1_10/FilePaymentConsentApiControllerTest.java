@@ -60,6 +60,11 @@ public class FilePaymentConsentApiControllerTest extends BasePaymentConsentApiCo
     }
 
     @Override
+    protected OBVersion getControllerVersion() {
+        return OBVersion.v3_1_10;
+    }
+
+    @Override
     protected String getControllerEndpointName() {
         return "file-payment-consents";
     }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticstandingorder.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticstandingorder.v4_0_0;
 
 import static com.forgerock.sapi.gateway.rcs.consent.store.client.TestConsentStoreClientConfigurationFactory.createConsentStoreClientConfiguration;
 
@@ -24,7 +24,7 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 class DomesticStandingOrderConsentStoreClientTest extends BaseDomesticStandingOrderConsentStoreClientTest {
 
     protected DomesticStandingOrderConsentStoreClientTest() {
-        super(OBVersion.v3_1_10);
+        super(OBVersion.v4_0_0);
     }
 
     @Override

@@ -46,6 +46,11 @@ public class DomesticScheduledPaymentConsentApiControllerTest extends BasePaymen
     }
 
     @Override
+    protected OBVersion getControllerVersion() {
+        return OBVersion.v3_1_10;
+    }
+
+    @Override
     protected String getControllerEndpointName() {
         return "domestic-scheduled-payment-consents";
     }
