@@ -34,7 +34,7 @@ import io.swagger.annotations.Api;
 public class CustomerInfoConsentApiController extends BaseCustomerInfoConsentApiController {
 
     @Autowired
-    public CustomerInfoConsentApiController(@Qualifier("v3.1.10CustomerInfoConsentService") CustomerInfoConsentService consentService) {
+    public CustomerInfoConsentApiController(@Qualifier("v1.0CustomerInfoConsentService") CustomerInfoConsentService consentService) {
         super(consentService, OBVersion.v1_0);
     }
 }

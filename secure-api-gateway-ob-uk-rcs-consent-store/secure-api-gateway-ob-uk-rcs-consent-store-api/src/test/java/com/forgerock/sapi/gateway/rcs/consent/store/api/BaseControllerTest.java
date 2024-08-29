@@ -225,6 +225,7 @@ public abstract class BaseControllerTest<T extends BaseConsent, C extends BaseCr
     }
 
     @Test
+    @EnabledIf("controllerVersionIsGreaterThanV3_1_9")
     public void shouldAccessConsentCreatedUsingOlderApiVersion() {
         final String consentId = createConsentEntityForVersionValidation(TEST_API_CLIENT_1, OBVersion.v3_1_9);
 
@@ -236,18 +237,23 @@ public abstract class BaseControllerTest<T extends BaseConsent, C extends BaseCr
         assertThat(getConsentResponseEntity.getBody().getRequestVersion()).isEqualTo(OBVersion.v3_1_9);
     }
 
+    boolean controllerVersionIsGreaterThanV3_1_9() {
+        return getControllerVersion().isAfterVersion(OBVersion.v3_1_9);
+    }
+
     /**
      * This test is only supported by controllers running version < v4.0.0, this is because it needs to create
      * a consent on a newer API version and v4.0.0 is the latest version that we support (at the time of writing).
      */
     @Test
-    @EnabledIf(value = "controllerVersionIsLessThanV4_0_0")
+    @EnabledIf("controllerVersionIsLessThanV4_0_0")
     public void failToAccessConsentCreatedUsingNewerApiVersion() {
         final OBVersion consentVersion = OBVersion.v4_0_0;
         final String consentId = createConsentEntityForVersionValidation(TEST_API_CLIENT_1, consentVersion);
 
         final ResponseEntity<OBErrorResponse1> errorResponseEntity = makeGetRequest(consentId,
-                TEST_API_CLIENT_1, OBErrorResponse1.class);
+                                                                                    TEST_API_CLIENT_1,
+                                                                                    OBErrorResponse1.class);
 
         validateInvalidApiVersionErrorResponse(consentId, consentVersion, getControllerVersion(), errorResponseEntity);
     }

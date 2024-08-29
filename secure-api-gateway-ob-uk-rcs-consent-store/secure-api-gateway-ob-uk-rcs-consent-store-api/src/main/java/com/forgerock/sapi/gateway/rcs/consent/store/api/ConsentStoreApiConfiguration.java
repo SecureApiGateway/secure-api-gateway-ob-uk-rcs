@@ -15,8 +15,11 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.api;
 
+import static com.forgerock.sapi.gateway.rcs.consent.store.repo.ConsentStoreConfiguration.getConsentServiceClassNameFromFactoryClass;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 import org.joda.time.DateTime;
@@ -28,9 +31,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.ConsentStoreConfiguration;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentServiceFactory;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.customerinfo.CustomerInfoConsentServiceFactory;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 @Configuration
@@ -70,19 +73,35 @@ public class ConsentStoreApiConfiguration {
         final List<OBVersion> apiVersions = supportedApiVersions();
         final List<BaseConsentService> consentServices = new ArrayList<>(consentServiceFactories.size() * apiVersions.size());
 
+        boolean customerInfoConsentServiceFactoryFound = false;
         for (ConsentServiceFactory consentServiceFactory : consentServiceFactories) {
+            // Customer Info is versioned differently to standard OB APIs, only a single version: v1.0 is supported.
+            if (consentServiceFactory instanceof CustomerInfoConsentServiceFactory) {
+                if (!customerInfoConsentServiceFactoryFound) {
+                    consentServices.add(createConsentServiceBean(beanFactory, consentServiceFactory, OBVersion.v1_0));
+                    customerInfoConsentServiceFactoryFound = true;
+                }
+                continue;
+            }
             for (OBVersion apiVersion : apiVersions) {
-                BaseConsentService apiConsentService = consentServiceFactory.createApiConsentService(apiVersion);
-                final String beanName = apiVersion.getCanonicalName() + ConsentStoreConfiguration.getConsentServiceClassNameFromFactoryClass(consentServiceFactory.getClass());
-
-                // initializeBean is important as it ensures that the services are proxied by Spring, which enables it to add
-                // the runtime support for validation annotations i.e. @Validated and @Valid (and any other annotations supported by Spring).
-                apiConsentService = (BaseConsentService) beanFactory.initializeBean(apiConsentService, beanName);
-                beanFactory.registerSingleton(beanName, apiConsentService);
-                beanFactory.autowireBean(apiConsentService);
-                consentServices.add(apiConsentService);
+                consentServices.add(createConsentServiceBean(beanFactory, consentServiceFactory, apiVersion));
             }
         }
+
         return consentServices;
+    }
+
+    private static BaseConsentService createConsentServiceBean(ConfigurableListableBeanFactory beanFactory,
+                                                               ConsentServiceFactory consentServiceFactory,
+                                                               OBVersion apiVersion) {
+        BaseConsentService apiConsentService = consentServiceFactory.createApiConsentService(apiVersion);
+        final String beanName = apiVersion.getCanonicalName() + getConsentServiceClassNameFromFactoryClass(consentServiceFactory.getClass());
+
+        // initializeBean is important as it ensures that the services are proxied by Spring, which enables it to add
+        // the runtime support for validation annotations i.e. @Validated and @Valid (and any other annotations supported by Spring).
+        apiConsentService = (BaseConsentService) beanFactory.initializeBean(apiConsentService, beanName);
+        beanFactory.registerSingleton(beanName, apiConsentService);
+        beanFactory.autowireBean(apiConsentService);
+        return apiConsentService;
     }
 }
