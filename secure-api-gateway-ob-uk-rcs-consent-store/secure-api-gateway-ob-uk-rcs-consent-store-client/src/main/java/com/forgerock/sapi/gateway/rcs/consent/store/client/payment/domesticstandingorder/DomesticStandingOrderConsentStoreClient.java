@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticstandingorder.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticstandingorder;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
@@ -23,7 +23,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticst
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticstandingorder.v3_1_10.DomesticStandingOrderConsent;
 
 /**
- * Client for interacting with com.forgerock.sapi.gateway.rcs.consent.store.api.v3_1_10.DomesticStandingOrderConsentApi
+ * Client for interacting with com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domesticstandingorder.DomesticStandingOrderConsentApi
  */
 public interface DomesticStandingOrderConsentStoreClient {
 

@@ -13,28 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.api.customerinfo.v1_0;
+package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domesticstandingorder.v4_0_0;
 
+import java.util.function.Supplier;
+
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.api.customerinfo.BaseCustomerInfoConsentApiController;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.customerinfo.CustomerInfoConsentService;
+import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domesticstandingorder.BaseDomesticStandingOrderConsentApiController;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DomesticStandingOrderConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import io.swagger.annotations.Api;
 
-@Controller
-@Api(tags = {"v1.0"})
-@RequestMapping(value = "/consent/store/v1.0")
+/**
+ * Implementation of DomesticStandingOrderPaymentConsentApi for OBIE version 4.0.0
+ */
+@Controller("v4.0.0DomesticStandingOrderConsentApiController")
+@Api(tags = {"v4.0.0"})
+@RequestMapping(value = "/consent/store/v4.0.0")
 @DependsOn({"versionedConsentServices"})
-public class CustomerInfoConsentApiController extends BaseCustomerInfoConsentApiController {
+public class DomesticStandingOrderConsentApiController extends BaseDomesticStandingOrderConsentApiController {
 
     @Autowired
-    public CustomerInfoConsentApiController(@Qualifier("v1.0CustomerInfoConsentService") CustomerInfoConsentService consentService) {
-        super(consentService, OBVersion.v1_0);
+    public DomesticStandingOrderConsentApiController(
+            @Qualifier("v4.0.0DomesticStandingOrderConsentService") DomesticStandingOrderConsentService consentService,
+            Supplier<DateTime> idempotencyKeyExpirationSupplier) {
+
+        super(consentService, idempotencyKeyExpirationSupplier, OBVersion.v4_0_0);
     }
+
 }

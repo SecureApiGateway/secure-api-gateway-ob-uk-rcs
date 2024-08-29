@@ -33,7 +33,7 @@ import io.swagger.annotations.Api;
 /**
  * Implementation of DomesticStandingOrderPaymentConsentApi for OBIE version 3.1.10
  */
-@Controller
+@Controller("v3.1.10DomesticStandingOrderConsentApiController")
 @Api(tags = {"v3.1.10"})
 @RequestMapping(value = "/consent/store/v3.1.10")
 @DependsOn({"versionedConsentServices"})

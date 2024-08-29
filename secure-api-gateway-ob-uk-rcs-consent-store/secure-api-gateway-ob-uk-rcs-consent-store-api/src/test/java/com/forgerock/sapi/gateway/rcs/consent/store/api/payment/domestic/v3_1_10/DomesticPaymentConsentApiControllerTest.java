@@ -46,6 +46,11 @@ public class DomesticPaymentConsentApiControllerTest extends BasePaymentConsentA
     }
 
     @Override
+    protected OBVersion getControllerVersion() {
+        return OBVersion.v3_1_10;
+    }
+
+    @Override
     protected String getControllerEndpointName() {
         return "domestic-payment-consents";
     }

@@ -50,6 +50,11 @@ public class InternationalScheduledPaymentConsentApiControllerTest extends BaseP
     }
 
     @Override
+    protected OBVersion getControllerVersion() {
+        return OBVersion.v3_1_10;
+    }
+
+    @Override
     protected String getControllerEndpointName() {
         return "international-scheduled-payment-consents";
     }

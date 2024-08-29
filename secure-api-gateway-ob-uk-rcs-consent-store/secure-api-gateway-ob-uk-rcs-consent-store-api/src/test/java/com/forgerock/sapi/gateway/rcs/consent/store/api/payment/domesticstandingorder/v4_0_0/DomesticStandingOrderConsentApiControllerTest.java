@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domesticstandingorder.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domesticstandingorder.v4_0_0;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domesticstandingorder.BaseDomesticStandingOrderConsentApiControllerTest;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
@@ -22,7 +22,7 @@ public class DomesticStandingOrderConsentApiControllerTest extends BaseDomesticS
 
     @Override
     protected OBVersion getControllerVersion() {
-        return OBVersion.v3_1_10;
+        return OBVersion.v4_0_0;
     }
 
 }

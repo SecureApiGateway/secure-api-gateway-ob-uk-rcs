@@ -32,7 +32,6 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.Account
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.customerinfo.CustomerInfoConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import jakarta.annotation.PostConstruct;
 import uk.org.openbanking.datamodel.v3.account.OBReadConsent1;
 import uk.org.openbanking.datamodel.v3.account.OBReadConsent1Data;
 import uk.org.openbanking.datamodel.v3.account.OBRisk2;
@@ -48,9 +47,9 @@ public class CustomerInfoConsentApiControllerTest extends BaseControllerTest<Cus
         super(CustomerInfoConsent.class);
     }
 
-    @PostConstruct
-    public void postConstruct() {
-        apiBaseUrl = "http://localhost:" + port + "/consent/store/v1.0/" + getControllerEndpointName();
+    @Override
+    protected OBVersion getControllerVersion() {
+        return OBVersion.v1_0;
     }
 
     @Override

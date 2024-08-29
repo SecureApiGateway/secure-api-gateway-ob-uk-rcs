@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticstandingorder.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticstandingorder.v4_0_0;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Component;
@@ -24,15 +24,15 @@ import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticstand
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 /**
- * v3.1.10 implementation of RestDomesticStandingOrderConsentStoreClient
+ * v4.0.0 implementation of RestDomesticStandingOrderConsentStoreClient
  */
-@Component("v3.1.10RestDomesticStandingOrderConsentStoreClient")
+@Component("v4.0.0RestDomesticStandingOrderConsentStoreClient")
 public class RestDomesticStandingOrderConsentStoreClient extends BaseRestDomesticStandingOrderConsentStoreClient {
 
     public RestDomesticStandingOrderConsentStoreClient(ConsentStoreClientConfiguration consentStoreClientConfiguration,
                                                        RestTemplateBuilder restTemplateBuilder,
                                                        ObjectMapper objectMapper) {
 
-        super(consentStoreClientConfiguration, restTemplateBuilder, objectMapper, OBVersion.v3_1_10);
+        super(consentStoreClientConfiguration, restTemplateBuilder, objectMapper, OBVersion.v4_0_0);
     }
 }
