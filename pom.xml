@@ -21,7 +21,7 @@
 
     <groupId>com.forgerock.sapi.gateway</groupId>
     <artifactId>secure-api-gateway-ob-uk-rcs</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
+    <version>3.2.0</version>
     <packaging>pom</packaging>
     <name>secure-api-gateway-ob-uk-rcs</name>
     <description>A UK Open Banking Remote Consent Service for the Secure API Gateway</description>
@@ -41,7 +41,7 @@
     </parent>
 
     <properties>
-        <uk.bom.version>4.0.0-SNAPSHOT</uk.bom.version>
+        <uk.bom.version>3.2.0</uk.bom.version>
     </properties>
 
     <dependencyManagement>
@@ -61,7 +61,7 @@
         <connection>scm:git:${project.scm.url}</connection>
         <developerConnection>scm:git:${project.scm.url}</developerConnection>
         <url>https://github.com/SecureApiGateway/secure-api-gateway-ob-uk-rcs.git</url>
-        <tag>HEAD</tag>
+        <tag>v3.2.0</tag>
     </scm>
 
     <repositories>
