@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v4_0_0;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.v4.payment.FRWriteDomesticConsent;
+
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.BasePaymentConsent;
 import org.springframework.validation.annotation.Validated;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticConsent;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.BasePaymentConsent;
-
 /**
- * OBIE Domestic Payment  Consent: https://openbankinguk.github.io/read-write-api-site3/v3.1.10/resources-and-data-models/pisp/domestic-payment-consents.html
+ * OBIE Domestic Payment Consent: https://openbankinguk.github.io/read-write-api-site3/v3.1.10/resources-and-data-models/pisp/domestic-payment-consents.html
  */
 @Validated
 public class DomesticPaymentConsent extends BasePaymentConsent<FRWriteDomesticConsent> {

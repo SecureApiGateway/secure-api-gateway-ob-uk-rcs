@@ -13,19 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic;
+package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.v4;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.domestic.DomesticPaymentConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.payment.PaymentConsentRepository;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.BasePaymentConsentService;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.v4.BasePaymentConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DomesticPaymentConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
-@Qualifier("v3.1.10DomesticPaymentConsentService")
+@Qualifier("v4.0.0DomesticPaymentConsentService")
 public class DefaultDomesticPaymentConsentService extends BasePaymentConsentService<DomesticPaymentConsentEntity, PaymentAuthoriseConsentArgs> implements DomesticPaymentConsentService {
 
     public DefaultDomesticPaymentConsentService(PaymentConsentRepository<DomesticPaymentConsentEntity> repo) {

@@ -13,37 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic.v4_0_0;
 
-import java.util.function.Supplier;
-
+import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic.BaseDomesticPaymentConsentApiController;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.v4.DefaultDomesticPaymentConsentService;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
+import io.swagger.annotations.Api;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import uk.org.openbanking.datamodel.v4.payment.OBPaymentConsentStatus;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic.BaseDomesticPaymentConsentApiController;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DomesticPaymentConsentService;
-import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
-
-import io.swagger.annotations.Api;
-import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
+import java.util.function.Supplier;
 
 /**
- * Implementation of DomesticPaymentConsentApi for OBIE version 3.1.10
+ * Implementation of DomesticPaymentConsentApi for OBIE version 4.0.0
  */
-@Controller("v3.1.10DomesticPaymentConsentApiController")
-@Api(tags = {"v3.1.10"})
-@RequestMapping(value = "/consent/store/v3.1.10")
+@Controller("v4.0.0DomesticPaymentConsentApiController")
+@Api(tags = {"v4.0.0"})
+@RequestMapping(value = "/consent/store/v4.0.0")
 @DependsOn({"versionedConsentServices"})
 public class DomesticPaymentConsentApiController extends BaseDomesticPaymentConsentApiController {
 
     @Autowired
-    public DomesticPaymentConsentApiController(@Qualifier("v3.1.10DomesticPaymentConsentService") DomesticPaymentConsentService consentService,
+    public DomesticPaymentConsentApiController(@Qualifier("v4.0.0DomesticPaymentConsentService") DefaultDomesticPaymentConsentService consentService,
                                                Supplier<DateTime> idempotencyKeyExpirationSupplier) {
-        super(consentService, idempotencyKeyExpirationSupplier, OBVersion.v3_1_10, OBPaymentConsentStatus.AWAITINGAUTHORISATION.getValue());
+        super(consentService, idempotencyKeyExpirationSupplier, OBVersion.v4_0_0, OBPaymentConsentStatus.AWAU.getValue());
     }
 
 }
