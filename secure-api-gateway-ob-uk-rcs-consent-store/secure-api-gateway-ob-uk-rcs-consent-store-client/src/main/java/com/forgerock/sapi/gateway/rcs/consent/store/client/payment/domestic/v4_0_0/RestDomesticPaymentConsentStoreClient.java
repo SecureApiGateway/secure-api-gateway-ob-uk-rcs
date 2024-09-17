@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domestic.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domestic.v4_0_0;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientConfiguration;
@@ -29,10 +29,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class RestDomesticPaymentConsentStoreClient extends BaseRestDomesticPaymentConsentStoreClient {
 
+
     @Autowired
     public RestDomesticPaymentConsentStoreClient(ConsentStoreClientConfiguration consentStoreClientConfiguration, RestTemplateBuilder restTemplateBuilder,
                                                  ObjectMapper objectMapper) {
-        super(consentStoreClientConfiguration, restTemplateBuilder, objectMapper, OBVersion.v3_1_10);
+        super(consentStoreClientConfiguration, restTemplateBuilder, objectMapper, OBVersion.v4_0_0);
     }
 
 }
