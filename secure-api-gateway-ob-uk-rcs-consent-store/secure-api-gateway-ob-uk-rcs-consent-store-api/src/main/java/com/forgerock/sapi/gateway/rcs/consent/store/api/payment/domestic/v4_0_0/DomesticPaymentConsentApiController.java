@@ -31,7 +31,7 @@ import java.util.function.Supplier;
 /**
  * Implementation of DomesticPaymentConsentApi for OBIE version 4.0.0
  */
-@Controller
+@Controller("v4.0.0DomesticPaymentConsentApiController")
 @Api(tags = {"v4.0.0"})
 @RequestMapping(value = "/consent/store/v4.0.0")
 @DependsOn({"versionedConsentServices"})
