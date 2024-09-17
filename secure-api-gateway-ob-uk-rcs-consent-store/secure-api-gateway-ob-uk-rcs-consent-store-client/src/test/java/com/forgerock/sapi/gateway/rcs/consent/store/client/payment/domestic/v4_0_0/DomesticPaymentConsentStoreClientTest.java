@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticscheduled.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domestic.v4_0_0;
 
-import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.PaymentConsentValidationHelpers.validateAuthorisedConsent;
-import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.PaymentConsentValidationHelpers.validateConsumedConsent;
-import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.PaymentConsentValidationHelpers.validateCreateConsentAgainstCreateRequest;
-import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.PaymentConsentValidationHelpers.validateRejectedConsent;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-
-import java.util.List;
-import java.util.UUID;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRChargeBearerType;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRWriteDomesticConsentConverter;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException.ErrorType;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.TestConsentStoreClientConfigurationFactory;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.AuthorisePaymentConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePaymentConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v4_0_0.CreateDomesticPaymentConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v4_0_0.DomesticPaymentConsent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,28 +37,21 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRChargeBearerType;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteDomesticScheduledConsentConverter;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException.ErrorType;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.TestConsentStoreClientConfigurationFactory;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.AuthorisePaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticscheduled.v3_1_10.CreateDomesticScheduledPaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticscheduled.v3_1_10.DomesticScheduledPaymentConsent;
-
 import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
-import uk.org.openbanking.testsupport.v3.payment.OBWriteDomesticScheduledConsentTestDataFactory;
+import uk.org.openbanking.testsupport.v4.payment.OBWriteDomesticConsentTestDataFactory;
+
+import java.util.List;
+import java.util.UUID;
+
+import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.PaymentConsentValidationHelpers.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"rcs.consent.store.api.baseUri= 'ignored'"})
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
-class DomesticScheduledPaymentConsentStoreClientTest {
+class DomesticPaymentConsentStoreClientTest {
 
     @LocalServerPort
     private int port;
@@ -67,24 +62,24 @@ class DomesticScheduledPaymentConsentStoreClientTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private RestDomesticScheduledPaymentConsentStoreClient apiClient;
+    private RestDomesticPaymentConsentStoreClient apiClient;
 
     @BeforeEach
     public void beforeEach() {
-        apiClient = new RestDomesticScheduledPaymentConsentStoreClient(TestConsentStoreClientConfigurationFactory.createConsentStoreClientConfiguration(port), restTemplateBuilder, objectMapper);
+        apiClient = new RestDomesticPaymentConsentStoreClient(TestConsentStoreClientConfigurationFactory.createConsentStoreClientConfiguration(port), restTemplateBuilder, objectMapper);
     }
 
     @Test
     void testCreateConsent() {
-        final CreateDomesticScheduledPaymentConsentRequest createConsentRequest = buildCreateConsentRequest();
-        final DomesticScheduledPaymentConsent consent = apiClient.createConsent(createConsentRequest);
+        final CreateDomesticPaymentConsentRequest createConsentRequest = buildCreateConsentRequest();
+        final DomesticPaymentConsent consent = apiClient.createConsent(createConsentRequest);
 
-        validateCreateConsentAgainstCreateRequest(consent, createConsentRequest);
+        validateCreateConsentAgainstCreateRequestV4(consent, createConsentRequest);
     }
 
     @Test
     void failsToCreateConsentWhenFieldIsMissing() {
-        final CreateDomesticScheduledPaymentConsentRequest requestMissingIdempotencyField = buildCreateConsentRequest();
+        final CreateDomesticPaymentConsentRequest requestMissingIdempotencyField = buildCreateConsentRequest();
         requestMissingIdempotencyField.setIdempotencyKey(null);
 
         final ConsentStoreClientException clientException = assertThrows(ConsentStoreClientException.class,
@@ -98,35 +93,36 @@ class DomesticScheduledPaymentConsentStoreClientTest {
 
     @Test
     void testAuthoriseConsent() {
-        final CreateDomesticScheduledPaymentConsentRequest createConsentRequest = buildCreateConsentRequest();
-        final DomesticScheduledPaymentConsent consent = apiClient.createConsent(createConsentRequest);
+        final CreateDomesticPaymentConsentRequest createConsentRequest = buildCreateConsentRequest();
+        final DomesticPaymentConsent consent = apiClient.createConsent(createConsentRequest);
 
         final AuthorisePaymentConsentRequest authRequest = buildAuthoriseConsentRequest(consent, "psu4test", "acc-12345");
-        final DomesticScheduledPaymentConsent authResponse = apiClient.authoriseConsent(authRequest);
+        final DomesticPaymentConsent authResponse = apiClient.authoriseConsent(authRequest);
 
         validateAuthorisedConsent(authResponse, authRequest, consent);
     }
 
     @Test
     void testRejectConsent() {
-        final CreateDomesticScheduledPaymentConsentRequest createConsentRequest = buildCreateConsentRequest();
-        final DomesticScheduledPaymentConsent consent = apiClient.createConsent(createConsentRequest);
+        final CreateDomesticPaymentConsentRequest createConsentRequest = buildCreateConsentRequest();
+        final DomesticPaymentConsent consent = apiClient.createConsent(createConsentRequest);
 
         final RejectConsentRequest rejectRequest = buildRejectRequest(consent, "joe.bloggs");
-        final DomesticScheduledPaymentConsent rejectedConsent = apiClient.rejectConsent(rejectRequest);
+        final DomesticPaymentConsent rejectedConsent = apiClient.rejectConsent(rejectRequest);
         validateRejectedConsent(rejectedConsent, rejectRequest, consent);
     }
 
     @Test
     void testConsumeConsent() {
-        final CreateDomesticScheduledPaymentConsentRequest createConsentRequest = buildCreateConsentRequest();
-        final DomesticScheduledPaymentConsent consent = apiClient.createConsent(createConsentRequest);
+        final CreateDomesticPaymentConsentRequest createConsentRequest = buildCreateConsentRequest();
+        final DomesticPaymentConsent consent = apiClient.createConsent(createConsentRequest);
 
         final AuthorisePaymentConsentRequest authRequest = buildAuthoriseConsentRequest(consent, "psu4test", "acc-12345");
-        final DomesticScheduledPaymentConsent authResponse = apiClient.authoriseConsent(authRequest);
+        final DomesticPaymentConsent authResponse = apiClient.authoriseConsent(authRequest);
+        // Using V3 model status because we are only translating the statuses on the output of the customer facing APIs
         assertThat(authResponse.getStatus()).isEqualTo(OBPaymentConsentStatus.AUTHORISED.toString());
 
-        final DomesticScheduledPaymentConsent consumedConsent = apiClient.consumeConsent(buildConsumeRequest(consent));
+        final DomesticPaymentConsent consumedConsent = apiClient.consumeConsent(buildConsumeRequest(consent));
         assertThat(consumedConsent.getStatus()).isEqualTo(OBPaymentConsentStatus.CONSUMED.toString());
 
         validateConsumedConsent(consumedConsent, authResponse);
@@ -134,26 +130,26 @@ class DomesticScheduledPaymentConsentStoreClientTest {
 
     @Test
     void testGetConsent() {
-        final CreateDomesticScheduledPaymentConsentRequest createConsentRequest = buildCreateConsentRequest();
-        final DomesticScheduledPaymentConsent consent = apiClient.createConsent(createConsentRequest);
-        final DomesticScheduledPaymentConsent getResponse = apiClient.getConsent(consent.getId(), consent.getApiClientId());
+        final CreateDomesticPaymentConsentRequest createConsentRequest = buildCreateConsentRequest();
+        final DomesticPaymentConsent consent = apiClient.createConsent(createConsentRequest);
+        final DomesticPaymentConsent getResponse = apiClient.getConsent(consent.getId(), consent.getApiClientId());
         assertThat(getResponse).usingRecursiveComparison().isEqualTo(consent);
     }
 
-    private static CreateDomesticScheduledPaymentConsentRequest buildCreateConsentRequest() {
-        final CreateDomesticScheduledPaymentConsentRequest createConsentRequest = new CreateDomesticScheduledPaymentConsentRequest();
+    private static CreateDomesticPaymentConsentRequest buildCreateConsentRequest() {
+        final CreateDomesticPaymentConsentRequest createConsentRequest = new CreateDomesticPaymentConsentRequest();
         createConsentRequest.setIdempotencyKey(UUID.randomUUID().toString());
         createConsentRequest.setApiClientId("test-client-1");
+        createConsentRequest.setConsentRequest(FRWriteDomesticConsentConverter.toFRWriteDomesticConsent(OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4()));
         createConsentRequest.setCharges(List.of(
                 FRCharge.builder().type("fee")
                         .chargeBearer(FRChargeBearerType.BORNEBYCREDITOR)
                         .amount(new FRAmount("1.25","GBP"))
                         .build()));
-        createConsentRequest.setConsentRequest(FRWriteDomesticScheduledConsentConverter.toFRWriteDomesticScheduledConsent(OBWriteDomesticScheduledConsentTestDataFactory.aValidOBWriteDomesticScheduledConsent4()));
         return createConsentRequest;
     }
 
-    private static AuthorisePaymentConsentRequest buildAuthoriseConsentRequest(DomesticScheduledPaymentConsent consent, String resourceOwnerId, String authorisedDebtorAccountId) {
+    private static AuthorisePaymentConsentRequest buildAuthoriseConsentRequest(DomesticPaymentConsent consent, String resourceOwnerId, String authorisedDebtorAccountId) {
         final AuthorisePaymentConsentRequest authRequest = new AuthorisePaymentConsentRequest();
         authRequest.setAuthorisedDebtorAccountId(authorisedDebtorAccountId);
         authRequest.setConsentId(consent.getId());
@@ -162,7 +158,7 @@ class DomesticScheduledPaymentConsentStoreClientTest {
         return authRequest;
     }
 
-    private static RejectConsentRequest buildRejectRequest(DomesticScheduledPaymentConsent consent, String resourceOwnerId) {
+    private static RejectConsentRequest buildRejectRequest(DomesticPaymentConsent consent, String resourceOwnerId) {
         final RejectConsentRequest rejectRequest = new RejectConsentRequest();
         rejectRequest.setApiClientId(consent.getApiClientId());
         rejectRequest.setConsentId(consent.getId());
@@ -170,7 +166,7 @@ class DomesticScheduledPaymentConsentStoreClientTest {
         return rejectRequest;
     }
 
-    private static ConsumePaymentConsentRequest buildConsumeRequest(DomesticScheduledPaymentConsent consent) {
+    private static ConsumePaymentConsentRequest buildConsumeRequest(DomesticPaymentConsent consent) {
         final ConsumePaymentConsentRequest consumeRequest = new ConsumePaymentConsentRequest();
         consumeRequest.setApiClientId(consent.getApiClientId());
         consumeRequest.setConsentId((consent.getId()));

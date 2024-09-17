@@ -132,4 +132,9 @@ public class BasePaymentConsentDetailsServiceTest {
         given(accountService.getAccountWithBalanceByIdentifiers(eq(testUser.getId()), eq(debtorAccount.getIdentification()),
                 eq(debtorAccount.getSchemeName()))).willReturn(accountWithBalance);
     }
+
+    protected void mockAccountServiceGetByIdentifiersResponseV4(uk.org.openbanking.datamodel.v4.payment.OBWriteDomestic2DataInitiationDebtorAccount debtorAccount, FRAccountWithBalance accountWithBalance) {
+        given(accountService.getAccountWithBalanceByIdentifiers(eq(testUser.getId()), eq(debtorAccount.getIdentification()),
+                eq(debtorAccount.getSchemeName()))).willReturn(accountWithBalance);
+    }
 }

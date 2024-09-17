@@ -30,7 +30,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteFileConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteFileConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteFileConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.BasePaymentConsentApiControllerTest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
@@ -46,7 +46,7 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import uk.org.openbanking.datamodel.v3.error.OBError1;
 import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsent3;
-import uk.org.openbanking.testsupport.payment.OBWriteFileConsentTestDataFactory;
+import uk.org.openbanking.testsupport.v3.payment.OBWriteFileConsentTestDataFactory;
 
 
 public class FilePaymentConsentApiControllerTest extends BasePaymentConsentApiControllerTest<FilePaymentConsent, CreateFilePaymentConsentRequest> {

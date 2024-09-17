@@ -27,7 +27,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRChargeBearerType;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteInternationalConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.BasePaymentConsentWithExchangeRateInformationApiControllerTest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.international.v3_1_10.CreateInternationalPaymentConsentRequest;
@@ -38,7 +38,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.interna
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalConsent5;
-import uk.org.openbanking.testsupport.payment.OBWriteInternationalConsentTestDataFactory;
+import uk.org.openbanking.testsupport.v3.payment.OBWriteInternationalConsentTestDataFactory;
 
 public class InternationalPaymentConsentApiControllerTest extends BasePaymentConsentWithExchangeRateInformationApiControllerTest<InternationalPaymentConsent, CreateInternationalPaymentConsentRequest> {
 

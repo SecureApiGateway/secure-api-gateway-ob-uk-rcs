@@ -15,16 +15,6 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic;
 
-import static java.util.Objects.requireNonNull;
-
-import java.util.function.Supplier;
-
-import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.AuthorisePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePaymentConsentRequest;
@@ -34,8 +24,16 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.domestic
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DomesticPaymentConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
-
+import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
+
+import java.util.function.Supplier;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Base implementation of {@link DomesticPaymentConsentApi} containing the logic that is common across versions.
@@ -63,18 +61,18 @@ public class BaseDomesticPaymentConsentApiController implements DomesticPaymentC
 
     @Override
     public ResponseEntity<DomesticPaymentConsent> createConsent(CreateDomesticPaymentConsentRequest request) {
-        logger.info("Attempting to createConsent: {}", request);
+        logger.info("Attempting to createConsent: {} for version: {}", request, obVersion);
         final DomesticPaymentConsentEntity domesticPaymentConsent = new DomesticPaymentConsentEntity();
         domesticPaymentConsent.setRequestVersion(obVersion);
         domesticPaymentConsent.setApiClientId(request.getApiClientId());
         domesticPaymentConsent.setRequestObj(request.getConsentRequest());
-        domesticPaymentConsent.setStatus(OBPaymentConsentStatus.AWAITINGAUTHORISATION.toString());
+        domesticPaymentConsent.setStatus(OBPaymentConsentStatus.AWAITINGAUTHORISATION.getValue());
         domesticPaymentConsent.setCharges(request.getCharges());
         domesticPaymentConsent.setIdempotencyKey(request.getIdempotencyKey());
         domesticPaymentConsent.setIdempotencyKeyExpiration(idempotencyKeyExpirationSupplier.get());
         final DomesticPaymentConsentEntity persistedEntity = consentService.createConsent(domesticPaymentConsent);
         logger.info("Consent created with id: {}", persistedEntity.getId());
-
+        logger.info("Consent object persisted: {}", persistedEntity);
         return new ResponseEntity<>(convertEntityToDto(persistedEntity), HttpStatus.CREATED);
     }
 

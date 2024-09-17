@@ -18,7 +18,7 @@ package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.intern
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRExchangeRateInformation;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRExchangeRateConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRExchangeRateConverter;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.international.BasePaymentConsentEntityWithExchangeRateInformation;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.BasePaymentConsentServiceTest;
 
