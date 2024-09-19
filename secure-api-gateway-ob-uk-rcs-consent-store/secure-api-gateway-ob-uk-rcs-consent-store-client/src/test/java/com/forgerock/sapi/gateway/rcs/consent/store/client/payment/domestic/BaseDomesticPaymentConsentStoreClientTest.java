@@ -16,6 +16,10 @@
 package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domestic;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRChargeBearerType;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConsentConverter;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException.ErrorType;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
@@ -34,7 +38,9 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
+import uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory;
 
+import java.util.List;
 import java.util.UUID;
 
 import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.PaymentConsentValidationHelpers.*;
@@ -141,7 +147,12 @@ public abstract class BaseDomesticPaymentConsentStoreClientTest {
         final CreateDomesticPaymentConsentRequest createConsentRequest = new CreateDomesticPaymentConsentRequest();
         createConsentRequest.setIdempotencyKey(UUID.randomUUID().toString());
         createConsentRequest.setApiClientId("test-client-1");
-
+        createConsentRequest.setConsentRequest(FRWriteDomesticConsentConverter.toFRWriteDomesticConsent(OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4()));
+        createConsentRequest.setCharges(List.of(
+                FRCharge.builder().type("fee")
+                        .chargeBearer(FRChargeBearerType.BORNEBYCREDITOR)
+                        .amount(new FRAmount("1.25","GBP"))
+                        .build()));
         return createConsentRequest;
     }
 
