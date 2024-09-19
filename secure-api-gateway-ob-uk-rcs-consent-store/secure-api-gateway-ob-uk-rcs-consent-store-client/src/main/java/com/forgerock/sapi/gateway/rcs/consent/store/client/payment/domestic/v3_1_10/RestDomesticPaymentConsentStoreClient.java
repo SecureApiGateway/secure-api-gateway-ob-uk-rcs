@@ -24,9 +24,9 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Component;
 
 /**
- * Implementation of the DomesticPaymentConsentStoreClient which makes REST calls over HTTP
+ * Implementation of the RestDomesticPaymentConsentStoreClient which makes REST calls over HTTP
  */
-@Component
+@Component("v3.1.10RestDomesticPaymentConsentStoreClient")
 public class RestDomesticPaymentConsentStoreClient extends BaseRestDomesticPaymentConsentStoreClient {
 
     @Autowired
