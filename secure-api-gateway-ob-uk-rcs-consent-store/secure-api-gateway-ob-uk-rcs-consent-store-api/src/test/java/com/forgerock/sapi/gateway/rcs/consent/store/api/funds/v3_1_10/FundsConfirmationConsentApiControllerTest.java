@@ -17,6 +17,7 @@ package com.forgerock.sapi.gateway.rcs.consent.store.api.funds.v3_1_10;
 
 import java.util.UUID;
 
+import com.forgerock.sapi.gateway.rcs.consent.store.api.funds.BaseFundsConfirmationConsentApiControllerTest;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -40,82 +41,11 @@ import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsent1DataDebto
 /**
  * Test for {@link FundsConfirmationConsentApiController}
  */
-public class FundsConfirmationConsentApiControllerTest extends BaseControllerTest<FundsConfirmationConsent, CreateFundsConfirmationConsentRequest, AuthoriseFundsConfirmationConsentRequest> {
-
-    @Autowired
-    @Qualifier("internalFundsConfirmationConsentService")
-    private FundsConfirmationConsentService fundsConfirmationConsentService;
-
-    protected FundsConfirmationConsentApiControllerTest() {
-        super(FundsConfirmationConsent.class);
-    }
+public class FundsConfirmationConsentApiControllerTest extends BaseFundsConfirmationConsentApiControllerTest {
 
     @Override
     protected OBVersion getControllerVersion() {
         return OBVersion.v3_1_10;
     }
 
-    @Override
-    protected String getControllerEndpointName() {
-        return "funds-confirmation-consents";
-    }
-
-    @Override
-    protected String createConsentEntityForVersionValidation(String apiClient, OBVersion version) {
-        final FundsConfirmationConsentEntity consent = new FundsConfirmationConsentEntity();
-        consent.setApiClientId(apiClient);
-        consent.setRequestVersion(version);
-        consent.setRequestObj(createFRConsent());
-        consent.setStatus(AccountAccessConsentStateModel.AWAITING_AUTHORISATION);
-        return fundsConfirmationConsentService.createConsent(consent).getId();
-    }
-
-    @Override
-    protected CreateFundsConfirmationConsentRequest buildCreateConsentRequest(String apiClientId) {
-        final CreateFundsConfirmationConsentRequest createRequest = new CreateFundsConfirmationConsentRequest();
-        createRequest.setApiClientId(apiClientId);
-        final FRFundsConfirmationConsent frFundsConfirmationConsent = createFRConsent();
-        createRequest.setConsentRequest(frFundsConfirmationConsent);
-        return createRequest;
-    }
-
-    private static FRFundsConfirmationConsent createFRConsent() {
-        final OBFundsConfirmationConsent1 fundsConfirmationConsent1 = new OBFundsConfirmationConsent1();
-        fundsConfirmationConsent1.setData(
-                new OBFundsConfirmationConsent1Data()
-                        .expirationDateTime(DateTime.now().plusDays(30))
-                        .debtorAccount(
-                                new OBFundsConfirmationConsent1DataDebtorAccount()
-                                        .schemeName("UK.OBIE.SortCodeAccountNumber")
-                                        .identification("40400422390112")
-                                        .name("Mrs B Smith")
-                        )
-        );
-        return FRFundsConfirmationConsentConverter.toFRFundsConfirmationConsent(fundsConfirmationConsent1);
-    }
-
-    @Override
-    protected void validateCreateConsentAgainstCreateRequest(FundsConfirmationConsent consent, CreateFundsConfirmationConsentRequest createConsentRequest) {
-        FundsConfirmationConsentValidationHelpers.validateCreateConsentAgainstCreateRequest(consent, createConsentRequest);
-    }
-
-    @Override
-    protected AuthoriseFundsConfirmationConsentRequest buildAuthoriseConsentRequest(FundsConfirmationConsent consent, String resourceOwnerId) {
-        AuthoriseFundsConfirmationConsentRequest authoriseFundsConfirmationConsentRequest = new AuthoriseFundsConfirmationConsentRequest();
-        authoriseFundsConfirmationConsentRequest.setConsentId(consent.getId());
-        authoriseFundsConfirmationConsentRequest.setApiClientId(consent.getApiClientId());
-        authoriseFundsConfirmationConsentRequest.setResourceOwnerId(resourceOwnerId);
-        authoriseFundsConfirmationConsentRequest.setAuthorisedDebtorAccountId(UUID.randomUUID().toString());
-        return authoriseFundsConfirmationConsentRequest;
-    }
-
-    @Override
-    protected void validateAuthorisedConsent(FundsConfirmationConsent authorisedConsent, AuthoriseFundsConfirmationConsentRequest authoriseConsentReq, FundsConfirmationConsent originalConsent) {
-        FundsConfirmationConsentValidationHelpers.validateAuthorisedConsent(authorisedConsent, authoriseConsentReq, originalConsent);
-    }
-
-    @Override
-    protected void validateRejectedConsent(FundsConfirmationConsent rejectedConsent, RejectConsentRequest rejectConsentRequest, FundsConfirmationConsent originalConsent) {
-        FundsConfirmationConsentValidationHelpers.validateRejectedConsent(rejectedConsent, rejectConsentRequest, originalConsent);
-    }
 }

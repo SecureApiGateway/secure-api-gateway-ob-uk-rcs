@@ -26,7 +26,7 @@ public abstract class BasePaymentConsentWithExchangeRateInformationApiController
 
     @Override
     protected void validateCreateConsentAgainstCreateRequest(T consent, C createConsentRequest) {
-        PaymentConsentWithExchangeRateInformationValidationHelpers.validateCreateConsentAgainstCreateRequest(consent, createConsentRequest);
+        PaymentConsentWithExchangeRateInformationValidationHelpers.validateCreateConsentAgainstCreateRequest(consent, createConsentRequest, getControllerVersion());
     }
 
 }

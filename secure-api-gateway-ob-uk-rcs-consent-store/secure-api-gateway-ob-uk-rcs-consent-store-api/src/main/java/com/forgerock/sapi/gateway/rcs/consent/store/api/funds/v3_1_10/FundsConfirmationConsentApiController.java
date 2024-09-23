@@ -27,7 +27,7 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import io.swagger.annotations.Api;
 
-@Controller
+@Controller("v3.1.10FundsConfirmationConsentApiController")
 @Api(tags = {"v3.1.10"})
 @RequestMapping(value = "/consent/store/v3.1.10")
 @DependsOn({"versionedConsentServices"})

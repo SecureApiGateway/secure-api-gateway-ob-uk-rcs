@@ -33,7 +33,7 @@ import io.swagger.annotations.Api;
 /**
  * Implementation of DomesticVRPConsentApi for OBIE version 3.1.10
  */
-@Controller
+@Controller("v3.1.10DomesticVRPConsentApiController")
 @Api(tags = {"v3.1.10"})
 @RequestMapping(value = "/consent/store/v3.1.10")
 @DependsOn({"versionedConsentServices"})

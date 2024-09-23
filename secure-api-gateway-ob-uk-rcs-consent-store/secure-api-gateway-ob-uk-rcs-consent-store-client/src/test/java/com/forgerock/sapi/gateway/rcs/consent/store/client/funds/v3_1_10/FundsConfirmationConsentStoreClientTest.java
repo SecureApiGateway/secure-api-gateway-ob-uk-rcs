@@ -15,9 +15,9 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.client.funds.v3_1_10;
 
-import static com.forgerock.sapi.gateway.rcs.consent.store.api.funds.v3_1_10.FundsConfirmationConsentValidationHelpers.validateAuthorisedConsent;
-import static com.forgerock.sapi.gateway.rcs.consent.store.api.funds.v3_1_10.FundsConfirmationConsentValidationHelpers.validateCreateConsentAgainstCreateRequest;
-import static com.forgerock.sapi.gateway.rcs.consent.store.api.funds.v3_1_10.FundsConfirmationConsentValidationHelpers.validateRejectedConsent;
+import static com.forgerock.sapi.gateway.rcs.consent.store.api.funds.FundsConfirmationConsentValidationHelpers.validateAuthorisedConsent;
+import static com.forgerock.sapi.gateway.rcs.consent.store.api.funds.FundsConfirmationConsentValidationHelpers.validateCreateConsentAgainstCreateRequest;
+import static com.forgerock.sapi.gateway.rcs.consent.store.api.funds.FundsConfirmationConsentValidationHelpers.validateRejectedConsent;
 import static com.forgerock.sapi.gateway.rcs.consent.store.client.TestConsentStoreClientConfigurationFactory.createConsentStoreClientConfiguration;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -25,6 +25,12 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 import java.util.UUID;
 
+import com.forgerock.sapi.gateway.rcs.consent.store.client.funds.BaseFundsConfirmationConsentStoreClientTest;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.funds.BaseRestFundsConfirmationConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.funds.FundsConfirmationConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticstandingorder.BaseRestDomesticStandingOrderConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticstandingorder.v3_1_10.RestDomesticStandingOrderConsentStoreClient;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,120 +57,18 @@ import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsent1DataDebto
 /**
  * Test for {@link FundsConfirmationConsentStoreClient}
  */
-@SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"rcs.consent.store.api.baseUri= 'ignored'"})
-@ActiveProfiles("test")
-@ExtendWith(SpringExtension.class)
-public class FundsConfirmationConsentStoreClientTest {
 
-    private static final String API_CLIENT_ID = UUID.randomUUID().toString();
-    private static final String RESOURCE_OWNER_ID = UUID.randomUUID().toString();
+class FundsConfirmationConsentStoreClientTest extends BaseFundsConfirmationConsentStoreClientTest {
 
-    @LocalServerPort
-    private int port;
-
-    @Autowired
-    private RestTemplateBuilder restTemplateBuilder;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    private RestFundsConfirmationConsentStoreClient storeApiClient;
-
-    @BeforeEach
-    public void beforeEach() {
-        storeApiClient = new RestFundsConfirmationConsentStoreClient(createConsentStoreClientConfiguration(port), restTemplateBuilder, objectMapper);
+    protected FundsConfirmationConsentStoreClientTest() {
+        super(OBVersion.v3_1_10);
     }
 
-    @Test
-    void testCreateConsent() {
-        final CreateFundsConfirmationConsentRequest createConsentRequest = buildCreateConsentRequest();
-        final FundsConfirmationConsent consent = storeApiClient.createConsent(createConsentRequest);
-
-        validateCreateConsentAgainstCreateRequest(consent, createConsentRequest);
+    @Override
+    protected BaseRestFundsConfirmationConsentStoreClient createApiClient() {
+        return new RestFundsConfirmationConsentStoreClient(createConsentStoreClientConfiguration(port),
+                restTemplateBuilder,
+                objectMapper);
     }
 
-    @Test
-    void failsToCreateConsentWhenFieldIsMissing() {
-        final CreateFundsConfirmationConsentRequest requestMissingConsentReqField = new CreateFundsConfirmationConsentRequest();
-        requestMissingConsentReqField.setApiClientId(API_CLIENT_ID);
-
-        final ConsentStoreClientException clientException = assertThrows(ConsentStoreClientException.class,
-                () -> storeApiClient.createConsent(requestMissingConsentReqField));
-        assertThat(clientException.getErrorType()).isEqualTo(ConsentStoreClientException.ErrorType.BAD_REQUEST);
-        assertThat(clientException.getObError1()).isNotNull();
-        assertThat(clientException.getObError1().getErrorCode()).isEqualTo("UK.OBIE.Field.Invalid");
-        assertThat(clientException.getObError1().getMessage()).isEqualTo("The field received is invalid. Reason 'must not be null'");
-        assertThat(clientException.getObError1().getPath()).isEqualTo("consentRequest");
-    }
-
-    @Test
-    void testAuthoriseConsent() {
-        final CreateFundsConfirmationConsentRequest createConsentRequest = buildCreateConsentRequest();
-        final FundsConfirmationConsent consent = storeApiClient.createConsent(createConsentRequest);
-
-        final AuthoriseFundsConfirmationConsentRequest authRequest = buildAuthoriseConsentRequest(consent);
-        final FundsConfirmationConsent authResponse = storeApiClient.authoriseConsent(authRequest);
-
-        validateAuthorisedConsent(authResponse, authRequest, consent);
-    }
-
-    @Test
-    void testRejectConsent() {
-        final CreateFundsConfirmationConsentRequest createConsentRequest = buildCreateConsentRequest();
-        final FundsConfirmationConsent consent = storeApiClient.createConsent(createConsentRequest);
-
-        final RejectConsentRequest rejectRequest = buildRejectRequest(consent);
-        final FundsConfirmationConsent rejectedConsent = storeApiClient.rejectConsent(rejectRequest);
-        validateRejectedConsent(rejectedConsent, rejectRequest, consent);
-    }
-
-    @Test
-    void testGetConsent() {
-        final CreateFundsConfirmationConsentRequest createConsentRequest = buildCreateConsentRequest();
-        final FundsConfirmationConsent consent = storeApiClient.createConsent(createConsentRequest);
-        final FundsConfirmationConsent getResponse = storeApiClient.getConsent(consent.getId(), consent.getApiClientId());
-        assertThat(getResponse).usingRecursiveComparison().isEqualTo(consent);
-    }
-
-    @Test
-    void testDeleteConsent() {
-        final CreateFundsConfirmationConsentRequest createConsentRequest = buildCreateConsentRequest();
-        final FundsConfirmationConsent consent = storeApiClient.createConsent(createConsentRequest);
-        storeApiClient.deleteConsent(consent.getId(), consent.getApiClientId());
-    }
-
-    private static CreateFundsConfirmationConsentRequest buildCreateConsentRequest() {
-        final CreateFundsConfirmationConsentRequest createConsentRequest = new CreateFundsConfirmationConsentRequest();
-        createConsentRequest.setApiClientId(API_CLIENT_ID);
-        final OBFundsConfirmationConsent1 fundsConfirmationConsent1 = new OBFundsConfirmationConsent1();
-        fundsConfirmationConsent1.setData(
-                new OBFundsConfirmationConsent1Data()
-                        .expirationDateTime(DateTime.now().plusDays(30))
-                        .debtorAccount(
-                                new OBFundsConfirmationConsent1DataDebtorAccount()
-                                        .schemeName("UK.OBIE.SortCodeAccountNumber")
-                                        .identification("40400422390112")
-                                        .name("Mrs B Smith")
-                        )
-        );
-        createConsentRequest.setConsentRequest(FRFundsConfirmationConsentConverter.toFRFundsConfirmationConsent(fundsConfirmationConsent1));
-        return createConsentRequest;
-    }
-
-    private static AuthoriseFundsConfirmationConsentRequest buildAuthoriseConsentRequest(FundsConfirmationConsent consent) {
-        final AuthoriseFundsConfirmationConsentRequest authRequest = new AuthoriseFundsConfirmationConsentRequest();
-        authRequest.setConsentId(consent.getId());
-        authRequest.setResourceOwnerId(RESOURCE_OWNER_ID);
-        authRequest.setApiClientId(consent.getApiClientId());
-        authRequest.setAuthorisedDebtorAccountId(UUID.randomUUID().toString());
-        return authRequest;
-    }
-
-    private static RejectConsentRequest buildRejectRequest(FundsConfirmationConsent consent) {
-        final RejectConsentRequest rejectRequest = new RejectConsentRequest();
-        rejectRequest.setApiClientId(consent.getApiClientId());
-        rejectRequest.setConsentId(consent.getId());
-        rejectRequest.setResourceOwnerId(RESOURCE_OWNER_ID);
-        return rejectRequest;
-    }
 }
