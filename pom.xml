@@ -21,7 +21,7 @@
 
     <groupId>com.forgerock.sapi.gateway</groupId>
     <artifactId>secure-api-gateway-ob-uk-rcs</artifactId>
-    <version>3.2.1-SNAPSHOT</version>
+    <version>${revision}</version>
     <packaging>pom</packaging>
     <name>secure-api-gateway-ob-uk-rcs</name>
     <description>A UK Open Banking Remote Consent Service for the Secure API Gateway</description>
@@ -42,6 +42,7 @@
 
     <properties>
         <uk.bom.version>3.2.0</uk.bom.version>
+        <revision>3.2.1-SNAPSHOT</revision>
     </properties>
 
     <dependencyManagement>
