@@ -27,23 +27,35 @@
     <description>A UK Open Banking Remote Consent Service for the Secure API Gateway</description>
     <url>https://github.com/SecureApiGateway/secure-api-gateway-ob-uk-rcs.git</url>
 
-    <modules>
-        <module>secure-api-gateway-ob-uk-rcs-api</module>
-        <module>secure-api-gateway-ob-uk-rcs-server</module>
-        <module>secure-api-gateway-ob-uk-rcs-cloud-client</module>
-        <module>secure-api-gateway-ob-uk-rcs-consent-store</module>
-    </modules>
-
-    <parent>
-        <groupId>com.forgerock.sapi.gateway</groupId>
-        <artifactId>secure-api-gateway-parent</artifactId>
-        <version>3.2.0</version>
-    </parent>
-
-    <properties>
-        <uk.bom.version>3.2.0</uk.bom.version>
-        <revision>3.2.1-SNAPSHOT</revision>
-    </properties>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>${flatten-maven-plugin.version}</version>
+                <configuration>
+                    <updatePomFile>true</updatePomFile>
+                    <flattenMode>bom</flattenMode>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
     <dependencyManagement>
         <dependencies>
@@ -58,12 +70,26 @@
         </dependencies>
     </dependencyManagement>
 
-    <scm>
-        <connection>scm:git:${project.scm.url}</connection>
-        <developerConnection>scm:git:${project.scm.url}</developerConnection>
-        <url>https://github.com/SecureApiGateway/secure-api-gateway-ob-uk-rcs.git</url>
-        <tag>HEAD</tag>
-    </scm>
+    <modules>
+        <module>secure-api-gateway-ob-uk-rcs-api</module>
+        <module>secure-api-gateway-ob-uk-rcs-server</module>
+        <module>secure-api-gateway-ob-uk-rcs-cloud-client</module>
+        <module>secure-api-gateway-ob-uk-rcs-consent-store</module>
+    </modules>
+
+    <parent>
+        <groupId>com.forgerock.sapi.gateway</groupId>
+        <artifactId>secure-api-gateway-parent</artifactId>
+        <version>3.2.0</version>
+    </parent>
+
+    <properties>
+        <!-- Artifact versions -->
+        <uk.bom.version>3.2.0</uk.bom.version>
+        <revision>3.2.1-SNAPSHOT</revision>
+        <!-- Plugin versions -->
+        <flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
+    </properties>
 
     <repositories>
         <repository>
@@ -86,4 +112,12 @@
             </snapshots>
         </repository>
     </repositories>
+
+    <scm>
+        <connection>scm:git:${project.scm.url}</connection>
+        <developerConnection>scm:git:${project.scm.url}</developerConnection>
+        <url>https://github.com/SecureApiGateway/secure-api-gateway-ob-uk-rcs.git</url>
+        <tag>HEAD</tag>
+    </scm>
+
 </project>
