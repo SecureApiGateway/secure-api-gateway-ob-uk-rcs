@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domestic.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domestic.v4_0_0;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.BaseRestConsentStoreClient;
@@ -22,8 +22,8 @@ import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientExc
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.AuthorisePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v3_1_10.CreateDomesticPaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v4_0_0.CreateDomesticPaymentConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v4_0_0.DomesticPaymentConsent;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -31,10 +31,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 
-/**
- * Implementation of the RestDomesticPaymentConsentStoreClient which makes REST calls over HTTP
- */
-@Component("v3.1.10RestDomesticPaymentConsentStoreClient")
+@Component
 public class RestDomesticPaymentConsentStoreClient extends BaseRestConsentStoreClient implements DomesticPaymentConsentStoreClient {
     private final String consentServiceBaseUrl;
 
@@ -80,5 +77,4 @@ public class RestDomesticPaymentConsentStoreClient extends BaseRestConsentStoreC
         HttpEntity<ConsumePaymentConsentRequest> requestEntity = new HttpEntity(consumeRequest, this.createHeaders(consumeRequest.getApiClientId()));
         return (DomesticPaymentConsent)this.doRestCall(url, HttpMethod.POST, requestEntity, DomesticPaymentConsent.class);
     }
-
 }
