@@ -16,7 +16,7 @@
 package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic.v4_0_0;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic.BaseDomesticPaymentConsentApiController;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DefaultDomesticPaymentConsentService;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DomesticPaymentConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import io.swagger.annotations.Api;
 import org.joda.time.DateTime;
@@ -38,9 +38,8 @@ import java.util.function.Supplier;
 public class DomesticPaymentConsentApiController extends BaseDomesticPaymentConsentApiController {
 
     @Autowired
-    public DomesticPaymentConsentApiController(@Qualifier("v7DomesticPaymentConsentService")DefaultDomesticPaymentConsentService consentService,
+    public DomesticPaymentConsentApiController(@Qualifier("v4.0.0DomesticPaymentConsentService") DomesticPaymentConsentService consentService,
                                                Supplier<DateTime> idempotencyKeyExpirationSupplier) {
         super(consentService, idempotencyKeyExpirationSupplier, OBVersion.v4_0_0);
     }
-
 }
