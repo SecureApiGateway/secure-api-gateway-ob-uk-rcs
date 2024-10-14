@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
 
 import java.util.function.Supplier;
 
@@ -49,16 +50,13 @@ public class BaseDomesticPaymentConsentApiController implements DomesticPaymentC
     private final DomesticPaymentConsentService consentService;
     private final Supplier<DateTime> idempotencyKeyExpirationSupplier;
     private final OBVersion obVersion;
-    private final String createStatus;
 
     public BaseDomesticPaymentConsentApiController(DomesticPaymentConsentService consentService,
                                                    Supplier<DateTime> idempotencyKeyExpirationSupplier,
-                                                   OBVersion obVersion,
-                                                   String createStatus) {
+                                                   OBVersion obVersion) {
         this.consentService = requireNonNull(consentService, "consentService must be provided");
         this.idempotencyKeyExpirationSupplier = requireNonNull(idempotencyKeyExpirationSupplier, "idempotencyKeyExpirationSupplier must be provided");
         this.obVersion = requireNonNull(obVersion, "obVersion must be provided");
-        this.createStatus = createStatus;
     }
 
     @Override
@@ -68,7 +66,7 @@ public class BaseDomesticPaymentConsentApiController implements DomesticPaymentC
         domesticPaymentConsent.setRequestVersion(obVersion);
         domesticPaymentConsent.setApiClientId(request.getApiClientId());
         domesticPaymentConsent.setRequestObj(request.getConsentRequest());
-        domesticPaymentConsent.setStatus(createStatus);
+        domesticPaymentConsent.setStatus(OBPaymentConsentStatus.AWAITINGAUTHORISATION.getValue());
         domesticPaymentConsent.setCharges(request.getCharges());
         domesticPaymentConsent.setIdempotencyKey(request.getIdempotencyKey());
         domesticPaymentConsent.setIdempotencyKeyExpiration(idempotencyKeyExpirationSupplier.get());

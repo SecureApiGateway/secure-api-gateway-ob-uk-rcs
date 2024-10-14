@@ -16,7 +16,7 @@
 package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic.v4_0_0;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic.BaseDomesticPaymentConsentApiController;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.v4.DefaultDomesticPaymentConsentService;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DefaultDomesticPaymentConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import io.swagger.annotations.Api;
 import org.joda.time.DateTime;
@@ -25,7 +25,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import uk.org.openbanking.datamodel.v4.payment.OBPaymentConsentStatus;
 
 import java.util.function.Supplier;
 
@@ -41,7 +40,7 @@ public class DomesticPaymentConsentApiController extends BaseDomesticPaymentCons
     @Autowired
     public DomesticPaymentConsentApiController(@Qualifier("v4.0.0DomesticPaymentConsentService") DefaultDomesticPaymentConsentService consentService,
                                                Supplier<DateTime> idempotencyKeyExpirationSupplier) {
-        super(consentService, idempotencyKeyExpirationSupplier, OBVersion.v4_0_0, OBPaymentConsentStatus.AWAU.getValue());
+        super(consentService, idempotencyKeyExpirationSupplier, OBVersion.v4_0_0);
     }
 
 }

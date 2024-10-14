@@ -29,7 +29,6 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domesti
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import io.swagger.annotations.Api;
-import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
 
 /**
  * Implementation of DomesticPaymentConsentApi for OBIE version 3.1.10
@@ -43,7 +42,7 @@ public class DomesticPaymentConsentApiController extends BaseDomesticPaymentCons
     @Autowired
     public DomesticPaymentConsentApiController(@Qualifier("v3.1.10DomesticPaymentConsentService") DomesticPaymentConsentService consentService,
                                                Supplier<DateTime> idempotencyKeyExpirationSupplier) {
-        super(consentService, idempotencyKeyExpirationSupplier, OBVersion.v3_1_10, OBPaymentConsentStatus.AWAITINGAUTHORISATION.getValue());
+        super(consentService, idempotencyKeyExpirationSupplier, OBVersion.v3_1_10);
     }
 
 }
