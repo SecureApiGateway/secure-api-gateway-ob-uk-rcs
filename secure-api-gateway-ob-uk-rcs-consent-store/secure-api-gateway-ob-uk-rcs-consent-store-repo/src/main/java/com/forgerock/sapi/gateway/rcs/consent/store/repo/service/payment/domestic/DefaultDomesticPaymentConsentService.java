@@ -20,6 +20,10 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.payment.PaymentCo
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.BasePaymentConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 public class DefaultDomesticPaymentConsentService extends BasePaymentConsentService<DomesticPaymentConsentEntity, PaymentAuthoriseConsentArgs> implements DomesticPaymentConsentService {
 
