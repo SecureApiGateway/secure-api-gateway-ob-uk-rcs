@@ -38,7 +38,7 @@ import java.util.function.Supplier;
 public class DomesticPaymentConsentApiController extends BaseDomesticPaymentConsentApiController {
 
     @Autowired
-    public DomesticPaymentConsentApiController(@Qualifier("v4.0.0DomesticPaymentConsentService") DefaultDomesticPaymentConsentService consentService,
+    public DomesticPaymentConsentApiController(DefaultDomesticPaymentConsentService consentService,
                                                Supplier<DateTime> idempotencyKeyExpirationSupplier) {
         super(consentService, idempotencyKeyExpirationSupplier, OBVersion.v4_0_0);
     }

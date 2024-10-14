@@ -25,7 +25,6 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-@Qualifier("v3.1.10DomesticPaymentConsentService")
 public class DefaultDomesticPaymentConsentService extends BasePaymentConsentService<DomesticPaymentConsentEntity, PaymentAuthoriseConsentArgs> implements DomesticPaymentConsentService {
 
     public DefaultDomesticPaymentConsentService(PaymentConsentRepository<DomesticPaymentConsentEntity> repo) {
