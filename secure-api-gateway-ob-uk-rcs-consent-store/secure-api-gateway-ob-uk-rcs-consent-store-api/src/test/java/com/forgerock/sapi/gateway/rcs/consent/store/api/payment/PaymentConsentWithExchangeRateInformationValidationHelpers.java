@@ -15,27 +15,31 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.api.payment;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.Date;
-
-import org.joda.time.DateTime;
-
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.BaseCreateInternationalPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.BasePaymentConsentWithExchangeRateInformation;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
-
+import org.joda.time.DateTime;
 import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
+
+import java.util.Date;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class PaymentConsentWithExchangeRateInformationValidationHelpers {
 
     public static void validateCreateConsentAgainstCreateRequest(BasePaymentConsentWithExchangeRateInformation<?> consent,
                                                                  BaseCreateInternationalPaymentConsentRequest<?> createConsentRequest) {
+        validateCreateConsentAgainstCreateRequest(consent, createConsentRequest, OBVersion.v3_1_10);
+    }
+
+    public static void validateCreateConsentAgainstCreateRequest(BasePaymentConsentWithExchangeRateInformation<?> consent,
+                                                                 BaseCreateInternationalPaymentConsentRequest<?> createConsentRequest,
+                                                                 OBVersion expectedVersion) {
         assertThat(consent.getId()).isNotEmpty();
         assertThat(consent.getStatus()).isEqualTo(OBPaymentConsentStatus.AWAITINGAUTHORISATION.toString());
         assertThat(consent.getApiClientId()).isEqualTo(createConsentRequest.getApiClientId());
         assertThat(consent.getRequestObj()).isEqualTo(createConsentRequest.getConsentRequest());
-        assertThat(consent.getRequestVersion()).isEqualTo(OBVersion.v3_1_10);
+        assertThat(consent.getRequestVersion()).isEqualTo(expectedVersion);
         assertThat(consent.getCharges()).isEqualTo(createConsentRequest.getCharges());
         assertThat(consent.getExchangeRateInformation()).isEqualTo(createConsentRequest.getExchangeRateInformation());
         assertThat(consent.getIdempotencyKey()).isEqualTo(createConsentRequest.getIdempotencyKey());
