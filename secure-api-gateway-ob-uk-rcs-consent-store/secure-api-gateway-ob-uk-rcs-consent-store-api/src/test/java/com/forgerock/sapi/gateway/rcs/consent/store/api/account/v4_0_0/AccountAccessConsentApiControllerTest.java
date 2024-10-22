@@ -55,7 +55,7 @@ public class AccountAccessConsentApiControllerTest extends BaseControllerTest<Ac
 
     @Override
     protected OBVersion getControllerVersion() {
-        return OBVersion.v3_1_10;
+        return OBVersion.v4_0_0;
     }
 
     @Override

@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.api.account.v4_0_0;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.api.account.AccountAccessConsentApi;
+import com.forgerock.sapi.gateway.rcs.consent.store.api.account.v4_0_0.AccountAccessConsentApi;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v4_0_0.AccountAccessConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v4_0_0.AuthoriseAccountAccessConsentRequest;
