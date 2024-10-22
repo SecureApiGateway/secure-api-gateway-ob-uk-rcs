@@ -33,7 +33,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.Au
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.CreateAccountAccessConsentRequest;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-@Component
+@Component("v3.1.10RestAccountAccessConsentStoreClient")
 public class RestAccountAccessConsentStoreClient extends BaseRestConsentStoreClient implements AccountAccessConsentStoreClient {
 
     private final String consentServiceBaseUrl;

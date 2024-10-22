@@ -32,7 +32,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
-@Component
+@Component("v4.0.0RestAccountAccessConsentStoreClient")
 public class RestAccountAccessConsentStoreClient extends BaseRestConsentStoreClient implements AccountAccessConsentStoreClient {
 
     private final String consentServiceBaseUrl;
