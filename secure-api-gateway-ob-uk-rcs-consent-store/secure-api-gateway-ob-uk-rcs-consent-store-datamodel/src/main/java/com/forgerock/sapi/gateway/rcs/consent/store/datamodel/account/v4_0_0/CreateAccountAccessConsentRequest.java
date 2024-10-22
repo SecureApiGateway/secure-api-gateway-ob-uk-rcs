@@ -13,16 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.api.account.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v4_0_0;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.api.account.BaseAccountAccessConsentApiControllerTest;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRReadConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.BaseCreateConsentRequest;
+import org.springframework.validation.annotation.Validated;
 
-import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
-
-public class AccountAccessConsentApiControllerTest extends BaseAccountAccessConsentApiControllerTest {
-
-    @Override
-    protected OBVersion getControllerVersion() {
-        return OBVersion.v3_1_10;
-    }
+@Validated
+public class CreateAccountAccessConsentRequest extends BaseCreateConsentRequest<FRReadConsent> {
 }

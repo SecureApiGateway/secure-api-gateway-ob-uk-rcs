@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.api.account.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.api.account;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Date;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.api.account.AccountAccessConsentApi;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AuthoriseAccountAccessConsentRequest;
@@ -36,6 +35,20 @@ public class AccountAccessConsentValidationHelpers {
     /**
      * Validates that a created {@link AccountAccessConsent} against the original {@link CreateAccountAccessConsentRequest}
      */
+    public static void validateCreateConsentAgainstCreateRequest(AccountAccessConsent consent,
+                                                                 CreateAccountAccessConsentRequest createAccountAccessConsentRequest, OBVersion obVersion) {
+        assertThat(consent.getId()).isNotEmpty();
+        assertThat(consent.getStatus()).isEqualTo(OBExternalRequestStatus1Code.AWAITINGAUTHORISATION.toString());
+        assertThat(consent.getApiClientId()).isEqualTo(createAccountAccessConsentRequest.getApiClientId());
+        assertThat(consent.getRequestObj()).isEqualTo(createAccountAccessConsentRequest.getConsentRequest());
+        assertThat(consent.getRequestVersion()).isEqualTo(obVersion);
+        assertThat(consent.getResourceOwnerId()).isNull();
+        assertThat(consent.getAuthorisedAccountIds()).isNull();
+
+        assertThat(consent.getCreationDateTime()).isBefore(new Date());
+        assertThat(consent.getStatusUpdateDateTime()).isEqualTo(consent.getCreationDateTime());
+    }
+
     public static void validateCreateConsentAgainstCreateRequest(AccountAccessConsent consent,
                                                                  CreateAccountAccessConsentRequest createAccountAccessConsentRequest) {
         assertThat(consent.getId()).isNotEmpty();

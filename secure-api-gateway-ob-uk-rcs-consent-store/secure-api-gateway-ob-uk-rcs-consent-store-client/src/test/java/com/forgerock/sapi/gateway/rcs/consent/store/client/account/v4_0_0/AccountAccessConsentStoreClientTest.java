@@ -13,21 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.client.account.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.client.account.v4_0_0;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientConfiguration;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.account.BaseAccountAccessConsentStoreClientTest;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.account.BaseRestAccountAccessConsentStoreClient;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.stereotype.Component;
 
-@Component("v3.1.10RestAccountAccessConsentStoreClient")
-public class RestAccountAccessConsentStoreClient extends BaseRestAccountAccessConsentStoreClient {
+import static com.forgerock.sapi.gateway.rcs.consent.store.client.TestConsentStoreClientConfigurationFactory.createConsentStoreClientConfiguration;
 
+class AccountAccessConsentStoreClientTest extends BaseAccountAccessConsentStoreClientTest {
 
-    public RestAccountAccessConsentStoreClient(ConsentStoreClientConfiguration consentStoreClientConfiguration,
-                                               RestTemplateBuilder restTemplateBuilder, ObjectMapper objectMapper) {
-        super(consentStoreClientConfiguration, restTemplateBuilder, objectMapper, OBVersion.v3_1_10);
+    protected AccountAccessConsentStoreClientTest() {
+        super(OBVersion.v4_0_0);
     }
+
+    @Override
+    protected BaseRestAccountAccessConsentStoreClient createApiClient() {
+        return new RestAccountAccessConsentStoreClient(createConsentStoreClientConfiguration(port),
+                restTemplateBuilder,
+                objectMapper);
+    }
+
 }
