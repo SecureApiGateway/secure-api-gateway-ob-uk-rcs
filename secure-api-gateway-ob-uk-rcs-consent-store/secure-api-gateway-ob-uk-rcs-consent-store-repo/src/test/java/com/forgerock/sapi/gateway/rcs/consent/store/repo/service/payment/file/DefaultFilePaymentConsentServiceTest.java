@@ -34,7 +34,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRChargeBearerType;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteFileConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteFileConsentConverter;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.file.FilePaymentConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException.ErrorType;
@@ -47,7 +47,7 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import jakarta.validation.ConstraintViolationException;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsent3;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsentResponse4DataStatus;
-import uk.org.openbanking.testsupport.payment.OBWriteFileConsentTestDataFactory;
+import uk.org.openbanking.testsupport.v3.payment.OBWriteFileConsentTestDataFactory;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
