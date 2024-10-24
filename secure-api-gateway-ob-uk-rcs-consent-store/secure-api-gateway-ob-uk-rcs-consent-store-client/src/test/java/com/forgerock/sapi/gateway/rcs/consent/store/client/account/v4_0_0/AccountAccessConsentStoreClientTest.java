@@ -13,41 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.client.account.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.client.account.v4_0_0;
 
-import static com.forgerock.sapi.gateway.rcs.consent.store.client.TestConsentStoreClientConfigurationFactory.createConsentStoreClientConfiguration;
-import static com.forgerock.sapi.gateway.rcs.consent.store.api.account.v3_1_10.AccountAccessConsentValidationHelpers.validateAuthorisedConsent;
-import static com.forgerock.sapi.gateway.rcs.consent.store.api.account.v3_1_10.AccountAccessConsentValidationHelpers.validateCreateConsentAgainstCreateRequest;
-import static com.forgerock.sapi.gateway.rcs.consent.store.api.account.v3_1_10.AccountAccessConsentValidationHelpers.validateRejectedConsent;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-
-import java.util.List;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.v4.converter.account.FRReadConsentConverter;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException.ErrorType;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.account.v4_0_0.RestAccountAccessConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v4_0_0.AccountAccessConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v4_0_0.AuthoriseAccountAccessConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v4_0_0.CreateAccountAccessConsentRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRReadConsentConverter;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException.ErrorType;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AuthoriseAccountAccessConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.CreateAccountAccessConsentRequest;
-
-import uk.org.openbanking.datamodel.v3.account.OBReadConsent1;
-import uk.org.openbanking.datamodel.v3.account.OBReadConsent1Data;
+import uk.org.openbanking.datamodel.v4.account.OBReadConsent1;
+import uk.org.openbanking.datamodel.v4.account.OBReadConsent1Data;
 import uk.org.openbanking.datamodel.v3.account.OBRisk2;
-import uk.org.openbanking.datamodel.v3.common.OBExternalPermissions1Code;
+import uk.org.openbanking.datamodel.v4.account.OBInternalPermissions1Code;
+
+import java.util.List;
+
+import static com.forgerock.sapi.gateway.rcs.consent.store.api.account.v4_0_0.AccountAccessConsentValidationHelpers.*;
+import static com.forgerock.sapi.gateway.rcs.consent.store.client.TestConsentStoreClientConfigurationFactory.createConsentStoreClientConfiguration;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"rcs.consent.store.api.baseUri= 'ignored'"})
 @ActiveProfiles("test")
@@ -63,7 +60,7 @@ public class AccountAccessConsentStoreClientTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private RestAccountAccessConsentStoreClient apiClient;
+    private com.forgerock.sapi.gateway.rcs.consent.store.client.account.v4_0_0.RestAccountAccessConsentStoreClient apiClient;
 
     @BeforeEach
     public void beforeEach() {
@@ -132,7 +129,7 @@ public class AccountAccessConsentStoreClientTest {
         final CreateAccountAccessConsentRequest createConsentRequest = new CreateAccountAccessConsentRequest();
         createConsentRequest.setApiClientId("test-client-1");
         createConsentRequest.setConsentRequest(FRReadConsentConverter.toFRReadConsent(new OBReadConsent1()
-                                                    .data(new OBReadConsent1Data().permissions(List.of(OBExternalPermissions1Code.READACCOUNTSBASIC)))
+                                                    .data(new OBReadConsent1Data().permissions(List.of(OBInternalPermissions1Code.READACCOUNTSBASIC)))
                                                     .risk(new OBRisk2())));
         return createConsentRequest;
     }

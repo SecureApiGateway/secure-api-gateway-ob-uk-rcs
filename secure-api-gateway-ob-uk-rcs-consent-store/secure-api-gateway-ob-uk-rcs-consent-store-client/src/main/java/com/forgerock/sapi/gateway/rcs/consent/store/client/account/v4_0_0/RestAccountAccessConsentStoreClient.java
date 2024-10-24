@@ -13,27 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.client.account.v3_1_10;
-
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.stereotype.Component;
+package com.forgerock.sapi.gateway.rcs.consent.store.client.account.v4_0_0;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.BaseRestConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientConfiguration;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AuthoriseAccountAccessConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.CreateAccountAccessConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v4_0_0.AccountAccessConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v4_0_0.AuthoriseAccountAccessConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v4_0_0.CreateAccountAccessConsentRequest;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.stereotype.Component;
 
-@Component("v3.1.10RestAccountAccessConsentStoreClient")
+import java.util.Objects;
+
+@Component("v4.0.0RestAccountAccessConsentStoreClient")
 public class RestAccountAccessConsentStoreClient extends BaseRestConsentStoreClient implements AccountAccessConsentStoreClient {
 
     private final String consentServiceBaseUrl;
@@ -42,7 +41,7 @@ public class RestAccountAccessConsentStoreClient extends BaseRestConsentStoreCli
     public RestAccountAccessConsentStoreClient(ConsentStoreClientConfiguration consentStoreClientConfiguration,
                                                RestTemplateBuilder restTemplateBuilder, ObjectMapper objectMapper) {
 
-        this(consentStoreClientConfiguration, restTemplateBuilder, objectMapper, OBVersion.v3_1_10);
+        this(consentStoreClientConfiguration, restTemplateBuilder, objectMapper, OBVersion.v4_0_0);
     }
 
     public RestAccountAccessConsentStoreClient(ConsentStoreClientConfiguration consentStoreClientConfiguration,

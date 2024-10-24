@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.api.account.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.api.account.v4_0_0;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import com.forgerock.sapi.gateway.rcs.consent.store.api.account.v4_0_0.AccountAccessConsentApi;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v4_0_0.AccountAccessConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v4_0_0.AuthoriseAccountAccessConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v4_0_0.CreateAccountAccessConsentRequest;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
+import uk.org.openbanking.datamodel.v3.common.OBExternalRequestStatus1Code;
 
 import java.util.Date;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.api.account.v3_1_10.AccountAccessConsentApi;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AuthoriseAccountAccessConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.CreateAccountAccessConsentRequest;
-import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
-
-import uk.org.openbanking.datamodel.v3.common.OBExternalRequestStatus1Code;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Helper methods for validating {@link AccountAccessConsent} objects as part of using the {@link AccountAccessConsentApi}
@@ -42,7 +41,7 @@ public class AccountAccessConsentValidationHelpers {
         assertThat(consent.getStatus()).isEqualTo(OBExternalRequestStatus1Code.AWAITINGAUTHORISATION.toString());
         assertThat(consent.getApiClientId()).isEqualTo(createAccountAccessConsentRequest.getApiClientId());
         assertThat(consent.getRequestObj()).isEqualTo(createAccountAccessConsentRequest.getConsentRequest());
-        assertThat(consent.getRequestVersion()).isEqualTo(OBVersion.v3_1_10);
+        assertThat(consent.getRequestVersion()).isEqualTo(OBVersion.v4_0_0);
         assertThat(consent.getResourceOwnerId()).isNull();
         assertThat(consent.getAuthorisedAccountIds()).isNull();
 

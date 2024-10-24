@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.api.account.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.api.account.v4_0_0;
 
 import java.util.Objects;
 
@@ -28,9 +28,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AuthoriseAccountAccessConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.CreateAccountAccessConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v4_0_0.AccountAccessConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v4_0_0.AuthoriseAccountAccessConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v4_0_0.CreateAccountAccessConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.account.AccountAccessConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessAuthoriseConsentArgs;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessConsentService;
@@ -39,11 +39,10 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import org.springframework.web.bind.annotation.RequestMapping;
 import uk.org.openbanking.datamodel.v3.common.OBExternalRequestStatus1Code;
 
-@Controller("V3.1.10AccountAccessConsentApiController")
-@Api(tags = {"v3.1.10"})
-@RequestMapping(value = "/consent/store/v3.1.10")
+@Controller("V4.0.0AccountAccessConsentApiController")
+@Api(tags = {"v4.0.0"})
+@RequestMapping(value = "/consent/store/v4.0.0")
 @DependsOn({"versionedConsentServices"})
-
 public class AccountAccessConsentApiController implements AccountAccessConsentApi {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -53,8 +52,8 @@ public class AccountAccessConsentApiController implements AccountAccessConsentAp
     private final OBVersion obVersion;
 
     @Autowired
-    public AccountAccessConsentApiController(@Qualifier("v3.1.10AccountAccessConsentService") AccountAccessConsentService consentService) {
-        this(consentService, OBVersion.v3_1_10);
+    public AccountAccessConsentApiController(@Qualifier("v4.0.0AccountAccessConsentService") AccountAccessConsentService consentService) {
+        this(consentService, OBVersion.v4_0_0);
     }
 
     public AccountAccessConsentApiController(AccountAccessConsentService consentService, OBVersion obVersion) {
@@ -118,4 +117,3 @@ public class AccountAccessConsentApiController implements AccountAccessConsentAp
         return dto;
     }
 }
-

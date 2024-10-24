@@ -13,35 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.api.account.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.api.account.v4_0_0;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.List;
-
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRReadConsent;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.v4.converter.account.FRReadConsentConverter;
+import com.forgerock.sapi.gateway.rcs.consent.store.api.BaseControllerTest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v4_0_0.AccountAccessConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v4_0_0.AuthoriseAccountAccessConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v4_0_0.CreateAccountAccessConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.account.AccountAccessConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessConsentService;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessConsentStateModel;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRReadConsent;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRReadConsentConverter;
-import com.forgerock.sapi.gateway.rcs.consent.store.api.BaseControllerTest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AuthoriseAccountAccessConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.CreateAccountAccessConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.account.AccountAccessConsentEntity;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessConsentService;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessConsentStateModel;
-import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
-
-import uk.org.openbanking.datamodel.v3.account.OBReadConsent1;
-import uk.org.openbanking.datamodel.v3.account.OBReadConsent1Data;
+import uk.org.openbanking.datamodel.v4.account.OBReadConsent1;
+import uk.org.openbanking.datamodel.v4.account.OBReadConsent1Data;
 import uk.org.openbanking.datamodel.v3.account.OBRisk2;
-import uk.org.openbanking.datamodel.v3.common.OBExternalPermissions1Code;
+import uk.org.openbanking.datamodel.v4.account.OBInternalPermissions1Code;
 import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class AccountAccessConsentApiControllerTest extends BaseControllerTest<AccountAccessConsent, CreateAccountAccessConsentRequest, AuthoriseAccountAccessConsentRequest> {
 
@@ -57,7 +55,7 @@ public class AccountAccessConsentApiControllerTest extends BaseControllerTest<Ac
 
     @Override
     protected OBVersion getControllerVersion() {
-        return OBVersion.v3_1_10;
+        return OBVersion.v4_0_0;
     }
 
     @Override
@@ -85,7 +83,7 @@ public class AccountAccessConsentApiControllerTest extends BaseControllerTest<Ac
 
     private static FRReadConsent createFRConsent() {
         return FRReadConsentConverter.toFRReadConsent(new OBReadConsent1()
-                .data(new OBReadConsent1Data().permissions(List.of(OBExternalPermissions1Code.READACCOUNTSBASIC)))
+                .data(new OBReadConsent1Data().permissions(List.of(OBInternalPermissions1Code.READACCOUNTSBASIC)))
                 .risk(new OBRisk2()));
     }
 

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright © 2020-2024 ForgeRock AS (obst@forgerock.com)
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.forgerock.sapi.gateway</groupId>
+  <artifactId>secure-api-gateway-ob-uk-rcs-consent-store-datamodel</artifactId>
+  <version>4.0.0-SNAPSHOT</version>
+  <description>A UK Open Banking Remote Consent Service for the Secure API Gateway</description>
+  <url>https://github.com/SecureApiGateway/secure-api-gateway-ob-uk-rcs.git/secure-api-gateway-ob-uk-rcs-consent-store/secure-api-gateway-ob-uk-rcs-consent-store-datamodel</url>
+  <inceptionYear>2020</inceptionYear>
+  <organization>
+    <name>ForgeRock</name>
+    <url>http://www.forgerock.org</url>
+  </organization>
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <name>Jamie Bowen</name>
+      <email>jamie.bowen@forgerock.com</email>
+      <organization>ForgeRock</organization>
+      <organizationUrl>http://www.forgerock.com</organizationUrl>
+    </developer>
+    <developer>
+      <name>Jorge Sanchez-Perez</name>
+      <email>jorge.sanchez-perez@forgerock.com</email>
+      <organization>ForgeRock</organization>
+      <organizationUrl>http://www.forgerock.com</organizationUrl>
+    </developer>
+    <developer>
+      <name>Dan Badham</name>
+      <email>dan.badham@forgerock.com</email>
+      <organization>ForgeRock</organization>
+      <organizationUrl>http://www.forgerock.com</organizationUrl>
+    </developer>
+    <developer>
+      <name>Shaun Harrison</name>
+      <email>shaun.harrison@forgerock.com</email>
+      <organization>ForgeRock</organization>
+      <organizationUrl>http://www.forgerock.com</organizationUrl>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:https://github.com/SecureApiGateway/secure-api-gateway-ob-uk-rcs.git/secure-api-gateway-ob-uk-rcs-consent-store/secure-api-gateway-ob-uk-rcs-consent-store-datamodel/secure-api-gateway-ob-uk-rcs-consent-store/secure-api-gateway-ob-uk-rcs-consent-store-datamodel</connection>
+    <developerConnection>scm:git:https://github.com/SecureApiGateway/secure-api-gateway-ob-uk-rcs.git/secure-api-gateway-ob-uk-rcs-consent-store/secure-api-gateway-ob-uk-rcs-consent-store-datamodel/secure-api-gateway-ob-uk-rcs-consent-store/secure-api-gateway-ob-uk-rcs-consent-store-datamodel</developerConnection>
+    <url>https://github.com/SecureApiGateway/secure-api-gateway-ob-uk-rcs.git/secure-api-gateway-ob-uk-rcs-consent-store/secure-api-gateway-ob-uk-rcs-consent-store-datamodel</url>
+  </scm>
+  <distributionManagement>
+    <repository>
+      <id>maven.forgerock.org-community</id>
+      <name>maven.forgerock.org-releases</name>
+      <url>https://maven.forgerock.org/artifactory/community</url>
+    </repository>
+    <snapshotRepository>
+      <id>maven.forgerock.org-community-snapshots</id>
+      <name>maven.forgerock.org-snapshots</name>
+      <url>https://maven.forgerock.org/artifactory/community</url>
+    </snapshotRepository>
+  </distributionManagement>
+  <properties>
+    <jakarta.validation-api.version>3.1.0-M1</jakarta.validation-api.version>
+    <dockerfile-maven-plugin.version>1.4.13</dockerfile-maven-plugin.version>
+    <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
+    <nimbus-jose.version>9.40</nimbus-jose.version>
+    <jackson.version>2.14.2</jackson.version>
+    <guava.version>33.0.0-jre</guava.version>
+    <spring-boot.version>3.2.1</spring-boot.version>
+    <flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
+    <javax-el.version>3.0.1-b12</javax-el.version>
+    <httpclient.version>5.2.3</httpclient.version>
+    <model-mapper.version>2.4.4</model-mapper.version>
+    <hibernate-validator.version>8.0.1.Final</hibernate-validator.version>
+    <commons-lang3.version>3.12.0</commons-lang3.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <assertj.version>3.25.1</assertj.version>
+    <jaxb.sun.version>2.3.4</jaxb.sun.version>
+    <build-helper-plugin.version>3.2.0</build-helper-plugin.version>
+    <jackson-joda.version>2.14.2</jackson-joda.version>
+    <maven-deploy-plugin.version>3.1.0</maven-deploy-plugin.version>
+    <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
+    <maven-failsafe-plugin.version>3.2.5</maven-failsafe-plugin.version>
+    <openapi-generator.version>7.2.0</openapi-generator.version>
+    <bouncycastle.version>1.78.1</bouncycastle.version>
+    <java.version>17</java.version>
+    <versions-maven-plugin.version>2.16.2</versions-maven-plugin.version>
+    <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+    <legal.path.header>../../legal/LICENSE-HEADER.txt</legal.path.header>
+    <mockito.version>5.11.0</mockito.version>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <uk.bom.version>4.0.0-pr-223-SNAPSHOT</uk.bom.version>
+    <hibernate-validator-cdi.version>8.0.1.Final</hibernate-validator-cdi.version>
+    <revision>4.0.0-SNAPSHOT</revision>
+    <jaxb-api.version>2.3.1</jaxb-api.version>
+    <lombok.version>1.18.20</lombok.version>
+    <git-commit-id-plugin.version>4.0.3</git-commit-id-plugin.version>
+    <maven-enforcer-plugin.version>3.0.0-M3</maven-enforcer-plugin.version>
+    <junit-jupiter.version>5.7.0</junit-jupiter.version>
+    <mycila-license-maven-plugin.version>4.1</mycila-license-maven-plugin.version>
+    <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
+    <swagger-annotations-v3.version>2.2.20</swagger-annotations-v3.version>
+    <flapdoodle-mongo.version>4.12.0</flapdoodle-mongo.version>
+    <swagger-annotations.version>1.6.12</swagger-annotations.version>
+    <joda-time.version>2.10.8</joda-time.version>
+    <copyright-current-year>2024</copyright-current-year>
+    <spring-boot-maven-plugin.version>3.2.1</spring-boot-maven-plugin.version>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>com.forgerock.sapi.gateway</groupId>
+      <artifactId>secure-api-gateway-ob-uk-common-datamodel</artifactId>
+      <version>4.0.0-pr-223-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+  <repositories>
+    <repository>
+      <id>maven.forgerock.org-community</id>
+      <name>maven.forgerock.org-releases</name>
+      <url>https://maven.forgerock.org/artifactory/community</url>
+    </repository>
+    <repository>
+      <id>maven.forgerock.org-community-snapshots</id>
+      <name>maven.forgerock.org-snapshots</name>
+      <url>https://maven.forgerock.org/artifactory/community</url>
+    </repository>
+  </repositories>
+</project>
