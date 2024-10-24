@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic;
+package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.v3_1_10;
 
 import java.util.List;
 import java.util.UUID;
 
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DefaultDomesticScheduledPaymentConsentService;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

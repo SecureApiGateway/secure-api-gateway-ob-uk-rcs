@@ -101,7 +101,7 @@ public abstract class BaseConsentServiceTest<T extends BaseConsentEntity<?>, A e
         final ConstraintViolationException constraintViolationException = assertThrows(ConstraintViolationException.class,
                 () -> consentService.createConsent(consentObj));
         assertThat(constraintViolationException.getConstraintViolations()).hasSize(1);
-        assertThat(constraintViolationException.getMessage()).isEqualTo("createConsent.arg0.apiClientId: must not be null");
+        assertThat(constraintViolationException.getMessage()).isEqualTo("createConsent.consent.apiClientId: must not be null");
     }
 
     @Test
