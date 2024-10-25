@@ -15,10 +15,8 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic.v4_0_0;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic.BaseDomesticPaymentConsentApiController;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DomesticPaymentConsentService;
-import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
-import io.swagger.annotations.Api;
+import java.util.function.Supplier;
+
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,7 +24,11 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.function.Supplier;
+import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domestic.BaseDomesticPaymentConsentApiController;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DomesticPaymentConsentService;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
+
+import io.swagger.annotations.Api;
 
 /**
  * Implementation of DomesticPaymentConsentApi for OBIE version 4.0.0

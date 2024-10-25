@@ -84,13 +84,15 @@ public class BasePaymentConsentDetailsServiceTest {
     @MethodSource("chargeParameters")
     void testCalculateCharges(List<String> chargeAmounts, String expectedTotal) {
         final List<FRCharge> charges = chargeAmounts.stream().map(charge -> FRCharge.builder()
-                        .chargeBearer(FRChargeBearerType.BORNEBYDEBTOR)
-                        .type("fee")
-                        .amount(new FRAmount(charge, "GBP"))
-                        .build())
-                .collect(Collectors.toList());
+                                                                                    .chargeBearer(FRChargeBearerType.BORNEBYDEBTOR)
+                                                                                    .type("fee")
+                                                                                    .amount(new FRAmount(charge, "GBP"))
+                                                                                    .build())
+                                                    .collect(Collectors.toList());
 
-        assertThat(BasePaymentConsentDetailsService.computeTotalChargeAmount(charges)).isEqualTo(new FRAmount(expectedTotal, "GBP"));
+        assertThat(BasePaymentConsentDetailsService.computeTotalChargeAmount(charges)).isEqualTo(new FRAmount(
+                expectedTotal,
+                "GBP"));
     }
 
     @Test
@@ -108,8 +110,11 @@ public class BasePaymentConsentDetailsServiceTest {
                         .build()
         );
 
-        final IllegalStateException ex = assertThrows(IllegalStateException.class, () -> BasePaymentConsentDetailsService.computeTotalChargeAmount(charges));
-        assertThat(ex.getMessage()).isEqualTo("Charges contain more than 1 currency, all charges must be in the same currency");
+        final IllegalStateException ex = assertThrows(IllegalStateException.class,
+                                                      () -> BasePaymentConsentDetailsService.computeTotalChargeAmount(
+                                                              charges));
+        assertThat(ex.getMessage()).isEqualTo(
+                "Charges contain more than 1 currency, all charges must be in the same currency");
     }
 
     protected void mockConsentServiceCanAuthorise(ConsentService<?, ?> consentService) {
@@ -128,13 +133,19 @@ public class BasePaymentConsentDetailsServiceTest {
         given(apiClientServiceClient.getApiClient(eq(testApiClient.getId()))).willReturn(testApiClient);
     }
 
-    protected void mockAccountServiceGetByIdentifiersResponse(OBWriteDomestic2DataInitiationDebtorAccount debtorAccount, FRAccountWithBalance accountWithBalance) {
-        given(accountService.getAccountWithBalanceByIdentifiers(eq(testUser.getId()), eq(debtorAccount.getIdentification()),
-                eq(debtorAccount.getSchemeName()))).willReturn(accountWithBalance);
+    protected void mockAccountServiceGetByIdentifiersResponse(OBWriteDomestic2DataInitiationDebtorAccount debtorAccount,
+                                                              FRAccountWithBalance accountWithBalance) {
+        given(accountService.getAccountWithBalanceByIdentifiers(eq(testUser.getId()),
+                                                                eq(debtorAccount.getIdentification()),
+                                                                eq(debtorAccount.getSchemeName()))).willReturn(
+                accountWithBalance);
     }
 
-    protected void mockAccountServiceGetByIdentifiersResponseV4(uk.org.openbanking.datamodel.v4.payment.OBWriteDomestic2DataInitiationDebtorAccount debtorAccount, FRAccountWithBalance accountWithBalance) {
-        given(accountService.getAccountWithBalanceByIdentifiers(eq(testUser.getId()), eq(debtorAccount.getIdentification()),
-                eq(debtorAccount.getSchemeName()))).willReturn(accountWithBalance);
+    protected void mockAccountServiceGetByIdentifiersResponseV4(uk.org.openbanking.datamodel.v4.payment.OBWriteDomestic2DataInitiationDebtorAccount debtorAccount,
+                                                                FRAccountWithBalance accountWithBalance) {
+        given(accountService.getAccountWithBalanceByIdentifiers(eq(testUser.getId()),
+                                                                eq(debtorAccount.getIdentification()),
+                                                                eq(debtorAccount.getSchemeName()))).willReturn(
+                accountWithBalance);
     }
 }

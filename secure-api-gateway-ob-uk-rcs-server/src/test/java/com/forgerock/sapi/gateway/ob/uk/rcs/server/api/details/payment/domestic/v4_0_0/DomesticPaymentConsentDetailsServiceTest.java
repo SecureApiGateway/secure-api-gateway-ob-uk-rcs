@@ -15,6 +15,21 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.payment.domestic.v4_0_0;
 
+import static com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.v3_1_10.DefaultDomesticPaymentConsentServiceTest.createValidConsentEntity;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+
+import java.util.List;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccountWithBalance;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRAccountIdentifierConverter;
@@ -32,21 +47,8 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreE
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.DomesticPaymentConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import com.nimbusds.jwt.SignedJWT;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
+
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomestic2DataInitiationDebtorAccount;
-
-import java.util.List;
-
-import static com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domestic.v3_1_10.DefaultDomesticPaymentConsentServiceTest.createValidConsentEntity;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 class DomesticPaymentConsentDetailsServiceTest extends BasePaymentConsentDetailsServiceTest {
@@ -80,7 +82,9 @@ class DomesticPaymentConsentDetailsServiceTest extends BasePaymentConsentDetails
         assertThat(domesticPaymentConsentDetails.getPaymentReference()).isEqualTo("FRESCO-037");
         assertThat(domesticPaymentConsentDetails.getCharges()).isEqualTo(new FRAmount("0.25", "GBP"));
         assertThat(domesticPaymentConsentDetails.getInstructedAmount()).isEqualTo(new FRAmount("10.01", "GBP"));
-        assertThat(domesticPaymentConsentDetails.getInitiation()).isEqualTo(consentEntity.getRequestObj().getData().getInitiation());
+        assertThat(domesticPaymentConsentDetails.getInitiation()).isEqualTo(consentEntity.getRequestObj()
+                                                                                         .getData()
+                                                                                         .getInitiation());
         assertThat(domesticPaymentConsentDetails.getUsername()).isEqualTo(testUser.getUserName());
         assertThat(domesticPaymentConsentDetails.getAccounts()).isEqualTo(testUserBankAccounts);
         assertThat(domesticPaymentConsentDetails.getLogo()).isEqualTo(testApiClient.getLogoUri());
@@ -92,9 +96,12 @@ class DomesticPaymentConsentDetailsServiceTest extends BasePaymentConsentDetails
 
     @Test
     public void testGetDomesticPaymentDetailsWithDebtorAccount() throws ExceptionClient {
-        final OBWriteDomestic2DataInitiationDebtorAccount debtorAccount = new OBWriteDomestic2DataInitiationDebtorAccount().name("Test Account").identification("account-id-123").schemeName("accountId");
+        final OBWriteDomestic2DataInitiationDebtorAccount debtorAccount =
+                new OBWriteDomestic2DataInitiationDebtorAccount().name(
+                "Test Account").identification("account-id-123").schemeName("accountId");
         mockApiClientServiceResponse();
-        final FRAccountWithBalance accountWithBalance = FRAccountWithBalanceTestDataFactory.aValidFRAccountWithBalance();
+        final FRAccountWithBalance accountWithBalance =
+                FRAccountWithBalanceTestDataFactory.aValidFRAccountWithBalance();
         mockAccountServiceGetByIdentifiersResponseV4(debtorAccount, accountWithBalance);
         mockApiProviderConfigurationGetName();
 
@@ -102,13 +109,19 @@ class DomesticPaymentConsentDetailsServiceTest extends BasePaymentConsentDetails
 
         final DomesticPaymentConsentEntity consentEntity = createValidConsentEntity(testApiClient.getId());
 
-        consentEntity.getRequestObj().getData().getInitiation().setDebtorAccount(FRAccountIdentifierConverter.toFRAccountIdentifier(debtorAccount));
+        consentEntity.getRequestObj()
+                     .getData()
+                     .getInitiation()
+                     .setDebtorAccount(FRAccountIdentifierConverter.toFRAccountIdentifier(debtorAccount));
         consentEntity.setId(intentId);
         given(domesticPaymentConsentService.getConsent(intentId, testApiClient.getId())).willReturn(consentEntity);
         mockConsentServiceCanAuthorise(domesticPaymentConsentService);
 
         final ConsentDetails consentDetails = consentDetailsService.getDetailsFromConsentStore(
-                new ConsentClientDetailsRequest(intentId, Mockito.mock(SignedJWT.class), testUser, testApiClient.getId()));
+                new ConsentClientDetailsRequest(intentId,
+                                                Mockito.mock(SignedJWT.class),
+                                                testUser,
+                                                testApiClient.getId()));
 
         assertThat(consentDetails).isInstanceOf(DomesticPaymentConsentDetails.class);
         DomesticPaymentConsentDetails domesticPaymentConsentDetails = (DomesticPaymentConsentDetails) consentDetails;
@@ -134,18 +147,27 @@ class DomesticPaymentConsentDetailsServiceTest extends BasePaymentConsentDetails
     @Test
     void testConsentReAuthenticationNotSupported() {
         final String intentId = IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId();
-        given(domesticPaymentConsentService.getConsent(intentId, testApiClient.getId())).willReturn(createValidConsentEntity(testApiClient.getId()));
+        given(domesticPaymentConsentService.getConsent(intentId, testApiClient.getId())).willReturn(
+                createValidConsentEntity(testApiClient.getId()));
 
         given(domesticPaymentConsentService.canTransitionToAuthorisedState(any())).willReturn(Boolean.FALSE);
 
         final ConsentStoreException consentStoreException = Assertions.assertThrows(ConsentStoreException.class,
-                () -> consentDetailsService.getDetailsFromConsentStore(new ConsentClientDetailsRequest(intentId, Mockito.mock(SignedJWT.class), testUser, testApiClient.getId())));
+                                                                                    () -> consentDetailsService.getDetailsFromConsentStore(
+                                                                                            new ConsentClientDetailsRequest(
+                                                                                                    intentId,
+                                                                                                    Mockito.mock(
+                                                                                                            SignedJWT.class),
+                                                                                                    testUser,
+                                                                                                    testApiClient.getId())));
         assertThat(consentStoreException.getErrorType()).isEqualTo(ErrorType.CONSENT_REAUTHENTICATION_NOT_SUPPORTED);
     }
 
     @Test
     public void failToGetDomesticPaymentDetailsWithDebtorAccountWhenAccountNotOwnedByUser() throws ExceptionClient {
-        final OBWriteDomestic2DataInitiationDebtorAccount debtorAccount = new OBWriteDomestic2DataInitiationDebtorAccount().name("Test Account").identification("account-id-123").schemeName("accountId");
+        final OBWriteDomestic2DataInitiationDebtorAccount debtorAccount =
+                new OBWriteDomestic2DataInitiationDebtorAccount().name(
+                "Test Account").identification("account-id-123").schemeName("accountId");
         mockApiClientServiceResponse();
         mockApiProviderConfigurationGetName();
 
@@ -153,13 +175,22 @@ class DomesticPaymentConsentDetailsServiceTest extends BasePaymentConsentDetails
 
         final DomesticPaymentConsentEntity consentEntity = createValidConsentEntity(testApiClient.getId());
 
-        consentEntity.getRequestObj().getData().getInitiation().setDebtorAccount(FRAccountIdentifierConverter.toFRAccountIdentifier(debtorAccount));
+        consentEntity.getRequestObj()
+                     .getData()
+                     .getInitiation()
+                     .setDebtorAccount(FRAccountIdentifierConverter.toFRAccountIdentifier(debtorAccount));
         consentEntity.setId(intentId);
         given(domesticPaymentConsentService.getConsent(intentId, testApiClient.getId())).willReturn(consentEntity);
         mockConsentServiceCanAuthorise(domesticPaymentConsentService);
 
         final ConsentStoreException consentStoreException = Assertions.assertThrows(ConsentStoreException.class,
-                () -> consentDetailsService.getDetailsFromConsentStore(new ConsentClientDetailsRequest(intentId, Mockito.mock(SignedJWT.class), testUser, testApiClient.getId())));
+                                                                                    () -> consentDetailsService.getDetailsFromConsentStore(
+                                                                                            new ConsentClientDetailsRequest(
+                                                                                                    intentId,
+                                                                                                    Mockito.mock(
+                                                                                                            SignedJWT.class),
+                                                                                                    testUser,
+                                                                                                    testApiClient.getId())));
         assertThat(consentStoreException.getErrorType()).isEqualTo(ErrorType.INVALID_DEBTOR_ACCOUNT);
         assertThat(consentStoreException.getMessage()).contains("DebtorAccount not found for user");
     }

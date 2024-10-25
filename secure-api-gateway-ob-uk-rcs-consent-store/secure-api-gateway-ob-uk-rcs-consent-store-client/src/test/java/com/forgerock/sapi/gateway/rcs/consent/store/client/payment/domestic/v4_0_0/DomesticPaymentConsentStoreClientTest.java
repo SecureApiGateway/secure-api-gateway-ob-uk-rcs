@@ -15,6 +15,27 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domestic.v4_0_0;
 
+import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.PaymentConsentValidationHelpers.validateAuthorisedConsent;
+import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.PaymentConsentValidationHelpers.validateConsumedConsent;
+import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.PaymentConsentValidationHelpers.validateCreateConsentAgainstCreateRequestV4;
+import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.PaymentConsentValidationHelpers.validateRejectedConsent;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+
+import java.util.List;
+import java.util.UUID;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
@@ -28,25 +49,9 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.AuthoriseP
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v4_0_0.CreateDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v4_0_0.DomesticPaymentConsent;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
 import uk.org.openbanking.testsupport.v4.payment.OBWriteDomesticConsentTestDataFactory;
-
-import java.util.List;
-import java.util.UUID;
-
-import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.PaymentConsentValidationHelpers.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"rcs.consent.store.api.baseUri= 'ignored'"})
 @ActiveProfiles("test")
@@ -66,7 +71,9 @@ class DomesticPaymentConsentStoreClientTest {
 
     @BeforeEach
     public void beforeEach() {
-        apiClient = new RestDomesticPaymentConsentStoreClient(TestConsentStoreClientConfigurationFactory.createConsentStoreClientConfiguration(port), restTemplateBuilder, objectMapper);
+        apiClient =
+                new RestDomesticPaymentConsentStoreClient(TestConsentStoreClientConfigurationFactory.createConsentStoreClientConfiguration(
+                        port), restTemplateBuilder, objectMapper);
     }
 
     @Test
@@ -83,11 +90,13 @@ class DomesticPaymentConsentStoreClientTest {
         requestMissingIdempotencyField.setIdempotencyKey(null);
 
         final ConsentStoreClientException clientException = assertThrows(ConsentStoreClientException.class,
-                () -> apiClient.createConsent(requestMissingIdempotencyField));
+                                                                         () -> apiClient.createConsent(
+                                                                                 requestMissingIdempotencyField));
         assertThat(clientException.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
         assertThat(clientException.getObError1()).isNotNull();
         assertThat(clientException.getObError1().getErrorCode()).isEqualTo("UK.OBIE.Field.Invalid");
-        assertThat(clientException.getObError1().getMessage()).isEqualTo("The field received is invalid. Reason 'must not be null'");
+        assertThat(clientException.getObError1().getMessage()).isEqualTo(
+                "The field received is invalid. Reason 'must not be null'");
         assertThat(clientException.getObError1().getPath()).isEqualTo("idempotencyKey");
     }
 
@@ -96,7 +105,9 @@ class DomesticPaymentConsentStoreClientTest {
         final CreateDomesticPaymentConsentRequest createConsentRequest = buildCreateConsentRequest();
         final DomesticPaymentConsent consent = apiClient.createConsent(createConsentRequest);
 
-        final AuthorisePaymentConsentRequest authRequest = buildAuthoriseConsentRequest(consent, "psu4test", "acc-12345");
+        final AuthorisePaymentConsentRequest authRequest = buildAuthoriseConsentRequest(consent,
+                                                                                        "psu4test",
+                                                                                        "acc-12345");
         final DomesticPaymentConsent authResponse = apiClient.authoriseConsent(authRequest);
 
         validateAuthorisedConsent(authResponse, authRequest, consent);
@@ -117,7 +128,9 @@ class DomesticPaymentConsentStoreClientTest {
         final CreateDomesticPaymentConsentRequest createConsentRequest = buildCreateConsentRequest();
         final DomesticPaymentConsent consent = apiClient.createConsent(createConsentRequest);
 
-        final AuthorisePaymentConsentRequest authRequest = buildAuthoriseConsentRequest(consent, "psu4test", "acc-12345");
+        final AuthorisePaymentConsentRequest authRequest = buildAuthoriseConsentRequest(consent,
+                                                                                        "psu4test",
+                                                                                        "acc-12345");
         final DomesticPaymentConsent authResponse = apiClient.authoriseConsent(authRequest);
         // Using V3 model status because we are only translating the statuses on the output of the customer facing APIs
         assertThat(authResponse.getStatus()).isEqualTo(OBPaymentConsentStatus.AUTHORISED.toString());
@@ -140,16 +153,19 @@ class DomesticPaymentConsentStoreClientTest {
         final CreateDomesticPaymentConsentRequest createConsentRequest = new CreateDomesticPaymentConsentRequest();
         createConsentRequest.setIdempotencyKey(UUID.randomUUID().toString());
         createConsentRequest.setApiClientId("test-client-1");
-        createConsentRequest.setConsentRequest(FRWriteDomesticConsentConverter.toFRWriteDomesticConsent(OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4()));
+        createConsentRequest.setConsentRequest(FRWriteDomesticConsentConverter.toFRWriteDomesticConsent(
+                OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4()));
         createConsentRequest.setCharges(List.of(
                 FRCharge.builder().type("fee")
                         .chargeBearer(FRChargeBearerType.BORNEBYCREDITOR)
-                        .amount(new FRAmount("1.25","GBP"))
+                        .amount(new FRAmount("1.25", "GBP"))
                         .build()));
         return createConsentRequest;
     }
 
-    private static AuthorisePaymentConsentRequest buildAuthoriseConsentRequest(DomesticPaymentConsent consent, String resourceOwnerId, String authorisedDebtorAccountId) {
+    private static AuthorisePaymentConsentRequest buildAuthoriseConsentRequest(DomesticPaymentConsent consent,
+                                                                               String resourceOwnerId,
+                                                                               String authorisedDebtorAccountId) {
         final AuthorisePaymentConsentRequest authRequest = new AuthorisePaymentConsentRequest();
         authRequest.setAuthorisedDebtorAccountId(authorisedDebtorAccountId);
         authRequest.setConsentId(consent.getId());

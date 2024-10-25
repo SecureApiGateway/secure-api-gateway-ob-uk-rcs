@@ -41,20 +41,28 @@ public class RestDomesticPaymentConsentStoreClient extends BaseRestConsentStoreC
     private final String consentServiceBaseUrl;
 
     @Autowired
-    public RestDomesticPaymentConsentStoreClient(ConsentStoreClientConfiguration consentStoreClientConfiguration, RestTemplateBuilder restTemplateBuilder,
+    public RestDomesticPaymentConsentStoreClient(ConsentStoreClientConfiguration consentStoreClientConfiguration,
+                                                 RestTemplateBuilder restTemplateBuilder,
                                                  ObjectMapper objectMapper) {
         this(consentStoreClientConfiguration, restTemplateBuilder, objectMapper, OBVersion.v4_0_0);
     }
 
-    public RestDomesticPaymentConsentStoreClient(ConsentStoreClientConfiguration consentStoreClientConfiguration, RestTemplateBuilder restTemplateBuilder,
-                                                 ObjectMapper objectMapper, OBVersion obVersion) {
+    public RestDomesticPaymentConsentStoreClient(ConsentStoreClientConfiguration consentStoreClientConfiguration,
+                                                 RestTemplateBuilder restTemplateBuilder,
+                                                 ObjectMapper objectMapper,
+                                                 OBVersion obVersion) {
         super(restTemplateBuilder, objectMapper);
-        this.consentServiceBaseUrl = consentStoreClientConfiguration.getBaseUri() + "/v" + obVersion.getCanonicalVersion() + "/domestic-payment-consents";
+        this.consentServiceBaseUrl =
+                consentStoreClientConfiguration.getBaseUri() + "/v" + obVersion.getCanonicalVersion() + "/domestic"
+                        + "-payment-consents";
     }
 
     @Override
-    public DomesticPaymentConsent createConsent(CreateDomesticPaymentConsentRequest createConsentRequest) throws ConsentStoreClientException {
-        final HttpEntity<CreateDomesticPaymentConsentRequest> requestEntity = new HttpEntity<>(createConsentRequest, createHeaders(createConsentRequest.getApiClientId()));
+    public DomesticPaymentConsent createConsent(CreateDomesticPaymentConsentRequest createConsentRequest)
+            throws ConsentStoreClientException {
+        final HttpEntity<CreateDomesticPaymentConsentRequest> requestEntity = new HttpEntity<>(createConsentRequest,
+                                                                                               createHeaders(
+                                                                                                       createConsentRequest.getApiClientId()));
         return doRestCall(consentServiceBaseUrl, HttpMethod.POST, requestEntity, DomesticPaymentConsent.class);
     }
 
@@ -66,23 +74,28 @@ public class RestDomesticPaymentConsentStoreClient extends BaseRestConsentStoreC
     }
 
     @Override
-    public DomesticPaymentConsent authoriseConsent(AuthorisePaymentConsentRequest authRequest) throws ConsentStoreClientException {
+    public DomesticPaymentConsent authoriseConsent(AuthorisePaymentConsentRequest authRequest)
+            throws ConsentStoreClientException {
         final String url = consentServiceBaseUrl + "/" + authRequest.getConsentId() + "/authorise";
-        final HttpEntity<AuthorisePaymentConsentRequest> requestEntity = new HttpEntity<>(authRequest, createHeaders(authRequest.getApiClientId()));
+        final HttpEntity<AuthorisePaymentConsentRequest> requestEntity = new HttpEntity<>(authRequest,
+                                                                                          createHeaders(authRequest.getApiClientId()));
         return doRestCall(url, HttpMethod.POST, requestEntity, DomesticPaymentConsent.class);
     }
 
     @Override
     public DomesticPaymentConsent rejectConsent(RejectConsentRequest rejectRequest) throws ConsentStoreClientException {
         final String url = consentServiceBaseUrl + "/" + rejectRequest.getConsentId() + "/reject";
-        final HttpEntity<RejectConsentRequest> requestEntity = new HttpEntity<>(rejectRequest, createHeaders(rejectRequest.getApiClientId()));
+        final HttpEntity<RejectConsentRequest> requestEntity = new HttpEntity<>(rejectRequest,
+                                                                                createHeaders(rejectRequest.getApiClientId()));
         return doRestCall(url, HttpMethod.POST, requestEntity, DomesticPaymentConsent.class);
     }
 
     @Override
-    public DomesticPaymentConsent consumeConsent(ConsumePaymentConsentRequest consumeRequest) throws ConsentStoreClientException {
+    public DomesticPaymentConsent consumeConsent(ConsumePaymentConsentRequest consumeRequest)
+            throws ConsentStoreClientException {
         final String url = consentServiceBaseUrl + "/" + consumeRequest.getConsentId() + "/consume";
-        final HttpEntity<ConsumePaymentConsentRequest> requestEntity = new HttpEntity<>(consumeRequest, createHeaders(consumeRequest.getApiClientId()));
+        final HttpEntity<ConsumePaymentConsentRequest> requestEntity = new HttpEntity<>(consumeRequest,
+                                                                                        createHeaders(consumeRequest.getApiClientId()));
         return doRestCall(url, HttpMethod.POST, requestEntity, DomesticPaymentConsent.class);
     }
 

@@ -15,9 +15,10 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v4_0_0;
 
+import org.springframework.validation.annotation.Validated;
+
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.BaseCreatePaymentConsentRequest;
-import org.springframework.validation.annotation.Validated;
 
 @Validated
 public class CreateDomesticPaymentConsentRequest extends BaseCreatePaymentConsentRequest<FRWriteDomesticConsent> {
