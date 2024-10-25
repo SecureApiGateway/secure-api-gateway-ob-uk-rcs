@@ -15,11 +15,9 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domestic;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.BaseRestConsentStoreClient;
@@ -38,12 +36,6 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 public class BaseRestDomesticPaymentConsentStoreClient extends BaseRestConsentStoreClient implements DomesticPaymentConsentStoreClient {
 
     private final String consentServiceBaseUrl;
-
-    @Autowired
-    public BaseRestDomesticPaymentConsentStoreClient(ConsentStoreClientConfiguration consentStoreClientConfiguration, RestTemplateBuilder restTemplateBuilder,
-                                                 ObjectMapper objectMapper) {
-        this(consentStoreClientConfiguration, restTemplateBuilder, objectMapper, OBVersion.v3_1_10);
-    }
 
     public BaseRestDomesticPaymentConsentStoreClient(ConsentStoreClientConfiguration consentStoreClientConfiguration, RestTemplateBuilder restTemplateBuilder,
                                                  ObjectMapper objectMapper, OBVersion obVersion) {
