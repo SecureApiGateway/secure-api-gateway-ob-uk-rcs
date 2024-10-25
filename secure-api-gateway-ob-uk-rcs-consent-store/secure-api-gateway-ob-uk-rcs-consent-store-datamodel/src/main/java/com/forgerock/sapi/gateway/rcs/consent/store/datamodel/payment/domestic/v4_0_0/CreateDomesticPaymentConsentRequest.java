@@ -13,21 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models;
+package com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v4_0_0;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class ConsentClientDecisionRequestData {
-    @JsonProperty("Status")
-    private String status;
-    private FRFinancialAccount debtorAccount;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.BaseCreatePaymentConsentRequest;
+
+@Validated
+public class CreateDomesticPaymentConsentRequest extends BaseCreatePaymentConsentRequest<FRWriteDomesticConsent> {
+
 }

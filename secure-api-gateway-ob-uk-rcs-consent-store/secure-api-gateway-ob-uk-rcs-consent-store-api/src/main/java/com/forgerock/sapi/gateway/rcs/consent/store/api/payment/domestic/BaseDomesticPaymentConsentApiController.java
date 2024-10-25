@@ -68,13 +68,12 @@ public class BaseDomesticPaymentConsentApiController implements DomesticPaymentC
         domesticPaymentConsent.setRequestVersion(obVersion);
         domesticPaymentConsent.setApiClientId(request.getApiClientId());
         domesticPaymentConsent.setRequestObj(request.getConsentRequest());
-        domesticPaymentConsent.setStatus(OBPaymentConsentStatus.AWAITINGAUTHORISATION.toString());
+        domesticPaymentConsent.setStatus(OBPaymentConsentStatus.AWAITINGAUTHORISATION.getValue());
         domesticPaymentConsent.setCharges(request.getCharges());
         domesticPaymentConsent.setIdempotencyKey(request.getIdempotencyKey());
         domesticPaymentConsent.setIdempotencyKeyExpiration(idempotencyKeyExpirationSupplier.get());
         final DomesticPaymentConsentEntity persistedEntity = consentService.createConsent(domesticPaymentConsent);
         logger.info("Consent created with id: {}", persistedEntity.getId());
-
         return new ResponseEntity<>(convertEntityToDto(persistedEntity), HttpStatus.CREATED);
     }
 

@@ -36,6 +36,11 @@ public class PaymentConsentValidationHelpers {
         validateCreateConsentAgainstCreateRequest(consent, createConsentRequest, OBVersion.v3_1_10);
     }
 
+    public static void validateCreateConsentAgainstCreateRequestV4(BasePaymentConsent<?> consent,
+                                                                 BaseCreatePaymentConsentRequest<?> createConsentRequest) {
+        validateCreateConsentAgainstCreateRequest(consent, createConsentRequest, OBVersion.v4_0_0);
+    }
+
     public static void validateCreateConsentAgainstCreateRequest(BasePaymentConsent<?> consent,
                                                                  BaseCreatePaymentConsentRequest<?> createConsentRequest,
                                                                  OBVersion expectedVersion) {
