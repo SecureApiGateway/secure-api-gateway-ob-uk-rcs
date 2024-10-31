@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticscheduled.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticscheduled;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.Objects.requireNonNull;
+
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.BaseRestConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientConfiguration;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticscheduled.DomesticScheduledPaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.AuthorisePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePaymentConsentRequest;
@@ -36,21 +35,21 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 /**
  * Implementation of the DomesticScheduledPaymentConsentStoreClient which makes REST calls over HTTP
  */
-@Component
-public class RestDomesticScheduledPaymentConsentStoreClient extends BaseRestConsentStoreClient implements DomesticScheduledPaymentConsentStoreClient {
+public class BaseRestDomesticScheduledPaymentConsentStoreClient extends BaseRestConsentStoreClient implements DomesticScheduledPaymentConsentStoreClient {
 
-    private final String consentServiceBaseUrl;
+    protected final String consentServiceBaseUrl;
+    protected final OBVersion obVersion;
 
-    @Autowired
-    public RestDomesticScheduledPaymentConsentStoreClient(ConsentStoreClientConfiguration consentStoreClientConfiguration, RestTemplateBuilder restTemplateBuilder,
-                                                          ObjectMapper objectMapper) {
-        this(consentStoreClientConfiguration, restTemplateBuilder, objectMapper, OBVersion.v3_1_10);
-    }
+    public BaseRestDomesticScheduledPaymentConsentStoreClient(
+            ConsentStoreClientConfiguration consentStoreClientConfiguration,
+            RestTemplateBuilder restTemplateBuilder,
+            ObjectMapper objectMapper,
+            OBVersion obVersion) {
 
-    public RestDomesticScheduledPaymentConsentStoreClient(ConsentStoreClientConfiguration consentStoreClientConfiguration, RestTemplateBuilder restTemplateBuilder,
-                                                          ObjectMapper objectMapper, OBVersion obVersion) {
         super(restTemplateBuilder, objectMapper);
-        this.consentServiceBaseUrl = consentStoreClientConfiguration.getBaseUri() + "/v" + obVersion.getCanonicalVersion() + "/domestic-scheduled-payment-consents";
+        this.obVersion = requireNonNull(obVersion, "obVersion must be provided");
+        this.consentServiceBaseUrl = consentStoreClientConfiguration.getBaseUri() + "/v" + obVersion.getCanonicalVersion()
+                + "/domestic-scheduled-payment-consents";
     }
 
     @Override
@@ -86,5 +85,4 @@ public class RestDomesticScheduledPaymentConsentStoreClient extends BaseRestCons
         final HttpEntity<ConsumePaymentConsentRequest> requestEntity = new HttpEntity<>(consumeRequest, createHeaders(consumeRequest.getApiClientId()));
         return doRestCall(url, HttpMethod.POST, requestEntity, DomesticScheduledPaymentConsent.class);
     }
-
 }

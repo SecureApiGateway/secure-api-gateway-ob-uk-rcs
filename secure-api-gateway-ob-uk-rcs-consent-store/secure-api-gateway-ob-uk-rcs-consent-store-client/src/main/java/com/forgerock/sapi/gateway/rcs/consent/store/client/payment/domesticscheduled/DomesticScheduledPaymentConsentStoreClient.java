@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticscheduled.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticscheduled;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
@@ -23,7 +23,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticsc
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticscheduled.v3_1_10.DomesticScheduledPaymentConsent;
 
 /**
- * Client for interacting with com.forgerock.sapi.gateway.rcs.consent.store.api.v3_1_10.DomesticScheduledPaymentConsentApi
+ * Client for interacting with com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domesticscheduled.DomesticScheduledPaymentConsentApi
  */
 public interface DomesticScheduledPaymentConsentStoreClient {
 
