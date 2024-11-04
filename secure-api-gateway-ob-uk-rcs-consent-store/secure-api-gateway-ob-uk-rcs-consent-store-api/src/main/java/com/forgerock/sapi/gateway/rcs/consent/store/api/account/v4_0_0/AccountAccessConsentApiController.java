@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.api.account.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.api.account.v4_0_0;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.api.account.BaseAccountAccessConsentApiController;
 import io.swagger.annotations.Api;
@@ -27,18 +27,15 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Controller("V3.1.10AccountAccessConsentApiController")
-@Api(tags = {"v3.1.10"})
-@RequestMapping(value = "/consent/store/v3.1.10")
+@Controller("V4.0.0AccountAccessConsentApiController")
+@Api(tags = {"v4.0.0"})
+@RequestMapping(value = "/consent/store/v4.0.0")
 @DependsOn({"versionedConsentServices"})
-
 public class AccountAccessConsentApiController extends BaseAccountAccessConsentApiController {
 
     @Autowired
-    public AccountAccessConsentApiController(
-            @Qualifier("v3.1.10AccountAccessConsentService") AccountAccessConsentService accountAccessConsentService) {
-        super(accountAccessConsentService, OBVersion.v3_1_10);
+    public AccountAccessConsentApiController(@Qualifier("v4.0.0AccountAccessConsentService") AccountAccessConsentService accountAccessConsentService) {
+        super(accountAccessConsentService, OBVersion.v4_0_0);
     }
 
 }
-

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.client.account.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.client.account.v4_0_0;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientConfiguration;
@@ -22,12 +22,12 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Component;
 
-@Component("v3.1.10RestAccountAccessConsentStoreClient")
+@Component("v4.0.0RestAccountAccessConsentStoreClient")
 public class RestAccountAccessConsentStoreClient extends BaseRestAccountAccessConsentStoreClient {
 
 
     public RestAccountAccessConsentStoreClient(ConsentStoreClientConfiguration consentStoreClientConfiguration,
                                                RestTemplateBuilder restTemplateBuilder, ObjectMapper objectMapper) {
-        super(consentStoreClientConfiguration, restTemplateBuilder, objectMapper, OBVersion.v3_1_10);
+        super(consentStoreClientConfiguration, restTemplateBuilder, objectMapper, OBVersion.v4_0_0);
     }
 }
