@@ -49,20 +49,6 @@ public class AccountAccessConsentValidationHelpers {
         assertThat(consent.getStatusUpdateDateTime()).isEqualTo(consent.getCreationDateTime());
     }
 
-    public static void validateCreateConsentAgainstCreateRequest(AccountAccessConsent consent,
-                                                                 CreateAccountAccessConsentRequest createAccountAccessConsentRequest) {
-        assertThat(consent.getId()).isNotEmpty();
-        assertThat(consent.getStatus()).isEqualTo(OBExternalRequestStatus1Code.AWAITINGAUTHORISATION.toString());
-        assertThat(consent.getApiClientId()).isEqualTo(createAccountAccessConsentRequest.getApiClientId());
-        assertThat(consent.getRequestObj()).isEqualTo(createAccountAccessConsentRequest.getConsentRequest());
-        assertThat(consent.getRequestVersion()).isEqualTo(OBVersion.v3_1_10);
-        assertThat(consent.getResourceOwnerId()).isNull();
-        assertThat(consent.getAuthorisedAccountIds()).isNull();
-
-        assertThat(consent.getCreationDateTime()).isBefore(new Date());
-        assertThat(consent.getStatusUpdateDateTime()).isEqualTo(consent.getCreationDateTime());
-    }
-
     public static void validateAuthorisedConsent(AccountAccessConsent authorisedConsent, AuthoriseAccountAccessConsentRequest authoriseReq, AccountAccessConsent originalConsent) {
         assertThat(authorisedConsent.getStatus()).isEqualTo(OBExternalRequestStatus1Code.AUTHORISED.toString());
         assertThat(authorisedConsent.getResourceOwnerId()).isEqualTo(authoriseReq.getResourceOwnerId());
