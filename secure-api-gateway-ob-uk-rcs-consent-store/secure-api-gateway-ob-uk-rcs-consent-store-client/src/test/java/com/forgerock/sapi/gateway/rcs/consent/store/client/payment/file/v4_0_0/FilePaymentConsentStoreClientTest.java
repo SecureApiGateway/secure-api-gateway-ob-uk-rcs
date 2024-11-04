@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.file.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.file.v4_0_0;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.file.BaseFilePaymentConsentStoreClientTest;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.file.BaseRestFilePaymentConsentStoreClient;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.file.v3_1_10.RestFilePaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import static com.forgerock.sapi.gateway.rcs.consent.store.client.TestConsentStoreClientConfigurationFactory.createConsentStoreClientConfiguration;
@@ -25,7 +24,7 @@ import static com.forgerock.sapi.gateway.rcs.consent.store.client.TestConsentSto
 class FilePaymentConsentStoreClientTest extends BaseFilePaymentConsentStoreClientTest {
 
     protected FilePaymentConsentStoreClientTest() {
-        super(OBVersion.v3_1_10);
+        super(OBVersion.v4_0_0);
     }
 
     @Override
