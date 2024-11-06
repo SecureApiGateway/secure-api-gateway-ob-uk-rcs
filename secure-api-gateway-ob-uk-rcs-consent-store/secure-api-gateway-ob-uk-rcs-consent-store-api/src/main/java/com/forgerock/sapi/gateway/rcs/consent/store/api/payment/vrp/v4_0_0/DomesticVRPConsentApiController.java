@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.vrp.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.vrp.v4_0_0;
 
 import java.util.function.Supplier;
 
@@ -33,9 +33,9 @@ import io.swagger.annotations.Api;
 /**
  * Implementation of DomesticVRPConsentApi for OBIE version 3.1.10
  */
-@Controller("v3.1.10DomesticVRPConsentApiController")
-@Api(tags = {"v3.1.10"})
-@RequestMapping(value = "/consent/store/v3.1.10")
+@Controller("v4.0.0DomesticVRPConsentApiController")
+@Api(tags = {"v4.0.0"})
+@RequestMapping(value = "/consent/store/v4.0.0")
 @DependsOn({"versionedConsentServices"})
 public class DomesticVRPConsentApiController extends BaseDomesticVRPConsentApiController {
 
