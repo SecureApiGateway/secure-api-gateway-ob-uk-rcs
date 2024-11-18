@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.api.funds.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.api.funds;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Date;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.api.funds.FundsConfirmationConsentApi;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.AuthoriseFundsConfirmationConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.CreateFundsConfirmationConsentRequest;
@@ -34,12 +33,12 @@ import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1D
 public class FundsConfirmationConsentValidationHelpers {
 
     public static void validateCreateConsentAgainstCreateRequest(FundsConfirmationConsent consent,
-                                                                 CreateFundsConfirmationConsentRequest createFundsConfirmationConsentRequest) {
+                                                                 CreateFundsConfirmationConsentRequest createFundsConfirmationConsentRequest, OBVersion obVersion) {
         assertThat(consent.getId()).isNotEmpty();
         assertThat(consent.getStatus()).isEqualTo(StatusEnum.AWAITINGAUTHORISATION.toString());
         assertThat(consent.getApiClientId()).isEqualTo(createFundsConfirmationConsentRequest.getApiClientId());
         assertThat(consent.getRequestObj()).isEqualTo(createFundsConfirmationConsentRequest.getConsentRequest());
-        assertThat(consent.getRequestVersion()).isEqualTo(OBVersion.v3_1_10);
+        assertThat(consent.getRequestVersion()).isEqualTo(obVersion);
         assertThat(consent.getResourceOwnerId()).isNull();
         assertThat(consent.getCreationDateTime()).isBefore(new Date());
         assertThat(consent.getStatusUpdateDateTime()).isEqualTo(consent.getCreationDateTime());

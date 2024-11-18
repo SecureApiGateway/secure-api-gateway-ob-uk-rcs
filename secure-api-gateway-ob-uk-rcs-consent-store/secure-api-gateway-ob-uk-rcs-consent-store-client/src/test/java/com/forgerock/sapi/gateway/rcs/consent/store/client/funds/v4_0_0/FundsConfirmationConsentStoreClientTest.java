@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.client.funds.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.client.funds.v4_0_0;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.client.funds.BaseFundsConfirmationConsentStoreClientTest;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.funds.BaseRestFundsConfirmationConsentStoreClient;
@@ -24,7 +24,7 @@ import static com.forgerock.sapi.gateway.rcs.consent.store.client.TestConsentSto
 class FundsConfirmationConsentStoreClientTest extends BaseFundsConfirmationConsentStoreClientTest {
 
     protected FundsConfirmationConsentStoreClientTest() {
-        super(OBVersion.v3_1_10);
+        super(OBVersion.v4_0_0);
     }
 
     @Override
