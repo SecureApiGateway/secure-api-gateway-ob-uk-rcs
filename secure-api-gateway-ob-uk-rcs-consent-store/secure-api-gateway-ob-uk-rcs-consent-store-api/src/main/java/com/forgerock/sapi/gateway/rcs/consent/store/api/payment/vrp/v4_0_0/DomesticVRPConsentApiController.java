@@ -31,7 +31,7 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import io.swagger.annotations.Api;
 
 /**
- * Implementation of DomesticVRPConsentApi for OBIE version 3.1.10
+ * Implementation of DomesticVRPConsentApi for OBIE version 4.0.0
  */
 @Controller("v4.0.0DomesticVRPConsentApiController")
 @Api(tags = {"v4.0.0"})
@@ -41,9 +41,9 @@ public class DomesticVRPConsentApiController extends BaseDomesticVRPConsentApiCo
 
     @Autowired
     public DomesticVRPConsentApiController(
-            @Qualifier("v3.1.10DomesticVRPConsentService")DomesticVRPConsentService consentService,
+            @Qualifier("v4.0.0DomesticVRPConsentService") DomesticVRPConsentService consentService,
             Supplier<DateTime> idempotencyKeyExpirationSupplier) {
-        super(consentService, idempotencyKeyExpirationSupplier, OBVersion.v3_1_10);
+        super(consentService, idempotencyKeyExpirationSupplier, OBVersion.v4_0_0);
     }
 
 }

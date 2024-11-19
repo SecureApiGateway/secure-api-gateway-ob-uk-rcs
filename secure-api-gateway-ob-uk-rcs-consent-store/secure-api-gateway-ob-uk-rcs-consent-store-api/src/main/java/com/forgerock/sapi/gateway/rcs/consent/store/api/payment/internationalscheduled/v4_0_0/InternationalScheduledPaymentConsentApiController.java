@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.internationalscheduled.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.internationalscheduled.v4_0_0;
 
 import java.util.function.Supplier;
 
@@ -31,19 +31,19 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import io.swagger.annotations.Api;
 
 /**
- * Implementation of InternationalScheduledPaymentConsentApi for OBIE version 3.1.10
+ * Implementation of InternationalScheduledPaymentConsentApi for OBIE version 4.0.0
  */
-@Controller("v3.1.10InternationalScheduledPaymentConsentApiController")
-@Api(tags = {"v3.1.10"})
-@RequestMapping(value = "/consent/store/v3.1.10")
+@Controller("v4.0.0InternationalScheduledPaymentConsentApiController")
+@Api(tags = {"v4.0.0"})
+@RequestMapping(value = "/consent/store/v4.0.0")
 @DependsOn({"versionedConsentServices"})
 public class InternationalScheduledPaymentConsentApiController extends BaseInternationalScheduledPaymentConsentApiController {
 
     @Autowired
     public InternationalScheduledPaymentConsentApiController(
-            @Qualifier("v3.1.10InternationalScheduledPaymentConsentService") InternationalScheduledPaymentConsentService consentService,
+            @Qualifier("v4.0.0InternationalScheduledPaymentConsentService") InternationalScheduledPaymentConsentService consentService,
             Supplier<DateTime> idempotencyKeyExpirationSupplier) {
-        super(consentService, idempotencyKeyExpirationSupplier, OBVersion.v3_1_10);
+        super(consentService, idempotencyKeyExpirationSupplier, OBVersion.v4_0_0);
     }
 
 }
