@@ -13,23 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticscheduled.v4_0_0;
+package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.international.v4_0_0;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientConfiguration;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticscheduled.BaseRestDomesticScheduledPaymentConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.international.BaseRestInternationalPaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 /**
- * v4.0.0 implementation of RestDomesticScheduledPaymentConsentStoreClient
+ * v4.0.0 implementation of RestInternationalPaymentConsentStoreClient
  */
-@Component("v4.0.0RestDomesticScheduledPaymentConsentStoreClient")
-public class RestDomesticScheduledPaymentConsentStoreClient extends BaseRestDomesticScheduledPaymentConsentStoreClient {
+@Component("v4.0.0RestInternationalPaymentConsentStoreClient")
+public class RestInternationalPaymentConsentStoreClient extends BaseRestInternationalPaymentConsentStoreClient {
 
-    public RestDomesticScheduledPaymentConsentStoreClient(
+    public RestInternationalPaymentConsentStoreClient(
             ConsentStoreClientConfiguration consentStoreClientConfiguration,
             RestTemplateBuilder restTemplateBuilder,
             ObjectMapper objectMapper) {

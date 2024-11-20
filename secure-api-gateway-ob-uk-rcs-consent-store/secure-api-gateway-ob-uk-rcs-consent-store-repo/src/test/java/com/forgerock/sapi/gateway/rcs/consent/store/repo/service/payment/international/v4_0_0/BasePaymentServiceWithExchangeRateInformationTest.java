@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.international;
+package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.international.v4_0_0;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRExchangeRateInformation;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRExchangeRateConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRExchangeRateConverter;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.international.BasePaymentConsentEntityWithExchangeRateInformation;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.BasePaymentConsentServiceTest;
 
-import uk.org.openbanking.datamodel.v3.payment.OBExchangeRateType;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteInternational3DataInitiationExchangeRateInformation;
+import uk.org.openbanking.datamodel.v4.payment.OBExchangeRateType;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteInternational3DataInitiationExchangeRateInformation;
 
 public abstract class BasePaymentServiceWithExchangeRateInformationTest<T extends BasePaymentConsentEntityWithExchangeRateInformation<?>> extends BasePaymentConsentServiceTest<T> {
 

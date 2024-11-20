@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.payment.international;
 
-import static com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.international.DefaultInternationalStandingOrderConsentServiceTest.createValidConsentEntity;
+import static com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.international.v3_1_10.DefaultInternationalStandingOrderConsentServiceTest.createValidConsentEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 

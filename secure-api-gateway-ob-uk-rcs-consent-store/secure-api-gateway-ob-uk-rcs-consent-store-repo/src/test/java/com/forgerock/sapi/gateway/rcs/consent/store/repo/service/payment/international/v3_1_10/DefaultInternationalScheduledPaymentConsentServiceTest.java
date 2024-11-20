@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.international;
+package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.international.v3_1_10;
 
 import java.util.List;
 import java.util.UUID;
@@ -31,6 +31,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FR
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.international.InternationalScheduledPaymentConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.international.DefaultInternationalScheduledPaymentConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
