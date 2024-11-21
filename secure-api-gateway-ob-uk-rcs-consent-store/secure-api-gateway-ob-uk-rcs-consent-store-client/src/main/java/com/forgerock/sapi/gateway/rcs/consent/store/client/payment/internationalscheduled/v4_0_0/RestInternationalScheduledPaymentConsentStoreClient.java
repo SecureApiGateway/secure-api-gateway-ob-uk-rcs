@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.internationalscheduled.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.internationalscheduled.v4_0_0;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -27,14 +27,14 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 /**
  * Implementation of the InternationalScheduledPaymentConsentStoreClient which makes REST calls over HTTP
  */
-@Component("v3.1.10RestInternationalScheduledPaymentConsentStoreClient")
+@Component("v4.0.0RestInternationalScheduledPaymentConsentStoreClient")
 public class RestInternationalScheduledPaymentConsentStoreClient extends BaseRestInternationalScheduledPaymentConsentStoreClient {
 
     @Autowired
     public RestInternationalScheduledPaymentConsentStoreClient(ConsentStoreClientConfiguration consentStoreClientConfiguration,
                                                                RestTemplateBuilder restTemplateBuilder,
                                                                ObjectMapper objectMapper) {
-        super(consentStoreClientConfiguration, restTemplateBuilder, objectMapper, OBVersion.v3_1_10);
+        super(consentStoreClientConfiguration, restTemplateBuilder, objectMapper, OBVersion.v4_0_0);
     }
 
 }
