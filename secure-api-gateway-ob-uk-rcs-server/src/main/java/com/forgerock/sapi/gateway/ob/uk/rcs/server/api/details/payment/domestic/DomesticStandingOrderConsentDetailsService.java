@@ -20,6 +20,7 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRFrequency6Converter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticStandingOrderConsentData;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticStandingOrderDataInitiation;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticStandingOrderConsentDetails;
@@ -54,10 +55,14 @@ public class DomesticStandingOrderConsentDetailsService extends BasePaymentConse
 
         final FRWriteDomesticStandingOrderConsentData obConsentRequestData = consent.getRequestObj().getData();
         final FRWriteDomesticStandingOrderDataInitiation initiation = obConsentRequestData.getInitiation();
-        // Updating initiation.frequency with a readable value to be displayed in the UI
-        FRFrequency frFrequency = new FRFrequency(initiation.getFrequency());
-        initiation.setFrequency(frFrequency.getFormattedSentence());
 
+        if (initiation.getMandateRelatedInformation() != null && initiation.getMandateRelatedInformation().getFrequency() != null) {
+            // Updating initiation.frequency with a readable value to be displayed in the UI
+            initiation.setFrequency(initiation.getMandateRelatedInformation().getFrequency().getFormattedSentenceV4());
+        } else if (initiation.getFrequency() != null) {
+            FRFrequency frFrequency = new FRFrequency(initiation.getFrequency());
+            initiation.setFrequency(frFrequency.getFormattedSentence());
+        }
         consentDetails.setInitiation(initiation);
         consentDetails.setPaymentReference(initiation.getReference());
 
