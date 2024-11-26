@@ -49,7 +49,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.AuthoriseP
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internationalscheduled.v3_1_10.CreateInternationalScheduledPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internationalscheduled.v3_1_10.InternationalScheduledPaymentConsent;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.international.BasePaymentServiceWithExchangeRateInformationTest;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.international.v3_1_10.BasePaymentServiceWithExchangeRateInformationTest;
 
 import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalScheduledConsent5;

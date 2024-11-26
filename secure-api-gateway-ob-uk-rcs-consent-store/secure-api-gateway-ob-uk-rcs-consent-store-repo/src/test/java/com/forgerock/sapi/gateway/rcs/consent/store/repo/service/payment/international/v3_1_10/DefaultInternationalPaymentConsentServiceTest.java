@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.international;
+package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.international.v3_1_10;
 
 import java.util.List;
 import java.util.UUID;
@@ -27,45 +27,45 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRChargeBearerType;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteInternationalStandingOrderConsentConverter;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.international.InternationalStandingOrderConsentEntity;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteInternationalConsentConverter;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.international.InternationalPaymentConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentService;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.BasePaymentConsentServiceTest;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.international.DefaultInternationalPaymentConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalStandingOrderConsent6;
-import uk.org.openbanking.testsupport.v3.payment.OBWriteInternationalStandingOrderConsentTestDataFactory;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalConsent5;
+import uk.org.openbanking.testsupport.v3.payment.OBWriteInternationalConsentTestDataFactory;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 public
-class DefaultInternationalStandingOrderConsentServiceTest extends BasePaymentConsentServiceTest<InternationalStandingOrderConsentEntity> {
+class DefaultInternationalPaymentConsentServiceTest extends BasePaymentServiceWithExchangeRateInformationTest<InternationalPaymentConsentEntity> {
 
     @Autowired
-    private DefaultInternationalStandingOrderConsentService consentService;
+    private DefaultInternationalPaymentConsentService consentService;
 
     @Override
-    protected BaseConsentService<InternationalStandingOrderConsentEntity, PaymentAuthoriseConsentArgs> getConsentServiceToTest() {
+    protected BaseConsentService<InternationalPaymentConsentEntity, PaymentAuthoriseConsentArgs> getConsentServiceToTest() {
         return consentService;
     }
 
     @Override
-    protected InternationalStandingOrderConsentEntity getValidConsentEntity() {
+    protected InternationalPaymentConsentEntity getValidConsentEntity() {
         final String apiClientId = "test-client-987";
         return createValidConsentEntity(apiClientId);
     }
 
-    public static InternationalStandingOrderConsentEntity createValidConsentEntity(String apiClientId) {
-        return createValidConsentEntity(OBWriteInternationalStandingOrderConsentTestDataFactory.aValidOBWriteInternationalStandingOrderConsent6(), apiClientId);
+    public static InternationalPaymentConsentEntity createValidConsentEntity(String apiClientId) {
+        return createValidConsentEntity(OBWriteInternationalConsentTestDataFactory.aValidOBWriteInternationalConsent5(), apiClientId);
     }
 
-    public static InternationalStandingOrderConsentEntity createValidConsentEntity(OBWriteInternationalStandingOrderConsent6 obConsent, String apiClientId) {
-        final InternationalStandingOrderConsentEntity consent = new InternationalStandingOrderConsentEntity();
+    public static InternationalPaymentConsentEntity createValidConsentEntity(OBWriteInternationalConsent5 obConsent, String apiClientId) {
+        final InternationalPaymentConsentEntity consent = new InternationalPaymentConsentEntity();
         consent.setRequestVersion(OBVersion.v3_1_10);
         consent.setApiClientId(apiClientId);
-        consent.setRequestObj(FRWriteInternationalStandingOrderConsentConverter.toFRWriteInternationalStandingOrderConsent(obConsent));
+        consent.setRequestObj(FRWriteInternationalConsentConverter.toFRWriteInternationalConsent(obConsent));
         consent.setStatus(OBPaymentConsentStatus.AWAITINGAUTHORISATION.toString());
         consent.setIdempotencyKey(UUID.randomUUID().toString());
         consent.setIdempotencyKeyExpiration(DateTime.now().plusDays(1));
@@ -79,6 +79,7 @@ class DefaultInternationalStandingOrderConsentServiceTest extends BasePaymentCon
                         .amount(new FRAmount("0.10","GBP"))
                         .build())
         );
+        consent.setExchangeRateInformation(getExchangeRateInformation(obConsent.getData().getInitiation().getExchangeRateInformation()));
         return consent;
     }
 }

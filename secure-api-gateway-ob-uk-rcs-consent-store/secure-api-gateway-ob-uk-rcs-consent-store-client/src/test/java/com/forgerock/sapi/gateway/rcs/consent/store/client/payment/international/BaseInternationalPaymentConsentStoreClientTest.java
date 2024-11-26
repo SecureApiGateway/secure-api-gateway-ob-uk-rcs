@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.international.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.international;
 
 import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.PaymentConsentValidationHelpers.validateAuthorisedConsent;
 import static com.forgerock.sapi.gateway.rcs.consent.store.api.payment.PaymentConsentValidationHelpers.validateConsumedConsent;
@@ -43,45 +43,52 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRChargeBearerTy
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteInternationalConsentConverter;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException.ErrorType;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.TestConsentStoreClientConfigurationFactory;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.AuthorisePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePaymentConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticscheduled.v3_1_10.DomesticScheduledPaymentConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.international.v3_1_10.CreateInternationalPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.international.v3_1_10.InternationalPaymentConsent;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.international.v3_1_10.BasePaymentServiceWithExchangeRateInformationTest;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalConsent5;
 import uk.org.openbanking.testsupport.v3.payment.OBWriteInternationalConsentTestDataFactory;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"rcs.consent.store.api.baseUri= 'ignored'"})
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
-class InternationalPaymentConsentStoreClientTest {
+public abstract class BaseInternationalPaymentConsentStoreClientTest {
+
+    protected final OBVersion version;
 
     @LocalServerPort
-    private int port;
+    protected int port;
 
     @Autowired
-    private RestTemplateBuilder restTemplateBuilder;
+    protected RestTemplateBuilder restTemplateBuilder;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    protected ObjectMapper objectMapper;
 
-    private RestInternationalPaymentConsentStoreClient apiClient;
+    protected BaseRestInternationalPaymentConsentStoreClient apiClient;
+
+    protected BaseInternationalPaymentConsentStoreClientTest(OBVersion version) {
+        this.version = version;
+    }
 
     @BeforeEach
     public void beforeEach() {
-        apiClient = new RestInternationalPaymentConsentStoreClient(TestConsentStoreClientConfigurationFactory.createConsentStoreClientConfiguration(port), restTemplateBuilder, objectMapper);
+        apiClient = createApiClient();
     }
+
+    protected abstract BaseRestInternationalPaymentConsentStoreClient createApiClient();
 
     @Test
     void testCreateConsent() {
         final CreateInternationalPaymentConsentRequest createConsentRequest = buildCreateConsentRequest();
         final InternationalPaymentConsent consent = apiClient.createConsent(createConsentRequest);
 
-        validateCreateConsentAgainstCreateRequest(consent, createConsentRequest);
+        validateCreateConsentAgainstCreateRequest(consent, createConsentRequest, version);
     }
 
     @Test
@@ -116,6 +123,7 @@ class InternationalPaymentConsentStoreClientTest {
 
         final RejectConsentRequest rejectRequest = buildRejectRequest(consent, "joe.bloggs");
         final InternationalPaymentConsent rejectedConsent = apiClient.rejectConsent(rejectRequest);
+
         validateRejectedConsent(rejectedConsent, rejectRequest, consent);
     }
 
@@ -146,14 +154,12 @@ class InternationalPaymentConsentStoreClientTest {
         final CreateInternationalPaymentConsentRequest createConsentRequest = new CreateInternationalPaymentConsentRequest();
         createConsentRequest.setIdempotencyKey(UUID.randomUUID().toString());
         createConsentRequest.setApiClientId("test-client-1");
-        final OBWriteInternationalConsent5 obConsent = OBWriteInternationalConsentTestDataFactory.aValidOBWriteInternationalConsent5();
-        createConsentRequest.setConsentRequest(FRWriteInternationalConsentConverter.toFRWriteInternationalConsent(obConsent));
         createConsentRequest.setCharges(List.of(
                 FRCharge.builder().type("fee")
                         .chargeBearer(FRChargeBearerType.BORNEBYCREDITOR)
-                        .amount(new FRAmount("1.25","GBP"))
+                        .amount(new FRAmount("1.25", "GBP"))
                         .build()));
-        createConsentRequest.setExchangeRateInformation(BasePaymentServiceWithExchangeRateInformationTest.getExchangeRateInformation(obConsent.getData().getInitiation().getExchangeRateInformation()));
+        createConsentRequest.setConsentRequest(FRWriteInternationalConsentConverter.toFRWriteInternationalConsent(OBWriteInternationalConsentTestDataFactory.aValidOBWriteInternationalConsent5()));
         return createConsentRequest;
     }
 
@@ -180,5 +186,4 @@ class InternationalPaymentConsentStoreClientTest {
         consumeRequest.setConsentId((consent.getId()));
         return consumeRequest;
     }
-
 }
