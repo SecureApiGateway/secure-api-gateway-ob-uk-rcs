@@ -85,7 +85,7 @@
 
     <properties>
         <!-- Artifact versions -->
-        <uk.bom.version>4.0.0-pr-234-SNAPSHOT</uk.bom.version>
+        <uk.bom.version>4.0.0-SNAPSHOT</uk.bom.version>
         <!-- <uk.bom.version>4.0.0-SNAPSHOT</uk.bom.version> -->
         <revision>4.0.0-SNAPSHOT</revision>
         <!-- Plugin versions -->
