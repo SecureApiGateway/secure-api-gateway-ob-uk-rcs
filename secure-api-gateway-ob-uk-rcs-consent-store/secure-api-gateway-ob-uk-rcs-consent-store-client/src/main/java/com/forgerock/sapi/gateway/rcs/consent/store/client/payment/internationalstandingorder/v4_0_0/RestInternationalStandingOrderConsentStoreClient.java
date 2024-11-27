@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.internationalstandingorder.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.internationalstandingorder.v4_0_0;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Component;
@@ -24,9 +24,9 @@ import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.international
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 /**
- * v3.1.10 implementation of RestInternationalStandingOrderConsentStoreClient
+ * v4.0.0 implementation of RestInternationalStandingOrderConsentStoreClient
  */
-@Component("v3.1.10RestInternationalStandingOrderConsentStoreClient")
+@Component("v4.0.0RestInternationalStandingOrderConsentStoreClient")
 public class RestInternationalStandingOrderConsentStoreClient extends BaseRestInternationalStandingOrderConsentStoreClient {
 
     public RestInternationalStandingOrderConsentStoreClient(
@@ -34,6 +34,6 @@ public class RestInternationalStandingOrderConsentStoreClient extends BaseRestIn
             RestTemplateBuilder restTemplateBuilder,
             ObjectMapper objectMapper) {
 
-        super(consentStoreClientConfiguration, restTemplateBuilder, objectMapper, OBVersion.v3_1_10);
+        super(consentStoreClientConfiguration, restTemplateBuilder, objectMapper, OBVersion.v4_0_0);
     }
 }

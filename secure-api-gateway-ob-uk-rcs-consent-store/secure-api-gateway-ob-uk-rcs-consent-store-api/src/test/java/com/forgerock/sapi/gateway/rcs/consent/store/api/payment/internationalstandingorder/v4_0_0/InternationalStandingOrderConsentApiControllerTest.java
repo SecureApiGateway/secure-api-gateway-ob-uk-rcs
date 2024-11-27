@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.international.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.internationalstandingorder.v4_0_0;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.international.BaseInternationalPaymentConsentApiControllerTest;
+import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.internationalstandingorder.BaseInternationalStandingOrderConsentApiControllerTest;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-public class InternationalPaymentConsentApiControllerTest extends BaseInternationalPaymentConsentApiControllerTest {
+public class InternationalStandingOrderConsentApiControllerTest extends BaseInternationalStandingOrderConsentApiControllerTest {
 
     @Override
     protected OBVersion getControllerVersion() {
-        return OBVersion.v3_1_10;
+        return OBVersion.v4_0_0;
     }
 }
