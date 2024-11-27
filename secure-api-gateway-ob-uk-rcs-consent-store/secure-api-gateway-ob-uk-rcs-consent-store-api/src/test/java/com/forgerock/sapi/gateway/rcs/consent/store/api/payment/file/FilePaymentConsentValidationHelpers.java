@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.file.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.file;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,12 +34,12 @@ import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsentResponse4DataSt
 public class FilePaymentConsentValidationHelpers {
 
     public static void validateCreateConsentAgainstCreateRequest(FilePaymentConsent consent,
-                                                                 CreateFilePaymentConsentRequest createConsentRequest) {
+                                                                 CreateFilePaymentConsentRequest createConsentRequest, OBVersion version) {
         assertThat(consent.getId()).isNotEmpty();
         assertThat(consent.getStatus()).isEqualTo(OBWriteFileConsentResponse4DataStatus.AWAITINGUPLOAD.toString());
         assertThat(consent.getApiClientId()).isEqualTo(createConsentRequest.getApiClientId());
         assertThat(consent.getRequestObj()).isEqualTo(createConsentRequest.getConsentRequest());
-        assertThat(consent.getRequestVersion()).isEqualTo(OBVersion.v3_1_10);
+        assertThat(consent.getRequestVersion()).isEqualTo(version);
         assertThat(consent.getCharges()).isEqualTo(createConsentRequest.getCharges());
         assertThat(consent.getIdempotencyKey()).isEqualTo(createConsentRequest.getIdempotencyKey());
         assertThat(consent.getResourceOwnerId()).isNull();

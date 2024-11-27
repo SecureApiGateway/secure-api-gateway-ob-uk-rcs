@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.file.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.file.v4_0_0;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientConfiguration;
@@ -25,11 +25,11 @@ import org.springframework.stereotype.Component;
 /**
  * Implementation of the FilePaymentConsentStoreClient which makes REST calls over HTTP
  */
-@Component("v3.1.10RestFilePaymentConsentStoreClient")
+@Component("v4.0.0RestFilePaymentConsentStoreClient")
 public class RestFilePaymentConsentStoreClient extends BaseRestFilePaymentConsentStoreClient {
 
     public RestFilePaymentConsentStoreClient(ConsentStoreClientConfiguration consentStoreClientConfiguration, RestTemplateBuilder restTemplateBuilder,
                                              ObjectMapper objectMapper) {
-        super(consentStoreClientConfiguration, restTemplateBuilder, objectMapper, OBVersion.v3_1_10);
+        super(consentStoreClientConfiguration, restTemplateBuilder, objectMapper, OBVersion.v4_0_0);
     }
 }
