@@ -13,24 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.international.v3_1_10;
+package com.forgerock.sapi.gateway.rcs.consent.store.client.payment.internationalstandingorder.v4_0_0;
 
 import static com.forgerock.sapi.gateway.rcs.consent.store.client.TestConsentStoreClientConfigurationFactory.createConsentStoreClientConfiguration;
 
-import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.international.BaseInternationalPaymentConsentStoreClientTest;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.international.BaseRestInternationalPaymentConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.internationalstandingorder.BaseInternationalStandingOrderConsentStoreClientTest;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.internationalstandingorder.BaseRestInternationalStandingOrderConsentStoreClient;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-class InternationalPaymentConsentStoreClientTest extends BaseInternationalPaymentConsentStoreClientTest{
+class InternationalStandingOrderConsentStoreClientTest extends BaseInternationalStandingOrderConsentStoreClientTest {
 
-    protected InternationalPaymentConsentStoreClientTest() {
-        super(OBVersion.v3_1_10);
+    protected InternationalStandingOrderConsentStoreClientTest() {
+        super(OBVersion.v4_0_0);
     }
 
     @Override
-    protected BaseRestInternationalPaymentConsentStoreClient createApiClient() {
-        return new RestInternationalPaymentConsentStoreClient(
-                createConsentStoreClientConfiguration(port),
+    protected BaseRestInternationalStandingOrderConsentStoreClient createApiClient() {
+        return new RestInternationalStandingOrderConsentStoreClient(createConsentStoreClientConfiguration(port),
                 restTemplateBuilder,
                 objectMapper);
     }
