@@ -80,12 +80,12 @@
     <parent>
         <groupId>com.forgerock.sapi.gateway</groupId>
         <artifactId>secure-api-gateway-parent</artifactId>
-        <version>3.2.0</version>
+        <version>4.0.0</version>
     </parent>
 
     <properties>
         <!-- Artifact versions -->
-        <uk.bom.version>4.0.0-SNAPSHOT</uk.bom.version>
+        <uk.bom.version>4.0.0</uk.bom.version>
         <revision>4.0.0-SNAPSHOT</revision>
         <!-- Plugin versions -->
         <flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
