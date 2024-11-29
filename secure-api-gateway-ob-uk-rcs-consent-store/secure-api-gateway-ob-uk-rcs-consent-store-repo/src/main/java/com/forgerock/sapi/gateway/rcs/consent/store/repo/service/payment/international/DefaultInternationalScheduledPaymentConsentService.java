@@ -15,15 +15,12 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.international;
 
-import org.springframework.stereotype.Service;
-
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.international.InternationalScheduledPaymentConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.payment.PaymentConsentRepository;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.BasePaymentConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.PaymentAuthoriseConsentArgs;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
-@Service
 public class DefaultInternationalScheduledPaymentConsentService extends BasePaymentConsentService<InternationalScheduledPaymentConsentEntity, PaymentAuthoriseConsentArgs> implements InternationalScheduledPaymentConsentService {
 
     public DefaultInternationalScheduledPaymentConsentService(PaymentConsentRepository<InternationalScheduledPaymentConsentEntity> repo) {

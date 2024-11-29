@@ -15,19 +15,17 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.funds;
 
-import org.springframework.stereotype.Service;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.funds.FundsConfirmationConsentEntity;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.funds.FundsConfirmationConsentRepository;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
-@Service
 public class DefaultFundsConfirmationAccessConsentService extends BaseConsentService<FundsConfirmationConsentEntity, FundsConfirmationAuthoriseConsentArgs> implements FundsConfirmationConsentService {
 
     private final String revokedStatus;
 
-    public DefaultFundsConfirmationAccessConsentService(FundsConfirmationConsentRepository repo) {
+    public DefaultFundsConfirmationAccessConsentService(MongoRepository<FundsConfirmationConsentEntity, String> repo) {
         super(repo, IntentType.FUNDS_CONFIRMATION_CONSENT::generateIntentId, FundsConfirmationConsentStateModel.getInstance());
         revokedStatus = FundsConfirmationConsentStateModel.getInstance().getRevokedConsentStatus();
     }

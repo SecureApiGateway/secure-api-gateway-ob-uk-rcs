@@ -16,7 +16,7 @@
 package com.forgerock.sapi.gateway.rcs.consent.store.client.customerinfo.v1_0;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRReadConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRReadConsentConverter;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.customerinfo.v1_0.AuthoriseCustomerInfoConsentRequest;
@@ -31,10 +31,10 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.org.openbanking.datamodel.account.OBReadConsent1;
-import uk.org.openbanking.datamodel.account.OBReadConsent1Data;
-import uk.org.openbanking.datamodel.account.OBRisk2;
-import uk.org.openbanking.datamodel.common.OBExternalPermissions1Code;
+import uk.org.openbanking.datamodel.v3.account.OBReadConsent1;
+import uk.org.openbanking.datamodel.v3.account.OBReadConsent1Data;
+import uk.org.openbanking.datamodel.v3.account.OBRisk2;
+import uk.org.openbanking.datamodel.v3.common.OBExternalPermissions1Code;
 
 import java.util.List;
 import java.util.UUID;

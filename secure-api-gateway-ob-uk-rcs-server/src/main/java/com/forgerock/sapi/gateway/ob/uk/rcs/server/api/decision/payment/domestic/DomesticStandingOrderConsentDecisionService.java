@@ -15,6 +15,8 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.payment.domestic;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
 import com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.payment.BasePaymentConsentDecisionService;
@@ -23,9 +25,12 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.domesti
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 @Service
+@DependsOn({"internalConsentServices"})
 public class DomesticStandingOrderConsentDecisionService extends BasePaymentConsentDecisionService<DomesticStandingOrderConsentEntity> {
 
-    public DomesticStandingOrderConsentDecisionService(DomesticStandingOrderConsentService consentService) {
+    public DomesticStandingOrderConsentDecisionService(
+            @Qualifier("internalDomesticStandingOrderConsentService") DomesticStandingOrderConsentService consentService) {
+
         super(IntentType.PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT, consentService);
     }
 }

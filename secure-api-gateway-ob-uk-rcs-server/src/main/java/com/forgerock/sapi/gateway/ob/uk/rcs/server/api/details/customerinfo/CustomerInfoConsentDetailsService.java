@@ -26,17 +26,20 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.customerinfo.Cus
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import org.joda.time.LocalDate;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
 @Component
+@DependsOn({"internalConsentServices"})
 public class CustomerInfoConsentDetailsService extends BaseConsentDetailsService<CustomerInfoConsentEntity, CustomerInfoConsentDetails> {
 
     private final CustomerInfoService customerInfoService;
 
     public CustomerInfoConsentDetailsService(
-            ConsentService<CustomerInfoConsentEntity, ?> consentService,
+            @Qualifier("internalCustomerInfoConsentService") ConsentService<CustomerInfoConsentEntity, ?> consentService,
             ApiProviderConfiguration apiProviderConfiguration,
             ApiClientServiceClient apiClientService,
             CustomerInfoService customerInfoService

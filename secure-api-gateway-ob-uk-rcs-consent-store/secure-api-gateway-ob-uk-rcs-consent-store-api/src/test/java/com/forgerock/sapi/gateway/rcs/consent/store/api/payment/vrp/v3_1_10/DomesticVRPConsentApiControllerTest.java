@@ -19,34 +19,63 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.UUID;
 
+import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVRPConsentConverters;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.vrp.FRDomesticVRPConsentConverters;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.vrp.FRDomesticVRPConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.api.BaseControllerTest;
+import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.PaymentConsentValidationHelpers;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.AuthorisePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_10.CreateDomesticVRPConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_10.DomesticVRPConsent;
-import com.forgerock.sapi.gateway.rcs.consent.store.api.BaseControllerTest;
-import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.PaymentConsentValidationHelpers;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.vrp.DomesticVRPConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessConsentStateModel;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.vrp.DomesticVRPConsentService;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import uk.org.openbanking.datamodel.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
-import uk.org.openbanking.testsupport.vrp.OBDomesticVrpConsentRequestTestDataFactory;
+import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPConsentRequest;
+import uk.org.openbanking.testsupport.v3.vrp.OBDomesticVrpConsentRequestTestDataFactory;
 
 
 public class DomesticVRPConsentApiControllerTest extends BaseControllerTest<DomesticVRPConsent, CreateDomesticVRPConsentRequest, AuthorisePaymentConsentRequest> {
 
     private static final String TEST_DEBTOR_ACC_ID = "acc-435345";
 
+    @Autowired
+    @Qualifier("internalDomesticVRPConsentService")
+    private DomesticVRPConsentService consentService;
+
     public DomesticVRPConsentApiControllerTest() {
         super(DomesticVRPConsent.class);
     }
 
     @Override
+    protected OBVersion getControllerVersion() {
+        return OBVersion.v3_1_10;
+    }
+
+    @Override
     protected String getControllerEndpointName() {
         return "domestic-vrp-consents";
+    }
+
+    @Override
+    protected String createConsentEntityForVersionValidation(String apiClient, OBVersion version) {
+        final DomesticVRPConsentEntity consent = new DomesticVRPConsentEntity();
+        consent.setApiClientId(apiClient);
+        consent.setRequestVersion(version);
+        consent.setRequestObj(createFRConsent());
+        consent.setIdempotencyKey(UUID.randomUUID().toString());
+        consent.setIdempotencyKeyExpiration(DateTime.now().plusMinutes(5));
+        consent.setStatus(AccountAccessConsentStateModel.AWAITING_AUTHORISATION);
+        return consentService.createConsent(consent).getId();
     }
 
     @Override
@@ -81,11 +110,17 @@ public class DomesticVRPConsentApiControllerTest extends BaseControllerTest<Dome
 
     private static CreateDomesticVRPConsentRequest buildCreateDomesticVRPConsentRequest(String apiClientId, String idempotencyKey) {
         final CreateDomesticVRPConsentRequest createDomesticVRPConsentRequest = new CreateDomesticVRPConsentRequest();
-        final OBDomesticVRPConsentRequest paymentConsent = OBDomesticVrpConsentRequestTestDataFactory.aValidOBDomesticVRPConsentRequest();
-        createDomesticVRPConsentRequest.setConsentRequest(FRDomesticVRPConsentConverters.toFRDomesticVRPConsent(paymentConsent));
+        final FRDomesticVRPConsent frDomesticVRPConsent = createFRConsent();
+        createDomesticVRPConsentRequest.setConsentRequest(frDomesticVRPConsent);
         createDomesticVRPConsentRequest.setApiClientId(apiClientId);
         createDomesticVRPConsentRequest.setIdempotencyKey(idempotencyKey);
         return createDomesticVRPConsentRequest;
+    }
+
+    private static FRDomesticVRPConsent createFRConsent() {
+        final OBDomesticVRPConsentRequest paymentConsent = OBDomesticVrpConsentRequestTestDataFactory.aValidOBDomesticVRPConsentRequest();
+        final FRDomesticVRPConsent frDomesticVRPConsent = FRDomesticVRPConsentConverters.toFRDomesticVRPConsent(paymentConsent);
+        return frDomesticVRPConsent;
     }
 
     @Test

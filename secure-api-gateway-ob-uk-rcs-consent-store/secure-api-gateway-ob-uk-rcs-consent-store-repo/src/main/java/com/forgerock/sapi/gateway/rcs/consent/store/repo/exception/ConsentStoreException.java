@@ -24,6 +24,7 @@ public class ConsentStoreException extends RuntimeException {
         INVALID_STATE_TRANSITION,
         INVALID_CONSENT_DECISION,
         INVALID_DEBTOR_ACCOUNT,
+        INVALID_API_VERSION,
         CONSENT_REAUTHENTICATION_NOT_SUPPORTED,
         IDEMPOTENCY_ERROR
     }

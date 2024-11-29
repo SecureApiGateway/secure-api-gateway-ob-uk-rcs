@@ -15,18 +15,17 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.repo.service.customerinfo;
 
+import org.springframework.data.mongodb.repository.MongoRepository;
+
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.customerinfo.CustomerInfoConsentEntity;
-import com.forgerock.sapi.gateway.rcs.consent.store.repo.mongo.customerinfo.CustomerInfoConsentRepository;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
-import org.springframework.stereotype.Service;
 
-@Service
 public class DefaultCustomerInfoAccessConsentService extends BaseConsentService<CustomerInfoConsentEntity, CustomerInfoAuthoriseConsentArgs> implements CustomerInfoConsentService {
 
     private final String revokedStatus;
 
-    public DefaultCustomerInfoAccessConsentService(CustomerInfoConsentRepository repo) {
+    public DefaultCustomerInfoAccessConsentService(MongoRepository<CustomerInfoConsentEntity, String> repo) {
         super(repo, IntentType.CUSTOMER_INFO_CONSENT::generateIntentId, CustomerInfoConsentStateModel.getInstance());
         revokedStatus = CustomerInfoConsentStateModel.getInstance().getRevokedConsentStatus();
     }

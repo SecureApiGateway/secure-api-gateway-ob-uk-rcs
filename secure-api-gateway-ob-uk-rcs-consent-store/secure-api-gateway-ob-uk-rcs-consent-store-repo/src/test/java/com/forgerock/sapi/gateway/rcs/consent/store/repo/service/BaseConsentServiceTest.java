@@ -16,19 +16,28 @@
 package com.forgerock.sapi.gateway.rcs.consent.store.repo.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.Date;
-
-import jakarta.validation.ConstraintViolationException;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.BaseConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.account.AccountAccessConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException.ErrorType;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessConsentStateModel;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
+
+import jakarta.validation.ConstraintViolationException;
 
 public abstract class BaseConsentServiceTest<T extends BaseConsentEntity<?>, A extends AuthoriseConsentArgs> {
 
@@ -89,7 +98,7 @@ public abstract class BaseConsentServiceTest<T extends BaseConsentEntity<?>, A e
         final T consentObj = getValidConsentEntity();
         consentObj.setApiClientId(null); // remove mandatory field value
 
-        final ConstraintViolationException constraintViolationException = Assertions.assertThrows(ConstraintViolationException.class,
+        final ConstraintViolationException constraintViolationException = assertThrows(ConstraintViolationException.class,
                 () -> consentService.createConsent(consentObj));
         assertThat(constraintViolationException.getConstraintViolations()).hasSize(1);
         assertThat(constraintViolationException.getMessage()).isEqualTo("createConsent.arg0.apiClientId: must not be null");
@@ -99,13 +108,13 @@ public abstract class BaseConsentServiceTest<T extends BaseConsentEntity<?>, A e
     void failToGetConsentWhenApiClientIdDoesNotMatch() {
         final T persistedConsent = consentService.createConsent(getValidConsentEntity());
 
-        final ConsentStoreException consentStoreException = Assertions.assertThrows(ConsentStoreException.class, () -> consentService.getConsent(persistedConsent.getId(), "different-api-client-id"));
+        final ConsentStoreException consentStoreException = assertThrows(ConsentStoreException.class, () -> consentService.getConsent(persistedConsent.getId(), "different-api-client-id"));
         assertThat(consentStoreException.getErrorType()).isEqualTo(ErrorType.INVALID_PERMISSIONS);
     }
 
     @Test
     void failToGetIdThatDoesNotExist() {
-        final ConsentStoreException consentStoreException = Assertions.assertThrows(ConsentStoreException.class,
+        final ConsentStoreException consentStoreException = assertThrows(ConsentStoreException.class,
                 () -> getConsentServiceToTest().getConsent("does-not-exist", "client-1"));
         assertThat(consentStoreException.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
     }
@@ -165,5 +174,49 @@ public abstract class BaseConsentServiceTest<T extends BaseConsentEntity<?>, A e
 
         consent.setStatus(getConsentStateModel().getRevokedConsentStatus());
         assertThat(consentService.canTransitionToAuthorisedState(consent)).isFalse();
+    }
+
+    @Test
+    public void shouldAllowConsentVersionValidationToBeConfigured() {
+        final MongoRepository mockRepo = mock(MongoRepository.class);
+        final BaseConsentService<BaseConsentEntity<?>, AuthoriseConsentArgs> consentService = new BaseConsentService<>(mockRepo, () -> UUID.randomUUID().toString(), AccountAccessConsentStateModel.getInstance()) {
+            @Override
+            protected void addConsentSpecificAuthorisationData(BaseConsentEntity consent, AuthoriseConsentArgs authoriseConsentArgs) {
+            }
+        };
+
+        final String v4ConsentId = "consent1";
+        final String apiClientId = "client1";
+
+        final AccountAccessConsentEntity repoConsentv4 = new AccountAccessConsentEntity();
+        repoConsentv4.setId(v4ConsentId);
+        repoConsentv4.setApiClientId(apiClientId);
+        repoConsentv4.setRequestVersion(OBVersion.v4_0_0);
+        when(mockRepo.findById(eq(v4ConsentId))).thenReturn(Optional.of(repoConsentv4));
+
+        final String v319ConsentId = "consent2";
+        final AccountAccessConsentEntity repoConsentv3 = new AccountAccessConsentEntity();
+        repoConsentv3.setId(v319ConsentId);
+        repoConsentv3.setApiClientId(apiClientId);
+        repoConsentv3.setRequestVersion(OBVersion.v3_1_9);
+        when(mockRepo.findById(eq(v319ConsentId))).thenReturn(Optional.of(repoConsentv3));
+
+        // Sanity test fetching a consent with no version validation
+        BaseConsentEntity<?> consent = consentService.getConsent(v4ConsentId, apiClientId);
+        assertThat(consent).isEqualTo(repoConsentv4);
+
+        consentService.setApiVersionValidationStrategy(consentToValidate -> {
+            if (consentToValidate.getRequestVersion().equals(OBVersion.v3_1_9)) {
+                throw new ConsentStoreException(ErrorType.INVALID_API_VERSION, "v3.1.9 not supported");
+            }
+        });
+
+        // Fetch the v4 consent and ensure it passes the validation rule
+        consent = consentService.getConsent(v4ConsentId, apiClientId);
+        assertThat(consent).isEqualTo(repoConsentv4);
+
+        // Fetch the v3 consent and ensure it fails the validation rule
+        final ConsentStoreException ex = assertThrows(ConsentStoreException.class, () -> consentService.getConsent(v319ConsentId, apiClientId));
+        assertThat(ex.getErrorType()).isEqualTo(ErrorType.INVALID_API_VERSION);
     }
 }

@@ -15,38 +15,13 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.internationalstandingorder.v3_1_10;
 
-import java.util.UUID;
+import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.internationalstandingorder.BaseInternationalStandingOrderConsentApiControllerTest;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalStandingOrderConsentConverter;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internationalstandingorder.v3_1_10.CreateInternationalStandingOrderConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internationalstandingorder.v3_1_10.InternationalStandingOrderConsent;
-import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.BasePaymentConsentApiControllerTest;
-
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent6;
-import uk.org.openbanking.testsupport.payment.OBWriteInternationalStandingOrderConsentTestDataFactory;
-
-public class InternationalStandingOrderConsentApiControllerTest extends BasePaymentConsentApiControllerTest<InternationalStandingOrderConsent, CreateInternationalStandingOrderConsentRequest> {
-
-    public InternationalStandingOrderConsentApiControllerTest() {
-        super(InternationalStandingOrderConsent.class);
-    }
+public class InternationalStandingOrderConsentApiControllerTest extends BaseInternationalStandingOrderConsentApiControllerTest {
 
     @Override
-    protected String getControllerEndpointName() {
-        return "international-standing-order-consents";
-    }
-
-    @Override
-    protected CreateInternationalStandingOrderConsentRequest buildCreateConsentRequest(String apiClientId) {
-        return buildCreateInternationalStandingOrderConsentRequest(apiClientId, UUID.randomUUID().toString());
-    }
-
-    private static CreateInternationalStandingOrderConsentRequest buildCreateInternationalStandingOrderConsentRequest(String apiClientId, String idempotencyKey) {
-        final CreateInternationalStandingOrderConsentRequest createInternationalStandingOrderConsentRequest = new CreateInternationalStandingOrderConsentRequest();
-        final OBWriteInternationalStandingOrderConsent6 paymentConsent = OBWriteInternationalStandingOrderConsentTestDataFactory.aValidOBWriteInternationalStandingOrderConsent6();
-        createInternationalStandingOrderConsentRequest.setConsentRequest(FRWriteInternationalStandingOrderConsentConverter.toFRWriteInternationalStandingOrderConsent(paymentConsent));
-        createInternationalStandingOrderConsentRequest.setApiClientId(apiClientId);
-        createInternationalStandingOrderConsentRequest.setIdempotencyKey(idempotencyKey);
-        return createInternationalStandingOrderConsentRequest;
+    protected OBVersion getControllerVersion() {
+        return OBVersion.v3_1_10;
     }
 }

@@ -15,38 +15,14 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domesticstandingorder.v3_1_10;
 
-import java.util.UUID;
+import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domesticstandingorder.BaseDomesticStandingOrderConsentApiControllerTest;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticStandingOrderConsentConverter;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticstandingorder.v3_1_10.CreateDomesticStandingOrderConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticstandingorder.v3_1_10.DomesticStandingOrderConsent;
-import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.BasePaymentConsentApiControllerTest;
-
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5;
-import uk.org.openbanking.testsupport.payment.OBWriteDomesticStandingOrderConsentTestDataFactory;
-
-public class DomesticStandingOrderConsentApiControllerTest extends BasePaymentConsentApiControllerTest<DomesticStandingOrderConsent, CreateDomesticStandingOrderConsentRequest> {
-
-    public DomesticStandingOrderConsentApiControllerTest() {
-        super(DomesticStandingOrderConsent.class);
-    }
+public class DomesticStandingOrderConsentApiControllerTest extends BaseDomesticStandingOrderConsentApiControllerTest {
 
     @Override
-    protected String getControllerEndpointName() {
-        return "domestic-standing-order-consents";
+    protected OBVersion getControllerVersion() {
+        return OBVersion.v3_1_10;
     }
 
-    @Override
-    protected CreateDomesticStandingOrderConsentRequest buildCreateConsentRequest(String apiClientId) {
-        return buildCreateDomesticStandingOrderConsentRequest(apiClientId, UUID.randomUUID().toString());
-    }
-
-    private static CreateDomesticStandingOrderConsentRequest buildCreateDomesticStandingOrderConsentRequest(String apiClientId, String idempotencyKey) {
-        final CreateDomesticStandingOrderConsentRequest createDomesticStandingOrderConsentRequest = new CreateDomesticStandingOrderConsentRequest();
-        final OBWriteDomesticStandingOrderConsent5 paymentConsent = OBWriteDomesticStandingOrderConsentTestDataFactory.aValidOBWriteDomesticStandingOrderConsent5();
-        createDomesticStandingOrderConsentRequest.setConsentRequest(FRWriteDomesticStandingOrderConsentConverter.toFRWriteDomesticStandingOrderConsent(paymentConsent));
-        createDomesticStandingOrderConsentRequest.setApiClientId(apiClientId);
-        createDomesticStandingOrderConsentRequest.setIdempotencyKey(idempotencyKey);
-        return createDomesticStandingOrderConsentRequest;
-    }
 }

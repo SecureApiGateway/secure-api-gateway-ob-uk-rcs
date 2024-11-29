@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.payment.international;
 
-import static com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.international.DefaultInternationalStandingOrderConsentServiceTest.createValidConsentEntity;
+import static com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.international.v3_1_10.DefaultInternationalStandingOrderConsentServiceTest.createValidConsentEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
@@ -30,7 +30,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccountWithBalance;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRAccountIdentifierConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRAccountIdentifierConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalStandingOrderDataInitiation;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.account.FRAccountWithBalanceTestDataFactory;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.ConsentDetails;
@@ -43,7 +43,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.interna
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import com.nimbusds.jwt.SignedJWT;
 
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationDebtorAccount;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomestic2DataInitiationDebtorAccount;
 
 @ExtendWith(MockitoExtension.class)
 class InternationalStandingOrderConsentDetailsServiceTest extends BasePaymentConsentDetailsServiceTest {

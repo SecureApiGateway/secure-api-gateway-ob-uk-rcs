@@ -15,6 +15,8 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.payment.international;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
@@ -31,11 +33,14 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 @Component
+@DependsOn({"internalConsentServices"})
 public class InternationalPaymentConsentDetailsService extends BasePaymentConsentDetailsService<InternationalPaymentConsentEntity, InternationalPaymentConsentDetails> {
 
-    public InternationalPaymentConsentDetailsService(ConsentService<InternationalPaymentConsentEntity, ?> consentService,
-                                                     ApiProviderConfiguration apiProviderConfiguration, ApiClientServiceClient apiClientService,
-                                                     AccountService accountService) {
+    public InternationalPaymentConsentDetailsService(
+            @Qualifier("internalInternationalPaymentConsentService") ConsentService<InternationalPaymentConsentEntity, ?> consentService,
+            ApiProviderConfiguration apiProviderConfiguration,
+            ApiClientServiceClient apiClientService,
+            AccountService accountService) {
 
         super(IntentType.PAYMENT_INTERNATIONAL_CONSENT, InternationalPaymentConsentDetails::new, consentService,
                 apiProviderConfiguration, apiClientService, accountService);

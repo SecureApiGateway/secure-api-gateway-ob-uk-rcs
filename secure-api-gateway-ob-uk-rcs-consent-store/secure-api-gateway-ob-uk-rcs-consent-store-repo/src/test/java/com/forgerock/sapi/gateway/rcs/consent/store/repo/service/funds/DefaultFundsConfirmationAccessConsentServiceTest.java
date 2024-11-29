@@ -26,18 +26,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.funds.FRFundsConfirmationConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.funds.FRFundsConfirmationConsentConverter;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.funds.FundsConfirmationConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentService;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.BaseConsentServiceTest;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentStateModel;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import uk.org.openbanking.datamodel.common.OBExternalAccountIdentification4Code;
-import uk.org.openbanking.datamodel.common.OBExternalRequestStatus1Code;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1Data;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1DataDebtorAccount;
+import uk.org.openbanking.datamodel.v3.common.OBExternalAccountIdentification4Code;
+import uk.org.openbanking.datamodel.v3.common.OBExternalRequestStatus1Code;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsent1;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsent1Data;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsent1DataDebtorAccount;
 
 /**
  * Test for {@link DefaultFundsConfirmationAccessConsentService}

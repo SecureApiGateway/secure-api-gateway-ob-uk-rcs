@@ -15,6 +15,8 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.account;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRReadConsentData;
@@ -29,11 +31,12 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 @Component
+@DependsOn({"internalConsentServices"})
 public class AccountAccessConsentDetailsService extends BaseConsentDetailsService<AccountAccessConsentEntity, AccountsConsentDetails> {
 
     private final AccountService accountService;
 
-    public AccountAccessConsentDetailsService(ConsentService<AccountAccessConsentEntity, ?> consentService,
+    public AccountAccessConsentDetailsService(@Qualifier("internalAccountAccessConsentService") ConsentService<AccountAccessConsentEntity, ?> consentService,
             ApiProviderConfiguration apiProviderConfiguration, ApiClientServiceClient apiClientService, AccountService accountService) {
 
         super(IntentType.ACCOUNT_ACCESS_CONSENT, AccountsConsentDetails::new, consentService,

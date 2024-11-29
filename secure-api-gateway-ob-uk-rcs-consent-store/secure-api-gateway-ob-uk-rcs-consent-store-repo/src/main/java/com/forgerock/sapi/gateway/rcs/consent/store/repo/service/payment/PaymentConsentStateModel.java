@@ -22,7 +22,7 @@ import org.springframework.util.MultiValueMap;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentStateModel;
 
-import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
+import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
 
 /**
  * State model for Payment APIs: https://openbankinguk.github.io/read-write-api-site3/v3.1.10/resources-and-data-models/pisp/domestic-payment-consents.html#payment-order-consent

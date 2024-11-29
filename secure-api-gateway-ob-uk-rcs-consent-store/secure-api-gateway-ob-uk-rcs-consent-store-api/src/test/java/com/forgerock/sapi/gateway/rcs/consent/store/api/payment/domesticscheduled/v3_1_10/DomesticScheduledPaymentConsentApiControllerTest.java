@@ -15,39 +15,13 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domesticscheduled.v3_1_10;
 
-import java.util.UUID;
+import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.domesticscheduled.BaseDomesticScheduledPaymentConsentApiControllerTest;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticScheduledConsentConverter;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticscheduled.v3_1_10.CreateDomesticScheduledPaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticscheduled.v3_1_10.DomesticScheduledPaymentConsent;
-import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.BasePaymentConsentApiControllerTest;
-
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4;
-import uk.org.openbanking.testsupport.payment.OBWriteDomesticScheduledConsentTestDataFactory;
-
-
-public class DomesticScheduledPaymentConsentApiControllerTest extends BasePaymentConsentApiControllerTest<DomesticScheduledPaymentConsent, CreateDomesticScheduledPaymentConsentRequest> {
-
-    public DomesticScheduledPaymentConsentApiControllerTest() {
-        super(DomesticScheduledPaymentConsent.class);
-    }
+public class DomesticScheduledPaymentConsentApiControllerTest extends BaseDomesticScheduledPaymentConsentApiControllerTest {
 
     @Override
-    protected String getControllerEndpointName() {
-        return "domestic-scheduled-payment-consents";
-    }
-
-    @Override
-    protected CreateDomesticScheduledPaymentConsentRequest buildCreateConsentRequest(String apiClientId) {
-        return buildCreateDomesticScheduledPaymentConsentRequest(apiClientId, UUID.randomUUID().toString());
-    }
-
-    private static CreateDomesticScheduledPaymentConsentRequest buildCreateDomesticScheduledPaymentConsentRequest(String apiClientId, String idempotencyKey) {
-        final CreateDomesticScheduledPaymentConsentRequest createDomesticScheduledPaymentConsentRequest = new CreateDomesticScheduledPaymentConsentRequest();
-        final OBWriteDomesticScheduledConsent4 paymentConsent = OBWriteDomesticScheduledConsentTestDataFactory.aValidOBWriteDomesticScheduledConsent4();
-        createDomesticScheduledPaymentConsentRequest.setConsentRequest(FRWriteDomesticScheduledConsentConverter.toFRWriteDomesticScheduledConsent(paymentConsent));
-        createDomesticScheduledPaymentConsentRequest.setApiClientId(apiClientId);
-        createDomesticScheduledPaymentConsentRequest.setIdempotencyKey(idempotencyKey);
-        return createDomesticScheduledPaymentConsentRequest;
+    protected OBVersion getControllerVersion() {
+        return OBVersion.v3_1_10;
     }
 }

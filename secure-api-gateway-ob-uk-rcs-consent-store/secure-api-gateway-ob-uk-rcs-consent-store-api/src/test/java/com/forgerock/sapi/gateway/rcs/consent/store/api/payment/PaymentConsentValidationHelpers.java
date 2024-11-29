@@ -27,17 +27,28 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.BaseCreate
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.BasePaymentConsent;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
+import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
 
 public class PaymentConsentValidationHelpers {
 
     public static void validateCreateConsentAgainstCreateRequest(BasePaymentConsent<?> consent,
+            BaseCreatePaymentConsentRequest<?> createConsentRequest) {
+        validateCreateConsentAgainstCreateRequest(consent, createConsentRequest, OBVersion.v3_1_10);
+    }
+
+    public static void validateCreateConsentAgainstCreateRequestV4(BasePaymentConsent<?> consent,
                                                                  BaseCreatePaymentConsentRequest<?> createConsentRequest) {
+        validateCreateConsentAgainstCreateRequest(consent, createConsentRequest, OBVersion.v4_0_0);
+    }
+
+    public static void validateCreateConsentAgainstCreateRequest(BasePaymentConsent<?> consent,
+                                                                 BaseCreatePaymentConsentRequest<?> createConsentRequest,
+                                                                 OBVersion expectedVersion) {
         assertThat(consent.getId()).isNotEmpty();
         assertThat(consent.getStatus()).isEqualTo(OBPaymentConsentStatus.AWAITINGAUTHORISATION.toString());
         assertThat(consent.getApiClientId()).isEqualTo(createConsentRequest.getApiClientId());
         assertThat(consent.getRequestObj()).isEqualTo(createConsentRequest.getConsentRequest());
-        assertThat(consent.getRequestVersion()).isEqualTo(OBVersion.v3_1_10);
+        assertThat(consent.getRequestVersion()).isEqualTo(expectedVersion);
         assertThat(consent.getCharges()).isEqualTo(createConsentRequest.getCharges());
         assertThat(consent.getIdempotencyKey()).isEqualTo(createConsentRequest.getIdempotencyKey());
         assertThat(consent.getResourceOwnerId()).isNull();

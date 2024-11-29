@@ -15,83 +15,13 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.api.funds.v3_1_10;
 
-import java.util.UUID;
+import com.forgerock.sapi.gateway.rcs.consent.store.api.funds.BaseFundsConfirmationConsentApiControllerTest;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import org.joda.time.DateTime;
-
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.funds.FRFundsConfirmationConsentConverter;
-import com.forgerock.sapi.gateway.rcs.consent.store.api.BaseControllerTest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.AuthoriseFundsConfirmationConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.CreateFundsConfirmationConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.FundsConfirmationConsent;
-
-import jakarta.annotation.PostConstruct;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1Data;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1DataDebtorAccount;
-
-/**
- * Test for {@link FundsConfirmationConsentApiController}
- */
-public class FundsConfirmationConsentApiControllerTest extends BaseControllerTest<FundsConfirmationConsent, CreateFundsConfirmationConsentRequest, AuthoriseFundsConfirmationConsentRequest> {
-
-
-    protected FundsConfirmationConsentApiControllerTest() {
-        super(FundsConfirmationConsent.class);
-    }
-
-    @PostConstruct
-    public void postConstruct() {
-        apiBaseUrl = "http://localhost:" + port + "/consent/store/v3.1.10/" + getControllerEndpointName();
-    }
+public class FundsConfirmationConsentApiControllerTest extends BaseFundsConfirmationConsentApiControllerTest {
 
     @Override
-    protected String getControllerEndpointName() {
-        return "funds-confirmation-consents";
-    }
-
-    @Override
-    protected CreateFundsConfirmationConsentRequest buildCreateConsentRequest(String apiClientId) {
-        final CreateFundsConfirmationConsentRequest createRequest = new CreateFundsConfirmationConsentRequest();
-        createRequest.setApiClientId(apiClientId);
-        final OBFundsConfirmationConsent1 fundsConfirmationConsent1 = new OBFundsConfirmationConsent1();
-        fundsConfirmationConsent1.setData(
-                new OBFundsConfirmationConsent1Data()
-                        .expirationDateTime(DateTime.now().plusDays(30))
-                        .debtorAccount(
-                                new OBFundsConfirmationConsent1DataDebtorAccount()
-                                        .schemeName("UK.OBIE.SortCodeAccountNumber")
-                                        .identification("40400422390112")
-                                        .name("Mrs B Smith")
-                        )
-        );
-        createRequest.setConsentRequest(FRFundsConfirmationConsentConverter.toFRFundsConfirmationConsent(fundsConfirmationConsent1));
-        return createRequest;
-    }
-
-    @Override
-    protected void validateCreateConsentAgainstCreateRequest(FundsConfirmationConsent consent, CreateFundsConfirmationConsentRequest createConsentRequest) {
-        FundsConfirmationConsentValidationHelpers.validateCreateConsentAgainstCreateRequest(consent, createConsentRequest);
-    }
-
-    @Override
-    protected AuthoriseFundsConfirmationConsentRequest buildAuthoriseConsentRequest(FundsConfirmationConsent consent, String resourceOwnerId) {
-        AuthoriseFundsConfirmationConsentRequest authoriseFundsConfirmationConsentRequest = new AuthoriseFundsConfirmationConsentRequest();
-        authoriseFundsConfirmationConsentRequest.setConsentId(consent.getId());
-        authoriseFundsConfirmationConsentRequest.setApiClientId(consent.getApiClientId());
-        authoriseFundsConfirmationConsentRequest.setResourceOwnerId(resourceOwnerId);
-        authoriseFundsConfirmationConsentRequest.setAuthorisedDebtorAccountId(UUID.randomUUID().toString());
-        return authoriseFundsConfirmationConsentRequest;
-    }
-
-    @Override
-    protected void validateAuthorisedConsent(FundsConfirmationConsent authorisedConsent, AuthoriseFundsConfirmationConsentRequest authoriseConsentReq, FundsConfirmationConsent originalConsent) {
-        FundsConfirmationConsentValidationHelpers.validateAuthorisedConsent(authorisedConsent, authoriseConsentReq, originalConsent);
-    }
-
-    @Override
-    protected void validateRejectedConsent(FundsConfirmationConsent rejectedConsent, RejectConsentRequest rejectConsentRequest, FundsConfirmationConsent originalConsent) {
-        FundsConfirmationConsentValidationHelpers.validateRejectedConsent(rejectedConsent, rejectConsentRequest, originalConsent);
+    protected OBVersion getControllerVersion() {
+        return OBVersion.v3_1_10;
     }
 }

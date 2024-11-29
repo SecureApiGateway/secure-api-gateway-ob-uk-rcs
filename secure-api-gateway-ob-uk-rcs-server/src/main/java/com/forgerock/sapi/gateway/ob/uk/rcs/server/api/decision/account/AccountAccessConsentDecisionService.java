@@ -17,6 +17,8 @@ package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.decision.account;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.decision.ConsentDecisionDeserialized;
@@ -29,9 +31,10 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.Account
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 @Component
+@DependsOn({"internalConsentServices"})
 public class AccountAccessConsentDecisionService extends BaseConsentDecisionService<AccountAccessConsentEntity, AccountAccessAuthoriseConsentArgs> {
 
-    public AccountAccessConsentDecisionService(AccountAccessConsentService accountAccessConsentService) {
+    public AccountAccessConsentDecisionService(@Qualifier("internalAccountAccessConsentService") AccountAccessConsentService accountAccessConsentService) {
         super(IntentType.ACCOUNT_ACCESS_CONSENT, accountAccessConsentService);
     }
 

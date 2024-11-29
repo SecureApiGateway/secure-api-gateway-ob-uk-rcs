@@ -35,8 +35,8 @@ import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientExc
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBHeaders;
 import com.forgerock.sapi.gateway.uk.common.shared.fapi.FapiInteractionIdContext;
 
-import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.error.OBErrorResponse1;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
+import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
 
 public abstract class BaseRestConsentStoreClient {
 

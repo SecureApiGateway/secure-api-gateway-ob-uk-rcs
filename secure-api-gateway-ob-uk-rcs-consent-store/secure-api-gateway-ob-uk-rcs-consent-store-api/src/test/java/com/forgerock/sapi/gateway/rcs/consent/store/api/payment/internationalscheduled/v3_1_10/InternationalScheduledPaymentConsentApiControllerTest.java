@@ -15,31 +15,60 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.internationalscheduled.v3_1_10;
 
-import static com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.international.BasePaymentServiceWithExchangeRateInformationTest.getExchangeRateInformation;
+import static com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.international.v3_1_10.BasePaymentServiceWithExchangeRateInformationTest.getExchangeRateInformation;
 
 import java.util.List;
 import java.util.UUID;
 
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRChargeBearerType;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalScheduledConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteInternationalScheduledConsentConverter;
+import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.BasePaymentConsentWithExchangeRateInformationApiControllerTest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internationalscheduled.v3_1_10.CreateInternationalScheduledPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internationalscheduled.v3_1_10.InternationalScheduledPaymentConsent;
-import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.BasePaymentConsentWithExchangeRateInformationApiControllerTest;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.international.InternationalScheduledPaymentConsentEntity;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.account.AccountAccessConsentStateModel;
+import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.international.InternationalScheduledPaymentConsentService;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent5;
-import uk.org.openbanking.testsupport.payment.OBWriteInternationalScheduledConsentTestDataFactory;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalScheduledConsent5;
+import uk.org.openbanking.testsupport.v3.payment.OBWriteInternationalScheduledConsentTestDataFactory;
 
 public class InternationalScheduledPaymentConsentApiControllerTest extends BasePaymentConsentWithExchangeRateInformationApiControllerTest<InternationalScheduledPaymentConsent, CreateInternationalScheduledPaymentConsentRequest> {
+
+    @Autowired
+    @Qualifier("internalInternationalScheduledPaymentConsentService")
+    private InternationalScheduledPaymentConsentService consentService;
 
     public InternationalScheduledPaymentConsentApiControllerTest() {
         super(InternationalScheduledPaymentConsent.class);
     }
 
     @Override
+    protected OBVersion getControllerVersion() {
+        return OBVersion.v3_1_10;
+    }
+
+    @Override
     protected String getControllerEndpointName() {
         return "international-scheduled-payment-consents";
+    }
+
+    @Override
+    protected String createConsentEntityForVersionValidation(String apiClient, OBVersion version) {
+        final InternationalScheduledPaymentConsentEntity consent = new InternationalScheduledPaymentConsentEntity();
+        consent.setApiClientId(apiClient);
+        consent.setRequestVersion(version);
+        consent.setRequestObj(FRWriteInternationalScheduledConsentConverter.toFRWriteInternationalScheduledConsent(OBWriteInternationalScheduledConsentTestDataFactory.aValidOBWriteInternationalScheduledConsent5()));
+        consent.setIdempotencyKey(UUID.randomUUID().toString());
+        consent.setIdempotencyKeyExpiration(DateTime.now().plusMinutes(5));
+        consent.setStatus(AccountAccessConsentStateModel.AWAITING_AUTHORISATION);
+        return consentService.createConsent(consent).getId();
     }
 
     @Override

@@ -27,14 +27,14 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.forgerock.sapi.gateway.rcs.consent.store.api.BaseControllerTest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.AuthorisePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.BaseCreatePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.BasePaymentConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.api.BaseControllerTest;
 
-import uk.org.openbanking.datamodel.error.OBErrorResponse1;
+import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
 
 public abstract class BasePaymentConsentApiControllerTest<T extends BasePaymentConsent, C extends BaseCreatePaymentConsentRequest> extends BaseControllerTest<T, C, AuthorisePaymentConsentRequest> {
 
@@ -137,7 +137,7 @@ public abstract class BasePaymentConsentApiControllerTest<T extends BasePaymentC
 
     @Override
     protected void validateCreateConsentAgainstCreateRequest(T consent, C createConsentRequest) {
-        PaymentConsentValidationHelpers.validateCreateConsentAgainstCreateRequest(consent, createConsentRequest);
+        PaymentConsentValidationHelpers.validateCreateConsentAgainstCreateRequest(consent, createConsentRequest, getControllerVersion());
     }
 
     @Override

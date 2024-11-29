@@ -15,9 +15,13 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.repo.service;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -28,6 +32,8 @@ import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreE
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.exception.ConsentStoreException.ErrorType;
 
 public abstract class BaseConsentService<T extends BaseConsentEntity<?>, A extends AuthoriseConsentArgs> implements ConsentService<T, A> {
+
+    private final Consumer<T> NO_VALIDATION_STRATEGY = ignored -> {};
 
     protected final MongoRepository<T, String> repo;
 
@@ -58,18 +64,32 @@ public abstract class BaseConsentService<T extends BaseConsentEntity<?>, A exten
      * Status when the Resource Owner revokes an Authorisation previously given for a Consent
      */
     private final String revokedConsentStatus;
+    /**
+     * Consumer that applies API version validation to consents retrieved from the repo. The Consumer should throw
+     * a {@link ConsentStoreException} if the Consent should not be used with a particular API version.
+     * <p>
+     * The Consumer is wrapped in an AtomicReference to ensure thread safety with respect to customising this behaviour
+     * when the service has been created.
+     * <p>
+     * By default, no validation is carried out.
+     */
+    private final AtomicReference<Consumer<T>> apiVersionValidationStrategy = new AtomicReference<>(NO_VALIDATION_STRATEGY);
 
     public BaseConsentService(MongoRepository<T, String> repo, Supplier<String> idGenerator, ConsentStateModel consentStateModel) {
+        this.repo = requireNonNull(repo, "repo must be provided");
+        this.idGenerator = requireNonNull(idGenerator, "idGenerator must be provided");
 
-        this.repo = Objects.requireNonNull(repo, "repo must be provided");
-        this.idGenerator = Objects.requireNonNull(idGenerator, "idGenerator must be provided");
-
-        Objects.requireNonNull(consentStateModel, "consentStateModel must be provided");
+        requireNonNull(consentStateModel, "consentStateModel must be provided");
         this.validStateTransitions = consentStateModel.getValidStateTransitions();
         this.initialConsentStatus = consentStateModel.getInitialConsentStatus();
         this.authorisedConsentStatus = consentStateModel.getAuthorisedConsentStatus();
         this.rejectedConsentStatus = consentStateModel.getRejectedConsentStatus();
         this.revokedConsentStatus = consentStateModel.getRevokedConsentStatus();
+    }
+
+    void setApiVersionValidationStrategy(Consumer<T> apiVersionValidationStrategy) {
+        requireNonNull(apiVersionValidationStrategy, "apiVersionValidationStrategy must be provided");
+        this.apiVersionValidationStrategy.set(apiVersionValidationStrategy);
     }
 
     @Override
@@ -96,6 +116,7 @@ public abstract class BaseConsentService<T extends BaseConsentEntity<?>, A exten
         if (consent.isDeleted()) {
             throw new ConsentStoreException(ErrorType.NOT_FOUND, consentId);
         }
+        apiVersionValidationStrategy.get().accept(consent);
         return consent;
     }
 

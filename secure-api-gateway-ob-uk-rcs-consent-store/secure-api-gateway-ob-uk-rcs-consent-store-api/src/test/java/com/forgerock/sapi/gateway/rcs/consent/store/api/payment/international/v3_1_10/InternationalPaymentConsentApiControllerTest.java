@@ -15,52 +15,13 @@
  */
 package com.forgerock.sapi.gateway.rcs.consent.store.api.payment.international.v3_1_10;
 
-import static com.forgerock.sapi.gateway.rcs.consent.store.repo.service.payment.international.BasePaymentServiceWithExchangeRateInformationTest.getExchangeRateInformation;
+import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.international.BaseInternationalPaymentConsentApiControllerTest;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import java.util.List;
-import java.util.UUID;
-
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRChargeBearerType;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalConsentConverter;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.international.v3_1_10.CreateInternationalPaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.international.v3_1_10.InternationalPaymentConsent;
-import com.forgerock.sapi.gateway.rcs.consent.store.api.payment.BasePaymentConsentWithExchangeRateInformationApiControllerTest;
-
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent5;
-import uk.org.openbanking.testsupport.payment.OBWriteInternationalConsentTestDataFactory;
-
-public class InternationalPaymentConsentApiControllerTest extends BasePaymentConsentWithExchangeRateInformationApiControllerTest<InternationalPaymentConsent, CreateInternationalPaymentConsentRequest> {
-
-    public InternationalPaymentConsentApiControllerTest() {
-        super(InternationalPaymentConsent.class);
-    }
+public class InternationalPaymentConsentApiControllerTest extends BaseInternationalPaymentConsentApiControllerTest {
 
     @Override
-    protected String getControllerEndpointName() {
-        return "international-payment-consents";
-    }
-
-    @Override
-    protected CreateInternationalPaymentConsentRequest buildCreateConsentRequest(String apiClientId) {
-        final CreateInternationalPaymentConsentRequest createConsentRequest = new CreateInternationalPaymentConsentRequest();
-        final OBWriteInternationalConsent5 paymentConsent = OBWriteInternationalConsentTestDataFactory.aValidOBWriteInternationalConsent5();
-        createConsentRequest.setConsentRequest(FRWriteInternationalConsentConverter.toFRWriteInternationalConsent(paymentConsent));
-        createConsentRequest.setApiClientId(apiClientId);
-        createConsentRequest.setIdempotencyKey(UUID.randomUUID().toString());
-        createConsentRequest.setCharges(List.of(
-                FRCharge.builder().type("fee1")
-                        .chargeBearer(FRChargeBearerType.BORNEBYDEBTOR)
-                        .amount(new FRAmount("0.54","GBP"))
-                        .build(),
-                FRCharge.builder().type("fee2")
-                        .chargeBearer(FRChargeBearerType.BORNEBYDEBTOR)
-                        .amount(new FRAmount("0.10","GBP"))
-                        .build())
-        );
-        createConsentRequest.setExchangeRateInformation(getExchangeRateInformation(paymentConsent.getData().getInitiation().getExchangeRateInformation()));
-
-        return createConsentRequest;
+    protected OBVersion getControllerVersion() {
+        return OBVersion.v3_1_10;
     }
 }

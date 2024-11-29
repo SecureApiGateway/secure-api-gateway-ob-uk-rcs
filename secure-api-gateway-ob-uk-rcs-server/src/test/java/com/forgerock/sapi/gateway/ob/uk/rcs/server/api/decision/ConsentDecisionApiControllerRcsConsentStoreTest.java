@@ -34,8 +34,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import jakarta.annotation.PostConstruct;
-
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
@@ -43,11 +41,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -55,16 +55,16 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRReadConsent;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRReadConsentConverter;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.funds.FRFundsConfirmationConsentConverter;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConsentConverter;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticScheduledConsentConverter;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticStandingOrderConsentConverter;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteFileConsentConverter;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalConsentConverter;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalScheduledConsentConverter;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalStandingOrderConsentConverter;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVRPConsentConverters;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRReadConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.funds.FRFundsConfirmationConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteDomesticConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteDomesticScheduledConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteDomesticStandingOrderConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteFileConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteInternationalConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteInternationalScheduledConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteInternationalStandingOrderConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.vrp.FRDomesticVRPConsentConverters;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.RedirectionAction;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.decision.ConsentDecisionDeserialized;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.Constants;
@@ -108,21 +108,22 @@ import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jwt.JWTClaimsSet;
 
-import uk.org.openbanking.datamodel.account.OBReadConsent1;
-import uk.org.openbanking.datamodel.account.OBReadConsent1Data;
-import uk.org.openbanking.datamodel.account.OBRisk2;
-import uk.org.openbanking.datamodel.common.OBExternalPermissions1Code;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1Data;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1DataDebtorAccount;
-import uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory;
-import uk.org.openbanking.testsupport.payment.OBWriteDomesticScheduledConsentTestDataFactory;
-import uk.org.openbanking.testsupport.payment.OBWriteDomesticStandingOrderConsentTestDataFactory;
-import uk.org.openbanking.testsupport.payment.OBWriteFileConsentTestDataFactory;
-import uk.org.openbanking.testsupport.payment.OBWriteInternationalConsentTestDataFactory;
-import uk.org.openbanking.testsupport.payment.OBWriteInternationalScheduledConsentTestDataFactory;
-import uk.org.openbanking.testsupport.payment.OBWriteInternationalStandingOrderConsentTestDataFactory;
-import uk.org.openbanking.testsupport.vrp.OBDomesticVrpConsentRequestTestDataFactory;
+import jakarta.annotation.PostConstruct;
+import uk.org.openbanking.datamodel.v3.account.OBReadConsent1;
+import uk.org.openbanking.datamodel.v3.account.OBReadConsent1Data;
+import uk.org.openbanking.datamodel.v3.account.OBRisk2;
+import uk.org.openbanking.datamodel.v3.common.OBExternalPermissions1Code;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsent1;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsent1Data;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsent1DataDebtorAccount;
+import uk.org.openbanking.testsupport.v3.payment.OBWriteDomesticConsentTestDataFactory;
+import uk.org.openbanking.testsupport.v3.payment.OBWriteDomesticScheduledConsentTestDataFactory;
+import uk.org.openbanking.testsupport.v3.payment.OBWriteDomesticStandingOrderConsentTestDataFactory;
+import uk.org.openbanking.testsupport.v3.payment.OBWriteFileConsentTestDataFactory;
+import uk.org.openbanking.testsupport.v3.payment.OBWriteInternationalConsentTestDataFactory;
+import uk.org.openbanking.testsupport.v3.payment.OBWriteInternationalScheduledConsentTestDataFactory;
+import uk.org.openbanking.testsupport.v3.payment.OBWriteInternationalStandingOrderConsentTestDataFactory;
+import uk.org.openbanking.testsupport.v3.vrp.OBDomesticVrpConsentRequestTestDataFactory;
 
 /**
  * Spring Boot Test for {@link ConsentDecisionApiController} using the RCS Consent Store.
@@ -130,6 +131,7 @@ import uk.org.openbanking.testsupport.vrp.OBDomesticVrpConsentRequestTestDataFac
 @EnableConfigurationProperties
 @ActiveProfiles("test")
 @SpringBootTest(classes = RCSServerApplicationTestSupport.class, webEnvironment = RANDOM_PORT)
+@DependsOn({"internalConsentServices"})
 public class ConsentDecisionApiControllerRcsConsentStoreTest {
 
     private static final String TEST_API_CLIENT_ID = "test-api-client-1";
@@ -154,33 +156,43 @@ public class ConsentDecisionApiControllerRcsConsentStoreTest {
     private ConsentStoreEnabledIntentTypes consentStoreEnabledIntentTypes;
 
     @Autowired
+    @Qualifier("internalAccountAccessConsentService")
     private AccountAccessConsentService accountAccessConsentService;
 
     @Autowired
+    @Qualifier("internalDomesticPaymentConsentService")
     private DomesticPaymentConsentService domesticPaymentConsentService;
 
     @Autowired
+    @Qualifier("internalDomesticScheduledPaymentConsentService")
     private DomesticScheduledPaymentConsentService domesticScheduledPaymentConsentService;
 
     @Autowired
+    @Qualifier("internalDomesticStandingOrderConsentService")
     private DomesticStandingOrderConsentService domesticStandingOrderConsentService;
 
     @Autowired
+    @Qualifier("internalInternationalPaymentConsentService")
     private InternationalPaymentConsentService internationalPaymentConsentService;
 
     @Autowired
+    @Qualifier("internalInternationalScheduledPaymentConsentService")
     private InternationalScheduledPaymentConsentService internationalScheduledPaymentConsentService;
 
     @Autowired
+    @Qualifier("internalInternationalStandingOrderConsentService")
     private InternationalStandingOrderConsentService internationalStandingOrderConsentService;
 
     @Autowired
+    @Qualifier("internalFilePaymentConsentService")
     private FilePaymentConsentService filePaymentConsentService;
 
     @Autowired
+    @Qualifier("internalDomesticVRPConsentService")
     private DomesticVRPConsentService domesticVRPConsentService;
 
     @Autowired
+    @Qualifier("internalFundsConfirmationConsentService")
     private FundsConfirmationConsentService fundsConfirmationConsentService;
 
     @Autowired

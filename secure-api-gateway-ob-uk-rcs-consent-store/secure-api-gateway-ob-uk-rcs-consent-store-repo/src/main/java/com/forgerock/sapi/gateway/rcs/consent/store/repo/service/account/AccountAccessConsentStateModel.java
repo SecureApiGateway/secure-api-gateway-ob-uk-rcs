@@ -22,7 +22,7 @@ import org.springframework.util.MultiValueMap;
 
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentStateModel;
 
-import uk.org.openbanking.datamodel.common.OBExternalRequestStatus1Code;
+import uk.org.openbanking.datamodel.v3.common.OBExternalRequestStatus1Code;
 
 /**
  * State Model for Account Access Consents: https://openbankinguk.github.io/read-write-api-site3/v3.1.10/resources-and-data-models/aisp/account-access-consents.html#status-flow

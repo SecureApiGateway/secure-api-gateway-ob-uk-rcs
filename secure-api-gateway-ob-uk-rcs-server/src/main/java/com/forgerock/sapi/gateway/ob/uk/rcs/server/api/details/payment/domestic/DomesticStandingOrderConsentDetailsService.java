@@ -15,9 +15,12 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rcs.server.api.details.payment.domestic;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRFrequency6Converter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticStandingOrderConsentData;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticStandingOrderDataInitiation;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.consent.details.DomesticStandingOrderConsentDetails;
@@ -29,13 +32,18 @@ import com.forgerock.sapi.gateway.ob.uk.rcs.server.configuration.ApiProviderConf
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.entity.payment.domestic.DomesticStandingOrderConsentEntity;
 import com.forgerock.sapi.gateway.rcs.consent.store.repo.service.ConsentService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.forgerock.FRFrequency;
-import com.forgerock.sapi.gateway.uk.common.shared.api.meta.forgerock.FRFrequencyType;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 @Component
+@DependsOn({"internalConsentServices"})
 public class DomesticStandingOrderConsentDetailsService extends BasePaymentConsentDetailsService<DomesticStandingOrderConsentEntity, DomesticStandingOrderConsentDetails> {
 
-    public DomesticStandingOrderConsentDetailsService(ConsentService<DomesticStandingOrderConsentEntity, ?> consentService, ApiProviderConfiguration apiProviderConfiguration, ApiClientServiceClient apiClientService, AccountService accountService) {
+    public DomesticStandingOrderConsentDetailsService(
+            @Qualifier("internalDomesticStandingOrderConsentService") ConsentService<DomesticStandingOrderConsentEntity, ?> consentService,
+            ApiProviderConfiguration apiProviderConfiguration,
+            ApiClientServiceClient apiClientService,
+            AccountService accountService) {
+
         super(IntentType.PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT, DomesticStandingOrderConsentDetails::new, consentService,
               apiProviderConfiguration, apiClientService, accountService);
     }
@@ -47,10 +55,14 @@ public class DomesticStandingOrderConsentDetailsService extends BasePaymentConse
 
         final FRWriteDomesticStandingOrderConsentData obConsentRequestData = consent.getRequestObj().getData();
         final FRWriteDomesticStandingOrderDataInitiation initiation = obConsentRequestData.getInitiation();
-        // Updating initiation.frequency with a readable value to be displayed in the UI
-        FRFrequency frFrequency = new FRFrequency(initiation.getFrequency());
-        initiation.setFrequency(frFrequency.getFormattedSentence());
 
+        if (initiation.getMandateRelatedInformation() != null && initiation.getMandateRelatedInformation().getFrequency() != null) {
+            // Updating initiation.frequency with a readable value to be displayed in the UI
+            initiation.setFrequency(initiation.getMandateRelatedInformation().getFrequency().getFormattedSentenceV4());
+        } else if (initiation.getFrequency() != null) {
+            FRFrequency frFrequency = new FRFrequency(initiation.getFrequency());
+            initiation.setFrequency(frFrequency.getFormattedSentence());
+        }
         consentDetails.setInitiation(initiation);
         consentDetails.setPaymentReference(initiation.getReference());
 

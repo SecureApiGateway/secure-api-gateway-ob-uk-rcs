@@ -17,7 +17,6 @@ package com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
