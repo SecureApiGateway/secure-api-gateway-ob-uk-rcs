@@ -10,3 +10,5 @@ target/
 *.iml
 temp
 *.tgz
+.flattened-pom.xml
+/.flattened-pom.xml
