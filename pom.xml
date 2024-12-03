@@ -21,7 +21,7 @@
 
     <groupId>com.forgerock.sapi.gateway</groupId>
     <artifactId>secure-api-gateway-ob-uk-rcs</artifactId>
-    <version>4.0.1-SNAPSHOT</version>
+    <version>${revision}</version>
     <packaging>pom</packaging>
     <name>secure-api-gateway-ob-uk-rcs</name>
     <description>A UK Open Banking Remote Consent Service for the Secure API Gateway</description>
@@ -63,7 +63,7 @@
             <dependency>
                 <groupId>com.forgerock.sapi.gateway</groupId>
                 <artifactId>secure-api-gateway-ob-uk-common-bom</artifactId>
-                <version>4.0.0</version>
+                <version>4.0.1-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -80,12 +80,13 @@
     <parent>
         <groupId>com.forgerock.sapi.gateway</groupId>
         <artifactId>secure-api-gateway-parent</artifactId>
-        <version>4.0.0</version>
+        <version>4.0.1-SNAPSHOT</version>
     </parent>
 
     <properties>
         <!-- Plugin versions -->
         <flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
+        <revision>4.0.1-SNAPSHOT</revision>
     </properties>
 
     <repositories>
