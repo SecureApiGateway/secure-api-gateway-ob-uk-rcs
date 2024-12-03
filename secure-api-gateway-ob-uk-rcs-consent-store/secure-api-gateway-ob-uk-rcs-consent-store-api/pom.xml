@@ -22,7 +22,7 @@
     <parent>
         <groupId>com.forgerock.sapi.gateway</groupId>
         <artifactId>secure-api-gateway-ob-uk-rcs-consent-store</artifactId>
-        <version>${revision}</version>
+        <version>4.0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>secure-api-gateway-ob-uk-rcs-consent-store-api</artifactId>
