@@ -57,9 +57,11 @@ public class DomesticStandingOrderConsentDetailsService extends BasePaymentConse
         final FRWriteDomesticStandingOrderDataInitiation initiation = obConsentRequestData.getInitiation();
 
         if (initiation.getMandateRelatedInformation() != null && initiation.getMandateRelatedInformation().getFrequency() != null) {
+            logger.info("V4 frequency");
             // Updating initiation.frequency with a readable value to be displayed in the UI
             initiation.setFrequency(initiation.getMandateRelatedInformation().getFrequency().getFormattedSentenceV4());
         } else if (initiation.getFrequency() != null) {
+            logger.info("V3 frequency");
             FRFrequency frFrequency = new FRFrequency(initiation.getFrequency());
             initiation.setFrequency(frFrequency.getFormattedSentence());
         }
