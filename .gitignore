@@ -12,3 +12,6 @@ temp
 *.tgz
 .flattened-pom.xml
 /.flattened-pom.xml
+release.properties
+pom.xml.releaseBackup
+pom.xml.tag
