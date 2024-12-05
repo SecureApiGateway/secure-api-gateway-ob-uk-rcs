@@ -56,9 +56,14 @@ public class InternationalStandingOrderConsentDetailsService extends BasePayment
 
         final FRWriteInternationalStandingOrderConsentData obConsentRequestData = consent.getRequestObj().getData();
         final FRWriteInternationalStandingOrderDataInitiation initiation = obConsentRequestData.getInitiation();
-        // Updating initiation.frequency with a readable value to be displayed in the UI
-        FRFrequency frFrequency = new FRFrequency(initiation.getFrequency());
-        initiation.setFrequency(frFrequency.getFormattedSentence());
+
+        if (initiation.getMandateRelatedInformation() != null && initiation.getMandateRelatedInformation().getFrequency() != null) {
+            // Updating initiation.frequency with a readable value to be displayed in the UI
+            initiation.setFrequency(initiation.getMandateRelatedInformation().getFrequency().getFormattedSentenceV4());
+        } else if (initiation.getFrequency() != null) {
+            FRFrequency frFrequency = new FRFrequency(initiation.getFrequency());
+            initiation.setFrequency(frFrequency.getFormattedSentence());
+        }
 
         consentDetails.setPaymentReference(initiation.getReference());
         consentDetails.setInitiation(initiation);
