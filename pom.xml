@@ -16,8 +16,7 @@
     limitations under the License.
 
 -->
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.forgerock.sapi.gateway</groupId>
@@ -26,7 +25,7 @@
     </parent>
     <groupId>com.forgerock.sapi.gateway</groupId>
     <artifactId>secure-api-gateway-ob-uk-rcs</artifactId>
-    <version>4.0.3-SNAPSHOT</version>
+    <version>4.0.3</version>
     <packaging>pom</packaging>
     <name>secure-api-gateway-ob-uk-rcs</name>
     <description>A UK Open Banking Remote Consent Service for the Secure API Gateway</description>
@@ -41,7 +40,7 @@
         <connection>scm:git:${project.scm.url}</connection>
         <developerConnection>scm:git:${project.scm.url}</developerConnection>
         <url>https://github.com/SecureApiGateway/secure-api-gateway-ob-uk-rcs.git</url>
-        <tag>HEAD</tag>
+        <tag>v4.0.3</tag>
     </scm>
     <properties>
         <!-- Plugin versions -->
