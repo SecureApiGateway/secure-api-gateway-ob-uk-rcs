@@ -53,7 +53,7 @@
             <dependency>
                 <groupId>com.forgerock.sapi.gateway</groupId>
                 <artifactId>secure-api-gateway-ob-uk-common-bom</artifactId>
-                <version>4.0.4-SNAPSHOT</version>
+                <version>4.0.4-pr-254-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
