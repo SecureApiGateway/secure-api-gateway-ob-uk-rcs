@@ -20,6 +20,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentReque
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.AuthorisePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_10.CreateDomesticVRPConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_10.DomesticVRPConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_10.UpdateDomesticVRPConsentRequest;
 
 /**
  * Client for interacting with com.forgerock.sapi.gateway.rcs.consent.store.api.v3_1_10.DomesticVRPConsentApi
@@ -35,5 +36,7 @@ public interface DomesticVRPConsentStoreClient {
     DomesticVRPConsent rejectConsent(RejectConsentRequest rejectDomesticVRPConsentRequest) throws ConsentStoreClientException;
 
     void deleteConsent(String consentId, String apiClientId) throws ConsentStoreClientException;
+
+    void updateConsent(UpdateDomesticVRPConsentRequest updateConsentRequest) throws ConsentStoreClientException;
 
 }
