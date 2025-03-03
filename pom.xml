@@ -44,7 +44,7 @@
     </scm>
     <properties>
         <!-- Plugin versions -->
-        <flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
+        <flatten-maven-plugin.version>1.7.0</flatten-maven-plugin.version>
         <revision>4.0.4-SNAPSHOT</revision>
     </properties>
     <dependencyManagement>
