@@ -104,12 +104,12 @@ spec:
           - name: CONSENT_REPO_URI
             valueFrom:
               configMapKeyRef:
-                name: core-deployment-config
+                name: ob-deployment-config
                 key: CONSENT_REPO_URI
           - name: RS_API_URI
             valueFrom:
               configMapKeyRef:
-                name: core-deployment-config
+                name: ob-deployment-config
                 key: RS_API_URI
           - name: SERVER_PORT
             value: "8080"
@@ -122,12 +122,12 @@ spec:
           - name: RCS_CONSENT_RESPONSE_JWT_SIGNINGKEYID
             valueFrom:
               configMapKeyRef:
-                name: core-deployment-config
+                name: ob-deployment-config
                 key: RCS_CONSENT_RESPONSE_JWT_SIGNINGKEYID
           - name: RCS_CONSENT_RESPONSE_JWT_ISSUER
             valueFrom:
               configMapKeyRef:
-                name: core-deployment-config
+                name: ob-deployment-config
                 key: RCS_CONSENT_RESPONSE_JWT_ISSUER
           resources:
             limits:
@@ -147,14 +147,14 @@ spec:
 These are the environment variables declared in the `deployment.yaml`;
 | Key | Default | Description | Source |
 |-----|---------|-------------|--------|
-| CONSENT_REPO_URI | http://ig:80 | URI of IG | core-deployment-config |
-|RS_API_URI | http://test-facility-bank:8080 | URI of Test Facility Bank | core-deployment-config |
+| CONSENT_REPO_URI | http://ig:80 | URI of IG | ob-deployment-config |
+|RS_API_URI | http://test-facility-bank:8080 | URI of Test Facility Bank | ob-deployment-config |
 | SERVER_PORT | 8080 | What port does the container use |deployment.containerPort |
 | SPRING_PROFILES_ACTIVE | docker | What spring provile to use | Hardcoded |
 | JAVA_OPTS | -XX:+UseG1GC -XX:+UseContainerSupport -XX:MaxRAMPercentage=50 -agentlib:jdwp=transport=dt_socket,address=*:9090,server=y,suspend=n | Additional Java config | deployment.java.opts | 
 | RCS_CONSENT_RESPONSE_JWT_PRIVATEKEYPATH | /app/secrets/rcs-signing.key | Where to find the private signing key | Hardcoded |
-| RCS_CONSENT_RESPONSE_JWT_SIGNINGKEYID | rcs-jwt-signer | What is the signing key ID | core-deployment-config |
-| RCS_CONSENT_RESPONSE_JWT_ISSUER | secure-open-banking-rcs | What is the JWT responce issuer | core-deployment-config |
+| RCS_CONSENT_RESPONSE_JWT_SIGNINGKEYID | rcs-jwt-signer | What is the signing key ID | ob-deployment-config |
+| RCS_CONSENT_RESPONSE_JWT_ISSUER | secure-open-banking-rcs | What is the JWT responce issuer | ob-deployment-config |
 
 ### Values
 These are the values that are consumed in the `deployment.yaml` and `service.yaml`;
