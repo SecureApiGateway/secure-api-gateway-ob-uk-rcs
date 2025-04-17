@@ -60,27 +60,27 @@ spec:
           - name: SPRING_DATA_MONGODB_DATABASE
             valueFrom:
               secretKeyRef:
-                name: ob-secrets
+                name: rs-sapig-secrets
                 key: MONGODB_CONSENT_USERNAME
           - name: SPRING_DATA_MONGODB_USERNAME
             valueFrom:
               secretKeyRef:
-                name: ob-secrets
+                name: rs-sapig-secrets
                 key: MONGODB_CONSENT_USERNAME
           - name: SPRING_DATA_MONGODB_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: ob-secrets
+                name: rs-sapig-secrets
                 key: MONGODB_CONSENT_PASSWORD
           - name: CLOUD_CLIENT_BASE_URI
             valueFrom:
               configMapKeyRef:
-                name: ob-deployment-config
+                name: rs-sapig-deployment-config
                 key: GATEWAY_DATA_REPO_URI
           - name: RS_API_URI
             valueFrom:
               configMapKeyRef:
-                name: ob-deployment-config
+                name: rs-sapig-deployment-config
                 key: RS_API_URI
           - name: SERVER_PORT
             value: {{ .Values.deployment.containerPort | quote }}
@@ -93,12 +93,12 @@ spec:
           - name: RCS_CONSENT_RESPONSE_JWT_SIGNINGKEYID
             valueFrom:
               configMapKeyRef:
-                name: ob-deployment-config
+                name: rs-sapig-deployment-config
                 key: RCS_CONSENT_RESPONSE_JWT_SIGNINGKEYID
           - name: RCS_CONSENT_RESPONSE_JWT_ISSUER
             valueFrom:
               configMapKeyRef:
-                name: ob-deployment-config
+                name: rs-sapig-deployment-config
                 key: RCS_CONSENT_RESPONSE_JWT_ISSUER
           resources:
             {{- toYaml .Values.deployment.resources | nindent 12 }}
