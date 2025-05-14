@@ -37,7 +37,5 @@ public interface DomesticVRPConsentStoreClient {
 
     void deleteConsent(String consentId, String apiClientId) throws ConsentStoreClientException;
 
-    DomesticVRPConsent update1Consent(UpdateDomesticVRPConsentRequest updateConsentRequest) throws ConsentStoreClientException;
-
-    DomesticVRPConsent update2Consent(UpdateDomesticVRPConsentRequest updateConsentRequest) throws ConsentStoreClientException;
+    DomesticVRPConsent updateConsent(UpdateDomesticVRPConsentRequest updateConsentRequest) throws ConsentStoreClientException;
 }

@@ -78,15 +78,9 @@ public class BaseRestDomesticVRPConsentStoreClient extends BaseRestConsentStoreC
     }
 
     @Override
-    public DomesticVRPConsent update1Consent(UpdateDomesticVRPConsentRequest updateConsentRequest) throws ConsentStoreClientException {
+    public DomesticVRPConsent updateConsent(UpdateDomesticVRPConsentRequest updateConsentRequest) throws ConsentStoreClientException {
         final HttpEntity<UpdateDomesticVRPConsentRequest> requestEntity = new HttpEntity<>(updateConsentRequest, createHeaders(updateConsentRequest.getApiClientId()));
         return doRestCall(consentServiceBaseUrl, HttpMethod.PUT, requestEntity, DomesticVRPConsent.class);
-    }
-
-    @Override
-    public DomesticVRPConsent update2Consent(UpdateDomesticVRPConsentRequest updateConsentRequest) throws ConsentStoreClientException {
-        final HttpEntity<UpdateDomesticVRPConsentRequest> requestEntity = new HttpEntity<>(updateConsentRequest, createHeaders(updateConsentRequest.getApiClientId()));
-        return doRestCall(consentServiceBaseUrl, HttpMethod.PATCH, requestEntity, DomesticVRPConsent.class);
     }
 
 }
