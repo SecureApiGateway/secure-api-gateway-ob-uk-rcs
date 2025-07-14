@@ -61,6 +61,9 @@ public class BaseDomesticVRPConsentApiController implements DomesticVRPConsentAp
     public ResponseEntity<DomesticVRPConsent> createConsent(CreateDomesticVRPConsentRequest request) {
         logger.info("Attempting to createConsent: {}", request);
         final DomesticVRPConsentEntity domesticPaymentConsent = new DomesticVRPConsentEntity();
+        if (request.getConsentId() != null) {
+            domesticPaymentConsent.setId(request.getConsentId());
+        }
         domesticPaymentConsent.setRequestVersion(obVersion);
         domesticPaymentConsent.setApiClientId(request.getApiClientId());
         domesticPaymentConsent.setRequestObj(request.getConsentRequest());

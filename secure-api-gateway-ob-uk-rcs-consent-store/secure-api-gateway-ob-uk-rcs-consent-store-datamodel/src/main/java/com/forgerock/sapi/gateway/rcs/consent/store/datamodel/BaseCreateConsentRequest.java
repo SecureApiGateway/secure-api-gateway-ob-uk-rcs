@@ -25,9 +25,18 @@ public abstract class BaseCreateConsentRequest<T> {
 
     @NotNull
     private String apiClientId;
+    private String consentId;
     @NotNull
     @Valid
     private T consentRequest;
+
+    public String getConsentId() {
+        return consentId;
+    }
+
+    public void setConsentId(String consentId) {
+        this.consentId = consentId;
+    }
 
     public String getApiClientId() {
         return apiClientId;
