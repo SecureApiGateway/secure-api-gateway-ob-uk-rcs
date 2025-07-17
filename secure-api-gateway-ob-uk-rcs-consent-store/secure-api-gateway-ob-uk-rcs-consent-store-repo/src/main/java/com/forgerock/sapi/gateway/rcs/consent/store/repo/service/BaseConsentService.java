@@ -24,6 +24,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.util.MultiValueMap;
 
@@ -94,12 +96,23 @@ public abstract class BaseConsentService<T extends BaseConsentEntity<?>, A exten
 
     @Override
     public T createConsent(T consent) {
-        if (consent.getId() != null) {
-            throw new IllegalStateException("Cannot create consent, object already has an id: " + consent.getId());
-        }
-        consent.setId(idGenerator.get());
-        consent.setStatus(initialConsentStatus);
 
+        final Logger logger = LoggerFactory.getLogger(getClass());
+        if (consent.getId() != null) {
+            if (!consent.getId().startsWith("DVRP_")) {
+                logger.debug("DVRPConsent: {}", consent);
+                throw new IllegalStateException("Cannot create consent, object already has an id: " + consent.getId());
+            }
+
+            if (repo.existsById(consent.getId())) {
+                logger.debug("Object already has an id: " + consent.getId());
+                repo.deleteById(consent.getId());
+            }
+        } else {
+            consent.setId(idGenerator.get());
+        }
+
+        consent.setStatus(initialConsentStatus);
         return repo.insert(consent);
     }
 
