@@ -96,23 +96,12 @@ public abstract class BaseConsentService<T extends BaseConsentEntity<?>, A exten
 
     @Override
     public T createConsent(T consent) {
-
-        final Logger logger = LoggerFactory.getLogger(getClass());
         if (consent.getId() != null) {
-            if (!consent.getId().startsWith("DVRP_")) {
-                logger.debug("DVRPConsent: {}", consent);
-                throw new IllegalStateException("Cannot create consent, object already has an id: " + consent.getId());
-            }
-
-            if (repo.existsById(consent.getId())) {
-                logger.debug("Object already has an id: " + consent.getId());
-                repo.deleteById(consent.getId());
-            }
-        } else {
-            consent.setId(idGenerator.get());
+            throw new IllegalStateException("Cannot create consent, object already has an id: " + consent.getId());
         }
-
+        consent.setId(idGenerator.get());
         consent.setStatus(initialConsentStatus);
+
         return repo.insert(consent);
     }
 
