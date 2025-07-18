@@ -27,7 +27,7 @@ public abstract class BaseCreateConsentRequest<T> {
 
     @NotNull
     private String apiClientId;
-    private String consentId;
+
     @NotNull
     @Valid
     private T consentRequest;

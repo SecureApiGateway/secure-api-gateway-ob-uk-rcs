@@ -94,10 +94,13 @@ public abstract class BaseConsentService<T extends BaseConsentEntity<?>, A exten
 
     @Override
     public T createConsent(T consent) {
-        if (consent.getId() != null) {
+        if (consent.getId() != null && !consent.getId().startsWith("DVRP")) {
             throw new IllegalStateException("Cannot create consent, object already has an id: " + consent.getId());
         }
-        consent.setId(idGenerator.get());
+
+        if (consent.getId() == null) {
+            consent.setId(idGenerator.get());
+        }
         consent.setStatus(initialConsentStatus);
 
         return repo.insert(consent);
@@ -163,6 +166,11 @@ public abstract class BaseConsentService<T extends BaseConsentEntity<?>, A exten
         consent.setStatus(revokedConsentStatus);
         consent.setDeleted(true);
         repo.save(consent);
+    }
+
+    @Override
+    public void deleteConsentForMigration(String consentId, String apiClientId) {
+        repo.deleteById(consentId);
     }
 
     @Override
