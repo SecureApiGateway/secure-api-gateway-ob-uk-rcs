@@ -23,9 +23,11 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public abstract class BaseCreateConsentRequest<T> {
 
+    private String consentId;
+
     @NotNull
     private String apiClientId;
-    private String consentId;
+
     @NotNull
     @Valid
     private T consentRequest;

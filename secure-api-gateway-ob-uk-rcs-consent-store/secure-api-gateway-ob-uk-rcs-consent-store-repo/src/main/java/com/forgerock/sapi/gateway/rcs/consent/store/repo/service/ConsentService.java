@@ -40,6 +40,8 @@ public interface ConsentService<T extends BaseConsentEntity, A extends Authorise
 
     void deleteConsent(String consentId, String apiClientId);
 
+    void deleteConsentForMigration(String consentId, String apiClientId);
+
     /**
      * Can the Consent transition from its current state to Authorised state
      */
