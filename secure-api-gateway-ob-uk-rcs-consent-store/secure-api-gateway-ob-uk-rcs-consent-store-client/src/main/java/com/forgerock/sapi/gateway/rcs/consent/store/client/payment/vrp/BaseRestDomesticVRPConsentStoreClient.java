@@ -27,6 +27,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.RejectConsentReque
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.AuthorisePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_10.CreateDomesticVRPConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_10.DomesticVRPConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_10.UpdateDomesticVRPConsentRequest;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 /**
@@ -74,6 +75,12 @@ public class BaseRestDomesticVRPConsentStoreClient extends BaseRestConsentStoreC
         final String url = consentServiceBaseUrl + "/" + consentId;
         final HttpEntity<Object> requestEntity = new HttpEntity<>(createHeaders(apiClientId));
         doRestCall(url, HttpMethod.DELETE, requestEntity, Void.class);
+    }
+
+    @Override
+    public DomesticVRPConsent updateConsent(UpdateDomesticVRPConsentRequest updateConsentRequest) throws ConsentStoreClientException {
+        final HttpEntity<UpdateDomesticVRPConsentRequest> requestEntity = new HttpEntity<>(updateConsentRequest, createHeaders(updateConsentRequest.getApiClientId()));
+        return doRestCall(consentServiceBaseUrl, HttpMethod.PUT, requestEntity, DomesticVRPConsent.class);
     }
 
 }
