@@ -104,6 +104,13 @@ public class BaseDomesticVRPConsentApiController implements DomesticVRPConsentAp
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    @Override
+    public ResponseEntity<Void> deleteConsentForMigration(String consentId, String apiClientId) {
+        logger.debug("Attempting to delete consent for migration purposes - id: {}, apiClientId: {}", consentId, apiClientId);
+        consentService.deleteConsentForMigration(consentId, apiClientId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
     private DomesticVRPConsent convertEntityToDto(DomesticVRPConsentEntity entity) {
         final DomesticVRPConsent dto = new DomesticVRPConsent();
         dto.setId(entity.getId());
