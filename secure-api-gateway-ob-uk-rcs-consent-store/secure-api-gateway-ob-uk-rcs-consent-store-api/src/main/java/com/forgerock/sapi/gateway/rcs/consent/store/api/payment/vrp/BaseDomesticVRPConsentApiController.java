@@ -106,7 +106,7 @@ public class BaseDomesticVRPConsentApiController implements DomesticVRPConsentAp
 
     @Override
     public ResponseEntity<Void> deleteConsentForMigration(String consentId, String apiClientId) {
-        logger.info("Attempting to delete consent for migration purposes - id: {}, apiClientId: {}", consentId, apiClientId);
+        logger.debug("Attempting to delete consent for migration purposes - id: {}, apiClientId: {}", consentId, apiClientId);
         consentService.deleteConsentForMigration(consentId, apiClientId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
