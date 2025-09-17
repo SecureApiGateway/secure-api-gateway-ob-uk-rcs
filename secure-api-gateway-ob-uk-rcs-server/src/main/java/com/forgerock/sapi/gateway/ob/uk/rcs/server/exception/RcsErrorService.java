@@ -20,6 +20,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rcs.api.dto.RedirectionAction;
 import com.forgerock.sapi.gateway.ob.uk.rcs.cloud.client.exceptions.ErrorType;
 import com.google.common.base.Splitter;
+import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,7 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.Map;
 
@@ -80,9 +82,21 @@ public class RcsErrorService {
         OBRIErrorType obriErrorType = invalidConsentException.getObriErrorType();
         try {
             Map<String, String> params = extractParams(consentContextJwt);
+            log.debug("Consent context JWT {} has error '{}'", consentContextJwt, invalidConsentException.getReason());
 
-            String redirectURL = params.get("redirect_uri") != null ? URLDecoder.decode(params.get("redirect_uri"), "UTF-8") : "";
-            if (StringUtils.isEmpty(redirectURL)) {
+            // Consent content may come in the form of a 'request' claim (parameter), which is more secure and should
+            // take precedence, or may come as top-level claims (e.g. 'redirect_uri') as per the OAuth2 specs.
+            JWTClaimsSet requestParamClaims = getRequestParameterClaims(params);
+
+            // Identify error redirect_uri
+            String redirectURL = requestParamClaims.getStringClaim("redirect_uri");
+            if (redirectURL == null) {
+                redirectURL = params.get("redirect_uri");
+            }
+            log.debug("Consent redirect_uri {}", redirectURL);
+            redirectURL = redirectURL != null ? URLDecoder.decode(redirectURL, StandardCharsets.UTF_8) : null;
+
+            if (redirectURL == null || redirectURL.isEmpty()) {
                 String message = "Null or empty redirect URL. Falling back to just throwing error back to UI";
                 String errorMessage = obriErrorType != null ? String.format(obriErrorType.getMessage(), message) : message;
                 log.warn(errorMessage);
@@ -93,20 +107,15 @@ public class RcsErrorService {
                                 .build());
             }
 
-            String state = "";
-
-            if (params.get("state") != null) {
-                state = URLDecoder.decode(params.get("state"), "UTF-8");
-            } else {
-                String requestParameter = params.get("request");
-                if (requestParameter != null) {
-                    SignedJWT requestParameterJwt = (SignedJWT) JWTParser.parse(requestParameter);
-                    state = requestParameterJwt.getJWTClaimsSet().getStringClaim(STATE);
-                }
+            // Identify error state
+            String state = requestParamClaims.getStringClaim(STATE);
+            if (state == null) {
+                state = params.get(STATE);
             }
+            log.debug("Consent state {}", state);
+            state = state != null ? URLDecoder.decode(state, StandardCharsets.UTF_8) : "";
 
-            String errorDescription = errorType.getDescription() +
-                    invalidConsentException.getReason() != null ? " " + invalidConsentException.getReason() : "";
+            String errorDescription = invalidConsentException.getReason();
             UriComponents uriComponents = UriComponentsBuilder
                     .fromHttpUrl(redirectURL)
                     .fragment("error=" + errorType.getErrorCode() + "&state=" + state +
@@ -120,11 +129,7 @@ public class RcsErrorService {
                     .body(RedirectionAction.builder()
                             .consentJwt(consentContextJwt)
                             .redirectUri(uriComponents.toUriString())
-                            .errorMessage(
-                                    invalidConsentException.getErrorType() != null ?
-                                            invalidConsentException.getErrorType().getDescription() :
-                                            null
-                            )
+                            .errorMessage(invalidConsentException.getErrorType().getDescription())
                             .requestMethod(HttpMethod.GET.name())
                             .build());
         } catch (Exception e) {
@@ -144,23 +149,33 @@ public class RcsErrorService {
             throws OBErrorException {
         try {
             Map<String, String> params = extractParams(consentContextJwt);
-            String redirectURL = URLDecoder.decode(params.get("redirect_uri"), "UTF-8");
-            String state = "";
+            log.debug("Consent context JWT {} has OBErrorException '{}'", consentContextJwt, obError.getMessage());
 
-            if (params.get("state") != null) {
-                state = URLDecoder.decode(params.get("state"), "UTF-8");
-            } else {
-                String requestParameter = params.get("request");
-                if (requestParameter != null) {
-                    SignedJWT requestParameterJwt = (SignedJWT) JWTParser.parse(requestParameter);
-                    state = requestParameterJwt.getJWTClaimsSet().getStringClaim(STATE);
-                }
+            // Consent content may come in the form of a 'request' claim (parameter), which is more secure and should
+            // take precedence, or may come as top-level claims (e.g. 'redirect_uri') as per the OAuth2 specs.
+            JWTClaimsSet requestParamClaims = getRequestParameterClaims(params);
+
+            // Identify error redirect_uri
+            String redirectURL = requestParamClaims.getStringClaim("redirect_uri");
+            if (redirectURL == null) {
+                redirectURL = params.get("redirect_uri");
             }
+            log.debug("Consent redirect_uri {}", redirectURL);
+            redirectURL = redirectURL != null ? URLDecoder.decode(redirectURL, StandardCharsets.UTF_8) : null;
 
-            if (StringUtils.isEmpty(redirectURL)) {
+            if (redirectURL == null || redirectURL.isEmpty()) {
                 log.warn("Null or empty redirect URL. Falling back to just throwing error back to UI");
                 throw obError;
             }
+
+            // Identify error state
+            String state = requestParamClaims.getStringClaim(STATE);
+            if (state == null) {
+                state = params.get(STATE);
+            }
+            log.debug("Consent state {}", state);
+            state = state != null ? URLDecoder.decode(state, StandardCharsets.UTF_8) : "";
+
             UriComponents uriComponents = UriComponentsBuilder
                     .fromHttpUrl(redirectURL)
                     .fragment("error=invalid_request_object&state=" + state + "&error_description=" +
@@ -191,5 +206,19 @@ public class RcsErrorService {
 
         String query = amRedirectUri.split("\\?")[1];
         return Splitter.on('&').trimResults().withKeyValueSeparator("=").split(query);
+    }
+
+    private JWTClaimsSet getRequestParameterClaims(Map<String, String> params) throws ParseException {
+        log.debug("Checking presence of 'request' (parameter) claim in params {}", params);
+        String requestParamValue = params.get("request");
+        if (requestParamValue == null) {
+            // If not present then return empty claimsSet
+            log.debug("No 'request' parameter found");
+            return new JWTClaimsSet.Builder().build();
+        }
+        SignedJWT signedJWT = (SignedJWT) JWTParser.parse(requestParamValue);
+        JWTClaimsSet claimSet = signedJWT.getJWTClaimsSet();
+        log.debug("Identified 'request' parameter claims {}", claimSet);
+        return claimSet;
     }
 }
