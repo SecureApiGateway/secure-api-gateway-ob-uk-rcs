@@ -79,11 +79,14 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
             apiClientId = consentClientRequest.getClientId();
 
             IntentType intentType = IntentType.identify(intentId);
+            log.debug("XXX: intentType={}", intentType != null ? intentType.name() : "null");
             if (Objects.nonNull(intentType)) {
                 final ConsentDetails details;
                 if (consentStoreDetailsServiceRegistry.isIntentTypeSupported(intentType)) {
+                    log.debug("XXX: isIntentTypeSupported({})=true", intentType.name());
                     details = consentStoreDetailsServiceRegistry.getDetailsFromConsentStore(intentType, consentClientRequest);
                 } else {
+                    log.debug("XXX: isIntentTypeSupported({})=false", intentType.name());
                     throw new IllegalStateException(intentType + " not supported");
                 }
                 return ResponseEntity.ok(details);
@@ -93,6 +96,7 @@ public class ConsentDetailsApiController implements ConsentDetailsApi {
                 throw new ExceptionClient(consentClientRequest, ErrorType.UNKNOWN_INTENT_TYPE, message);
             }
         } catch (ExceptionClient e) {
+            log.error("XXX: ExceptionClient raised: '{}'", e.getMessage(), e);
             String errorMessage = String.format("%s", e.getMessage());
             log.error(errorMessage);
             throw new InvalidConsentException(consentRequestJws, e.getErrorClient().getErrorType(),
