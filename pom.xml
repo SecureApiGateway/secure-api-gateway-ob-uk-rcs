@@ -21,43 +21,24 @@
     <parent>
         <groupId>com.forgerock.sapi.gateway</groupId>
         <artifactId>secure-api-gateway-parent</artifactId>
-        <version>5.0.4-SNAPSHOT</version>
+        <version>5.0.6-SNAPSHOT</version>
     </parent>
-    <groupId>com.forgerock.sapi.gateway</groupId>
     <artifactId>secure-api-gateway-ob-uk-rcs</artifactId>
     <version>5.0.6-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>secure-api-gateway-ob-uk-rcs</name>
     <description>A UK Open Banking Remote Consent Service for the Secure API Gateway</description>
     <url>https://github.com/SecureApiGateway/secure-api-gateway-ob-uk-rcs.git</url>
-    <modules>
-        <module>secure-api-gateway-ob-uk-rcs-api</module>
-        <module>secure-api-gateway-ob-uk-rcs-server</module>
-        <module>secure-api-gateway-ob-uk-rcs-cloud-client</module>
-        <module>secure-api-gateway-ob-uk-rcs-consent-store</module>
-    </modules>
+    <organization>
+        <name>ForgeRock</name>
+        <url>http://www.forgerock.org</url>
+    </organization>
     <scm>
         <connection>scm:git:${project.scm.url}</connection>
         <developerConnection>scm:git:${project.scm.url}</developerConnection>
         <url>https://github.com/SecureApiGateway/secure-api-gateway-ob-uk-rcs.git</url>
         <tag>HEAD</tag>
     </scm>
-    <properties>
-        <!-- Plugin versions -->
-        <flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
-    </properties>
-    <dependencyManagement>
-        <dependencies>
-            <!-- ForgeRock BOM (Bill of Material)-->
-            <dependency>
-                <groupId>com.forgerock.sapi.gateway</groupId>
-                <artifactId>secure-api-gateway-ob-uk-common-bom</artifactId>
-                <version>5.0.4-SNAPSHOT</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
     <repositories>
         <repository>
             <id>maven.forgerock.org-community</id>
@@ -79,8 +60,70 @@
             </snapshots>
         </repository>
     </repositories>
+    <modules>
+        <module>secure-api-gateway-ob-uk-rcs-api</module>
+        <module>secure-api-gateway-ob-uk-rcs-server</module>
+        <module>secure-api-gateway-ob-uk-rcs-cloud-client</module>
+        <module>secure-api-gateway-ob-uk-rcs-consent-store</module>
+    </modules>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Plugin versions -->
+        <flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
+    </properties>
+    <dependencyManagement>
+        <dependencies>
+            <!-- ForgeRock BOM (Bill of Material)-->
+            <dependency>
+                <groupId>com.forgerock.sapi.gateway</groupId>
+                <artifactId>secure-api-gateway-ob-uk-common-bom</artifactId>
+                <version>5.0.6-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
@@ -108,6 +151,4 @@
             </plugin>
         </plugins>
     </build>
-
-
 </project>

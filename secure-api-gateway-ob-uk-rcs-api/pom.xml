@@ -18,32 +18,20 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <artifactId>secure-api-gateway-ob-uk-rcs-api</artifactId>
-    <packaging>jar</packaging>
-    <name>secure-api-gateway-ob-uk-rcs-api</name>
-    <description>Module defining the API for the Open Banking RCS</description>
-    <url>
-        https://github.com/SecureApiGateway/secure-api-gateway-ob-uk-rcs/secure-api-gateway-ob-uk-rcs-api
-    </url>
-
     <parent>
         <groupId>com.forgerock.sapi.gateway</groupId>
         <artifactId>secure-api-gateway-ob-uk-rcs</artifactId>
         <version>5.0.6-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-
+    <artifactId>secure-api-gateway-ob-uk-rcs-api</artifactId>
+    <packaging>jar</packaging>
+    <name>secure-api-gateway-ob-uk-rcs-api</name>
+    <description>Module defining the API for the Open Banking RCS</description>
     <properties>
         <!-- property to run individualy the module with no license issues -->
         <legal.path.header>../legal/LICENSE-HEADER.txt</legal.path.header>
     </properties>
-
-    <organization>
-        <name>ForgeRock</name>
-        <url>http://www.forgerock.org</url>
-    </organization>
-
     <dependencies>
         <!-- ForgeRock dependencies -->
         <dependency>
@@ -73,11 +61,6 @@
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.modelmapper</groupId>
             <artifactId>modelmapper</artifactId>
@@ -99,13 +82,18 @@
         </dependency>
         <!-- External Test dependencies -->
         <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
+            <artifactId>mockito-junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

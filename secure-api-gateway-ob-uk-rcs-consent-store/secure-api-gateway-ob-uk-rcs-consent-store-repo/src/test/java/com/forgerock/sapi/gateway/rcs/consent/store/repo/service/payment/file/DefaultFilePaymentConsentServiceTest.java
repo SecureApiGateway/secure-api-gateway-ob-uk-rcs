@@ -137,7 +137,7 @@ public class DefaultFilePaymentConsentServiceTest extends BasePaymentConsentServ
 
         final ConstraintViolationException constraintViolationException = assertThrows(ConstraintViolationException.class, () -> service.uploadFile(fileUploadArgs));
         assertThat(constraintViolationException.getConstraintViolations()).hasSize(1);
-        assertThat(constraintViolationException.getMessage()).isEqualTo("uploadFile.arg0.fileContents: must not be null");
+        assertThat(constraintViolationException.getMessage()).isEqualTo("uploadFile.fileUploadArgs.fileContents: must not be null");
     }
 
     @Test

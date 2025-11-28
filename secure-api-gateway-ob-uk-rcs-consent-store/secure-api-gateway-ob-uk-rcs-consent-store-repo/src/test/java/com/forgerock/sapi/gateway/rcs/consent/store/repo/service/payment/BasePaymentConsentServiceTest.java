@@ -118,7 +118,7 @@ public abstract class BasePaymentConsentServiceTest<T extends BasePaymentConsent
         final T persistedConsent = getConsentInStateToAuthoriseOrReject();
         final ConstraintViolationException ex = assertThrows(ConstraintViolationException.class,
                 () -> getPaymentConsentService().authoriseConsent(new PaymentAuthoriseConsentArgs(persistedConsent.getId(), persistedConsent.getApiClientId(), "user-1234", null)));
-        assertThat(ex.getMessage()).isEqualTo("authoriseConsent.arg0.authorisedDebtorAccountId: must not be null");
+        assertThat(ex.getMessage()).isEqualTo("authoriseConsent.authoriseConsentArgs.authorisedDebtorAccountId: must not be null");
     }
 
     @Test
