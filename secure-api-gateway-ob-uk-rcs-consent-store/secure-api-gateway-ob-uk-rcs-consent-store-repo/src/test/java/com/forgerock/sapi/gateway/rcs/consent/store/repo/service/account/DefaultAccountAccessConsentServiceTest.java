@@ -106,12 +106,12 @@ public class DefaultAccountAccessConsentServiceTest extends BaseConsentServiceTe
         final AccountAccessConsentEntity persistedConsent = consentService.createConsent(getValidConsentEntity());
         final ConstraintViolationException ex = Assertions.assertThrows(ConstraintViolationException.class,
                 () -> consentService.authoriseConsent(new AccountAccessAuthoriseConsentArgs(persistedConsent.getId(), persistedConsent.getApiClientId(), "user-123", null)));
-        assertThat(ex.getConstraintViolations().stream().map(ConstraintViolation::getPropertyPath).map(Path::toString).collect(Collectors.toSet())).isEqualTo(Set.of("authoriseConsent.arg0.authorisedAccountIds"));
+        assertThat(ex.getConstraintViolations().stream().map(ConstraintViolation::getPropertyPath).map(Path::toString).collect(Collectors.toSet())).isEqualTo(Set.of("authoriseConsent.authoriseConsentArgs.authorisedAccountIds"));
         assertThat(ex.getConstraintViolations().stream().map(ConstraintViolation::getMessage).collect(Collectors.toSet())).isEqualTo(Set.of("must not be null", "must not be empty"));
 
         final ConstraintViolationException ex2 = Assertions.assertThrows(ConstraintViolationException.class,
                 () -> consentService.authoriseConsent(new AccountAccessAuthoriseConsentArgs(persistedConsent.getId(), persistedConsent.getApiClientId(), "user-123", List.of())));
-        assertThat(ex2.getMessage()).isEqualTo("authoriseConsent.arg0.authorisedAccountIds: must not be empty");
+        assertThat(ex2.getMessage()).isEqualTo("authoriseConsent.authoriseConsentArgs.authorisedAccountIds: must not be empty");
     }
 
     @Test

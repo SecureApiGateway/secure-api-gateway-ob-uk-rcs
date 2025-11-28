@@ -19,28 +19,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>secure-api-gateway-ob-uk-rcs-cloud-client</artifactId>
-    <packaging>jar</packaging>
-    <name>secure-api-gateway-ob-uk-rcs-cloud-client</name>
-    <description>A Forgerock Cloud Client Service for the Secure API Gateway</description>
-    <url>
-        https://github.com/SecureApiGateway/secure-api-gateway-ob-uk-rcs/secure-api-gateway-ob-uk-rcs-cloud-client
-    </url>
-
-    <organization>
-        <name>ForgeRock</name>
-        <url>http://www.forgerock.org</url>
-    </organization>
-
     <parent>
         <groupId>com.forgerock.sapi.gateway</groupId>
         <artifactId>secure-api-gateway-ob-uk-rcs</artifactId>
         <version>5.0.6-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-
+    <artifactId>secure-api-gateway-ob-uk-rcs-cloud-client</artifactId>
+    <packaging>jar</packaging>
+    <name>secure-api-gateway-ob-uk-rcs-cloud-client</name>
+    <description>A Forgerock Cloud Client Service for the Secure API Gateway</description>
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- property to run individualy the module with no license issues -->
         <legal.path.header>../legal/LICENSE-HEADER.txt</legal.path.header>
     </properties>
@@ -82,10 +71,6 @@
             <artifactId>jakarta.validation-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
             <artifactId>httpclient5</artifactId>
         </dependency>
@@ -104,23 +89,8 @@
         </dependency>
         <!-- External Test dependencies -->
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

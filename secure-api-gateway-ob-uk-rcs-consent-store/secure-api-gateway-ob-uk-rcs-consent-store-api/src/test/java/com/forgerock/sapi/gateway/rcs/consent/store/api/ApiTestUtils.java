@@ -20,7 +20,9 @@ import org.springframework.http.HttpHeaders;
 public class ApiTestUtils {
     public static HttpHeaders createConsentStoreApiRequiredHeaders(String apiClientId) {
         final HttpHeaders headers = new HttpHeaders();
-        headers.add("x-api-client-id", apiClientId);
+        if (apiClientId != null) {
+            headers.add("x-api-client-id", apiClientId);
+        }
         return headers;
     }
 }
