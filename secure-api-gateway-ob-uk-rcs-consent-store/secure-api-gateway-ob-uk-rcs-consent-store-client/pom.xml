@@ -21,7 +21,7 @@
     <parent>
         <groupId>com.forgerock.sapi.gateway</groupId>
         <artifactId>secure-api-gateway-ob-uk-rcs-consent-store</artifactId>
-        <version>5.1.1-SNAPSHOT</version>
+        <version>5.1.1</version>
     </parent>
     <artifactId>secure-api-gateway-ob-uk-rcs-consent-store-client</artifactId>
     <properties>
