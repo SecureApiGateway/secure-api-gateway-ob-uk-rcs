@@ -75,12 +75,12 @@ spec:
           - name: CLOUD_CLIENT_BASE_URI
             valueFrom:
               configMapKeyRef:
-                name: rs-sapig-deployment-config
+                name: fapi-pep-rs-ob-config
                 key: GATEWAY_DATA_REPO_URI
           - name: RS_API_URI
             valueFrom:
               configMapKeyRef:
-                name: rs-sapig-deployment-config
+                name: fapi-pep-rs-ob-config
                 key: RS_API_URI
           - name: SERVER_PORT
             value: {{ .Values.deployment.containerPort | quote }}
@@ -93,12 +93,12 @@ spec:
           - name: RCS_CONSENT_RESPONSE_JWT_SIGNINGKEYID
             valueFrom:
               configMapKeyRef:
-                name: rs-sapig-deployment-config
+                name: fapi-pep-rs-ob-config
                 key: RCS_CONSENT_RESPONSE_JWT_SIGNINGKEYID
           - name: RCS_CONSENT_RESPONSE_JWT_ISSUER
             valueFrom:
               configMapKeyRef:
-                name: rs-sapig-deployment-config
+                name: fapi-pep-rs-ob-config
                 key: RCS_CONSENT_RESPONSE_JWT_ISSUER
           resources:
             {{- toYaml .Values.deployment.resources | nindent 12 }}
