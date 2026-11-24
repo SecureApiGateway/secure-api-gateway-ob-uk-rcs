@@ -46,8 +46,9 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.Auth
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.CreateFundsConfirmationConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.FundsConfirmationConsent;
 
+import uk.org.openbanking.datamodel.v4.fund.OBCashAccountDebtorWithName;
 import uk.org.openbanking.datamodel.v4.fund.OBFundsConfirmationConsent1;
-import uk.org.openbanking.datamodel.v4.fund.OBFundsConfirmationConsent1Data;
+import uk.org.openbanking.datamodel.v4.fund.OBFundsConfirmationConsentData1;
 import uk.org.openbanking.datamodel.v4.fund.OBFundsConfirmationConsent1DataDebtorAccount;
 
 /**
@@ -148,10 +149,10 @@ public abstract class BaseFundsConfirmationConsentStoreClientTest {
         createConsentRequest.setApiClientId(API_CLIENT_ID);
         final OBFundsConfirmationConsent1 fundsConfirmationConsent1 = new OBFundsConfirmationConsent1();
         fundsConfirmationConsent1.setData(
-                new OBFundsConfirmationConsent1Data()
+                new OBFundsConfirmationConsentData1()
                         .expirationDateTime(DateTime.now().plusDays(30))
                         .debtorAccount(
-                                new OBFundsConfirmationConsent1DataDebtorAccount()
+                                new OBCashAccountDebtorWithName()
                                         .schemeName("UK.OBIE.SortCodeAccountNumber")
                                         .identification("40400422390112")
                                         .name("Mrs B Smith")
